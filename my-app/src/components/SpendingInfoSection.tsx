@@ -1,13 +1,21 @@
 "use client";
 
+import { Modal } from "@/components/Modal";
+import { NewSpendingModal } from "@/composites/NewSpendingModal";
 import { useSpendingInfo } from "@/context/SpendingInfoProvider";
 import { normalizeNumber } from "@/utils/normalizeNumber";
+import { useRef } from "react";
 
 const WEEKDAY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export const SpendingInfoSection = () => {
   const { state } = useSpendingInfo();
+  const modalRef = useRef<ModalRef>(null);
   const today = new Date();
+
+  const handleOpenModal = () => {
+    modalRef.current?.open();
+  };
 
   return (
     <div className="flex flex-col w-full gap-3">
@@ -43,10 +51,18 @@ export const SpendingInfoSection = () => {
 
       {/* Add Record */}
       <div className="flex w-full items-center justify-center pt-12">
-        <button className="px-6 py-3 border-2 border-dashed border-text text-xl font-semibold transition-all rounded-lg hover:border-2 hover:border-solid hover:text-blue-500 hover:shadow-blue-300 hover:shadow-lg hover:border-blue-500">
+        <button
+          type="button"
+          onClick={handleOpenModal}
+          className="px-6 py-3 border-b-2 border-dashed border-text text-xl font-semibold transition-all hover:text-blue-500 hover:shadow-[0_12px_12px_-12px_#1CB5D9] hover:border-blue-500"
+        >
           Add Record
         </button>
       </div>
+
+      <Modal ref={modalRef}>
+        <NewSpendingModal />
+      </Modal>
     </div>
   );
 };

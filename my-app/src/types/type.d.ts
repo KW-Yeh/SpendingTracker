@@ -13,3 +13,8 @@ interface SpendingRecord {
   category: string;
   description: string;
 }
+
+interface ModalRef {
+  open: () => void;
+  close: () => void;
+}
