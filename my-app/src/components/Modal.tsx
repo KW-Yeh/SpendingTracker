@@ -1,36 +1,48 @@
 "use client";
-import { forwardRef, ReactNode, useImperativeHandle, useRef } from "react";
+import useFocusRef from "@/hooks/useFocusRef";
+import { forwardRef, ReactNode, useImperativeHandle, useState } from "react";
 
 interface Props {
   children: ReactNode;
 }
 
 export const Modal = forwardRef<ModalRef, Props>((props, ref) => {
-  const dialogRef = useRef<HTMLDialogElement>(null);
+  const [open, setOpen] = useState(false);
+  const contentRef = useFocusRef<HTMLDivElement>(() => {
+    setOpen(false);
+  });
 
   useImperativeHandle(ref, () => ({
     open: () => {
-      dialogRef.current?.showModal();
+      setOpen(true);
     },
     close: () => {
-      dialogRef.current?.close();
+      setOpen(false);
     },
   }));
 
   const handleCloseModal = () => {
-    dialogRef.current?.close();
+    setOpen(false);
   };
 
+  if (!open) return null;
+
   return (
-    <dialog ref={dialogRef} className="relative p-6 rounded-2xl">
-      <button
-        type="button"
-        onClick={handleCloseModal}
-        className="absolute top-1 right-1 rounded-full flex items-center transition-colors justify-center size-6 hover:bg-gray-200"
+    <div className="fixed top-0 left-0 right-0 bottom-0 flex items-end justify-center bg-black/60 backdrop-blur-sm z-50">
+      <div
+        ref={contentRef}
+        className="relative p-6 rounded-t-2xl w-full bg-background"
       >
-        <span className="text-sm">x</span>
-      </button>
-      {props.children}
-    </dialog>
+        <button
+          type="button"
+          onClick={handleCloseModal}
+          className="absolute top-1 right-1 rounded-full flex items-center transition-colors justify-center size-6 hover:bg-gray-200"
+        >
+          <span>x</span>
+        </button>
+        {props.children}
+      </div>
+    </div>
   );
 });
+Modal.displayName = "Modal";

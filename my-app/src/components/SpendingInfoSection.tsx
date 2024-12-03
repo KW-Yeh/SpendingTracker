@@ -6,7 +6,7 @@ import { useSpendingInfo } from "@/context/SpendingInfoProvider";
 import { normalizeNumber } from "@/utils/normalizeNumber";
 import { useRef } from "react";
 
-const WEEKDAY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const WEEKDAY = ["日", "一", "二", "三", "四", "五", "六"];
 
 export const SpendingInfoSection = () => {
   const { state } = useSpendingInfo();
@@ -24,7 +24,9 @@ export const SpendingInfoSection = () => {
         <span className="text-2xl font-bold">
           {today.getMonth() + 1}/{today.getDate()}
         </span>
-        <span className="text-2xl font-bold">({WEEKDAY[today.getDay()]})</span>
+        <span className="text-2xl font-bold">
+          (週{WEEKDAY[today.getDay()]})
+        </span>
       </div>
 
       {/* Total Spending */}
@@ -40,11 +42,11 @@ export const SpendingInfoSection = () => {
       {/* Income & Outcome */}
       <div className="grid w-full grid-cols-2 gap-3">
         <div className="col-span-1 flex items-center justify-between gap-3 rounded-lg bg-green-300 p-3">
-          <span className="text-lg">Income</span>
+          <span className="text-lg">收入</span>
           <span className="text-lg">${normalizeNumber(state.income)}</span>
         </div>
         <div className="col-span-1 flex items-center justify-between gap-3 rounded-lg bg-red-300 p-3">
-          <span className="text-lg">Outcome</span>
+          <span className="text-lg">支出</span>
           <span className="text-lg">${normalizeNumber(state.outcome)}</span>
         </div>
       </div>
@@ -56,7 +58,7 @@ export const SpendingInfoSection = () => {
           onClick={handleOpenModal}
           className="px-6 py-3 border-b-2 border-dashed border-text text-xl font-semibold transition-all hover:text-blue-500 hover:shadow-[0_12px_12px_-12px_#1CB5D9] hover:border-blue-500"
         >
-          Add Record
+          新增
         </button>
       </div>
 
