@@ -1,4 +1,5 @@
 "use client";
+import { CloseIcon } from "@/components/icons/CloseIcon";
 import useFocusRef from "@/hooks/useFocusRef";
 import { forwardRef, ReactNode, useImperativeHandle, useState } from "react";
 
@@ -36,9 +37,9 @@ export const Modal = forwardRef<ModalRef, Props>((props, ref) => {
         <button
           type="button"
           onClick={handleCloseModal}
-          className="absolute top-1 right-1 rounded-full flex items-center transition-colors justify-center size-6 hover:bg-gray-200"
+          className="absolute top-1 right-1 rounded-full transition-colors size-6 p-1 hover:bg-gray-300"
         >
-          <span>x</span>
+          <CloseIcon className="size-full" />
         </button>
         {props.children}
       </div>

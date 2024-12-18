@@ -8,7 +8,9 @@ interface SpendingInfo {
 
 interface SpendingRecord {
   id: string;
+  type: string;
   date: string;
+  necessity: string;
   amount: number;
   category: string;
   description: string;

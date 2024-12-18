@@ -1,4 +1,4 @@
-import { Header } from "@/components/Header";
+import { Header } from "@/composites/Header";
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ReactNode } from "react";

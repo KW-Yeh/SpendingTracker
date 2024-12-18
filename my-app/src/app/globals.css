@@ -34,10 +34,8 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     width: 100%;
     min-height: 100vh;
-    padding: 24px;
     display: flex;
     flex-direction: column;
-    gap: 24px;
 }
 
 /* Chrome, Safari, Edge, Opera */
