@@ -49,3 +49,39 @@ input::-webkit-inner-spin-button {
 input[type=number] {
     -moz-appearance: textfield;
 }
+
+.scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+    background-color: var(--background);
+}
+
+.scrollbar::-webkit-scrollbar-track-piece:end {
+    background: var(--background);
+    margin-bottom: 16px;
+}
+
+.scrollbar::-webkit-scrollbar-track-piece:start {
+    background: var(--background);
+    margin-top: 16px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+    border-radius: 6px;
+    background-color: gray;
+}
+
+.scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: dimgray;
+}
+
+.scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #D3D3D3 var(--background);
+}
+
+.scrollbar:hover {
+    scrollbar-color: #C0C0C0 var(--background);
+}

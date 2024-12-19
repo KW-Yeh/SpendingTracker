@@ -91,7 +91,7 @@ export const EditorBlock = (props: Props) => {
       <button
         type="submit"
         disabled={loading}
-        className="flex h-full w-8 items-center justify-center rounded-r-lg p-2"
+        className="flex h-full w-8 items-center justify-center rounded-r-lg hover:bg-primary-300 p-2 transition-colors bg-primary-100"
       >
         <SendIcon className="w-full" />
       </button>

@@ -20,11 +20,11 @@ export const SpendingInfoSection = () => {
   };
 
   return (
-    <div className="flex flex-1 w-full flex-col items-center gap-4 p-6">
+    <div className="flex w-full flex-1 flex-col items-center gap-4 p-6">
       <Switch type={selectedType} onChange={setSelectedType} />
       <DatePicker date={selectedDate} onChange={handleOnChangeDate} />
       <EditorBlock type={selectedType} date={selectedDate} />
-      <SpendingList />
+      <SpendingList type={selectedType} date={selectedDate} />
       <Modal ref={modalRef}>Modal</Modal>
     </div>
   );
