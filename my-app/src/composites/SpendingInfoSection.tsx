@@ -5,7 +5,7 @@ import { Modal } from '@/components/Modal';
 import { EditorBlock } from '@/composites/EditorBlock';
 import { SpendingList } from '@/composites/SpendingList';
 import { SpendingType } from '@/utils/constants';
-import { ChangeEvent, useRef, useState } from 'react';
+import { ChangeEvent, startTransition, useRef, useState } from 'react';
 
 export const SpendingInfoSection = () => {
   const modalRef = useRef<ModalRef>(null);
@@ -16,7 +16,9 @@ export const SpendingInfoSection = () => {
 
   const handleOnChangeDate = (event: ChangeEvent) => {
     const date = new Date((event.target as HTMLInputElement).value);
-    setSelectedDate(date);
+    startTransition(() => {
+      setSelectedDate(date);
+    });
   };
 
   return (
@@ -37,17 +39,22 @@ const Switch = ({
   type: SpendingType;
   onChange: (type: SpendingType) => void;
 }) => {
+  const handleOnClick = (type: SpendingType) => {
+    startTransition(() => {
+      onChange(type);
+    });
+  };
   return (
     <div className="flex items-center gap-1">
       <button
         className={`rounded-l border border-solid border-red-500 px-6 py-2 text-center transition-colors ${type === SpendingType.Outcome ? 'bg-red-300' : 'text-red-500 hover:bg-red-300'}`}
-        onClick={() => onChange(SpendingType.Outcome)}
+        onClick={() => handleOnClick(SpendingType.Outcome)}
       >
         支出
       </button>
       <button
         className={`rounded-r border border-solid border-green-500 px-6 py-2 text-center transition-colors ${type === SpendingType.Income ? 'bg-green-300' : 'text-green-500 hover:bg-green-300'}`}
-        onClick={() => onChange(SpendingType.Income)}
+        onClick={() => handleOnClick(SpendingType.Income)}
       >
         收入
       </button>

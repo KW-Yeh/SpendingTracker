@@ -40,10 +40,9 @@ export const EditorBlock = (props: Props) => {
         description,
         amount,
       };
-      console.log('Add new spending:', newSpending);
+      alert('Add new spending: ' + JSON.stringify(newSpending));
       setTimeout(() => {
         setLoading(false);
-        console.log('complete');
       }, 1000);
     },
     [props.type, props.date],
@@ -52,7 +51,7 @@ export const EditorBlock = (props: Props) => {
   return (
     <form
       onSubmit={handleOnSubmit}
-      className="flex h-10 w-fit items-center divide-x divide-text rounded-lg border border-solid border-text"
+      className="max-w-175 flex h-10 w-full items-center divide-x divide-text rounded-lg border border-solid border-text"
     >
       <div className="flex h-full flex-1 items-center text-xs sm:text-sm lg:text-base">
         <select
@@ -72,12 +71,14 @@ export const EditorBlock = (props: Props) => {
             </option>
           ))}
         </select>
-        <input
-          type="text"
-          name="description"
-          className="h-full w-20 bg-transparent p-2 pr-0 focus:outline-0 sm:w-auto sm:flex-1"
-          placeholder="吃了漢堡跟薯條"
-        />
+        <div className="flex-1">
+          <input
+            type="text"
+            name="description"
+            className="h-full w-full bg-transparent p-2 pr-0 focus:outline-0"
+            placeholder="描述一下"
+          />
+        </div>
         <div className="flex h-full items-center gap-1 p-2">
           <span>$</span>
           <input
@@ -91,7 +92,7 @@ export const EditorBlock = (props: Props) => {
       <button
         type="submit"
         disabled={loading}
-        className="flex h-full w-8 items-center justify-center rounded-r-lg hover:bg-primary-300 p-2 transition-colors bg-primary-100"
+        className="flex h-full w-8 shrink-0 items-center justify-center rounded-r-lg bg-primary-100 p-2 transition-colors hover:bg-primary-300"
       >
         <SendIcon className="w-full" />
       </button>

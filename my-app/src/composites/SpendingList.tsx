@@ -14,7 +14,7 @@ const TEST_DATA: SpendingRecord[] = [
     type: SpendingType.Outcome,
     necessity: Necessity.Need,
     category: '🍔',
-    description: 'Bought some groceries',
+    description: '買了一些吃的',
     amount: 100,
     date: new Date().toUTCString(),
   },
@@ -23,7 +23,7 @@ const TEST_DATA: SpendingRecord[] = [
     type: SpendingType.Outcome,
     necessity: Necessity.Need,
     category: '👗',
-    description: 'Bought some clothes',
+    description: '買了一些衣服',
     amount: 100,
     date: new Date().toUTCString(),
   },
@@ -32,7 +32,7 @@ const TEST_DATA: SpendingRecord[] = [
     type: SpendingType.Income,
     necessity: Necessity.Need,
     category: '📈',
-    description: 'Received salary',
+    description: '賣股票',
     amount: 100,
     date: new Date().toUTCString(),
   },
@@ -41,7 +41,7 @@ const TEST_DATA: SpendingRecord[] = [
     type: SpendingType.Income,
     necessity: Necessity.Need,
     category: '🎁',
-    description: 'Received bonus',
+    description: '路上撿到錢',
     amount: 100,
     date: new Date().toUTCString(),
   },
@@ -50,7 +50,7 @@ const TEST_DATA: SpendingRecord[] = [
     type: SpendingType.Outcome,
     necessity: Necessity.NotNeed,
     category: '🎲',
-    description: 'Bought some games',
+    description: '買遊戲',
     amount: 100,
     date: new Date().toUTCString(),
   },
@@ -59,7 +59,7 @@ const TEST_DATA: SpendingRecord[] = [
     type: SpendingType.Outcome,
     necessity: Necessity.NotNeed,
     category: '📚',
-    description: 'Bought some books',
+    description: '買書',
     amount: 100,
     date: new Date().toUTCString(),
   },
@@ -68,7 +68,7 @@ const TEST_DATA: SpendingRecord[] = [
     type: SpendingType.Outcome,
     necessity: Necessity.NotNeed,
     category: '💊',
-    description: 'Bought some medicine',
+    description: '看醫生',
     amount: 100,
     date: new Date().toUTCString(),
   },
@@ -77,7 +77,7 @@ const TEST_DATA: SpendingRecord[] = [
     type: SpendingType.Outcome,
     necessity: Necessity.NotNeed,
     category: '📉',
-    description: 'Invested in stock',
+    description: '買股票',
     amount: 100,
     date: new Date().toUTCString(),
   },
@@ -86,7 +86,7 @@ const TEST_DATA: SpendingRecord[] = [
     type: SpendingType.Outcome,
     necessity: Necessity.NotNeed,
     category: '✨',
-    description: 'Other expenses',
+    description: '其他花費',
     amount: 100,
     date: new Date().toUTCString(),
   },
@@ -95,7 +95,7 @@ const TEST_DATA: SpendingRecord[] = [
     type: SpendingType.Outcome,
     necessity: Necessity.Need,
     category: '🏠',
-    description: 'Paid reeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeent',
+    description: '房租',
     amount: 100,
     date: new Date().toUTCString(),
   },
@@ -123,34 +123,60 @@ export const SpendingList = (props: Props) => {
   );
 
   return (
-    <div className="flex w-full max-w-[700px] flex-1 flex-col justify-end gap-2 text-xs sm:text-sm lg:text-base">
+    <div className="max-w-175 flex w-full flex-1 flex-col justify-end gap-2 text-xs sm:text-sm lg:text-base">
       <h3 className="">{`${year}/${month}/${day}: $${totalAmount}`}</h3>
-      <div className="scrollbar flex h-96 w-full flex-col gap-2 overflow-y-auto overflow-x-hidden">
+      <div className="scrollbar flex h-96 w-full flex-col overflow-y-auto overflow-x-hidden">
         {filteredData.map((spending, index) => (
-          <div
+          <Item
             key={`${spending.id}-${index.toString()}`}
-            className={`grid grid-cols-12 items-center gap-2 rounded p-2 ${spending.necessity === Necessity.Need ? 'bg-gray-200' : ''}`}
-          >
-            <div className="col-span-1">{spending.necessity}</div>
-            <div className="col-span-1 flex items-center justify-center">
-              <div className="rounded border border-solid border-text p-1">
-                {spending.category}
-              </div>
-            </div>
-            <div className="col-span-5 overflow-hidden text-ellipsis whitespace-nowrap">
-              {spending.description}
-            </div>
-            <div className="col-span-2 text-end">${spending.amount}</div>
-            <div className="col-span-3 flex items-center justify-end gap-px">
-              <button className="group rounded p-2 transition-colors hover:bg-primary-300">
-                <EditIcon className="size-4 transition-colors group-hover:text-background" />
-              </button>
-              <button className="group rounded p-2 transition-colors hover:bg-red-300">
-                <DeleteIcon className="size-4 transition-colors group-hover:text-background" />
-              </button>
-            </div>
-          </div>
+            spending={spending}
+          />
         ))}
+      </div>
+    </div>
+  );
+};
+
+const Item = ({ spending }: { spending: SpendingRecord }) => {
+  const handleEdit = () => {
+    alert(
+      `Edit ${spending.id}: ${spending.type} $${spending.amount} ${spending.description}`,
+    );
+  };
+
+  const handleDelete = () => {
+    alert(
+      `Delete ${spending.id}: ${spending.type} $${spending.amount} ${spending.description}`,
+    );
+  };
+  return (
+    <div className="grid grid-cols-12 items-center gap-2 rounded p-2 odd:bg-gray-200">
+      <div className="col-span-1 text-center">{spending.necessity}</div>
+      <div className="col-span-1 flex items-center justify-center">
+        <div className="rounded border border-solid border-text p-1">
+          {spending.category}
+        </div>
+      </div>
+      <div
+        title={spending.description}
+        className="col-span-5 overflow-hidden text-ellipsis whitespace-nowrap"
+      >
+        {spending.description}
+      </div>
+      <div className="col-span-2 text-end">${spending.amount}</div>
+      <div className="col-span-3 flex items-center justify-end gap-px">
+        <button
+          onClick={handleEdit}
+          className="group rounded p-2 transition-colors hover:bg-primary-300"
+        >
+          <EditIcon className="size-4 transition-colors group-hover:text-background" />
+        </button>
+        <button
+          onClick={handleDelete}
+          className="group rounded p-2 transition-colors hover:bg-red-300"
+        >
+          <DeleteIcon className="size-4 transition-colors group-hover:text-background" />
+        </button>
       </div>
     </div>
   );

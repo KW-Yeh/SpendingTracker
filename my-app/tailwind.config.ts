@@ -28,6 +28,9 @@ export default {
         "yellow-300": "var(--secondary-yellow-300)",
         "yellow-500": "var(--secondary-yellow-500)",
       },
+      spacing: {
+        175: '43.75rem', // 700px
+      }
     },
   },
   plugins: [],
