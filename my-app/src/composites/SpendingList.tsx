@@ -4,102 +4,11 @@ import { Necessity, SpendingType } from '@/utils/constants';
 import { useMemo } from 'react';
 
 interface Props {
+  list: SpendingRecord[];
   date: Date;
   type: SpendingType;
+  handleEdit: (record: SpendingRecord) => void;
 }
-
-const TEST_DATA: SpendingRecord[] = [
-  {
-    id: '1',
-    type: SpendingType.Outcome,
-    necessity: Necessity.Need,
-    category: '🍔',
-    description: '買了一些吃的',
-    amount: 100,
-    date: new Date().toUTCString(),
-  },
-  {
-    id: '2',
-    type: SpendingType.Outcome,
-    necessity: Necessity.Need,
-    category: '👗',
-    description: '買了一些衣服',
-    amount: 100,
-    date: new Date().toUTCString(),
-  },
-  {
-    id: '3',
-    type: SpendingType.Income,
-    necessity: Necessity.Need,
-    category: '📈',
-    description: '賣股票',
-    amount: 100,
-    date: new Date().toUTCString(),
-  },
-  {
-    id: '4',
-    type: SpendingType.Income,
-    necessity: Necessity.Need,
-    category: '🎁',
-    description: '路上撿到錢',
-    amount: 100,
-    date: new Date().toUTCString(),
-  },
-  {
-    id: '5',
-    type: SpendingType.Outcome,
-    necessity: Necessity.NotNeed,
-    category: '🎲',
-    description: '買遊戲',
-    amount: 100,
-    date: new Date().toUTCString(),
-  },
-  {
-    id: '6',
-    type: SpendingType.Outcome,
-    necessity: Necessity.NotNeed,
-    category: '📚',
-    description: '買書',
-    amount: 100,
-    date: new Date().toUTCString(),
-  },
-  {
-    id: '7',
-    type: SpendingType.Outcome,
-    necessity: Necessity.NotNeed,
-    category: '💊',
-    description: '看醫生',
-    amount: 100,
-    date: new Date().toUTCString(),
-  },
-  {
-    id: '8',
-    type: SpendingType.Outcome,
-    necessity: Necessity.NotNeed,
-    category: '📉',
-    description: '買股票',
-    amount: 100,
-    date: new Date().toUTCString(),
-  },
-  {
-    id: '9',
-    type: SpendingType.Outcome,
-    necessity: Necessity.NotNeed,
-    category: '✨',
-    description: '其他花費',
-    amount: 100,
-    date: new Date().toUTCString(),
-  },
-  {
-    id: '10',
-    type: SpendingType.Outcome,
-    necessity: Necessity.Need,
-    category: '🏠',
-    description: '房租',
-    amount: 100,
-    date: new Date().toUTCString(),
-  },
-];
 
 export const SpendingList = (props: Props) => {
   const year = props.date.getFullYear();
@@ -108,7 +17,7 @@ export const SpendingList = (props: Props) => {
 
   const filteredData = useMemo(
     () =>
-      [...TEST_DATA, ...TEST_DATA]
+      [...props.list, ...props.list]
         .filter((data) => data.type === props.type)
         .sort((_, b) => {
           if (b.necessity === Necessity.Need) return 1;
@@ -123,13 +32,14 @@ export const SpendingList = (props: Props) => {
   );
 
   return (
-    <div className="max-w-175 flex w-full flex-1 flex-col justify-end gap-2 text-xs sm:text-sm lg:text-base">
+    <div className="flex w-full max-w-175 flex-1 flex-col justify-end gap-2 text-xs sm:text-sm lg:text-base">
       <h3 className="">{`${year}/${month}/${day}: $${totalAmount}`}</h3>
       <div className="scrollbar flex h-96 w-full flex-col overflow-y-auto overflow-x-hidden">
         {filteredData.map((spending, index) => (
           <Item
             key={`${spending.id}-${index.toString()}`}
             spending={spending}
+            handleEdit={props.handleEdit}
           />
         ))}
       </div>
@@ -137,14 +47,21 @@ export const SpendingList = (props: Props) => {
   );
 };
 
-const Item = ({ spending }: { spending: SpendingRecord }) => {
-  const handleEdit = () => {
+const Item = ({
+  spending,
+  handleEdit,
+}: {
+  spending: SpendingRecord;
+  handleEdit: (record: SpendingRecord) => void;
+}) => {
+  const handleOnEdit = () => {
+    handleEdit(spending);
     alert(
       `Edit ${spending.id}: ${spending.type} $${spending.amount} ${spending.description}`,
     );
   };
 
-  const handleDelete = () => {
+  const handleOnDelete = () => {
     alert(
       `Delete ${spending.id}: ${spending.type} $${spending.amount} ${spending.description}`,
     );
@@ -166,13 +83,13 @@ const Item = ({ spending }: { spending: SpendingRecord }) => {
       <div className="col-span-2 text-end">${spending.amount}</div>
       <div className="col-span-3 flex items-center justify-end gap-px">
         <button
-          onClick={handleEdit}
+          onClick={handleOnEdit}
           className="group rounded p-2 transition-colors hover:bg-primary-300"
         >
           <EditIcon className="size-4 transition-colors group-hover:text-background" />
         </button>
         <button
-          onClick={handleDelete}
+          onClick={handleOnDelete}
           className="group rounded p-2 transition-colors hover:bg-red-300"
         >
           <DeleteIcon className="size-4 transition-colors group-hover:text-background" />

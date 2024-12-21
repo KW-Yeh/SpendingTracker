@@ -11,24 +11,27 @@ import useFocusRef from '@/hooks/useFocusRef';
 import { ROUTE_TITLE } from '@/utils/constants';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ReactNode } from 'react';
+import { ReactNode, useRef } from 'react';
 
 export const MenuButton = () => {
+  const bgRef = useRef<HTMLDivElement>(null);
   const asideRef = useFocusRef<HTMLElement>(() => {
     handleCloseAside();
   });
 
   function handleCloseAside() {
     requestAnimationFrame(() => {
-      if (!asideRef.current) return;
+      if (!asideRef.current || !bgRef.current) return;
       asideRef.current.style.left = '-240px';
+      bgRef.current.style.right = '100%';
     });
   }
 
   function handleOpenAside() {
     requestAnimationFrame(() => {
-      if (!asideRef.current) return;
+      if (!asideRef.current || !bgRef.current) return;
       asideRef.current.style.left = '0';
+      bgRef.current.style.right = '0';
     });
   }
 
@@ -40,6 +43,10 @@ export const MenuButton = () => {
       >
         <MenuIcon className="size-full" />
       </button>
+      <div
+        ref={bgRef}
+        className="fixed bottom-0 left-0 right-full top-0 bg-black/50"
+      ></div>
       <aside
         ref={asideRef}
         className="fixed -left-60 bottom-0 top-0 z-30 flex w-60 origin-right flex-col items-center justify-between bg-background p-4 shadow-xl transition-all sm:p-6"
