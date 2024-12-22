@@ -71,7 +71,7 @@ export const EditorBlock = (props: Props) => {
       if (amount === 0) return;
       setLoading(true);
       const newSpending: SpendingRecord = {
-        id: Date.now().toString(),
+        id: new Date().getTime().toString(),
         ...(props.data ?? {}),
         type: props.type,
         date: props.date.toUTCString(),

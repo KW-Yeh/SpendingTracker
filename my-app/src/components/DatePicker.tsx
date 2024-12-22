@@ -1,6 +1,6 @@
 'use client';
 
-// import { CalendarIcon } from '@/components/icons/CalendarIcon';
+import { CalendarIcon } from '@/components/icons/CalendarIcon';
 import { WEEKDAY } from '@/utils/constants';
 import { ChangeEvent, useRef } from 'react';
 
@@ -18,6 +18,11 @@ export const DatePicker = (props: Props) => {
 
   const showPicker = () => {
     if (!inputRef.current) return;
+    inputRef.current.dispatchEvent(
+      new MouseEvent('mousedown', { bubbles: true, cancelable: true }),
+    );
+    inputRef.current.focus();
+    inputRef.current.click();
     inputRef.current.showPicker();
   };
 
@@ -26,7 +31,7 @@ export const DatePicker = (props: Props) => {
       <input
         ref={inputRef}
         type="date"
-        className="hidden"
+        className="absolute bottom-0 left-0 right-0 top-0 opacity-0"
         onChange={props.onChange}
       />
       <button
@@ -34,7 +39,7 @@ export const DatePicker = (props: Props) => {
         onClick={showPicker}
       >
         <span>{`${year} 年 ${month} 月 ${day} 日 (週${WEEKDAY[weekday]})`}</span>
-        {/*<CalendarIcon className="size-4 sm:size-5" />*/}
+        <CalendarIcon className="size-4 sm:size-5" />
       </button>
     </div>
   );
