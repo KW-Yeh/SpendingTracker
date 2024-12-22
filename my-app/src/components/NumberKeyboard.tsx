@@ -34,7 +34,7 @@ export const NumberKeyboard = (props: Props) => {
   }, [props.onConfirm, amount]);
 
   return (
-    <div className="flex flex-col p-4 text-sm sm:text-base">
+    <div className="flex flex-col text-sm sm:text-base">
       <p className="mb-2 mt-1 rounded-md border-2 border-solid border-text p-4 text-end font-bold">
         {amount}
       </p>

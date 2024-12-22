@@ -154,7 +154,7 @@ export const EditorBlock = (props: Props) => {
           <SendIcon className="w-full" />
         </button>
       </form>
-      <Modal ref={modalRef} className="w-80">
+      <Modal ref={modalRef} className="w-72 sm:w-80">
         <h1 className="text-base font-bold sm:text-xl">Number Keyboard</h1>
         <NumberKeyboard
           default={amount}
