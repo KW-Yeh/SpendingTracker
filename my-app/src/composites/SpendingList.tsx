@@ -1,29 +1,31 @@
 import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { EditIcon } from '@/components/icons/EditIcon';
+import { useGetSpendingCtx } from '@/context/SpendingProvider';
+import { deleteItem } from '@/services/dbHandler';
 import { Necessity, SpendingType } from '@/utils/constants';
 import { useMemo } from 'react';
 
 interface Props {
-  list: SpendingRecord[];
   date: Date;
   type: SpendingType;
   handleEdit: (record: SpendingRecord) => void;
 }
 
 export const SpendingList = (props: Props) => {
+  const { loading, data } = useGetSpendingCtx();
   const year = props.date.getFullYear();
   const month = props.date.getMonth();
   const day = props.date.getDate();
 
   const filteredData = useMemo(
     () =>
-      [...props.list, ...props.list]
+      [...data]
         .filter((data) => data.type === props.type)
         .sort((_, b) => {
           if (b.necessity === Necessity.Need) return 1;
           return -1;
         }),
-    [props.type],
+    [data, props.type],
   );
 
   const totalAmount = filteredData.reduce(
@@ -32,17 +34,26 @@ export const SpendingList = (props: Props) => {
   );
 
   return (
-    <div className="flex w-full max-w-175 flex-1 flex-col justify-end gap-2 text-xs sm:text-sm lg:text-base">
-      <h3 className="">{`${year}/${month}/${day}: $${totalAmount}`}</h3>
-      <div className="scrollbar flex h-96 w-full flex-col overflow-y-auto overflow-x-hidden">
-        {filteredData.map((spending, index) => (
-          <Item
-            key={`${spending.id}-${index.toString()}`}
-            spending={spending}
-            handleEdit={props.handleEdit}
-          />
-        ))}
-      </div>
+    <div className="max-w-175 flex w-full flex-1 flex-col justify-end gap-2 text-xs sm:text-sm lg:text-base">
+      {loading && (
+        <div className="mb-2 flex w-full items-center justify-center pb-96">
+          <span>Loading...</span>
+        </div>
+      )}
+      {!loading && (
+        <>
+          <h3 className="">{`${year}/${month}/${day}: $${totalAmount}`}</h3>
+          <div className="scrollbar flex h-96 w-full flex-col overflow-y-auto overflow-x-hidden">
+            {filteredData.map((spending, index) => (
+              <Item
+                key={`${spending.id}-${index.toString()}`}
+                spending={spending}
+                handleEdit={props.handleEdit}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 };
@@ -54,17 +65,17 @@ const Item = ({
   spending: SpendingRecord;
   handleEdit: (record: SpendingRecord) => void;
 }) => {
+  const { syncData } = useGetSpendingCtx();
+
   const handleOnEdit = () => {
     handleEdit(spending);
-    alert(
-      `Edit ${spending.id}: ${spending.type} $${spending.amount} ${spending.description}`,
-    );
   };
 
   const handleOnDelete = () => {
-    alert(
-      `Delete ${spending.id}: ${spending.type} $${spending.amount} ${spending.description}`,
-    );
+    if (!confirm('確定要刪除這筆資料嗎?')) return;
+    deleteItem(spending.id).then(() => {
+      syncData();
+    });
   };
   return (
     <div className="grid grid-cols-12 items-center gap-2 rounded p-2 odd:bg-gray-200">

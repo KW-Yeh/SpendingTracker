@@ -1,8 +1,10 @@
 'use client';
 
-import { SendIcon } from '@/components/icons/SendIcon';
+import { EnterIcon } from '@/components/icons/EnterIcon';
 import { Modal } from '@/components/Modal';
 import { NumberKeyboard } from '@/components/NumberKeyboard';
+import { useGetSpendingCtx } from '@/context/SpendingProvider';
+import { putItem } from '@/services/dbHandler';
 import {
   INCOME_TYPE_OPTIONS,
   Necessity,
@@ -17,6 +19,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { v4 as uuid } from 'uuid';
 
 interface Props {
   type: SpendingType;
@@ -25,6 +28,7 @@ interface Props {
 }
 
 export const EditorBlock = (props: Props) => {
+  const { syncData } = useGetSpendingCtx();
   const spendingCategories =
     props.type === SpendingType.Income
       ? INCOME_TYPE_OPTIONS
@@ -71,8 +75,9 @@ export const EditorBlock = (props: Props) => {
       if (amount === 0) return;
       setLoading(true);
       const newSpending: SpendingRecord = {
-        id: new Date().getTime().toString(),
         ...(props.data ?? {}),
+        id: props.data?.id ?? uuid(),
+        'user-token': 'test',
         type: props.type,
         date: props.date.toUTCString(),
         necessity,
@@ -80,14 +85,18 @@ export const EditorBlock = (props: Props) => {
         description,
         amount,
       };
-      alert('Add new spending: ' + JSON.stringify(newSpending));
-      setTimeout(() => {
-        setLoading(false);
-        setNewDesc('');
-        setSelectedNecessity(undefined);
-        setSelectedCategory(undefined);
-        setAmount(0);
-      }, 1000);
+
+      putItem(newSpending)
+        .then(() => {
+          syncData();
+        })
+        .then(() => {
+          setLoading(false);
+          setNewDesc('');
+          setSelectedNecessity(undefined);
+          setSelectedCategory(undefined);
+          setAmount(0);
+        });
     },
     [props.type, props.date, props.data],
   );
@@ -96,14 +105,14 @@ export const EditorBlock = (props: Props) => {
     <>
       <form
         onSubmit={handleOnSubmit}
-        className="flex h-10 w-full max-w-175 items-center divide-x divide-text rounded-lg border border-solid border-text"
+        className="max-w-175 flex h-fit w-full items-center divide-x divide-text rounded-lg border border-solid border-text"
       >
         <div className="flex h-full flex-1 items-center text-xs sm:text-sm lg:text-base">
           <select
             value={selectedNecessity}
             onChange={handleSelectNecessity}
             name="necessity"
-            className="h-full bg-transparent p-2 focus:outline-0"
+            className="h-full bg-transparent p-2 focus:outline-0 sm:py-4"
           >
             <option value={Necessity.Need}>{Necessity.Need}</option>
             <option value={Necessity.NotNeed}>{Necessity.NotNeed}</option>
@@ -112,7 +121,7 @@ export const EditorBlock = (props: Props) => {
             value={selectedCategory}
             onChange={handleSelectCategory}
             name="category"
-            className="h-full bg-transparent p-2 focus:outline-0"
+            className="h-full bg-transparent p-2 focus:outline-0 sm:py-4"
           >
             {spendingCategories.map((category) => (
               <option key={category} value={category}>
@@ -126,14 +135,14 @@ export const EditorBlock = (props: Props) => {
               name="description"
               value={newDesc}
               onChange={handleEditDesc}
-              className="h-full w-full bg-transparent p-2 pr-0 focus:outline-0"
+              className="h-full w-full bg-transparent p-2 pr-0 focus:outline-0 sm:py-4"
               placeholder="描述一下"
             />
           </div>
           <button
             type="button"
             onClick={() => modalRef.current?.open()}
-            className="flex h-full w-14 items-center justify-between gap-2 p-2 sm:w-20"
+            className="flex h-full w-20 items-center gap-2 p-2 sm:w-24 sm:py-4"
           >
             <span>$</span>
             <span>{amount}</span>
@@ -149,9 +158,9 @@ export const EditorBlock = (props: Props) => {
         <button
           type="submit"
           disabled={loading}
-          className="flex h-full w-8 shrink-0 items-center justify-center rounded-r-lg bg-primary-100 p-2 transition-colors hover:bg-primary-300"
+          className="flex h-full w-8 shrink-0 items-center justify-center rounded-r-lg bg-primary-100 p-2 transition-colors hover:bg-primary-300 sm:w-12"
         >
-          <SendIcon className="w-full" />
+          <EnterIcon className="size-3 sm:size-4" />
         </button>
       </form>
       <Modal ref={modalRef} className="w-72 sm:w-80">

@@ -3,101 +3,8 @@
 import { DatePicker } from '@/components/DatePicker';
 import { EditorBlock } from '@/composites/EditorBlock';
 import { SpendingList } from '@/composites/SpendingList';
-import { Necessity, SpendingType } from '@/utils/constants';
+import { SpendingType } from '@/utils/constants';
 import { ChangeEvent, startTransition, useState } from 'react';
-
-const TEST_DATA: SpendingRecord[] = [
-  {
-    id: '1',
-    type: SpendingType.Outcome,
-    necessity: Necessity.Need,
-    category: '🍔',
-    description: '買了一些吃的',
-    amount: 100,
-    date: new Date().toUTCString(),
-  },
-  {
-    id: '2',
-    type: SpendingType.Outcome,
-    necessity: Necessity.Need,
-    category: '👗',
-    description: '買了一些衣服',
-    amount: 100,
-    date: new Date().toUTCString(),
-  },
-  {
-    id: '3',
-    type: SpendingType.Income,
-    necessity: Necessity.Need,
-    category: '📈',
-    description: '賣股票',
-    amount: 100,
-    date: new Date().toUTCString(),
-  },
-  {
-    id: '4',
-    type: SpendingType.Income,
-    necessity: Necessity.Need,
-    category: '🎁',
-    description: '路上撿到錢',
-    amount: 100,
-    date: new Date().toUTCString(),
-  },
-  {
-    id: '5',
-    type: SpendingType.Outcome,
-    necessity: Necessity.NotNeed,
-    category: '🎲',
-    description: '買遊戲',
-    amount: 100,
-    date: new Date().toUTCString(),
-  },
-  {
-    id: '6',
-    type: SpendingType.Outcome,
-    necessity: Necessity.NotNeed,
-    category: '📚',
-    description: '買書',
-    amount: 100,
-    date: new Date().toUTCString(),
-  },
-  {
-    id: '7',
-    type: SpendingType.Outcome,
-    necessity: Necessity.NotNeed,
-    category: '💊',
-    description: '看醫生',
-    amount: 100,
-    date: new Date().toUTCString(),
-  },
-  {
-    id: '8',
-    type: SpendingType.Outcome,
-    necessity: Necessity.NotNeed,
-    category: '📉',
-    description: '買股票',
-    amount: 100,
-    date: new Date().toUTCString(),
-  },
-  {
-    id: '9',
-    type: SpendingType.Outcome,
-    necessity: Necessity.NotNeed,
-    category: '✨',
-    description: '其他花費',
-    amount: 100,
-    date: new Date().toUTCString(),
-  },
-  {
-    id: '10',
-    type: SpendingType.Outcome,
-    necessity: Necessity.Need,
-    category: '🏠',
-    description: '房租',
-    amount: 100,
-    date: new Date().toUTCString(),
-  },
-];
 
 export const SpendingInfoSection = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -123,7 +30,6 @@ export const SpendingInfoSection = () => {
         data={selectedData}
       />
       <SpendingList
-        list={TEST_DATA}
         type={selectedType}
         date={selectedDate}
         handleEdit={setSelectedData}

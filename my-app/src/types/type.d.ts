@@ -8,6 +8,7 @@ interface SpendingInfo {
 
 interface SpendingRecord {
   id: string;
+  'user-token': string;
   type: string;
   date: string;
   necessity: string;
