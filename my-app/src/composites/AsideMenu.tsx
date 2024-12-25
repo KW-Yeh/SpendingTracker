@@ -3,11 +3,13 @@
 import { CloseIcon } from '@/components/icons/CloseIcon';
 import { CoinIcon } from '@/components/icons/CoinIcon';
 import { HomeIcon } from '@/components/icons/HomeIcon';
+import { LeaveIcon } from '@/components/icons/LeaveIcon';
 import { ListIcon } from '@/components/icons/ListIcon';
 import { SettingIcon } from '@/components/icons/SettingIcon';
 import { Account } from '@/composites/Account';
 import useFocusRef from '@/hooks/useFocusRef';
 import { ROUTE_TITLE } from '@/utils/constants';
+import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ReactNode, useEffect, useRef } from 'react';
@@ -19,6 +21,7 @@ interface Props {
 
 export const AsideMenu = (props: Props) => {
   const { isOpen, onClose } = props;
+  const { data: session } = useSession();
   const bgRef = useRef<HTMLDivElement>(null);
   const asideRef = useFocusRef<HTMLElement>(() => {
     onClose();
@@ -67,7 +70,7 @@ export const AsideMenu = (props: Props) => {
             <CloseIcon className="size-full" />
           </button>
         </div>
-        <Account />
+        <Account session={session} />
         <div className="flex w-full flex-1 flex-col items-center gap-2">
           {Object.keys(ROUTE_TITLE).map((path) => (
             <RouteButton
@@ -78,9 +81,16 @@ export const AsideMenu = (props: Props) => {
             />
           ))}
         </div>
-        <button className="flex w-full items-center rounded-md bg-gray-200 px-6 py-3 text-left text-sm font-semibold transition-colors hover:bg-gray-300 sm:text-base">
-          <SettingIcon className="mr-3 size-5" />
+        <button className="flex mb-2 w-full items-center justify-between rounded-md bg-gray-200 px-6 py-3 text-left text-sm font-semibold transition-colors hover:bg-gray-300 sm:text-base">
           設定
+          <SettingIcon className="size-5" />
+        </button>
+        <button
+          onClick={() => signOut()}
+          className="flex w-full items-center justify-between rounded-md bg-red-200 px-6 py-3 text-left text-sm font-semibold transition-colors hover:bg-red-300 sm:text-base"
+        >
+          登出
+          <LeaveIcon className="size-5" />
         </button>
       </aside>
     </>

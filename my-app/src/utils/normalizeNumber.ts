@@ -10,7 +10,7 @@ export const normalizeNumber = (num: number) => {
     res.push(digit);
     count++;
   });
-  return res.reverse().join("");
+  return res.toReversed().join("");
 };
 
 function isNumber(val: string) {
