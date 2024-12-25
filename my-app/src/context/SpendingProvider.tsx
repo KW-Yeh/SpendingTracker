@@ -5,6 +5,7 @@ import {
   createContext,
   ReactNode,
   startTransition,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -18,7 +19,7 @@ const INIT_CTX_VAL: {
 } = {
   loading: true,
   data: [],
-  syncData: (_userToken: string) => {},
+  syncData: () => {},
 };
 
 export const SpendingProvider = ({ children }: { children: ReactNode }) => {
@@ -42,11 +43,11 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       .catch(console.error);
   };
 
-  const syncData = (userToken: string) => {
+  const syncData = useCallback((userToken: string) => {
     startTransition(() => {
       queryItem(userToken);
     });
-  };
+  }, []);
 
   const ctxVal = useMemo(
     () => ({
@@ -54,7 +55,7 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       data,
       syncData,
     }),
-    [loading, data],
+    [loading, data, syncData],
   );
 
   useEffect(() => {
