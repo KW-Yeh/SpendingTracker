@@ -2,12 +2,19 @@ import { Session } from 'next-auth';
 import Image from 'next/image';
 import Link from 'next/link';
 
-export const Account = ({ session }: { session: Session | null }) => {
+export const Account = ({
+  session,
+  onClose,
+}: {
+  session: Session | null;
+  onClose: () => void;
+}) => {
   if (!session?.user) {
     return (
       <div className="mb-6 flex flex-col items-center">
         <Link
           href="/login"
+          onClick={onClose}
           className="group relative mb-4 flex size-16 items-center justify-center rounded-full bg-gray-500 p-1 transition-colors hover:bg-gray-700 sm:size-20"
         >
           <span className="rounded-full text-center text-white opacity-0 transition-opacity group-hover:opacity-100">

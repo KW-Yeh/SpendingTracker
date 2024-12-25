@@ -6,7 +6,7 @@ export const Caption = ({ openAside }: { openAside: () => void }) => {
     <div className="sticky left-0 top-0 z-40 w-full border-b border-solid border-text p-4 backdrop-blur sm:p-6">
       <div className="flex items-center">
         <MenuButton openAside={openAside} />
-        <div className="flex flex-1 justify-center">
+        <div className="flex flex-1 justify-center pr-8">
           <RouteTitle />
         </div>
       </div>

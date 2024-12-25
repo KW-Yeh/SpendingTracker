@@ -70,7 +70,7 @@ export const AsideMenu = (props: Props) => {
             <CloseIcon className="size-full" />
           </button>
         </div>
-        <Account session={session} />
+        <Account session={session} onClose={onClose} />
         <div className="flex w-full flex-1 flex-col items-center gap-2">
           {Object.keys(ROUTE_TITLE).map((path) => (
             <RouteButton
@@ -87,7 +87,10 @@ export const AsideMenu = (props: Props) => {
         </button>
         {session?.user && (
           <button
-            onClick={() => signOut()}
+            onClick={async () => {
+              await signOut();
+              onClose();
+            }}
             className="mt-2 flex w-full items-center justify-between rounded-md bg-red-200 px-6 py-3 text-left text-sm font-semibold transition-colors hover:bg-red-300 sm:text-base"
           >
             登出

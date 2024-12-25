@@ -2,6 +2,7 @@ export const ROUTE_TITLE: Record<string, string> = {
   '/': '主畫面',
   '/list': '總表',
   '/budget': '儲蓄目標',
+  '/login': '會員登入',
 };
 
 export enum SpendingType {
