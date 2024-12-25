@@ -1,8 +1,21 @@
-export const ROUTE_TITLE: Record<string, string> = {
-  '/': '主畫面',
-  '/list': '總表',
-  '/budget': '儲蓄目標',
-  '/login': '會員登入',
+enum Route {
+  Base = '/',
+  List = '/list',
+  Budget = '/budget',
+  Login = '/login',
+}
+
+export const MENU_CONFIG: Record<string, string> = {
+  [Route.Base]: '主畫面',
+  [Route.List]: '總表',
+  [Route.Budget]: '儲蓄目標',
+};
+
+export const PAGE_TITLE: Record<string, string> = {
+  [Route.Base]: '主畫面',
+  [Route.List]: '總表',
+  [Route.Budget]: '儲蓄目標',
+  [Route.Login]: '會員登入',
 };
 
 export enum SpendingType {
@@ -15,12 +28,7 @@ export enum Necessity {
   NotNeed = '非',
 }
 
-export const INCOME_TYPE_OPTIONS = [
-  '📈',
-  '💰',
-  '🎁',
-  '✨',
-];
+export const INCOME_TYPE_OPTIONS = ['📈', '💰', '🎁', '✨'];
 
 export const OUTCOME_TYPE_OPTIONS = [
   '🍔',

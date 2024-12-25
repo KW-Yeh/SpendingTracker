@@ -11,6 +11,8 @@ import {
   OUTCOME_TYPE_OPTIONS,
   SpendingType,
 } from '@/utils/constants';
+import { normalizeNumber } from '@/utils/normalizeNumber';
+import { useSession } from 'next-auth/react';
 import {
   ChangeEvent,
   FormEvent,
@@ -29,6 +31,7 @@ interface Props {
 
 export const EditorBlock = (props: Props) => {
   const { syncData } = useGetSpendingCtx();
+  const { data: session } = useSession();
   const spendingCategories =
     props.type === SpendingType.Income
       ? INCOME_TYPE_OPTIONS
@@ -66,6 +69,7 @@ export const EditorBlock = (props: Props) => {
   const handleOnSubmit = useCallback(
     (event: FormEvent) => {
       event.preventDefault();
+      const userEmail = session?.user?.email ?? 'test';
       const formElement = event.target as HTMLFormElement;
       const formData = new FormData(formElement);
       const necessity = formData.get('necessity') as Necessity;
@@ -77,7 +81,7 @@ export const EditorBlock = (props: Props) => {
       const newSpending: SpendingRecord = {
         ...(props.data ?? {}),
         id: props.data?.id ?? uuid(),
-        'user-token': 'test',
+        'user-token': userEmail,
         type: props.type,
         date: props.date.toUTCString(),
         necessity,
@@ -88,7 +92,7 @@ export const EditorBlock = (props: Props) => {
 
       putItem(newSpending)
         .then(() => {
-          syncData();
+          syncData(userEmail);
         })
         .then(() => {
           setLoading(false);
@@ -98,14 +102,14 @@ export const EditorBlock = (props: Props) => {
           setAmount(0);
         });
     },
-    [props.type, props.date, props.data],
+    [session, props.type, props.date, props.data],
   );
 
   return (
     <>
       <form
         onSubmit={handleOnSubmit}
-        className="max-w-175 flex h-fit w-full items-center divide-x divide-text rounded-lg border border-solid border-text"
+        className="flex h-fit w-full max-w-175 items-center divide-x divide-text rounded-lg border border-solid border-text"
       >
         <div className="flex h-full flex-1 items-center text-xs sm:text-sm lg:text-base">
           <select
@@ -147,9 +151,9 @@ export const EditorBlock = (props: Props) => {
             <span>$</span>
             <span>{amount}</span>
             <input
-              type="number"
+              type="text"
               name="amount"
-              value={amount}
+              value={normalizeNumber(amount)}
               className="hidden"
               readOnly
             />

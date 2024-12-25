@@ -2,13 +2,14 @@
 
 import { CloseIcon } from '@/components/icons/CloseIcon';
 import { CoinIcon } from '@/components/icons/CoinIcon';
+import { EnterIcon } from '@/components/icons/EnterIcon';
 import { HomeIcon } from '@/components/icons/HomeIcon';
 import { LeaveIcon } from '@/components/icons/LeaveIcon';
 import { ListIcon } from '@/components/icons/ListIcon';
 import { SettingIcon } from '@/components/icons/SettingIcon';
 import { Account } from '@/composites/Account';
 import useFocusRef from '@/hooks/useFocusRef';
-import { ROUTE_TITLE } from '@/utils/constants';
+import { MENU_CONFIG } from '@/utils/constants';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -72,11 +73,11 @@ export const AsideMenu = (props: Props) => {
         </div>
         <Account session={session} onClose={onClose} />
         <div className="flex w-full flex-1 flex-col items-center gap-2">
-          {Object.keys(ROUTE_TITLE).map((path) => (
+          {Object.keys(MENU_CONFIG).map((path) => (
             <RouteButton
               key={path}
               href={path}
-              label={ROUTE_TITLE[path]}
+              label={MENU_CONFIG[path]}
               onClick={onClose}
             />
           ))}
@@ -96,6 +97,16 @@ export const AsideMenu = (props: Props) => {
             登出
             <LeaveIcon className="size-5" />
           </button>
+        )}
+        {!session?.user && (
+          <Link
+            href="/login"
+            onClick={() => onClose()}
+            className="mt-2 flex w-full items-center justify-between rounded-md bg-blue-200 px-6 py-3 text-left text-sm font-semibold transition-colors hover:bg-blue-300 sm:text-base"
+          >
+            登入
+            <EnterIcon className="size-5" />
+          </Link>
         )}
       </aside>
     </>

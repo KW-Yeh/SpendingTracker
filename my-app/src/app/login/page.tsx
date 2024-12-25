@@ -18,7 +18,7 @@ export default async function Home() {
   if (session?.user) redirect('/');
 
   return (
-    <div className="mx-auto flex w-full max-w-96 flex-1 flex-col items-center justify-center gap-6">
+    <div className="items-ceenter mx-auto mt-20 flex w-full max-w-96 flex-1 flex-col justify-start gap-6">
       <div className="divide-y divide-text rounded-2xl border border-solid border-text shadow">
         <h1 className="p-6 text-xl font-bold">選擇登入方式</h1>
         <div className="flex w-full flex-col items-center gap-4 p-6">
