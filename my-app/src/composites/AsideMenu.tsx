@@ -35,7 +35,7 @@ export const AsideMenu = (props: Props) => {
     } else {
       close();
     }
-  }, [isOpen]);
+  }, [isOpen, open, close]);
 
   function close() {
     requestAnimationFrame(() => {

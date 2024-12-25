@@ -82,7 +82,7 @@ const Item = ({
     deleteItem(spending.id).then(() => {
       syncData(userToken);
     });
-  }, [spending.id, userToken]);
+  }, [spending.id, userToken, syncData]);
 
   return (
     <div className="grid grid-cols-12 items-center gap-2 rounded p-2 odd:bg-gray-200">

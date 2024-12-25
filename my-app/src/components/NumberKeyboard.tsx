@@ -8,7 +8,8 @@ interface Props {
 }
 
 export const NumberKeyboard = (props: Props) => {
-  const [amount, setAmount] = useState((props.default ?? 0) + '');
+  const { default: defaultValue, onConfirm } = props;
+  const [amount, setAmount] = useState((defaultValue ?? 0) + '');
   const handleOnClick = (val: string) => {
     if (val === 'clear') {
       setAmount('0');
@@ -27,11 +28,11 @@ export const NumberKeyboard = (props: Props) => {
 
   const handleSubmit = useCallback(() => {
     try {
-      props.onConfirm(Number(amount));
+      onConfirm(Number(amount));
     } catch {
       alert('Invalid amount');
     }
-  }, [props.onConfirm, amount]);
+  }, [onConfirm, amount]);
 
   return (
     <div className="flex flex-col text-sm sm:text-base">

@@ -102,7 +102,7 @@ export const EditorBlock = (props: Props) => {
           setAmount(0);
         });
     },
-    [session, props.type, props.date, props.data],
+    [session, props.type, props.date, props.data, syncData],
   );
 
   return (

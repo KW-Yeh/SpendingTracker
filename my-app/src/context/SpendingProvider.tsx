@@ -5,7 +5,6 @@ import {
   createContext,
   ReactNode,
   startTransition,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -43,11 +42,11 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       .catch(console.error);
   };
 
-  const syncData = useCallback((userToken: string) => {
+  const syncData = (userToken: string) => {
     startTransition(() => {
       queryItem(userToken);
     });
-  }, []);
+  };
 
   const ctxVal = useMemo(
     () => ({
@@ -55,7 +54,7 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       data,
       syncData,
     }),
-    [loading, data, syncData],
+    [loading, data],
   );
 
   useEffect(() => {
