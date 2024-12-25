@@ -81,17 +81,19 @@ export const AsideMenu = (props: Props) => {
             />
           ))}
         </div>
-        <button className="flex mb-2 w-full items-center justify-between rounded-md bg-gray-200 px-6 py-3 text-left text-sm font-semibold transition-colors hover:bg-gray-300 sm:text-base">
+        <button className="flex w-full items-center justify-between rounded-md bg-gray-200 px-6 py-3 text-left text-sm font-semibold transition-colors hover:bg-gray-300 sm:text-base">
           設定
           <SettingIcon className="size-5" />
         </button>
-        <button
-          onClick={() => signOut()}
-          className="flex w-full items-center justify-between rounded-md bg-red-200 px-6 py-3 text-left text-sm font-semibold transition-colors hover:bg-red-300 sm:text-base"
-        >
-          登出
-          <LeaveIcon className="size-5" />
-        </button>
+        {session?.user && (
+          <button
+            onClick={() => signOut()}
+            className="mt-2 flex w-full items-center justify-between rounded-md bg-red-200 px-6 py-3 text-left text-sm font-semibold transition-colors hover:bg-red-300 sm:text-base"
+          >
+            登出
+            <LeaveIcon className="size-5" />
+          </button>
+        )}
       </aside>
     </>
   );
