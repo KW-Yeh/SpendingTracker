@@ -1,6 +1,5 @@
 'use client';
 
-import { CloseIcon } from '@/components/icons/CloseIcon';
 import { CoinIcon } from '@/components/icons/CoinIcon';
 import { EnterIcon } from '@/components/icons/EnterIcon';
 import { HomeIcon } from '@/components/icons/HomeIcon';
@@ -35,13 +34,13 @@ export const AsideMenu = (props: Props) => {
     } else {
       close();
     }
-  }, [isOpen, open, close]);
+  }, [isOpen]);
 
   function close() {
     requestAnimationFrame(() => {
       if (!bgRef.current || !asideRef.current) return;
       bgRef.current.style.right = '100%';
-      asideRef.current.style.left = '-240px';
+      asideRef.current.style.left = '-288px';
     });
   }
 
@@ -61,20 +60,12 @@ export const AsideMenu = (props: Props) => {
       ></div>
       <aside
         ref={asideRef}
-        className="fixed -left-60 bottom-0 top-0 z-50 flex w-60 origin-right flex-col items-center justify-between bg-background p-4 shadow-xl transition-all sm:p-6"
+        className="fixed -left-60 bottom-0 top-0 z-50 flex w-72 origin-right flex-col items-center justify-between bg-background p-4 shadow-xl transition-all"
       >
-        <div className="mb-6 flex w-full items-center">
-          <button
-            onClick={onClose}
-            className="size-8 rounded-full p-2 transition-colors hover:bg-gray-300"
-          >
-            <CloseIcon className="size-full" />
-          </button>
-        </div>
-        <Account session={session} onClose={onClose} />
+        <Account session={session} />
         <div className="flex w-full flex-1 flex-col items-center gap-2">
           {Object.keys(MENU_CONFIG).map((path) => (
-            <RouteButton
+            <MenuButton
               key={path}
               href={path}
               label={MENU_CONFIG[path]}
@@ -82,61 +73,71 @@ export const AsideMenu = (props: Props) => {
             />
           ))}
         </div>
-        <button className="flex w-full items-center justify-between rounded-md bg-gray-200 px-6 py-3 text-left text-sm font-semibold transition-colors hover:bg-gray-300 sm:text-base">
-          設定
-          <SettingIcon className="size-5" />
-        </button>
         {session?.user && (
-          <button
+          <MenuButton
             onClick={async () => {
               await signOut();
               onClose();
             }}
-            className="mt-2 flex w-full items-center justify-between rounded-md bg-red-200 px-6 py-3 text-left text-sm font-semibold transition-colors hover:bg-red-300 sm:text-base"
-          >
-            登出
-            <LeaveIcon className="size-5" />
-          </button>
+            label="登出"
+            icon={<LeaveIcon className="mr-3 size-4 sm:mr-4" />}
+          />
         )}
         {!session?.user && (
-          <Link
+          <MenuButton
             href="/login"
             onClick={() => onClose()}
-            className="mt-2 flex w-full items-center justify-between rounded-md bg-blue-200 px-6 py-3 text-left text-sm font-semibold transition-colors hover:bg-blue-300 sm:text-base"
-          >
-            登入
-            <EnterIcon className="size-5" />
-          </Link>
+            label="登入"
+            icon={<EnterIcon className="mr-3 size-4 sm:mr-4" />}
+          />
         )}
+        <MenuButton
+          onClick={() => console.log('setting')}
+          label="設定"
+          icon={<SettingIcon className="mr-3 size-4 sm:mr-4" />}
+        />
       </aside>
     </>
   );
 };
 
 const ROUTE_ICON: Record<string, ReactNode> = {
-  '/': <HomeIcon className="mr-3 size-5" />,
-  '/list': <ListIcon className="mr-3 size-5" />,
-  '/budget': <CoinIcon className="mr-3 size-5" />,
+  '/': <HomeIcon className="mr-3 size-4 sm:mr-4" />,
+  '/list': <ListIcon className="mr-3 size-4 sm:mr-4" />,
+  '/budget': <CoinIcon className="mr-3 size-4 sm:mr-4" />,
 };
 
-const RouteButton = ({
+const MenuButton = ({
   href,
+  icon,
   label,
   onClick,
 }: {
-  href: string;
+  href?: string;
+  icon?: ReactNode;
   label: string;
   onClick: () => void;
 }) => {
   const pathName = usePathname();
+  if (href) {
+    return (
+      <Link
+        href={href}
+        onClick={onClick}
+        className={`flex w-full items-center rounded-md px-5 py-3 text-left text-sm font-semibold transition-all hover:brightness-110 sm:text-base ${pathName === href ? 'bg-primary-100' : 'hover:bg-primary-100'}`}
+      >
+        {icon ?? ROUTE_ICON[href]}
+        {label}
+      </Link>
+    );
+  }
   return (
-    <Link
-      href={href}
+    <button
       onClick={onClick}
-      className={`flex w-full items-center rounded-md px-6 py-3 text-left text-sm font-semibold transition-colors sm:text-base ${pathName === href ? 'bg-primary-100' : 'hover:bg-primary-300'}`}
+      className="flex w-full items-center rounded-md px-5 py-3 text-left text-sm font-semibold transition-all hover:bg-primary-100 hover:brightness-110 sm:text-base"
     >
-      {ROUTE_ICON[href]}
+      {icon}
       {label}
-    </Link>
+    </button>
   );
 };
