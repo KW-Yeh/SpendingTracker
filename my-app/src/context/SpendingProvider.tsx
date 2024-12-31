@@ -60,6 +60,8 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (session?.user?.email) {
       syncData(session.user.email);
+    } else {
+      setLoading(false);
     }
   }, [session?.user?.email]);
 

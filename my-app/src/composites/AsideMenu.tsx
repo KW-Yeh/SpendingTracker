@@ -1,15 +1,13 @@
 'use client';
 
 import { CoinIcon } from '@/components/icons/CoinIcon';
-import { EnterIcon } from '@/components/icons/EnterIcon';
 import { HomeIcon } from '@/components/icons/HomeIcon';
-import { LeaveIcon } from '@/components/icons/LeaveIcon';
 import { ListIcon } from '@/components/icons/ListIcon';
 import { SettingIcon } from '@/components/icons/SettingIcon';
 import { Account } from '@/composites/Account';
 import useFocusRef from '@/hooks/useFocusRef';
 import { MENU_CONFIG } from '@/utils/constants';
-import { signOut, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ReactNode, useEffect, useRef } from 'react';
@@ -60,10 +58,10 @@ export const AsideMenu = (props: Props) => {
       ></div>
       <aside
         ref={asideRef}
-        className="fixed -left-60 bottom-0 top-0 z-50 flex w-72 origin-right flex-col items-center justify-between bg-background p-4 shadow-xl transition-all"
+        className="fixed -left-72 bottom-0 top-0 z-50 flex w-72 origin-right flex-col items-center justify-between bg-background shadow-xl transition-all"
       >
-        <Account session={session} />
-        <div className="flex w-full flex-1 flex-col items-center gap-2">
+        <Account session={session} close={onClose} />
+        <div className="flex w-full flex-1 flex-col items-center gap-2 px-4">
           {Object.keys(MENU_CONFIG).map((path) => (
             <MenuButton
               key={path}
@@ -73,29 +71,13 @@ export const AsideMenu = (props: Props) => {
             />
           ))}
         </div>
-        {session?.user && (
+        <div className="w-full border-t border-solid border-text px-4 py-2">
           <MenuButton
-            onClick={async () => {
-              await signOut();
-              onClose();
-            }}
-            label="登出"
-            icon={<LeaveIcon className="mr-3 size-4 sm:mr-4" />}
+            onClick={() => console.log('setting')}
+            label="設定"
+            icon={<SettingIcon className="mr-3 size-4 sm:mr-4" />}
           />
-        )}
-        {!session?.user && (
-          <MenuButton
-            href="/login"
-            onClick={() => onClose()}
-            label="登入"
-            icon={<EnterIcon className="mr-3 size-4 sm:mr-4" />}
-          />
-        )}
-        <MenuButton
-          onClick={() => console.log('setting')}
-          label="設定"
-          icon={<SettingIcon className="mr-3 size-4 sm:mr-4" />}
-        />
+        </div>
       </aside>
     </>
   );

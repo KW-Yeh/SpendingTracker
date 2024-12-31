@@ -45,7 +45,10 @@ export const SpendingList = (props: Props) => {
       )}
       {!loading && (
         <>
-          <h3 className="">{`${year}/${month+1}/${day}: $${normalizeNumber(totalAmount)}`}</h3>
+          <h3 className="flex w-full items-center justify-between">
+            <span>{`${year}/${month + 1}/${day}`}</span>
+            <span>{`當天總花費: $${normalizeNumber(totalAmount)}`}</span>
+          </h3>
           <div className="scrollbar flex h-96 w-full flex-col overflow-y-auto overflow-x-hidden">
             {filteredData.map((spending, index) => (
               <Item

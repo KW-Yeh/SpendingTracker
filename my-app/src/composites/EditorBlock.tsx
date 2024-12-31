@@ -1,8 +1,10 @@
 'use client';
 
 import { EnterIcon } from '@/components/icons/EnterIcon';
+import { Loading } from '@/components/icons/Loading';
 import { Modal } from '@/components/Modal';
 import { NumberKeyboard } from '@/components/NumberKeyboard';
+import { Select } from '@/components/Select';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { putItem } from '@/services/dbHandler';
 import {
@@ -58,12 +60,12 @@ export const EditorBlock = (props: Props) => {
     setNewDesc(event.target.value);
   };
 
-  const handleSelectNecessity = (event: ChangeEvent<HTMLSelectElement>) => {
-    setSelectedNecessity(event.target.value);
+  const handleSelectNecessity = (value: string) => {
+    setSelectedNecessity(value);
   };
 
-  const handleSelectCategory = (event: ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCategory(event.target.value);
+  const handleSelectCategory = (value: string) => {
+    setSelectedCategory(value);
   };
 
   const handleOnSubmit = useCallback(
@@ -111,42 +113,44 @@ export const EditorBlock = (props: Props) => {
         onSubmit={handleOnSubmit}
         className="flex h-fit w-full max-w-175 items-center divide-x divide-text rounded-lg border border-solid border-text"
       >
-        <div className="flex h-full flex-1 items-center text-xs sm:text-sm lg:text-base">
-          <select
-            value={selectedNecessity}
-            onChange={handleSelectNecessity}
+        <div className="flex h-10 flex-1 items-center text-xs sm:text-sm lg:text-base">
+          <Select
+            value={selectedNecessity ?? Necessity.Need}
+            className="h-full py-2 pl-4"
             name="necessity"
-            className="h-full bg-transparent p-2 focus:outline-0 sm:py-4"
+            onChange={handleSelectNecessity}
           >
-            <option value={Necessity.Need}>{Necessity.Need}</option>
-            <option value={Necessity.NotNeed}>{Necessity.NotNeed}</option>
-          </select>
-          <select
-            value={selectedCategory}
-            onChange={handleSelectCategory}
+            <Select.Item value={Necessity.Need}>{Necessity.Need}</Select.Item>
+            <Select.Item value={Necessity.NotNeed}>
+              {Necessity.NotNeed}
+            </Select.Item>
+          </Select>
+          <Select
+            value={selectedCategory ?? spendingCategories[0]}
+            className="h-full py-2 pl-4"
             name="category"
-            className="h-full bg-transparent p-2 focus:outline-0 sm:py-4"
+            onChange={handleSelectCategory}
           >
             {spendingCategories.map((category) => (
-              <option key={category} value={category}>
+              <Select.Item key={category} value={category}>
                 {category}
-              </option>
+              </Select.Item>
             ))}
-          </select>
-          <div className="flex-1">
+          </Select>
+          <div className="h-full flex-1">
             <input
               type="text"
               name="description"
               value={newDesc}
               onChange={handleEditDesc}
-              className="h-full w-full bg-transparent p-2 pr-0 focus:outline-0 sm:py-4"
+              className="h-full w-full bg-transparent py-2 pl-4 pr-0 focus:outline-0"
               placeholder="描述一下"
             />
           </div>
           <button
             type="button"
             onClick={() => modalRef.current?.open()}
-            className="flex h-full w-20 items-center gap-2 p-2 sm:w-24 sm:py-4"
+            className="flex h-full w-16 items-center gap-1 p-2 sm:w-24"
           >
             <span>$</span>
             <span>{amount}</span>
@@ -162,12 +166,15 @@ export const EditorBlock = (props: Props) => {
         <button
           type="submit"
           disabled={loading}
-          className="flex h-full w-8 shrink-0 items-center justify-center rounded-r-lg bg-primary-100 p-2 transition-colors hover:bg-primary-300 sm:w-12"
+          className="flex h-full w-12 shrink-0 items-center justify-center rounded-r-lg bg-primary-100 p-2 transition-colors hover:bg-primary-300 sm:w-12"
         >
-          <EnterIcon className="size-3 sm:size-4" />
+          {loading && (
+            <Loading className="size-3 animate-spin text-white sm:size-4" />
+          )}
+          {!loading && <EnterIcon className="size-3 sm:size-4" />}
         </button>
       </form>
-      <Modal ref={modalRef} className="w-72 sm:w-80">
+      <Modal ref={modalRef} className="w-64 sm:w-80">
         <h1 className="text-base font-bold sm:text-xl">Number Keyboard</h1>
         <NumberKeyboard
           default={amount}
