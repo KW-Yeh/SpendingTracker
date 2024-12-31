@@ -38,7 +38,7 @@ export const DatePicker = (props: Props) => {
         className="z-20 flex items-center justify-between gap-4 bg-background p-4 text-base sm:text-lg"
         onClick={showPicker}
       >
-        <span>{`${year} 年 ${month} 月 ${day} 日 (週${WEEKDAY[weekday]})`}</span>
+        <span>{`${year} 年 ${month+1} 月 ${day} 日 (週${WEEKDAY[weekday]})`}</span>
         <CalendarIcon className="size-4 sm:size-5" />
       </button>
     </div>
