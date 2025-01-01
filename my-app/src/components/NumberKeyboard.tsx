@@ -40,11 +40,11 @@ export const NumberKeyboard = (props: Props) => {
         {amount}
       </p>
       <div className="grid grid-cols-3 gap-1">
-        <Key value="clear" className="col-span-1" onClick={handleOnClick}>
+        <Key value="clear" className="col-span-2" onClick={handleOnClick}>
           清除
         </Key>
-        <Key value="delete" className="col-span-2" onClick={handleOnClick}>
-          刪除
+        <Key value="delete" className="col-span-1" onClick={handleOnClick}>
+          ⌫
         </Key>
         {['7', '8', '9', '4', '5', '6', '1', '2', '3', '0'].map((key) => (
           <Key
@@ -76,7 +76,7 @@ const Key = (props: {
 }) => {
   return (
     <button
-      className={`${props.className} flex select-none items-center justify-center rounded-md border border-solid border-text p-3 transition-colors hover:bg-primary-100 active:bg-primary-300`}
+      className={`${props.className} flex select-none items-center justify-center rounded-md border border-solid border-text p-3 transition-colors active:bg-primary-300 sm:hover:bg-primary-100`}
       onClick={() => props.onClick(props.value)}
     >
       <span>{props.children}</span>
