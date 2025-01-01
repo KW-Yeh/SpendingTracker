@@ -47,12 +47,13 @@ export const SpendingList = (props: Props) => {
         <>
           <h3 className="flex w-full items-center justify-between">
             <span>{`${year}/${month + 1}/${day}`}</span>
-            <span>{`當天總花費: $${normalizeNumber(totalAmount)}`}</span>
+            <span>{`${props.type === SpendingType.Income ? '當天總收入' : '當天總花費'}: $${normalizeNumber(totalAmount)}`}</span>
           </h3>
           <div className="scrollbar flex h-96 w-full flex-col overflow-y-auto overflow-x-hidden">
             {filteredData.map((spending, index) => (
               <Item
                 key={`${spending.id}-${index.toString()}`}
+                green={props.type === SpendingType.Income}
                 spending={spending}
                 userToken={session?.user?.email ?? ''}
                 handleEdit={props.handleEdit}
@@ -67,10 +68,12 @@ export const SpendingList = (props: Props) => {
 
 const Item = ({
   spending,
+  green,
   userToken,
   handleEdit,
 }: {
   spending: SpendingRecord;
+  green: boolean;
   userToken: string;
   handleEdit: (record: SpendingRecord) => void;
 }) => {
@@ -88,7 +91,9 @@ const Item = ({
   }, [spending.id, userToken, syncData]);
 
   return (
-    <div className="grid grid-cols-12 items-center gap-2 rounded p-2 odd:bg-gray-200">
+    <div
+      className={`grid grid-cols-12 items-center gap-2 rounded border-l-4 border-solid p-2 odd:bg-gray-200 ${green ? 'border-green-500' : 'border-red-500'}`}
+    >
       <div className="col-span-1 text-center">{spending.necessity}</div>
       <div className="col-span-1 flex items-center justify-center">
         <div className="rounded border border-solid border-text p-1">

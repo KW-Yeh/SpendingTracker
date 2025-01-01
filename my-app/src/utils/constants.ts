@@ -6,14 +6,14 @@ enum Route {
 }
 
 export const MENU_CONFIG: Record<string, string> = {
-  [Route.Base]: '主畫面',
-  [Route.List]: '總表',
+  [Route.Base]: '首頁',
+  [Route.List]: '綜合分析',
   [Route.Budget]: '儲蓄目標',
 };
 
 export const PAGE_TITLE: Record<string, string> = {
-  [Route.Base]: '主畫面',
-  [Route.List]: '總表',
+  [Route.Base]: '首頁',
+  [Route.List]: '綜合分析',
   [Route.Budget]: '儲蓄目標',
   [Route.Login]: '會員登入',
 };

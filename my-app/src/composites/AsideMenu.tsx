@@ -58,7 +58,7 @@ export const AsideMenu = (props: Props) => {
       ></div>
       <aside
         ref={asideRef}
-        className="fixed -left-72 bottom-0 top-0 z-50 flex w-72 origin-right flex-col items-center justify-between bg-background shadow-xl transition-all"
+        className="fixed -left-72 bottom-0 top-0 z-50 flex w-72 origin-right flex-col items-center justify-between bg-background py-4 shadow-xl transition-all"
       >
         <Account session={session} close={onClose} />
         <div className="flex w-full flex-1 flex-col items-center gap-2 px-4">
@@ -71,7 +71,7 @@ export const AsideMenu = (props: Props) => {
             />
           ))}
         </div>
-        <div className="w-full border-t border-solid border-text px-4 py-2">
+        <div className="w-full border-t border-solid border-gray-300 px-4 py-2">
           <MenuButton
             onClick={() => console.log('setting')}
             label="設定"
