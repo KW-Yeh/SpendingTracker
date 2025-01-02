@@ -5,7 +5,7 @@ import { deleteItem } from '@/services/dbHandler';
 import { Necessity, SpendingType } from '@/utils/constants';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import { useSession } from 'next-auth/react';
-import { useCallback, useMemo } from 'react';
+import { ReactNode, useCallback, useMemo, useState, MouseEvent } from 'react';
 
 interface Props {
   date: Date;
@@ -13,9 +13,15 @@ interface Props {
   handleEdit: (record: SpendingRecord) => void;
 }
 
+enum FilterType {
+  Today,
+  ThisMonth,
+}
+
 export const SpendingList = (props: Props) => {
   const { loading, data } = useGetSpendingCtx();
   const { data: session } = useSession();
+  const [filter, setFilter] = useState(FilterType.Today);
   const year = props.date.getFullYear();
   const month = props.date.getMonth();
   const day = props.date.getDate();
@@ -23,13 +29,16 @@ export const SpendingList = (props: Props) => {
   const checkDate = useCallback(
     (dateStr: string) => {
       const date = new Date(dateStr);
+      if (filter === FilterType.ThisMonth) {
+        return date.getFullYear() === year && date.getMonth() === month;
+      }
       return (
         date.getFullYear() === year &&
         date.getMonth() === month &&
         date.getDate() === day
       );
     },
-    [day, month, year],
+    [day, month, year, filter],
   );
 
   const filteredData = useMemo(
@@ -57,11 +66,24 @@ export const SpendingList = (props: Props) => {
       )}
       {!loading && (
         <>
-          <h3 className="flex w-full items-center justify-between">
-            <span>{`${year}/${month + 1}/${day}`}</span>
-            <span>{`${props.type === SpendingType.Income ? '當天總收入' : '當天總花費'}: $${normalizeNumber(totalAmount)}`}</span>
-          </h3>
-          <div className="scrollbar flex h-96 w-full flex-col overflow-y-auto overflow-x-hidden">
+          <div className="flex w-full items-center justify-between">
+            <div className="flex items-center gap-2">
+              <FilterBtn
+                selected={filter === FilterType.Today}
+                onClick={() => setFilter(FilterType.Today)}
+              >
+                {`今天 (${month + 1}/${day})`}
+              </FilterBtn>
+              <FilterBtn
+                selected={filter === FilterType.ThisMonth}
+                onClick={() => setFilter(FilterType.ThisMonth)}
+              >
+                {`當月 (${month + 1}月)`}
+              </FilterBtn>
+            </div>
+            <span>{`總共: $${normalizeNumber(totalAmount)}`}</span>
+          </div>
+          <div className="scrollbar flex h-96 w-full flex-col gap-1 overflow-y-auto overflow-x-hidden">
             {filteredData.map((spending, index) => (
               <Item
                 key={`${spending.id}-${index.toString()}`}
@@ -75,6 +97,26 @@ export const SpendingList = (props: Props) => {
         </>
       )}
     </div>
+  );
+};
+
+const FilterBtn = ({
+  children,
+  selected,
+  onClick,
+}: {
+  children: ReactNode;
+  selected: boolean;
+  onClick: (event: MouseEvent) => void;
+}) => {
+  return (
+    <button
+      type="button"
+      className={`rounded border border-solid px-2 py-1 transition-colors ${selected ? 'border-text bg-primary-100 text-black' : 'border-gray-300 active:border-text sm:hover:border-text'}`}
+      onClick={onClick}
+    >
+      {children}
+    </button>
   );
 };
 
