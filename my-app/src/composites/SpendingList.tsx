@@ -20,15 +20,27 @@ export const SpendingList = (props: Props) => {
   const month = props.date.getMonth();
   const day = props.date.getDate();
 
+  const checkDate = useCallback(
+    (dateStr: string) => {
+      const date = new Date(dateStr);
+      return (
+        date.getFullYear() === year &&
+        date.getMonth() === month &&
+        date.getDate() === day
+      );
+    },
+    [day, month, year],
+  );
+
   const filteredData = useMemo(
     () =>
       [...data]
-        .filter((data) => data.type === props.type)
+        .filter((data) => data.type === props.type && checkDate(data.date))
         .sort((_, b) => {
           if (b.necessity === Necessity.Need) return 1;
           return -1;
         }),
-    [data, props.type],
+    [data, props.type, checkDate],
   );
 
   const totalAmount = filteredData.reduce(
