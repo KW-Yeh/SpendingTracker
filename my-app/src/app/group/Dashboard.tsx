@@ -61,7 +61,7 @@ export const Dashboard = () => {
           <RefreshIcon className={`size-4 ${loading ? 'animate-spin' : ''}`} />
         </button>
       </div>
-      <div className="flex w-full flex-col gap-4 sm:flex-row">
+      <div className="flex w-full flex-col gap-4 sm:flex-row sm:flex-wrap">
         {myGroups.map((group) => (
           <GroupCard key={group.id} group={group} />
         ))}
@@ -92,12 +92,12 @@ const GroupCard = ({ group }: { group: Group }) => {
         alert('尚無編輯功能');
         break;
       case 'delete':
-        if (!confirm('確定要刪除此群組嗎?')) return;
-        setLoading(true);
-        deleteGroup(group.id).then(() => {
-          syncGroup();
-          setLoading(false);
-        });
+        if (!confirm('確定要刪除此群組嗎?（尚無功能）')) return;
+        // setLoading(true);
+        // deleteGroup(group.id).then(() => {
+        //   syncGroup();
+        //   setLoading(false);
+        // });
         break;
       default:
         break;

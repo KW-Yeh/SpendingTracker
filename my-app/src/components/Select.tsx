@@ -26,7 +26,7 @@ export const Select = (props: Props) => {
 
   useEffect(() => {
     if (openOptions && ref.current) {
-      ref.current.style.width = `${ref.current.clientWidth}px`;
+      ref.current.style.width = `${ref.current.offsetWidth}px`;
     }
   }, [openOptions, ref]);
 
