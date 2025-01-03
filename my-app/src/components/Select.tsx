@@ -15,10 +15,18 @@ interface Props {
   onChange: (value: string) => void;
   children?: ReactNode;
   className?: string;
+  caretStyle?: string;
 }
 
 export const Select = (props: Props) => {
-  const { children, className = '', onChange, value, name } = props;
+  const {
+    children,
+    className = '',
+    caretStyle = '',
+    onChange,
+    value,
+    name,
+  } = props;
   const [openOptions, setOpenOptions] = useState(false);
   const ref = useFocusRef<HTMLDivElement>(() => {
     setOpenOptions(false);
@@ -40,12 +48,12 @@ export const Select = (props: Props) => {
     >
       <div className="relative">
         <button
-          className={`${className} flex min-w-10 items-center justify-between gap-2 sm:min-w-16`}
+          className={`${className} flex min-w-10 items-center justify-between gap-1 sm:min-w-16`}
           type="button"
           onClick={() => setOpenOptions((prevState) => !prevState)}
         >
           <span>{value}</span>
-          <CaretDown className="size-2" />
+          <CaretDown className={`size-2 ${caretStyle}`} />
         </button>
         <div
           ref={ref}

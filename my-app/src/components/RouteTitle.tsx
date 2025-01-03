@@ -31,11 +31,12 @@ export const RouteTitle = () => {
       <h1>{PAGE_TITLE[pathName]}</h1>
       {groups.length > 0 && (
         <div className="ml-1 flex items-center">
-          (
+          （
           <Select
             name="group"
             value={selectedGroup?.name ?? '個人'}
             onChange={handleSelectGroup}
+            caretStyle="size-5"
           >
             <Select.Item value="" className="text-base">
               個人
@@ -50,7 +51,7 @@ export const RouteTitle = () => {
               </Select.Item>
             ))}
           </Select>
-          )
+          ）
         </div>
       )}
     </div>
