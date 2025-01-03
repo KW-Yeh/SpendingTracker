@@ -1,11 +1,23 @@
 import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { EditIcon } from '@/components/icons/EditIcon';
+import { Select } from '@/components/Select';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
+import { useRoleCtx } from '@/context/UserRoleProvider';
 import { deleteItem } from '@/services/dbHandler';
-import { Necessity, SpendingType } from '@/utils/constants';
+import {
+  Necessity,
+  SpendingType,
+  USER_TOKEN_SEPARATOR,
+} from '@/utils/constants';
 import { normalizeNumber } from '@/utils/normalizeNumber';
-import { useSession } from 'next-auth/react';
-import { ReactNode, useCallback, useMemo, useState, MouseEvent } from 'react';
+import {
+  ReactNode,
+  useCallback,
+  useMemo,
+  useState,
+  MouseEvent,
+  useEffect,
+} from 'react';
 
 interface Props {
   date: Date;
@@ -19,12 +31,25 @@ enum FilterType {
 }
 
 export const SpendingList = (props: Props) => {
-  const { loading, data } = useGetSpendingCtx();
-  const { data: session } = useSession();
+  const { data, loading } = useGetSpendingCtx();
+  const { group } = useRoleCtx();
+  const [isInitialed, setIsInitialed] = useState(false);
   const [filter, setFilter] = useState(FilterType.Today);
+  const [selectedUserEmail, setSelectedUserEmail] = useState<string>();
   const year = props.date.getFullYear();
   const month = props.date.getMonth();
   const day = props.date.getDate();
+
+  const getSelectedUser = useCallback(
+    (
+      users: {
+        email: string;
+        name: string;
+        image: string;
+      }[],
+    ) => users.find((user) => user.email === selectedUserEmail),
+    [selectedUserEmail],
+  );
 
   const checkDate = useCallback(
     (dateStr: string) => {
@@ -45,11 +70,17 @@ export const SpendingList = (props: Props) => {
     () =>
       [...data]
         .filter((data) => data.type === props.type && checkDate(data.date))
+        .filter((data) =>
+          selectedUserEmail
+            ? data['user-token'].split(USER_TOKEN_SEPARATOR)[0] ===
+              selectedUserEmail
+            : true,
+        )
         .sort((_, b) => {
           if (b.necessity === Necessity.Need) return 1;
           return -1;
         }),
-    [data, props.type, checkDate],
+    [data, props.type, checkDate, selectedUserEmail],
   );
 
   const totalAmount = filteredData.reduce(
@@ -57,14 +88,20 @@ export const SpendingList = (props: Props) => {
     0,
   );
 
+  useEffect(() => {
+    if (!loading) {
+      setIsInitialed(true);
+    }
+  }, [loading]);
+
   return (
     <div className="flex w-full max-w-175 flex-1 flex-col justify-end gap-2 text-xs sm:text-sm lg:text-base">
-      {loading && (
+      {!isInitialed && (
         <div className="mb-2 flex w-full items-center justify-center pb-96">
           <span>Loading...</span>
         </div>
       )}
-      {!loading && (
+      {isInitialed && (
         <>
           <div className="flex w-full items-center justify-between">
             <div className="flex items-center gap-2">
@@ -80,6 +117,23 @@ export const SpendingList = (props: Props) => {
               >
                 {`當月 (${month + 1}月)`}
               </FilterBtn>
+              {group && (
+                <Select
+                  value={getSelectedUser(group.users)?.name ?? '全部'}
+                  name="user"
+                  onChange={setSelectedUserEmail}
+                  className="rounded border border-solid border-gray-300 px-2 py-1 active:border-text sm:hover:border-text"
+                >
+                  <Select.Item value="" className="text-start text-gray-500">
+                    全部
+                  </Select.Item>
+                  {group?.users.map((user) => (
+                    <Select.Item key={user.email} value={user.email}>
+                      {user.name}
+                    </Select.Item>
+                  ))}
+                </Select>
+              )}
             </div>
             <span>{`總共: $${normalizeNumber(totalAmount)}`}</span>
           </div>
@@ -89,7 +143,6 @@ export const SpendingList = (props: Props) => {
                 key={`${spending.id}-${index.toString()}`}
                 green={props.type === SpendingType.Income}
                 spending={spending}
-                userToken={session?.user?.email ?? ''}
                 handleEdit={props.handleEdit}
               />
             ))}
@@ -123,15 +176,23 @@ const FilterBtn = ({
 const Item = ({
   spending,
   green,
-  userToken,
   handleEdit,
 }: {
   spending: SpendingRecord;
   green: boolean;
-  userToken: string;
   handleEdit: (record: SpendingRecord) => void;
 }) => {
   const { syncData } = useGetSpendingCtx();
+  const { group } = useRoleCtx();
+
+  const userInfo = useMemo(
+    () =>
+      group?.users.find(
+        (d) =>
+          d.email === spending['user-token'].split(USER_TOKEN_SEPARATOR)[0],
+      ),
+    [group?.users, spending],
+  );
 
   const handleOnEdit = () => {
     handleEdit(spending);
@@ -140,9 +201,9 @@ const Item = ({
   const handleOnDelete = useCallback(() => {
     if (!confirm('確定要刪除這筆資料嗎?')) return;
     deleteItem(spending.id).then(() => {
-      syncData(userToken);
+      syncData();
     });
-  }, [spending.id, userToken, syncData]);
+  }, [spending.id, syncData]);
 
   return (
     <div
@@ -158,7 +219,7 @@ const Item = ({
         title={spending.description}
         className="col-span-5 overflow-hidden text-ellipsis whitespace-nowrap"
       >
-        {spending.description}
+        {`${userInfo ? `(${userInfo.name}) ` : ''}${spending.description}`}
       </div>
       <div className="col-span-2 text-end">
         ${normalizeNumber(spending.amount)}

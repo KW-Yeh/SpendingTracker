@@ -1,8 +1,10 @@
 'use client';
 
 import { DatePicker } from '@/components/DatePicker';
+import { RefreshIcon } from '@/components/icons/RefreshIcon';
 import { EditorBlock } from '@/composites/EditorBlock';
 import { SpendingList } from '@/composites/SpendingList';
+import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { SpendingType } from '@/utils/constants';
 import { ChangeEvent, startTransition, useState } from 'react';
 
@@ -12,6 +14,7 @@ export const SpendingInfoSection = () => {
   const [selectedType, setSelectedType] = useState<SpendingType>(
     SpendingType.Outcome,
   );
+  const { syncData, loading } = useGetSpendingCtx();
 
   const handleOnChangeDate = (event: ChangeEvent) => {
     const date = new Date((event.target as HTMLInputElement).value);
@@ -21,7 +24,17 @@ export const SpendingInfoSection = () => {
   };
 
   return (
-    <div className="flex w-full flex-1 flex-col items-center gap-4 p-6">
+    <div className="relative flex w-full flex-1 flex-col items-center gap-4 p-6">
+      <div className="absolute right-6 top-6">
+        <button
+          type="button"
+          onClick={() => syncData()}
+          disabled={loading}
+          className="rounded-md bg-gray-300 p-2 transition-colors active:bg-gray-400 sm:hover:bg-gray-400"
+        >
+          <RefreshIcon className={`size-4 ${loading ? 'animate-spin' : ''}`} />
+        </button>
+      </div>
       <Switch type={selectedType} onChange={setSelectedType} />
       <DatePicker date={selectedDate} onChange={handleOnChangeDate} />
       <EditorBlock

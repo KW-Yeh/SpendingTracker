@@ -85,3 +85,12 @@ input[type=number] {
 .scrollbar:hover {
     scrollbar-color: #C0C0C0 var(--background);
 }
+
+.clipped-text {
+    -webkit-background-clip: text; /* Clip the background to the text */
+    -webkit-text-fill-color: transparent; /* Make the text color transparent */
+}
+
+.gradient-r-from-purple-to-blue {
+    @apply bg-gradient-to-r from-purple-500 to-primary-500;
+}

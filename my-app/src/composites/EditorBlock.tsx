@@ -6,12 +6,14 @@ import { Modal } from '@/components/Modal';
 import { NumberKeyboard } from '@/components/NumberKeyboard';
 import { Select } from '@/components/Select';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
+import { useRoleCtx } from '@/context/UserRoleProvider';
 import { putItem } from '@/services/dbHandler';
 import {
   INCOME_TYPE_OPTIONS,
   Necessity,
   OUTCOME_TYPE_OPTIONS,
   SpendingType,
+  USER_TOKEN_SEPARATOR,
 } from '@/utils/constants';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import { useSession } from 'next-auth/react';
@@ -33,6 +35,7 @@ interface Props {
 
 export const EditorBlock = (props: Props) => {
   const { syncData } = useGetSpendingCtx();
+  const { group: selectedGroup } = useRoleCtx();
   const { data: session } = useSession();
   const spendingCategories =
     props.type === SpendingType.Income
@@ -71,7 +74,12 @@ export const EditorBlock = (props: Props) => {
   const handleOnSubmit = useCallback(
     (event: FormEvent) => {
       event.preventDefault();
-      const userEmail = session?.user?.email ?? 'test';
+      const userEmail = session?.user?.email;
+      if (!userEmail) return;
+      let userToken = userEmail;
+      if (selectedGroup) {
+        userToken += USER_TOKEN_SEPARATOR + selectedGroup.id;
+      }
       const formElement = event.target as HTMLFormElement;
       const formData = new FormData(formElement);
       const necessity = formData.get('necessity') as Necessity;
@@ -83,7 +91,7 @@ export const EditorBlock = (props: Props) => {
       const newSpending: SpendingRecord = {
         ...(props.data ?? {}),
         id: props.data?.id ?? uuid(),
-        'user-token': userEmail,
+        'user-token': userToken,
         type: props.type,
         date: props.date.toUTCString(),
         necessity,
@@ -94,7 +102,7 @@ export const EditorBlock = (props: Props) => {
 
       putItem(newSpending)
         .then(() => {
-          syncData(userEmail);
+          syncData();
         })
         .then(() => {
           setLoading(false);
@@ -104,7 +112,14 @@ export const EditorBlock = (props: Props) => {
           setAmount(0);
         });
     },
-    [session, props.type, props.date, props.data, syncData],
+    [
+      session?.user?.email,
+      selectedGroup,
+      props.data,
+      props.type,
+      props.date,
+      syncData,
+    ],
   );
 
   return (

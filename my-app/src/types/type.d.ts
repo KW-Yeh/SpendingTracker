@@ -1,11 +1,3 @@
-interface SpendingInfo {
-  total: number;
-  income: number;
-  outcome: number;
-  incomes: SpendingRecord[];
-  outcomes: SpendingRecord[];
-}
-
 interface SpendingRecord {
   id: string;
   'user-token': string;
@@ -15,6 +7,24 @@ interface SpendingRecord {
   amount: number;
   category: string;
   description: string;
+}
+
+interface Group {
+  id: string;
+  users: {
+    name: string;
+    email: string;
+    image: string;
+  }[];
+  name: string;
+}
+
+interface User {
+  name: string;
+  email: string;
+  image: string;
+  groups: string[];
+  defaultGroup?: string;
 }
 
 interface ModalRef {

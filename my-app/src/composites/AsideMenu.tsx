@@ -3,6 +3,7 @@
 import { CoinIcon } from '@/components/icons/CoinIcon';
 import { HomeIcon } from '@/components/icons/HomeIcon';
 import { ListIcon } from '@/components/icons/ListIcon';
+import { PeopleIcon } from '@/components/icons/PeopleIcon';
 import { SettingIcon } from '@/components/icons/SettingIcon';
 import { Account } from '@/composites/Account';
 import useFocusRef from '@/hooks/useFocusRef';
@@ -10,7 +11,7 @@ import { MENU_CONFIG } from '@/utils/constants';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ReactNode, useEffect, useRef } from 'react';
+import { ReactNode, useCallback, useEffect, useRef } from 'react';
 
 interface Props {
   isOpen: boolean;
@@ -26,29 +27,29 @@ export const AsideMenu = (props: Props) => {
     close();
   });
 
+  const close = useCallback(() => {
+    requestAnimationFrame(() => {
+      if (!bgRef.current || !asideRef.current) return;
+      bgRef.current.style.right = '100%';
+      asideRef.current.style.left = '-288px';
+    });
+  }, [asideRef]);
+
+  const open = useCallback(() => {
+    requestAnimationFrame(() => {
+      if (!bgRef.current || !asideRef.current) return;
+      bgRef.current.style.right = '0';
+      asideRef.current.style.left = '0';
+    });
+  }, [asideRef]);
+
   useEffect(() => {
     if (isOpen) {
       open();
     } else {
       close();
     }
-  }, [isOpen]);
-
-  function close() {
-    requestAnimationFrame(() => {
-      if (!bgRef.current || !asideRef.current) return;
-      bgRef.current.style.right = '100%';
-      asideRef.current.style.left = '-288px';
-    });
-  }
-
-  function open() {
-    requestAnimationFrame(() => {
-      if (!bgRef.current || !asideRef.current) return;
-      bgRef.current.style.right = '0';
-      asideRef.current.style.left = '0';
-    });
-  }
+  }, [close, isOpen, open]);
 
   return (
     <>
@@ -87,6 +88,7 @@ const ROUTE_ICON: Record<string, ReactNode> = {
   '/': <HomeIcon className="mr-3 size-4 sm:mr-4" />,
   '/list': <ListIcon className="mr-3 size-4 sm:mr-4" />,
   '/budget': <CoinIcon className="mr-3 size-4 sm:mr-4" />,
+  '/group': <PeopleIcon className="mr-3 size-4 sm:mr-4" />,
 };
 
 const MenuButton = ({

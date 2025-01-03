@@ -1,10 +1,13 @@
 'use client';
+import { useUserConfigCtx } from '@/context/UserConfigProvider';
+import { useRoleCtx } from '@/context/UserRoleProvider';
 import { getItems } from '@/services/dbHandler';
-import { useSession } from 'next-auth/react';
+import { USER_TOKEN_SEPARATOR } from '@/utils/constants';
 import {
   createContext,
   ReactNode,
   startTransition,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -14,7 +17,7 @@ import {
 const INIT_CTX_VAL: {
   loading: boolean;
   data: SpendingRecord[];
-  syncData: (userToken: string) => void;
+  syncData: () => void;
 } = {
   loading: true,
   data: [],
@@ -23,30 +26,46 @@ const INIT_CTX_VAL: {
 
 export const SpendingProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
-  const { data: session } = useSession();
+  const { config, loading: loadingConfig } = useUserConfigCtx();
+  const { group, loading: loadingGroup } = useRoleCtx();
   const [data, setData] = useState<SpendingRecord[]>([]);
 
-  const handleState = (res: SpendingRecord[], userToken: string) => {
-    startTransition(() => {
-      setData(res.filter((d) => d['user-token'] === userToken));
-      setLoading(false);
-    });
-  };
+  const handleState = useCallback(
+    (res: SpendingRecord[], userToken: string, isEmail: boolean) => {
+      setData(
+        res.filter((d) =>
+          isEmail
+            ? d['user-token'] === userToken
+            : d['user-token'].split(USER_TOKEN_SEPARATOR)[1] === userToken,
+        ),
+      );
+      startTransition(() => {
+        setLoading(false);
+      });
+    },
+    [],
+  );
 
-  const queryItem = (userToken: string) => {
-    getItems()
-      .then((res) => res.json())
-      .then((res: SpendingRecord[]) => {
-        handleState(res, userToken);
-      })
-      .catch(console.error);
-  };
+  const queryItem = useCallback(
+    (userToken: string, isEmail: boolean) => {
+      getItems()
+        .then((res) => res.json())
+        .then((res: SpendingRecord[]) => {
+          handleState(res, userToken, isEmail);
+        })
+        .catch(console.error);
+    },
+    [handleState],
+  );
 
-  const syncData = (userToken: string) => {
-    startTransition(() => {
-      queryItem(userToken);
-    });
-  };
+  const syncData = useCallback(() => {
+    setLoading(true);
+    if (!loadingConfig && config?.defaultGroup && !loadingGroup && group) {
+      queryItem(group.id, false);
+    } else if (!loadingConfig && config) {
+      queryItem(config.email, true);
+    }
+  }, [loadingGroup, group, queryItem, config, loadingConfig]);
 
   const ctxVal = useMemo(
     () => ({
@@ -54,16 +73,16 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       data,
       syncData,
     }),
-    [loading, data],
+    [loading, data, syncData],
   );
 
   useEffect(() => {
-    if (session?.user?.email) {
-      syncData(session.user.email);
-    } else {
-      setLoading(false);
+    if (!loadingConfig && config?.defaultGroup && !loadingGroup && group) {
+      queryItem(group.id, false);
+    } else if (!loadingConfig && config) {
+      queryItem(config.email, true);
     }
-  }, [session?.user?.email]);
+  }, [config, group, loadingConfig, loadingGroup, queryItem]);
 
   return <Ctx.Provider value={ctxVal}>{children}</Ctx.Provider>;
 };

@@ -1,7 +1,13 @@
 'use client';
 import { CaretDown } from '@/components/icons/CaretDown';
 import useFocusRef from '@/hooks/useFocusRef';
-import { createContext, ReactNode, useContext, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
 interface Props {
   value?: string;
@@ -17,6 +23,13 @@ export const Select = (props: Props) => {
   const ref = useFocusRef<HTMLDivElement>(() => {
     setOpenOptions(false);
   });
+
+  useEffect(() => {
+    if (openOptions && ref.current) {
+      ref.current.style.width = `${ref.current.clientWidth}px`;
+    }
+  }, [openOptions, ref]);
+
   return (
     <Ctx.Provider
       value={{
@@ -27,7 +40,7 @@ export const Select = (props: Props) => {
     >
       <div className="relative">
         <button
-          className={`${className} flex min-w-10 sm:min-w-16 items-center justify-between gap-2`}
+          className={`${className} flex min-w-10 items-center justify-between gap-2 sm:min-w-16`}
           type="button"
           onClick={() => setOpenOptions((prevState) => !prevState)}
         >
@@ -36,7 +49,7 @@ export const Select = (props: Props) => {
         </button>
         <div
           ref={ref}
-          className={`absolute top-full flex w-fit min-w-16 flex-col divide-y divide-gray-300 rounded-md bg-background py-2 shadow transition-all ${openOptions ? 'visible opacity-100' : 'invisible opacity-0'}`}
+          className={`absolute top-full flex min-w-16 flex-col divide-y divide-gray-300 rounded-md bg-background py-2 shadow transition-all ${openOptions ? 'visible opacity-100' : 'invisible opacity-0'}`}
         >
           {children}
         </div>
@@ -62,7 +75,7 @@ const Item = ({
   children,
 }: {
   className?: string;
-  children: string;
+  children: ReactNode;
   value: string;
 }) => {
   const { value: current, onChange, close } = useContext(Ctx);
@@ -73,7 +86,7 @@ const Item = ({
         onChange(value);
         close();
       }}
-      className={`bg-transparent px-4 py-2 transition-colors hover:bg-gray-300 ${className} ${current === value ? '' : ''}`}
+      className={`whitespace-nowrap bg-transparent px-4 py-2 transition-colors hover:bg-gray-300 ${className} ${current === value ? '' : ''}`}
     >
       {children}
     </button>
