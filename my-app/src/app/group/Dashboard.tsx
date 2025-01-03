@@ -8,7 +8,7 @@ import { PlusIcon } from '@/components/icons/PlusIcon';
 import { RefreshIcon } from '@/components/icons/RefreshIcon';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { useRoleCtx } from '@/context/UserRoleProvider';
-import { deleteGroup, putGroup, putUser } from '@/services/dbHandler';
+import { putGroup, putUser } from '@/services/dbHandler';
 import Image from 'next/image';
 import { useCallback, useMemo, useState } from 'react';
 import { v4 as uuid } from 'uuid';
@@ -71,9 +71,9 @@ export const Dashboard = () => {
 };
 
 const GroupCard = ({ group }: { group: Group }) => {
-  const { group: selectedGroup, syncGroup } = useRoleCtx();
+  const { group: selectedGroup } = useRoleCtx();
   const { config, syncUser } = useUserConfigCtx();
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
 
   const isSelected = useMemo(
     () => selectedGroup?.id === group.id,
@@ -93,11 +93,6 @@ const GroupCard = ({ group }: { group: Group }) => {
         break;
       case 'delete':
         if (!confirm('確定要刪除此群組嗎?（尚無功能）')) return;
-        // setLoading(true);
-        // deleteGroup(group.id).then(() => {
-        //   syncGroup();
-        //   setLoading(false);
-        // });
         break;
       default:
         break;
