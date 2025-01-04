@@ -20,7 +20,7 @@ export default async function Home() {
   return (
     <div className="items-ceenter mx-auto mt-20 flex w-full max-w-80 flex-1 flex-col justify-start gap-6 sm:max-w-96">
       <div className="divide-y divide-text rounded-2xl border border-solid border-text shadow">
-        <h1 className="p-6 text-xl font-bold">選擇登入方式</h1>
+        <h1 className="p-6 text-xl font-bold">歡迎</h1>
         <div className="flex w-full flex-col items-center gap-2 p-6 sm:gap-4">
           <p className="mb-4 text-sm sm:text-base">
             選擇一種登入方式並開始你的消費紀錄！

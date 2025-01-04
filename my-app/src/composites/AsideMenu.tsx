@@ -75,7 +75,8 @@ export const AsideMenu = (props: Props) => {
         </div>
         <div className="w-full border-t border-solid border-gray-300 px-4 py-2">
           <MenuButton
-            onClick={() => console.log('setting')}
+            href="/setting"
+            onClick={onClose}
             label="設定"
             icon={<SettingIcon className="mr-3 size-4 sm:mr-4" />}
           />
