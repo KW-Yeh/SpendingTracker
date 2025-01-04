@@ -2,7 +2,7 @@
 
 import { Loading } from '@/components/icons/Loading';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { useRoleCtx } from '@/context/UserRoleProvider';
+import { useGroupCtx } from '@/context/UserGroupProvider';
 import { putGroup, putUser } from '@/services/dbHandler';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
@@ -13,7 +13,7 @@ export const InviteConfirm = () => {
   const { id } = useParams();
   const { data: session } = useSession();
   const { syncUser, config } = useUserConfigCtx();
-  const { groups, syncGroup } = useRoleCtx();
+  const { groups, syncGroup } = useGroupCtx();
 
   const matchedGroup = useMemo(
     () => groups.find((group) => group.id === id),

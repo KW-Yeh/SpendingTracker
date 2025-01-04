@@ -33,7 +33,7 @@ export const ActionMenu = (props: Props) => {
       </button>
       <div
         ref={ref}
-        className={`absolute right-3 top-full flex w-fit flex-col divide-y divide-gray-300 rounded-md bg-background py-1 shadow transition-all ${open ? 'opacity-100' : 'hidden opacity-0'}`}
+        className={`absolute right-3 top-full z-30 flex w-fit flex-col divide-y divide-gray-300 rounded-md bg-background py-1 shadow transition-all ${open ? 'opacity-100' : 'hidden opacity-0'}`}
       >
         {options.map((option) => (
           <button
@@ -42,7 +42,7 @@ export const ActionMenu = (props: Props) => {
             onClick={() => {
               onClick(option.value);
             }}
-            className="flex items-center gap-2 whitespace-nowrap px-3 py-1 transition-colors active:bg-primary-100 sm:hover:bg-primary-100"
+            className="flex items-center gap-2 whitespace-nowrap px-4 py-2 transition-colors active:bg-primary-100 sm:hover:bg-primary-100"
           >
             {option.label}
           </button>

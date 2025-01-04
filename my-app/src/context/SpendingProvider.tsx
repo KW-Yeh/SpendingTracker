@@ -1,6 +1,6 @@
 'use client';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { useRoleCtx } from '@/context/UserRoleProvider';
+import { useGroupCtx } from '@/context/UserGroupProvider';
 import { getItems } from '@/services/dbHandler';
 import { USER_TOKEN_SEPARATOR } from '@/utils/constants';
 import {
@@ -27,7 +27,7 @@ const INIT_CTX_VAL: {
 export const SpendingProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const { config, loading: loadingConfig } = useUserConfigCtx();
-  const { group, loading: loadingGroup } = useRoleCtx();
+  const { group, loading: loadingGroup } = useGroupCtx();
   const [data, setData] = useState<SpendingRecord[]>([]);
 
   const handleState = useCallback(

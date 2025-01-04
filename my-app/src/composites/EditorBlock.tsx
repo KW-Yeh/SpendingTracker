@@ -6,7 +6,7 @@ import { Modal } from '@/components/Modal';
 import { NumberKeyboard } from '@/components/NumberKeyboard';
 import { Select } from '@/components/Select';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
-import { useRoleCtx } from '@/context/UserRoleProvider';
+import { useGroupCtx } from '@/context/UserGroupProvider';
 import { putItem } from '@/services/dbHandler';
 import {
   INCOME_TYPE_OPTIONS,
@@ -35,7 +35,7 @@ interface Props {
 
 export const EditorBlock = (props: Props) => {
   const { syncData } = useGetSpendingCtx();
-  const { group: selectedGroup } = useRoleCtx();
+  const { group: selectedGroup } = useGroupCtx();
   const { data: session } = useSession();
   const spendingCategories =
     props.type === SpendingType.Income

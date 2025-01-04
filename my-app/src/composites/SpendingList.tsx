@@ -2,7 +2,7 @@ import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { EditIcon } from '@/components/icons/EditIcon';
 import { Select } from '@/components/Select';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
-import { useRoleCtx } from '@/context/UserRoleProvider';
+import { useGroupCtx } from '@/context/UserGroupProvider';
 import { deleteItem } from '@/services/dbHandler';
 import {
   Necessity,
@@ -32,7 +32,7 @@ enum FilterType {
 
 export const SpendingList = (props: Props) => {
   const { data, loading } = useGetSpendingCtx();
-  const { group } = useRoleCtx();
+  const { group } = useGroupCtx();
   const [isInitialed, setIsInitialed] = useState(false);
   const [filter, setFilter] = useState(FilterType.Today);
   const [selectedUserEmail, setSelectedUserEmail] = useState<string>();
@@ -183,7 +183,7 @@ const Item = ({
   handleEdit: (record: SpendingRecord) => void;
 }) => {
   const { syncData } = useGetSpendingCtx();
-  const { group } = useRoleCtx();
+  const { group } = useGroupCtx();
 
   const userInfo = useMemo(
     () =>

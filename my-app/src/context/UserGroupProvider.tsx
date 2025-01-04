@@ -26,7 +26,7 @@ const INIT_CTX_VAL: {
   syncGroup: () => {},
 };
 
-export const UserRoleProvider = ({ children }: { children: ReactNode }) => {
+export const UserGroupProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [group, setGroup] = useState<Group>();
   const [groups, setGroups] = useState<Group[]>([]);
@@ -71,4 +71,4 @@ export const UserRoleProvider = ({ children }: { children: ReactNode }) => {
 };
 
 const Ctx = createContext(INIT_CTX_VAL);
-export const useRoleCtx = () => useContext(Ctx);
+export const useGroupCtx = () => useContext(Ctx);

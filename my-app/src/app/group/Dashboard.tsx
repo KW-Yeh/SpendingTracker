@@ -7,7 +7,7 @@ import { LinkIcon } from '@/components/icons/LinkIcon';
 import { PlusIcon } from '@/components/icons/PlusIcon';
 import { RefreshIcon } from '@/components/icons/RefreshIcon';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { useRoleCtx } from '@/context/UserRoleProvider';
+import { useGroupCtx } from '@/context/UserGroupProvider';
 import { putGroup, putUser } from '@/services/dbHandler';
 import Image from 'next/image';
 import { useCallback, useMemo, useState } from 'react';
@@ -15,7 +15,7 @@ import { v4 as uuid } from 'uuid';
 
 export const Dashboard = () => {
   const { myGroups, config, syncUser } = useUserConfigCtx();
-  const { syncGroup, loading } = useRoleCtx();
+  const { syncGroup, loading } = useGroupCtx();
 
   const handleCreateGroup = useCallback(async () => {
     if (!config) return;
@@ -50,7 +50,7 @@ export const Dashboard = () => {
           className="flex items-center rounded-md bg-primary-100 px-4 py-2 transition-colors active:bg-primary-300 sm:hover:bg-primary-300"
         >
           <PlusIcon className="mr-2 size-4" />
-          <span className="font-semibold">建立身分群組</span>
+          <span className="font-semibold">建立群組</span>
         </button>
         <button
           type="button"
@@ -71,8 +71,7 @@ export const Dashboard = () => {
 };
 
 const GroupCard = ({ group }: { group: Group }) => {
-  const { group: selectedGroup } = useRoleCtx();
-  const { config, syncUser } = useUserConfigCtx();
+  const { group: selectedGroup } = useGroupCtx();
   const [loading] = useState(false);
 
   const isSelected = useMemo(
@@ -99,16 +98,6 @@ const GroupCard = ({ group }: { group: Group }) => {
     }
   };
 
-  const handleSelectGroup = useCallback(() => {
-    if (!config) return;
-    putUser({
-      ...config,
-      defaultGroup: config.defaultGroup === group.id ? undefined : group.id,
-    }).then(() => {
-      syncUser();
-    });
-  }, [config, group.id, syncUser]);
-
   return (
     <div
       className={`relative grid w-full max-w-[350px] grid-cols-12 gap-4 rounded-xl border border-solid p-4 ${isSelected ? 'border-red-300' : 'border-gray-300'}`}
@@ -116,7 +105,7 @@ const GroupCard = ({ group }: { group: Group }) => {
       <div
         className={`absolute bottom-0 left-0 right-0 top-0 animate-pulse rounded-xl border border-solid border-transparent bg-gray-500/50 ${loading ? 'visible' : 'invisible'}`}
       ></div>
-      <div className="col-span-6 flex flex-col justify-between">
+      <div className="col-span-10 flex flex-col justify-between gap-2">
         <h3 className="overflow-hidden text-ellipsis whitespace-nowrap text-base font-bold sm:text-lg">
           {group.name}
         </h3>
@@ -135,7 +124,7 @@ const GroupCard = ({ group }: { group: Group }) => {
           ))}
         </div>
       </div>
-      <div className="col-span-6 flex flex-col items-end justify-between gap-4">
+      <div className="col-span-2 flex flex-col items-end justify-between gap-4">
         <ActionMenu
           onClick={handleAction}
           options={[
@@ -143,7 +132,7 @@ const GroupCard = ({ group }: { group: Group }) => {
               value: 'invite',
               label: (
                 <>
-                  <LinkIcon className="size-3" />
+                  <LinkIcon className="size-4" />
                   <span>邀請</span>
                 </>
               ),
@@ -152,7 +141,7 @@ const GroupCard = ({ group }: { group: Group }) => {
               value: 'edit',
               label: (
                 <>
-                  <EditIcon className="size-3" />
+                  <EditIcon className="size-4" />
                   <span>編輯</span>
                 </>
               ),
@@ -161,20 +150,13 @@ const GroupCard = ({ group }: { group: Group }) => {
               value: 'delete',
               label: (
                 <>
-                  <DeleteIcon className="size-3" />
+                  <DeleteIcon className="size-4" />
                   <span>刪除</span>
                 </>
               ),
             },
           ]}
         />
-        <button
-          type="button"
-          onClick={handleSelectGroup}
-          className={`rounded-md px-4 py-2 transition-colors ${isSelected ? 'bg-red-100 active:bg-red-300 sm:hover:bg-red-300' : 'bg-green-100 active:bg-green-300 sm:hover:bg-green-300'}`}
-        >
-          {isSelected ? '取消使用' : '選擇使用'}
-        </button>
       </div>
     </div>
   );

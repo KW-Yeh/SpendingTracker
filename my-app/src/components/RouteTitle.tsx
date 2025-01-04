@@ -2,7 +2,7 @@
 
 import { Select } from '@/components/Select';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { useRoleCtx } from '@/context/UserRoleProvider';
+import { useGroupCtx } from '@/context/UserGroupProvider';
 import { putUser } from '@/services/dbHandler';
 import { PAGE_TITLE } from '@/utils/constants';
 import { usePathname } from 'next/navigation';
@@ -10,12 +10,14 @@ import { useCallback } from 'react';
 
 export const RouteTitle = () => {
   const pathName = usePathname();
-  const { group: selectedGroup, groups } = useRoleCtx();
+  const { group: selectedGroup, groups, setGroup } = useGroupCtx();
   const { config, syncUser } = useUserConfigCtx();
 
   const handleSelectGroup = useCallback(
     (groupId: string) => {
       if (!config) return;
+      const matchedGroup = groups.find((group) => group.id === groupId);
+      setGroup(matchedGroup);
       putUser({
         ...config,
         defaultGroup: config.defaultGroup === groupId ? undefined : groupId,
@@ -23,7 +25,7 @@ export const RouteTitle = () => {
         syncUser();
       });
     },
-    [config, syncUser],
+    [config, groups, setGroup, syncUser],
   );
 
   return (

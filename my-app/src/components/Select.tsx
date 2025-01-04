@@ -94,7 +94,7 @@ const Item = ({
         onChange(value);
         close();
       }}
-      className={`whitespace-nowrap bg-transparent px-4 py-2 transition-colors hover:bg-gray-300 ${className} ${current === value ? '' : ''}`}
+      className={`whitespace-nowrap bg-transparent px-4 py-2 text-start transition-colors hover:bg-gray-300 ${className} ${current === value ? '' : ''}`}
     >
       {children}
     </button>

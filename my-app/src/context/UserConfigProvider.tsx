@@ -1,6 +1,6 @@
 'use client';
 
-import { useRoleCtx } from '@/context/UserRoleProvider';
+import { useGroupCtx } from '@/context/UserGroupProvider';
 import { getUser, putUser } from '@/services/dbHandler';
 import { useSession } from 'next-auth/react';
 import {
@@ -30,7 +30,7 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
   const [config, setConfig] = useState<User>();
   const [loading, setLoading] = useState(true);
   const { data: session } = useSession();
-  const { setGroup, groups } = useRoleCtx();
+  const { setGroup, groups, group: selectedGroup } = useGroupCtx();
 
   const myGroups = useMemo(
     () => groups.filter((group) => config?.groups.includes(group.id)),
@@ -105,12 +105,12 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
   }, [session?.user?.email, syncUser]);
 
   useEffect(() => {
-    if (config?.defaultGroup) {
-      setGroup(myGroups.find((group) => group.id === config.defaultGroup));
+    if (selectedGroup?.id) {
+      setGroup(myGroups.find((group) => group.id === selectedGroup.id));
     } else {
       setGroup(undefined);
     }
-  }, [config?.defaultGroup, myGroups, setGroup]);
+  }, [selectedGroup?.id, myGroups, setGroup]);
 
   return <Ctx.Provider value={ctxVal}>{children}</Ctx.Provider>;
 };

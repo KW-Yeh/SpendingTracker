@@ -1,7 +1,7 @@
 import { Header } from '@/composites/Header';
 import { SpendingProvider } from '@/context/SpendingProvider';
 import { UserConfigProvider } from '@/context/UserConfigProvider';
-import { UserRoleProvider } from '@/context/UserRoleProvider';
+import { UserGroupProvider } from '@/context/UserGroupProvider';
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { SessionProvider } from 'next-auth/react';
@@ -28,14 +28,14 @@ export default function RootLayout({
     <html lang="zh-Hant">
       <body>
         <SessionProvider>
-          <UserRoleProvider>
+          <UserGroupProvider>
             <UserConfigProvider>
               <SpendingProvider>
                 <Header />
                 {children}
               </SpendingProvider>
             </UserConfigProvider>
-          </UserRoleProvider>
+          </UserGroupProvider>
         </SessionProvider>
       </body>
     </html>
