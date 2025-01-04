@@ -16,6 +16,7 @@ interface Props {
   children?: ReactNode;
   className?: string;
   caretStyle?: string;
+  menuStyle?: string;
 }
 
 export const Select = (props: Props) => {
@@ -23,6 +24,7 @@ export const Select = (props: Props) => {
     children,
     className = '',
     caretStyle = '',
+    menuStyle = '',
     onChange,
     value,
     name,
@@ -57,7 +59,7 @@ export const Select = (props: Props) => {
         </button>
         <div
           ref={ref}
-          className={`absolute top-full flex min-w-16 flex-col divide-y divide-gray-300 rounded-md bg-background py-2 shadow transition-all ${openOptions ? 'visible opacity-100' : 'invisible opacity-0'}`}
+          className={`${menuStyle} absolute top-full flex min-w-16 flex-col divide-y divide-gray-300 rounded-md bg-background py-2 shadow transition-all ${openOptions ? 'visible opacity-100' : 'invisible opacity-0'}`}
         >
           {children}
         </div>

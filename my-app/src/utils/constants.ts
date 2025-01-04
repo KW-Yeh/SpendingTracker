@@ -1,4 +1,4 @@
-enum Route {
+export enum Route {
   Base = '/',
   Insert = '/insert',
   List = '/list',
