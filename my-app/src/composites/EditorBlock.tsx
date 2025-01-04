@@ -31,6 +31,7 @@ interface Props {
   type: SpendingType;
   date: Date;
   data?: SpendingRecord;
+  reset: () => void;
 }
 
 export const EditorBlock = (props: Props) => {
@@ -124,6 +125,15 @@ export const EditorBlock = (props: Props) => {
 
   return (
     <>
+      <div className="flex w-full items-center">
+        <button
+          type="button"
+          onClick={props.reset}
+          className="rounded-md border border-solid border-gray-300 px-2 py-1 text-xs transition-colors active:border-text sm:text-sm sm:hover:border-text lg:text-base"
+        >
+          清空
+        </button>
+      </div>
       <form
         onSubmit={handleOnSubmit}
         className="flex h-fit w-full max-w-175 items-center divide-x divide-text rounded-lg border border-solid border-text"

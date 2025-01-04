@@ -32,13 +32,18 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
 
   const handleState = useCallback(
     (res: SpendingRecord[], userToken: string, isEmail: boolean) => {
-      setData(
-        res.filter((d) =>
-          isEmail
-            ? d['user-token'] === userToken
-            : d['user-token'].split(USER_TOKEN_SEPARATOR)[1] === userToken,
-        ),
-      );
+      startTransition(() => {
+        setData(
+          res
+            .sort(sortData)
+            .filter((d) =>
+              isEmail
+                ? d['user-token'] === userToken
+                : d['user-token'].split(USER_TOKEN_SEPARATOR)[1] === userToken,
+            ),
+        );
+        setLoading(false);
+      });
       startTransition(() => {
         setLoading(false);
       });
@@ -89,3 +94,7 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
 
 const Ctx = createContext(INIT_CTX_VAL);
 export const useGetSpendingCtx = () => useContext(Ctx);
+
+const sortData = (a: SpendingRecord, b: SpendingRecord) => {
+  return new Date(b.date).getTime() - new Date(a.date).getTime();
+};

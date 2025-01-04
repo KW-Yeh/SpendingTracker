@@ -4,11 +4,7 @@ import { Select } from '@/components/Select';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useGroupCtx } from '@/context/UserGroupProvider';
 import { deleteItem } from '@/services/dbHandler';
-import {
-  Necessity,
-  SpendingType,
-  USER_TOKEN_SEPARATOR,
-} from '@/utils/constants';
+import { SpendingType, USER_TOKEN_SEPARATOR } from '@/utils/constants';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import {
   ReactNode,
@@ -75,11 +71,7 @@ export const SpendingList = (props: Props) => {
             ? data['user-token'].split(USER_TOKEN_SEPARATOR)[0] ===
               selectedUserEmail
             : true,
-        )
-        .sort((_, b) => {
-          if (b.necessity === Necessity.Need) return 1;
-          return -1;
-        }),
+        ),
     [data, props.type, checkDate, selectedUserEmail],
   );
 

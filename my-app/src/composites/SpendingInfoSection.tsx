@@ -6,7 +6,7 @@ import { EditorBlock } from '@/composites/EditorBlock';
 import { SpendingList } from '@/composites/SpendingList';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { SpendingType } from '@/utils/constants';
-import { ChangeEvent, startTransition, useState } from 'react';
+import { ChangeEvent, startTransition, useEffect, useState } from 'react';
 
 export const SpendingInfoSection = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -22,6 +22,16 @@ export const SpendingInfoSection = () => {
       setSelectedDate(date);
     });
   };
+
+  const reset = () => {
+    setSelectedData(undefined);
+  };
+
+  useEffect(() => {
+    if (selectedData?.id) {
+      setSelectedDate(new Date(selectedData.date));
+    }
+  }, [selectedData?.id, selectedData?.date]);
 
   return (
     <div className="relative flex w-full flex-1 flex-col items-center gap-4 p-6">
@@ -41,6 +51,7 @@ export const SpendingInfoSection = () => {
         type={selectedType}
         date={selectedDate}
         data={selectedData}
+        reset={reset}
       />
       <SpendingList
         type={selectedType}
