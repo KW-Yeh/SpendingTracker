@@ -38,7 +38,7 @@ export const RouteTitle = () => {
             name="group"
             value={selectedGroup?.name ?? '個人'}
             onChange={handleSelectGroup}
-            caretStyle="size-5"
+            caretStyle="size-4"
           >
             <Select.Item value="" className="text-base">
               個人
