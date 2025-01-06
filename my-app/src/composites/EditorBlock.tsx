@@ -6,7 +6,6 @@ import { Modal } from '@/components/Modal';
 import { NumberKeyboard } from '@/components/NumberKeyboard';
 import { Select } from '@/components/Select';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
-import { useGroupCtx } from '@/context/UserGroupProvider';
 import { putItem } from '@/services/dbHandler';
 import {
   INCOME_TYPE_OPTIONS,
@@ -31,12 +30,13 @@ interface Props {
   type: SpendingType;
   date: Date;
   data?: SpendingRecord;
+  groupId?: string;
+  member?: MemberType;
   reset: () => void;
 }
 
 export const EditorBlock = (props: Props) => {
   const { syncData } = useGetSpendingCtx();
-  const { group: selectedGroup } = useGroupCtx();
   const { data: session } = useSession();
   const spendingCategories =
     props.type === SpendingType.Income
@@ -75,11 +75,14 @@ export const EditorBlock = (props: Props) => {
   const handleOnSubmit = useCallback(
     (event: FormEvent) => {
       event.preventDefault();
-      const userEmail = session?.user?.email;
+      let userEmail = session?.user?.email;
+      if (props.member) {
+        userEmail = props.member.email;
+      }
       if (!userEmail) return;
       let userToken = userEmail;
-      if (selectedGroup) {
-        userToken += USER_TOKEN_SEPARATOR + selectedGroup.id;
+      if (props.groupId) {
+        userToken += USER_TOKEN_SEPARATOR + props.groupId;
       }
       const formElement = event.target as HTMLFormElement;
       const formData = new FormData(formElement);
@@ -112,32 +115,22 @@ export const EditorBlock = (props: Props) => {
           setSelectedCategory(undefined);
           setAmount(0);
         });
+      props.reset();
     },
-    [
-      session?.user?.email,
-      selectedGroup,
-      props.data,
-      props.type,
-      props.date,
-      syncData,
-    ],
+    [session?.user?.email, props, syncData],
   );
 
   return (
     <>
-      <div className="flex w-full items-center">
-        <button
-          type="button"
-          onClick={props.reset}
-          className="rounded-md border border-solid border-gray-300 px-2 py-1 text-xs transition-colors active:border-text sm:text-sm sm:hover:border-text lg:text-base"
-        >
-          清空
-        </button>
-      </div>
       <form
         onSubmit={handleOnSubmit}
-        className="flex h-fit w-full max-w-175 items-center divide-x divide-text rounded-lg border border-solid border-text"
+        className="relative flex h-fit w-full max-w-175 items-center rounded-lg border border-solid border-text"
       >
+        {props.data && (
+          <span className="absolute left-2 top-0 -translate-y-1/2 rounded-full bg-yellow-500 px-1 text-xs">
+            編輯中
+          </span>
+        )}
         <div className="flex h-10 flex-1 items-center text-xs sm:text-sm lg:text-base">
           <Select
             value={selectedNecessity ?? Necessity.Need}
@@ -191,7 +184,7 @@ export const EditorBlock = (props: Props) => {
         <button
           type="submit"
           disabled={loading}
-          className="flex h-full w-12 shrink-0 items-center justify-center rounded-r-lg bg-primary-100 p-2 transition-colors hover:bg-primary-300 sm:w-12"
+          className="flex h-full w-12 shrink-0 items-center justify-center rounded-r-lg border-l border-solid border-text bg-primary-100 p-2 transition-colors hover:bg-primary-300 sm:w-12"
         >
           {loading && (
             <Loading className="size-3 animate-spin text-white sm:size-4" />

@@ -10,7 +10,7 @@ import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { useGroupCtx } from '@/context/UserGroupProvider';
 import { putGroup, putUser } from '@/services/dbHandler';
 import Image from 'next/image';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 
 export const Dashboard = () => {
@@ -71,13 +71,7 @@ export const Dashboard = () => {
 };
 
 const GroupCard = ({ group }: { group: Group }) => {
-  const { group: selectedGroup } = useGroupCtx();
   const [loading] = useState(false);
-
-  const isSelected = useMemo(
-    () => selectedGroup?.id === group.id,
-    [group.id, selectedGroup?.id],
-  );
 
   const handleAction = (action: string) => {
     switch (action) {
@@ -100,7 +94,7 @@ const GroupCard = ({ group }: { group: Group }) => {
 
   return (
     <div
-      className={`relative grid w-full max-w-[350px] grid-cols-12 gap-4 rounded-xl border border-solid p-4 ${isSelected ? 'border-red-300' : 'border-gray-300'}`}
+      className="relative grid w-full max-w-[350px] grid-cols-12 gap-4 rounded-xl border border-solid p-4 border-gray-300"
     >
       <div
         className={`absolute bottom-0 left-0 right-0 top-0 animate-pulse rounded-xl border border-solid border-transparent bg-gray-500/50 ${loading ? 'visible' : 'invisible'}`}

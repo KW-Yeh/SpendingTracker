@@ -1,23 +1,19 @@
 import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { EditIcon } from '@/components/icons/EditIcon';
-import { Select } from '@/components/Select';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
-import { useGroupCtx } from '@/context/UserGroupProvider';
+import { useUserConfigCtx } from '@/context/UserConfigProvider';
+import { useFilterGroup } from '@/hooks/useFilterGroup';
 import { deleteItem } from '@/services/dbHandler';
 import { SpendingType, USER_TOKEN_SEPARATOR } from '@/utils/constants';
 import { normalizeNumber } from '@/utils/normalizeNumber';
-import {
-  ReactNode,
-  useCallback,
-  useMemo,
-  useState,
-  MouseEvent,
-  useEffect,
-} from 'react';
+import { ReactNode, useCallback, useState, MouseEvent, useEffect } from 'react';
 
 interface Props {
   date: Date;
   type: SpendingType;
+  groupId?: string;
+  member?: MemberType;
+  onSelectMember: (member?: MemberType) => void;
   handleEdit: (record: SpendingRecord) => void;
 }
 
@@ -27,25 +23,15 @@ enum FilterType {
 }
 
 export const SpendingList = (props: Props) => {
-  const { data, loading } = useGetSpendingCtx();
-  const { group } = useGroupCtx();
+  const { loading } = useGetSpendingCtx();
+  const { myGroups } = useUserConfigCtx();
+  const { filteredData: data } = useFilterGroup(props.groupId);
   const [isInitialed, setIsInitialed] = useState(false);
   const [filter, setFilter] = useState(FilterType.Today);
-  const [selectedUserEmail, setSelectedUserEmail] = useState<string>();
+  const [filteredData, setFilteredData] = useState<SpendingRecord[]>([]);
   const year = props.date.getFullYear();
   const month = props.date.getMonth();
   const day = props.date.getDate();
-
-  const getSelectedUser = useCallback(
-    (
-      users: {
-        email: string;
-        name: string;
-        image: string;
-      }[],
-    ) => users.find((user) => user.email === selectedUserEmail),
-    [selectedUserEmail],
-  );
 
   const checkDate = useCallback(
     (dateStr: string) => {
@@ -62,23 +48,48 @@ export const SpendingList = (props: Props) => {
     [day, month, year, filter],
   );
 
-  const filteredData = useMemo(
-    () =>
-      [...data]
-        .filter((data) => data.type === props.type && checkDate(data.date))
-        .filter((data) =>
-          selectedUserEmail
-            ? data['user-token'].split(USER_TOKEN_SEPARATOR)[0] ===
-              selectedUserEmail
-            : true,
-        ),
-    [data, props.type, checkDate, selectedUserEmail],
+  const checkMember = useCallback(
+    (userToken: string) => {
+      if (props.member) {
+        return userToken.split(USER_TOKEN_SEPARATOR)[0] === props.member.email;
+      }
+      return true;
+    },
+    [props.member],
+  );
+
+  const handleOnEdit = useCallback(
+    (record: SpendingRecord) => {
+      const userToken = record['user-token'];
+      const isGrouped = userToken.split(USER_TOKEN_SEPARATOR).length === 2;
+      let email = userToken;
+      if (isGrouped) {
+        email = userToken.split(USER_TOKEN_SEPARATOR)[0];
+      }
+      const member = myGroups
+        .find((_group) => _group.id === props.groupId)
+        ?.users.find((_user) => _user.email === email);
+      props.onSelectMember(member);
+      props.handleEdit(record);
+    },
+    [myGroups, props],
   );
 
   const totalAmount = filteredData.reduce(
     (acc, spending) => acc + spending.amount,
     0,
   );
+
+  useEffect(() => {
+    setFilteredData(
+      [...data].filter(
+        (data) =>
+          data.type === props.type &&
+          checkDate(data.date) &&
+          checkMember(data['user-token']),
+      ),
+    );
+  }, [checkDate, checkMember, data, props.type]);
 
   useEffect(() => {
     if (!loading) {
@@ -109,23 +120,6 @@ export const SpendingList = (props: Props) => {
               >
                 {`當月 (${month + 1}月)`}
               </FilterBtn>
-              {group && (
-                <Select
-                  value={getSelectedUser(group.users)?.name ?? '全部'}
-                  name="user"
-                  onChange={setSelectedUserEmail}
-                  className="rounded border border-solid border-gray-300 px-2 py-1 active:border-text sm:hover:border-text"
-                >
-                  <Select.Item value="" className="text-start text-gray-500">
-                    全部
-                  </Select.Item>
-                  {group?.users.map((user) => (
-                    <Select.Item key={user.email} value={user.email}>
-                      {user.name}
-                    </Select.Item>
-                  ))}
-                </Select>
-              )}
             </div>
             <span>{`總共: $${normalizeNumber(totalAmount)}`}</span>
           </div>
@@ -135,7 +129,7 @@ export const SpendingList = (props: Props) => {
                 key={`${spending.id}-${index.toString()}`}
                 green={props.type === SpendingType.Income}
                 spending={spending}
-                handleEdit={props.handleEdit}
+                handleEdit={handleOnEdit}
               />
             ))}
           </div>
@@ -175,16 +169,6 @@ const Item = ({
   handleEdit: (record: SpendingRecord) => void;
 }) => {
   const { syncData } = useGetSpendingCtx();
-  const { group } = useGroupCtx();
-
-  const userInfo = useMemo(
-    () =>
-      group?.users.find(
-        (d) =>
-          d.email === spending['user-token'].split(USER_TOKEN_SEPARATOR)[0],
-      ),
-    [group?.users, spending],
-  );
 
   const handleOnEdit = () => {
     handleEdit(spending);
@@ -199,7 +183,7 @@ const Item = ({
 
   return (
     <div
-      className={`grid grid-cols-12 items-center gap-2 rounded border-l-4 border-solid p-2 odd:bg-gray-200 ${green ? 'border-green-500' : 'border-red-500'}`}
+      className={`grid grid-cols-12 items-center gap-2 rounded border-l-4 border-solid p-2 odd:bg-gray-200 ${green ? 'border-green-300' : 'border-red-300'}`}
     >
       <div className="col-span-1 text-center">{spending.necessity}</div>
       <div className="col-span-1 flex items-center justify-center">
@@ -211,7 +195,7 @@ const Item = ({
         title={spending.description}
         className="col-span-5 overflow-hidden text-ellipsis whitespace-nowrap"
       >
-        {`${userInfo ? `(${userInfo.name}) ` : ''}${spending.description}`}
+        {spending.description}
       </div>
       <div className="col-span-2 text-end">
         ${normalizeNumber(spending.amount)}

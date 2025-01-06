@@ -30,7 +30,7 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
   const [config, setConfig] = useState<User>();
   const [loading, setLoading] = useState(true);
   const { data: session } = useSession();
-  const { setGroup, groups, group: selectedGroup } = useGroupCtx();
+  const { groups } = useGroupCtx();
 
   const myGroups = useMemo(
     () => groups.filter((group) => config?.groups.includes(group.id)),
@@ -52,7 +52,6 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
           email: email,
           image: session.user.image || '',
           groups: [],
-          defaultGroup: undefined,
         });
       }
     },
@@ -103,14 +102,6 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
       syncUser();
     }
   }, [session?.user?.email, syncUser]);
-
-  useEffect(() => {
-    if (selectedGroup?.id) {
-      setGroup(myGroups.find((group) => group.id === selectedGroup.id));
-    } else {
-      setGroup(undefined);
-    }
-  }, [selectedGroup?.id, myGroups, setGroup]);
 
   return <Ctx.Provider value={ctxVal}>{children}</Ctx.Provider>;
 };

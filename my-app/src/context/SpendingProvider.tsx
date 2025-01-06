@@ -1,8 +1,6 @@
 'use client';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { useGroupCtx } from '@/context/UserGroupProvider';
 import { getItems } from '@/services/dbHandler';
-import { USER_TOKEN_SEPARATOR } from '@/utils/constants';
 import {
   createContext,
   ReactNode,
@@ -27,50 +25,33 @@ const INIT_CTX_VAL: {
 export const SpendingProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const { config, loading: loadingConfig } = useUserConfigCtx();
-  const { group, loading: loadingGroup } = useGroupCtx();
   const [data, setData] = useState<SpendingRecord[]>([]);
 
-  const handleState = useCallback(
-    (res: SpendingRecord[], userToken: string, isEmail: boolean) => {
-      startTransition(() => {
-        setData(
-          res
-            .sort(sortData)
-            .filter((d) =>
-              isEmail
-                ? d['user-token'] === userToken
-                : d['user-token'].split(USER_TOKEN_SEPARATOR)[1] === userToken,
-            ),
-        );
-        setLoading(false);
-      });
-      startTransition(() => {
-        setLoading(false);
-      });
-    },
-    [],
-  );
+  const handleState = useCallback((res: SpendingRecord[]) => {
+    startTransition(() => {
+      setData(res.sort(sortData));
+      setLoading(false);
+    });
+    startTransition(() => {
+      setLoading(false);
+    });
+  }, []);
 
-  const queryItem = useCallback(
-    (userToken: string, isEmail: boolean) => {
-      getItems()
-        .then((res) => res.json())
-        .then((res: SpendingRecord[]) => {
-          handleState(res, userToken, isEmail);
-        })
-        .catch(console.error);
-    },
-    [handleState],
-  );
+  const queryItem = useCallback(() => {
+    getItems()
+      .then((res) => res.json())
+      .then((res: SpendingRecord[]) => {
+        handleState(res);
+      })
+      .catch(console.error);
+  }, [handleState]);
 
   const syncData = useCallback(() => {
     setLoading(true);
-    if (!loadingConfig && config?.defaultGroup && !loadingGroup && group) {
-      queryItem(group.id, false);
-    } else if (!loadingConfig && config) {
-      queryItem(config.email, true);
+    if (!loadingConfig && config) {
+      queryItem();
     }
-  }, [loadingGroup, group, queryItem, config, loadingConfig]);
+  }, [queryItem, config, loadingConfig]);
 
   const ctxVal = useMemo(
     () => ({
@@ -82,12 +63,10 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
   );
 
   useEffect(() => {
-    if (!loadingConfig && config?.defaultGroup && !loadingGroup && group) {
-      queryItem(group.id, false);
-    } else if (!loadingConfig && config) {
-      queryItem(config.email, true);
+    if (!loadingConfig && config) {
+      queryItem();
     }
-  }, [config, group, loadingConfig, loadingGroup, queryItem]);
+  }, [config, loadingConfig, queryItem]);
 
   return <Ctx.Provider value={ctxVal}>{children}</Ctx.Provider>;
 };

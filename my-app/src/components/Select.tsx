@@ -36,7 +36,13 @@ export const Select = (props: Props) => {
 
   useEffect(() => {
     if (openOptions && ref.current) {
-      ref.current.style.width = `${ref.current.offsetWidth}px`;
+      let maxWidth = 0;
+      ref.current.querySelectorAll('button').forEach((button) => {
+        const textElementWidth = button.querySelector('span')?.offsetWidth;
+        maxWidth = Math.max(maxWidth, textElementWidth ?? 0);
+      });
+      const width = Math.max(ref.current.offsetWidth, maxWidth + 32);
+      ref.current.style.width = `${width}px`;
     }
   }, [openOptions, ref]);
 
@@ -50,16 +56,18 @@ export const Select = (props: Props) => {
     >
       <div className="relative">
         <button
-          className={`${className} flex min-w-10 items-center justify-between gap-1 sm:min-w-16`}
+          className={`${className} flex items-center justify-between gap-1`}
           type="button"
           onClick={() => setOpenOptions((prevState) => !prevState)}
         >
-          <span>{value}</span>
-          <CaretDown className={`size-2 ${caretStyle}`} />
+          <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+            {value}
+          </span>
+          <CaretDown className={`size-2 shrink-0 ${caretStyle}`} />
         </button>
         <div
           ref={ref}
-          className={`${menuStyle} absolute top-full flex min-w-16 flex-col divide-y divide-gray-300 rounded-md bg-background py-2 shadow transition-all ${openOptions ? 'visible opacity-100' : 'invisible opacity-0'}`}
+          className={`${menuStyle} absolute top-full z-40 flex min-w-16 flex-col divide-y divide-gray-300 rounded-md bg-background py-2 shadow transition-all ${openOptions ? 'visible opacity-100' : 'invisible opacity-0'}`}
         >
           {children}
         </div>
@@ -96,9 +104,9 @@ const Item = ({
         onChange(value);
         close();
       }}
-      className={`whitespace-nowrap bg-transparent px-4 py-2 text-start transition-colors hover:bg-gray-300 ${className} ${current === value ? '' : ''}`}
+      className={`flex w-full bg-transparent px-4 py-2 transition-colors hover:bg-gray-300 ${className} ${current === value ? '' : ''}`}
     >
-      {children}
+      <span className="whitespace-nowrap">{children}</span>
     </button>
   );
 };

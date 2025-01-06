@@ -14,21 +14,16 @@ import {
 
 const INIT_CTX_VAL: {
   loading: boolean;
-  group?: Group;
   groups: Group[];
-  setGroup: (group?: Group) => void;
   syncGroup: () => void;
 } = {
   loading: true,
-  group: undefined,
   groups: [],
-  setGroup: () => {},
   syncGroup: () => {},
 };
 
 export const UserGroupProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
-  const [group, setGroup] = useState<Group>();
   const [groups, setGroups] = useState<Group[]>([]);
 
   const handleState = (res: Group[]) => {
@@ -55,12 +50,10 @@ export const UserGroupProvider = ({ children }: { children: ReactNode }) => {
   const ctxVal = useMemo(
     () => ({
       loading,
-      group,
       groups,
-      setGroup,
       syncGroup,
     }),
-    [group, groups, loading, syncGroup],
+    [groups, loading, syncGroup],
   );
 
   useEffect(() => {

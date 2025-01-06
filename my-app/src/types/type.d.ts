@@ -11,20 +11,21 @@ interface SpendingRecord {
 
 interface Group {
   id: string;
-  users: {
-    name: string;
-    email: string;
-    image: string;
-  }[];
+  users: MemberType[];
   name: string;
 }
+
+type MemberType = {
+  name: string;
+  email: string;
+  image: string;
+};
 
 interface User {
   name: string;
   email: string;
   image: string;
   groups: string[];
-  defaultGroup?: string;
 }
 
 interface ModalRef {
