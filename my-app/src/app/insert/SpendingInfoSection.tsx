@@ -96,12 +96,14 @@ export const SpendingInfoSection = () => {
         data={selectedData}
         groupId={selectedGroup}
         memberEmail={selectedMemberEmail}
+        refreshData={refreshData}
         reset={reset}
       />
       <SpendingList
         type={selectedType}
         date={selectedDate}
         handleEdit={setSelectedData}
+        refreshData={refreshData}
       />
     </div>
   );

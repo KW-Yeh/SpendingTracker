@@ -33,6 +33,7 @@ interface Props {
   groupId?: string;
   memberEmail?: string;
   reset: () => void;
+  refreshData: () => void;
 }
 
 export const EditorBlock = (props: Props) => {
@@ -106,7 +107,7 @@ export const EditorBlock = (props: Props) => {
 
       putItem(newSpending)
         .then(() => {
-          syncData(props.groupId, userEmail);
+          props.refreshData();
         })
         .then(() => {
           setLoading(false);

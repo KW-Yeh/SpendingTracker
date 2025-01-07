@@ -10,6 +10,7 @@ interface Props {
   date: Date;
   type: SpendingType;
   handleEdit: (record: SpendingRecord) => void;
+  refreshData: () => void;
 }
 
 enum FilterType {
@@ -18,7 +19,7 @@ enum FilterType {
 }
 
 export const SpendingList = (props: Props) => {
-  const { date, type, handleEdit } = props;
+  const { date, type, handleEdit, refreshData } = props;
   const { loading, data } = useGetSpendingCtx();
   const [isInitialed, setIsInitialed] = useState(false);
   const [filter, setFilter] = useState(FilterType.Today);
@@ -62,7 +63,7 @@ export const SpendingList = (props: Props) => {
   return (
     <div className="flex w-full max-w-175 flex-1 flex-col justify-end gap-2 text-xs sm:text-sm lg:text-base">
       {!isInitialed && (
-        <div className="mb-2 flex w-full items-center justify-center pb-96">
+        <div className="mb-2 flex w-full items-center justify-center pb-80">
           <span>Loading...</span>
         </div>
       )}
@@ -85,13 +86,14 @@ export const SpendingList = (props: Props) => {
             </div>
             <span>{`總共: $${normalizeNumber(totalAmount)}`}</span>
           </div>
-          <div className="scrollbar flex h-96 w-full flex-col gap-1 overflow-y-auto overflow-x-hidden">
+          <div className="scrollbar flex h-80 w-full flex-col gap-1 overflow-y-auto overflow-x-hidden">
             {filteredData.map((spending, index) => (
               <Item
                 key={`${spending.id}-${index.toString()}`}
                 green={type === SpendingType.Income}
                 spending={spending}
                 handleEdit={handleEdit}
+                refreshData={refreshData}
               />
             ))}
           </div>
@@ -125,13 +127,13 @@ const Item = ({
   spending,
   green,
   handleEdit,
+  refreshData,
 }: {
   spending: SpendingRecord;
   green: boolean;
   handleEdit: (record: SpendingRecord) => void;
+  refreshData: () => void;
 }) => {
-  const { syncData } = useGetSpendingCtx();
-
   const handleOnEdit = () => {
     handleEdit(spending);
   };
@@ -139,9 +141,9 @@ const Item = ({
   const handleOnDelete = useCallback(() => {
     if (!confirm('確定要刪除這筆資料嗎?')) return;
     deleteItem(spending.id).then(() => {
-      syncData();
+      refreshData();
     });
-  }, [spending.id, syncData]);
+  }, [spending.id, refreshData]);
 
   return (
     <div
