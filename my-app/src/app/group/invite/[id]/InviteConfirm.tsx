@@ -13,26 +13,22 @@ export const InviteConfirm = () => {
   const { id } = useParams();
   const { status } = useSession();
   const { syncUser, config, loading: loadingUserData } = useUserConfigCtx();
-  const { groups, syncGroup, loading: loadingGroupData } = useGroupCtx();
+  const { groups, syncGroup } = useGroupCtx();
 
   const matchedGroup = useMemo(() => groups[0], [groups]);
 
-  const handleUpdateUser = useCallback(
-    async (config: User, id: string) => {
-      const userGroups = new Set(config.groups);
-      if (userGroups.has(id)) {
-        alert('已加入該群組');
-        redirect('/group');
-      }
-      userGroups.add(id);
-      await putUser({
-        ...config,
-        groups: Array.from(userGroups),
-      });
-      syncUser();
-    },
-    [syncUser],
-  );
+  const handleUpdateUser = useCallback(async (config: User, id: string) => {
+    const userGroups = new Set(config.groups);
+    if (userGroups.has(id)) {
+      alert('已加入該群組');
+      redirect('/group');
+    }
+    userGroups.add(id);
+    await putUser({
+      ...config,
+      groups: Array.from(userGroups),
+    });
+  }, []);
 
   const handleUpdateGroup = useCallback(
     async (group: Group, userInfo: User) => {
@@ -47,29 +43,29 @@ export const InviteConfirm = () => {
         ...group,
         users: Array.from(users),
       });
-      syncGroup(userInfo.groups);
     },
-    [syncGroup],
+    [],
   );
 
   const handleJoinGroup = useCallback(async () => {
     if (!config) return;
-    if (!matchedGroup) return;
-    await handleUpdateUser(config, matchedGroup.id);
-    await handleUpdateGroup(matchedGroup, config);
-    redirect('/group');
-  }, [config, handleUpdateGroup, handleUpdateUser, matchedGroup]);
-
-  useEffect(() => {
-    if (
-      status === 'authenticated' &&
-      !loadingGroupData &&
-      groups.length === 0
-    ) {
+    if (!matchedGroup) {
       alert('該群組邀請連結已經遺失');
       redirect('/');
     }
-  }, [groups, loadingGroupData, status]);
+    await handleUpdateUser(config, matchedGroup.id);
+    syncUser();
+    await handleUpdateGroup(matchedGroup, config);
+    syncGroup(config.groups);
+    redirect('/group');
+  }, [
+    config,
+    handleUpdateGroup,
+    handleUpdateUser,
+    matchedGroup,
+    syncGroup,
+    syncUser,
+  ]);
 
   useEffect(() => {
     if (!loadingUserData && config?.email) {
