@@ -4,12 +4,14 @@ import { Loading } from '@/components/icons/Loading';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { putGroup, putUser } from '@/services/dbHandler';
+import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { redirect, useParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo } from 'react';
 
 export const InviteConfirm = () => {
   const { id } = useParams();
+  const { status } = useSession();
   const { syncUser, config, loading: loadingUserData } = useUserConfigCtx();
   const { groups, syncGroup, loading: loadingGroupData } = useGroupCtx();
 
@@ -59,20 +61,24 @@ export const InviteConfirm = () => {
   }, [config, handleUpdateGroup, handleUpdateUser, matchedGroup]);
 
   useEffect(() => {
-    if (!loadingGroupData && groups.length === 0) {
+    if (
+      status === 'authenticated' &&
+      !loadingGroupData &&
+      groups.length === 0
+    ) {
       alert('該群組邀請連結已經遺失');
       redirect('/');
     }
-  }, [groups, loadingGroupData]);
+  }, [groups, loadingGroupData, status]);
 
   useEffect(() => {
     if (!loadingUserData && config?.email) {
       syncGroup(id);
-    } else {
+    } else if (status === 'unauthenticated') {
       alert('請先登入再加入群組');
       redirect('/login');
     }
-  }, [loadingUserData, config, id, syncGroup]);
+  }, [loadingUserData, config, id, syncGroup, status]);
 
   if (!matchedGroup)
     return (
