@@ -31,7 +31,7 @@ interface Props {
   date: Date;
   data?: SpendingRecord;
   groupId?: string;
-  member?: MemberType;
+  memberEmail?: string;
   reset: () => void;
 }
 
@@ -76,8 +76,8 @@ export const EditorBlock = (props: Props) => {
     (event: FormEvent) => {
       event.preventDefault();
       let userEmail = session?.user?.email;
-      if (props.member) {
-        userEmail = props.member.email;
+      if (props.memberEmail) {
+        userEmail = props.memberEmail;
       }
       if (!userEmail) return;
       let userToken = userEmail;
@@ -192,8 +192,7 @@ export const EditorBlock = (props: Props) => {
           {!loading && <EnterIcon className="size-3 sm:size-4" />}
         </button>
       </form>
-      <Modal ref={modalRef} className="w-72 sm:w-80">
-        <h1 className="text-base font-bold sm:text-xl">你的花費</h1>
+      <Modal ref={modalRef} className="w-72 sm:w-80" title="你的花費">
         <NumberKeyboard
           default={amount}
           onConfirm={(val) => {

@@ -5,6 +5,7 @@ import { RefreshIcon } from '@/components/icons/RefreshIcon';
 import { Select } from '@/components/Select';
 import { EditorBlock } from '@/composites/EditorBlock';
 import { SpendingList } from '@/composites/SpendingList';
+import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { SpendingType } from '@/utils/constants';
@@ -24,7 +25,8 @@ export const SpendingInfoSection = () => {
     SpendingType.Outcome,
   );
   const [selectedGroup, setSelectedGroup] = useState<string>();
-  const [selectedMember, setSelectedMember] = useState<MemberType>();
+  const [selectedMemberEmail, setSelectedMemberEmail] = useState<string>();
+  const { config: userData } = useUserConfigCtx();
   const { syncData, loading } = useGetSpendingCtx();
 
   const handleOnChangeDate = (event: ChangeEvent) => {
@@ -34,6 +36,10 @@ export const SpendingInfoSection = () => {
     });
   };
 
+  const refreshData = useCallback(() => {
+    syncData(selectedGroup, selectedMemberEmail);
+  }, [selectedGroup, selectedMemberEmail, syncData]);
+
   const reset = () => {
     setSelectedData(undefined);
   };
@@ -41,15 +47,26 @@ export const SpendingInfoSection = () => {
   useEffect(() => {
     if (selectedData?.id) {
       setSelectedDate(new Date(selectedData.date));
+      setSelectedMemberEmail(selectedData['user-token']);
     }
-  }, [selectedData?.id, selectedData?.date]);
+  }, [selectedData]);
+
+  useEffect(() => {
+    if (!selectedGroup && userData?.email) {
+      setSelectedMemberEmail(userData.email);
+    }
+  }, [selectedGroup, userData?.email]);
+
+  useEffect(() => {
+    refreshData();
+  }, [refreshData]);
 
   return (
     <div className="relative flex w-full flex-1 flex-col items-center gap-4 p-6">
       <div className="absolute right-6 top-6">
         <button
           type="button"
-          onClick={() => syncData()}
+          onClick={refreshData}
           disabled={loading}
           className="rounded-md bg-gray-300 p-2 transition-colors active:bg-gray-400 sm:hover:bg-gray-400"
         >
@@ -61,9 +78,9 @@ export const SpendingInfoSection = () => {
       <div className="flex w-full max-w-175 flex-wrap justify-between gap-2">
         <GroupSelector
           selectedGroup={selectedGroup}
-          selectedMember={selectedMember}
+          selectedMemberEmail={selectedMemberEmail}
           onSelectGroup={setSelectedGroup}
-          onSelectMember={setSelectedMember}
+          onSelectMemberEmail={setSelectedMemberEmail}
         />
         <button
           type="button"
@@ -78,15 +95,12 @@ export const SpendingInfoSection = () => {
         date={selectedDate}
         data={selectedData}
         groupId={selectedGroup}
-        member={selectedMember}
+        memberEmail={selectedMemberEmail}
         reset={reset}
       />
       <SpendingList
         type={selectedType}
         date={selectedDate}
-        groupId={selectedGroup}
-        member={selectedMember}
-        onSelectMember={setSelectedMember}
         handleEdit={setSelectedData}
       />
     </div>
@@ -95,29 +109,25 @@ export const SpendingInfoSection = () => {
 
 const GroupSelector = ({
   selectedGroup,
-  selectedMember,
+  selectedMemberEmail,
   onSelectGroup,
-  onSelectMember,
+  onSelectMemberEmail,
 }: {
   selectedGroup?: string;
-  selectedMember?: MemberType;
+  selectedMemberEmail?: string;
   onSelectGroup: (groupId: string) => void;
-  onSelectMember: (member?: MemberType) => void;
+  onSelectMemberEmail: (email?: string) => void;
 }) => {
-  const { myGroups: groups, loading } = useUserConfigCtx();
+  const { groups, loading } = useGroupCtx();
 
   const group = useMemo(
     () => groups.find((group) => group.id === selectedGroup),
     [groups, selectedGroup],
   );
 
-  const handleOnSelectMember = useCallback(
-    (email: string) => {
-      if (!group) return;
-      const member = group.users.find((user) => user.email === email);
-      onSelectMember(member);
-    },
-    [onSelectMember, group],
+  const selectedMember = useMemo(
+    () => group?.users.find((user) => user.email === selectedMemberEmail),
+    [group?.users, selectedMemberEmail],
   );
 
   return (
@@ -128,6 +138,7 @@ const GroupSelector = ({
         value={group?.name ?? '個人'}
         onChange={onSelectGroup}
         className="max-w-24 rounded-md border border-solid border-gray-300 px-2 py-1 transition-colors active:border-text sm:hover:border-text"
+        menuStyle="max-w-32"
       >
         <Select.Item value="">個人</Select.Item>
         {!loading &&
@@ -144,7 +155,7 @@ const GroupSelector = ({
           <Select
             name="member"
             value={selectedMember?.name ?? '全部'}
-            onChange={handleOnSelectMember}
+            onChange={onSelectMemberEmail}
             className="max-w-24 rounded-md border border-solid border-gray-300 px-2 py-1 transition-colors active:border-text sm:hover:border-text"
           >
             <Select.Item value="">全部</Select.Item>

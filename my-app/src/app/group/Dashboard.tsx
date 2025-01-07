@@ -6,19 +6,27 @@ import { EditIcon } from '@/components/icons/EditIcon';
 import { LinkIcon } from '@/components/icons/LinkIcon';
 import { PlusIcon } from '@/components/icons/PlusIcon';
 import { RefreshIcon } from '@/components/icons/RefreshIcon';
+import { Modal } from '@/components/Modal';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { useGroupCtx } from '@/context/UserGroupProvider';
-import { putGroup, putUser } from '@/services/dbHandler';
+import { useGroupCtx } from '@/context/GroupProvider';
+import { deleteGroup, getUser, putGroup, putUser } from '@/services/dbHandler';
 import Image from 'next/image';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { v4 as uuid } from 'uuid';
+import QRCode from 'react-qr-code';
 
 export const Dashboard = () => {
-  const { myGroups, config, syncUser } = useUserConfigCtx();
-  const { syncGroup, loading } = useGroupCtx();
+  const { config: userData, syncUser } = useUserConfigCtx();
+  const { groups, syncGroup, loading } = useGroupCtx();
+
+  const refresh = useCallback(() => {
+    if (userData) {
+      syncGroup(userData.groups);
+    }
+  }, [userData, syncGroup]);
 
   const handleCreateGroup = useCallback(async () => {
-    if (!config) return;
+    if (!userData) return;
     const groupName = prompt('請輸入身分群組名稱');
     if (!groupName) return;
     const groupId = uuid();
@@ -27,19 +35,19 @@ export const Dashboard = () => {
       name: groupName,
       users: [
         {
-          name: config.name,
-          email: config.email,
-          image: config.image,
+          name: userData.name,
+          email: userData.email,
+          image: userData.image,
         },
       ],
     });
-    syncGroup();
     await putUser({
-      ...config,
-      groups: [...config.groups, groupId],
+      ...userData,
+      groups: [...userData.groups, groupId],
     });
+    syncGroup([...userData.groups, groupId]);
     syncUser();
-  }, [config, syncGroup, syncUser]);
+  }, [userData, syncGroup, syncUser]);
 
   return (
     <div className="flex w-full flex-col items-center gap-4 text-sm sm:text-base">
@@ -54,7 +62,7 @@ export const Dashboard = () => {
         </button>
         <button
           type="button"
-          onClick={() => syncGroup()}
+          onClick={refresh}
           disabled={loading}
           className="rounded-md bg-gray-300 p-2 transition-colors active:bg-gray-400 sm:hover:bg-gray-400"
         >
@@ -62,30 +70,57 @@ export const Dashboard = () => {
         </button>
       </div>
       <div className="flex w-full flex-col gap-4 sm:flex-row sm:flex-wrap">
-        {myGroups.map((group) => (
-          <GroupCard key={group.id} group={group} />
+        {groups.map((group) => (
+          <GroupCard key={group.id} group={group} refresh={refresh} />
         ))}
       </div>
     </div>
   );
 };
 
-const GroupCard = ({ group }: { group: Group }) => {
-  const [loading] = useState(false);
+const GroupCard = ({
+  group,
+  refresh,
+}: {
+  group: Group;
+  refresh: () => void;
+}) => {
+  const [loading, setLoading] = useState(false);
+  const inviteLink = `${location.href}/invite/${group.id}`;
+  const modalRef = useRef<ModalRef>(null);
 
-  const handleAction = (action: string) => {
+  const handleCopyInviteLink = () => {
+    navigator.clipboard.writeText(inviteLink).then(() => {
+      alert('已複製邀請連結');
+      modalRef.current?.close();
+    });
+  };
+
+  const handleAction = async (action: string) => {
     switch (action) {
       case 'invite':
-        const inviteLink = `${location.href}/invite/${group.id}`;
-        navigator.clipboard.writeText(inviteLink).then(() => {
-          alert(`已複製邀請連結: ${inviteLink}`);
-        });
+        modalRef.current?.open();
         break;
       case 'edit':
         alert('尚無編輯功能');
+        refresh();
         break;
       case 'delete':
-        if (!confirm('確定要刪除此群組嗎?（尚無功能）')) return;
+        if (!confirm('確定要刪除此群組嗎?')) return;
+        setLoading(true);
+        const groupUserEmails = group.users.map((user) => user.email);
+        const users = await Promise.all(groupUserEmails.map(getUser));
+        await Promise.all(
+          users.map((user) =>
+            putUser({
+              ...user,
+              groups: user.groups.filter((groupId) => groupId !== group.id),
+            }),
+          ),
+        );
+        await deleteGroup(group.id);
+        refresh();
+        setLoading(false);
         break;
       default:
         break;
@@ -93,9 +128,7 @@ const GroupCard = ({ group }: { group: Group }) => {
   };
 
   return (
-    <div
-      className="relative grid w-full max-w-[350px] grid-cols-12 gap-4 rounded-xl border border-solid p-4 border-gray-300"
-    >
+    <div className="relative grid w-full max-w-[350px] grid-cols-12 gap-4 rounded-xl border border-solid border-gray-300 p-4">
       <div
         className={`absolute bottom-0 left-0 right-0 top-0 animate-pulse rounded-xl border border-solid border-transparent bg-gray-500/50 ${loading ? 'visible' : 'invisible'}`}
       ></div>
@@ -152,6 +185,26 @@ const GroupCard = ({ group }: { group: Group }) => {
           ]}
         />
       </div>
+      <Modal ref={modalRef} className="w-72 sm:w-80" title="邀請成員一起記帳！">
+        <div className="flex w-full flex-col items-center">
+          <QRCode value={inviteLink} size={100} />
+        </div>
+        <div className="flex w-full items-center gap-2 pt-6">
+          <input
+            type="text"
+            className="flex-1 rounded border border-solid border-text px-2 py-1"
+            value={inviteLink}
+            readOnly
+          />
+          <button
+            type="button"
+            className="rounded bg-primary-100 px-2 py-1 transition-colors active:bg-primary-300 sm:hover:bg-primary-300"
+            onClick={handleCopyInviteLink}
+          >
+            複製
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 };

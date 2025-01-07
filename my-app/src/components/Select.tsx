@@ -106,7 +106,9 @@ const Item = ({
       }}
       className={`flex w-full bg-transparent px-4 py-2 transition-colors hover:bg-gray-300 ${className} ${current === value ? '' : ''}`}
     >
-      <span className="whitespace-nowrap">{children}</span>
+      <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+        {children}
+      </span>
     </button>
   );
 };

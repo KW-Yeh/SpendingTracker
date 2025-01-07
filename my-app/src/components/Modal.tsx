@@ -6,6 +6,7 @@ import { forwardRef, ReactNode, useImperativeHandle, useState } from 'react';
 interface Props {
   children: ReactNode;
   className?: string;
+  title: ReactNode;
 }
 
 export const Modal = forwardRef<ModalRef, Props>((props, ref) => {
@@ -42,6 +43,7 @@ export const Modal = forwardRef<ModalRef, Props>((props, ref) => {
         >
           <CloseIcon className="size-full" />
         </button>
+        <h1 className="mb-6 text-base font-bold sm:text-xl">{props.title}</h1>
         {props.children}
       </div>
     </div>

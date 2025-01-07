@@ -1,4 +1,4 @@
-import { SpendingInfoSection } from '@/composites/SpendingInfoSection';
+import { SpendingInfoSection } from '@/app/insert/SpendingInfoSection';
 
 export default function Home() {
   return (

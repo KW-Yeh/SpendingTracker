@@ -1,6 +1,5 @@
 'use client';
 
-import { useGroupCtx } from '@/context/UserGroupProvider';
 import { getUser, putUser } from '@/services/dbHandler';
 import { useSession } from 'next-auth/react';
 import {
@@ -17,12 +16,10 @@ import {
 const INIT_CTX_VAL: {
   loading: boolean;
   config?: User;
-  myGroups: Group[];
   syncUser: () => void;
 } = {
   loading: true,
   config: undefined,
-  myGroups: [],
   syncUser: () => {},
 };
 
@@ -30,12 +27,6 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
   const [config, setConfig] = useState<User>();
   const [loading, setLoading] = useState(true);
   const { data: session } = useSession();
-  const { groups } = useGroupCtx();
-
-  const myGroups = useMemo(
-    () => groups.filter((group) => config?.groups.includes(group.id)),
-    [config?.groups, groups],
-  );
 
   const handleState = (value: User) => {
     setConfig(value);
@@ -61,8 +52,7 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
   const queryUser = useCallback(
     (email: string) => {
       getUser(email)
-        .then((res) => res.json())
-        .then((res: User) => {
+        .then((res) => {
           if (!res.email) {
             handleNewUser(email).then(() => {
               setTimeout(() => {
@@ -91,10 +81,9 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
     () => ({
       loading,
       config,
-      myGroups,
       syncUser,
     }),
-    [loading, config, myGroups, syncUser],
+    [loading, config, syncUser],
   );
 
   useEffect(() => {

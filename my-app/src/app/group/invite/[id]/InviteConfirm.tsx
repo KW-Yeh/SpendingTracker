@@ -2,23 +2,18 @@
 
 import { Loading } from '@/components/icons/Loading';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { useGroupCtx } from '@/context/UserGroupProvider';
+import { useGroupCtx } from '@/context/GroupProvider';
 import { putGroup, putUser } from '@/services/dbHandler';
-import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { redirect, useParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo } from 'react';
 
 export const InviteConfirm = () => {
   const { id } = useParams();
-  const { data: session } = useSession();
   const { syncUser, config } = useUserConfigCtx();
   const { groups, syncGroup } = useGroupCtx();
 
-  const matchedGroup = useMemo(
-    () => groups.find((group) => group.id === id),
-    [groups, id],
-  );
+  const matchedGroup = useMemo(() => groups[0], [groups]);
 
   const handleUpdateUser = useCallback(
     async (config: User, id: string) => {
@@ -38,10 +33,7 @@ export const InviteConfirm = () => {
   );
 
   const handleUpdateGroup = useCallback(
-    async (
-      group: Group,
-      userInfo: { email: string; name: string; image: string },
-    ) => {
+    async (group: Group, userInfo: User) => {
       const users = group.users;
       const existence = users.find((user) => user.email === userInfo.email);
       if (existence) {
@@ -53,7 +45,7 @@ export const InviteConfirm = () => {
         ...group,
         users: Array.from(users),
       });
-      syncGroup();
+      syncGroup(userInfo.groups);
     },
     [syncGroup],
   );
@@ -67,16 +59,20 @@ export const InviteConfirm = () => {
   }, [config, handleUpdateGroup, handleUpdateUser, matchedGroup]);
 
   useEffect(() => {
-    if (groups.length > 0) {
-      if (!matchedGroup) {
-        alert('該群組邀請連結已經遺失');
-        redirect('/');
-      } else if (!session?.user?.email) {
-        alert('請先登入再加入群組');
-        redirect('/login');
-      }
+    if (groups.length === 0) {
+      alert('該群組邀請連結已經遺失');
+      redirect('/');
     }
-  }, [groups, matchedGroup, session?.user?.email]);
+  }, [groups]);
+
+  useEffect(() => {
+    if (config?.email) {
+      syncGroup(id);
+    } else {
+      alert('請先登入再加入群組');
+      redirect('/login');
+    }
+  }, [config, id, syncGroup]);
 
   if (!matchedGroup)
     return (

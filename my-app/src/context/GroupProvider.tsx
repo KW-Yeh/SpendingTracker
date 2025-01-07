@@ -7,7 +7,6 @@ import {
   startTransition,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -15,14 +14,14 @@ import {
 const INIT_CTX_VAL: {
   loading: boolean;
   groups: Group[];
-  syncGroup: () => void;
+  syncGroup: (groupId?: string | string[]) => void;
 } = {
   loading: true,
   groups: [],
   syncGroup: () => {},
 };
 
-export const UserGroupProvider = ({ children }: { children: ReactNode }) => {
+export const GroupProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [groups, setGroups] = useState<Group[]>([]);
 
@@ -33,19 +32,21 @@ export const UserGroupProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const queryGroup = useCallback(() => {
-    getGroups()
-      .then((res) => res.json())
-      .then((res: Group[]) => {
+  const queryGroup = useCallback((groupId?: string | string[]) => {
+    getGroups(groupId)
+      .then((res) => {
         handleState(res);
       })
       .catch(console.error);
   }, []);
 
-  const syncGroup = useCallback(() => {
-    setLoading(true);
-    queryGroup();
-  }, [queryGroup]);
+  const syncGroup = useCallback(
+    (groupId?: string | string[]) => {
+      setLoading(true);
+      queryGroup(groupId);
+    },
+    [queryGroup],
+  );
 
   const ctxVal = useMemo(
     () => ({
@@ -55,10 +56,6 @@ export const UserGroupProvider = ({ children }: { children: ReactNode }) => {
     }),
     [groups, loading, syncGroup],
   );
-
-  useEffect(() => {
-    syncGroup();
-  }, [syncGroup]);
 
   return <Ctx.Provider value={ctxVal}>{children}</Ctx.Provider>;
 };

@@ -1,19 +1,14 @@
 import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { EditIcon } from '@/components/icons/EditIcon';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
-import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { useFilterGroup } from '@/hooks/useFilterGroup';
 import { deleteItem } from '@/services/dbHandler';
-import { SpendingType, USER_TOKEN_SEPARATOR } from '@/utils/constants';
+import { SpendingType } from '@/utils/constants';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import { ReactNode, useCallback, useState, MouseEvent, useEffect } from 'react';
 
 interface Props {
   date: Date;
   type: SpendingType;
-  groupId?: string;
-  member?: MemberType;
-  onSelectMember: (member?: MemberType) => void;
   handleEdit: (record: SpendingRecord) => void;
 }
 
@@ -23,15 +18,14 @@ enum FilterType {
 }
 
 export const SpendingList = (props: Props) => {
-  const { loading } = useGetSpendingCtx();
-  const { myGroups } = useUserConfigCtx();
-  const { filteredData: data } = useFilterGroup(props.groupId);
+  const { date, type, handleEdit } = props;
+  const { loading, data } = useGetSpendingCtx();
   const [isInitialed, setIsInitialed] = useState(false);
   const [filter, setFilter] = useState(FilterType.Today);
   const [filteredData, setFilteredData] = useState<SpendingRecord[]>([]);
-  const year = props.date.getFullYear();
-  const month = props.date.getMonth();
-  const day = props.date.getDate();
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const day = date.getDate();
 
   const checkDate = useCallback(
     (dateStr: string) => {
@@ -48,33 +42,6 @@ export const SpendingList = (props: Props) => {
     [day, month, year, filter],
   );
 
-  const checkMember = useCallback(
-    (userToken: string) => {
-      if (props.member) {
-        return userToken.split(USER_TOKEN_SEPARATOR)[0] === props.member.email;
-      }
-      return true;
-    },
-    [props.member],
-  );
-
-  const handleOnEdit = useCallback(
-    (record: SpendingRecord) => {
-      const userToken = record['user-token'];
-      const isGrouped = userToken.split(USER_TOKEN_SEPARATOR).length === 2;
-      let email = userToken;
-      if (isGrouped) {
-        email = userToken.split(USER_TOKEN_SEPARATOR)[0];
-      }
-      const member = myGroups
-        .find((_group) => _group.id === props.groupId)
-        ?.users.find((_user) => _user.email === email);
-      props.onSelectMember(member);
-      props.handleEdit(record);
-    },
-    [myGroups, props],
-  );
-
   const totalAmount = filteredData.reduce(
     (acc, spending) => acc + spending.amount,
     0,
@@ -82,14 +49,9 @@ export const SpendingList = (props: Props) => {
 
   useEffect(() => {
     setFilteredData(
-      [...data].filter(
-        (data) =>
-          data.type === props.type &&
-          checkDate(data.date) &&
-          checkMember(data['user-token']),
-      ),
+      [...data].filter((data) => data.type === type && checkDate(data.date)),
     );
-  }, [checkDate, checkMember, data, props.type]);
+  }, [checkDate, data, type]);
 
   useEffect(() => {
     if (!loading) {
@@ -127,9 +89,9 @@ export const SpendingList = (props: Props) => {
             {filteredData.map((spending, index) => (
               <Item
                 key={`${spending.id}-${index.toString()}`}
-                green={props.type === SpendingType.Income}
+                green={type === SpendingType.Income}
                 spending={spending}
-                handleEdit={handleOnEdit}
+                handleEdit={handleEdit}
               />
             ))}
           </div>
