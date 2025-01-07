@@ -10,8 +10,8 @@ import { useCallback, useEffect, useMemo } from 'react';
 
 export const InviteConfirm = () => {
   const { id } = useParams();
-  const { syncUser, config } = useUserConfigCtx();
-  const { groups, syncGroup, loading } = useGroupCtx();
+  const { syncUser, config, loading: loadingUserData } = useUserConfigCtx();
+  const { groups, syncGroup, loading: loadingGroupData } = useGroupCtx();
 
   const matchedGroup = useMemo(() => groups[0], [groups]);
 
@@ -59,20 +59,20 @@ export const InviteConfirm = () => {
   }, [config, handleUpdateGroup, handleUpdateUser, matchedGroup]);
 
   useEffect(() => {
-    if (!loading && groups.length === 0) {
+    if (!loadingGroupData && groups.length === 0) {
       alert('該群組邀請連結已經遺失');
       redirect('/');
     }
-  }, [groups, loading]);
+  }, [groups, loadingGroupData]);
 
   useEffect(() => {
-    if (config?.email) {
+    if (!loadingUserData && config?.email) {
       syncGroup(id);
     } else {
       alert('請先登入再加入群組');
       redirect('/login');
     }
-  }, [config, id, syncGroup]);
+  }, [loadingUserData, config, id, syncGroup]);
 
   if (!matchedGroup)
     return (
