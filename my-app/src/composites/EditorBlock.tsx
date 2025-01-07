@@ -106,7 +106,7 @@ export const EditorBlock = (props: Props) => {
 
       putItem(newSpending)
         .then(() => {
-          syncData();
+          syncData(props.groupId, userEmail);
         })
         .then(() => {
           setLoading(false);
