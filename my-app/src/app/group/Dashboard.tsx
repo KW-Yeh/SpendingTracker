@@ -86,7 +86,7 @@ const GroupCard = ({
   refresh: () => void;
 }) => {
   const [loading, setLoading] = useState(false);
-  const inviteLink = `${location.href}/invite/${group.id}`;
+  const inviteLink = `${location.origin}/group/invite/${group.id}`;
   const modalRef = useRef<ModalRef>(null);
 
   const handleCopyInviteLink = () => {

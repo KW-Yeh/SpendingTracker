@@ -11,7 +11,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 export const InviteConfirm = () => {
   const { id } = useParams();
   const { syncUser, config } = useUserConfigCtx();
-  const { groups, syncGroup } = useGroupCtx();
+  const { groups, syncGroup, loading } = useGroupCtx();
 
   const matchedGroup = useMemo(() => groups[0], [groups]);
 
@@ -59,11 +59,11 @@ export const InviteConfirm = () => {
   }, [config, handleUpdateGroup, handleUpdateUser, matchedGroup]);
 
   useEffect(() => {
-    if (groups.length === 0) {
+    if (!loading && groups.length === 0) {
       alert('該群組邀請連結已經遺失');
       redirect('/');
     }
-  }, [groups]);
+  }, [groups, loading]);
 
   useEffect(() => {
     if (config?.email) {
