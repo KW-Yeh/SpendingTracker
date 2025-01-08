@@ -41,7 +41,7 @@ type Action =
 const INITIAL_STATE: SpendingRecord = {
   id: uuid(),
   amount: 0,
-  category: '',
+  category: '🍔',
   date: new Date().toISOString(),
   description: '',
   necessity: Necessity.Need,

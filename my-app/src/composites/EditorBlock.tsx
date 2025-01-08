@@ -92,7 +92,7 @@ export const EditorBlock = (props: Props) => {
       >
         <div className="flex h-10 flex-1 items-center text-xs sm:text-sm lg:text-base">
           <Select
-            value={selectedNecessity ?? Necessity.Need}
+            value={selectedNecessity}
             className="h-full py-2 pl-4"
             name="necessity"
             onChange={handleSelectNecessity}
@@ -101,7 +101,7 @@ export const EditorBlock = (props: Props) => {
             <Select.Item value={Necessity.NotNeed}>非必要花費</Select.Item>
           </Select>
           <Select
-            value={selectedCategory ?? spendingCategories[0].value}
+            value={selectedCategory}
             className="h-full py-2 pl-4"
             name="category"
             onChange={handleSelectCategory}
