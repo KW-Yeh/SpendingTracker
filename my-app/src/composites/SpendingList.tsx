@@ -9,6 +9,7 @@ import { ReactNode, useCallback, useState, MouseEvent, useEffect } from 'react';
 interface Props {
   date: Date;
   type: SpendingType;
+  selectedDataId: string;
   handleEdit: (record: SpendingRecord) => void;
   refreshData: () => void;
 }
@@ -19,7 +20,7 @@ enum FilterType {
 }
 
 export const SpendingList = (props: Props) => {
-  const { date, type, handleEdit, refreshData } = props;
+  const { date, type, selectedDataId, handleEdit, refreshData } = props;
   const { loading, data } = useGetSpendingCtx();
   const [isInitialed, setIsInitialed] = useState(false);
   const [filter, setFilter] = useState(FilterType.Today);
@@ -69,7 +70,7 @@ export const SpendingList = (props: Props) => {
       )}
       {isInitialed && (
         <>
-          <div className="flex w-full items-center justify-between">
+          <div className="flex w-full items-center justify-between px-1">
             <div className="flex items-center gap-2">
               <FilterBtn
                 selected={filter === FilterType.Today}
@@ -86,12 +87,13 @@ export const SpendingList = (props: Props) => {
             </div>
             <span>{`總共: $${normalizeNumber(totalAmount)}`}</span>
           </div>
-          <div className="scrollbar flex h-80 w-full flex-col gap-1 overflow-y-auto overflow-x-hidden">
+          <div className="scrollbar flex h-80 w-full flex-col gap-1 overflow-y-auto overflow-x-hidden p-1">
             {filteredData.map((spending, index) => (
               <Item
                 key={`${spending.id}-${index.toString()}`}
                 green={type === SpendingType.Income}
                 spending={spending}
+                id={selectedDataId}
                 handleEdit={handleEdit}
                 refreshData={refreshData}
               />
@@ -126,11 +128,13 @@ const FilterBtn = ({
 const Item = ({
   spending,
   green,
+  id,
   handleEdit,
   refreshData,
 }: {
   spending: SpendingRecord;
   green: boolean;
+  id: string;
   handleEdit: (record: SpendingRecord) => void;
   refreshData: () => void;
 }) => {
@@ -147,7 +151,7 @@ const Item = ({
 
   return (
     <div
-      className={`grid grid-cols-12 items-center gap-2 rounded border-l-4 border-solid p-2 odd:bg-gray-200 ${green ? 'border-green-300' : 'border-red-300'}`}
+      className={`grid grid-cols-12 items-center gap-2 rounded border-l-4 border-solid p-2 transition-all odd:bg-gray-200 ${green ? 'border-green-300' : 'border-red-300'} ${id === spending.id ? 'shadow-[0_0_0_1px_#F6CF08]' : ''}`}
     >
       <div className="col-span-1 text-center">{spending.necessity}</div>
       <div className="col-span-1 flex items-center justify-center">
@@ -167,15 +171,15 @@ const Item = ({
       <div className="col-span-3 flex items-center justify-end gap-px">
         <button
           onClick={handleOnEdit}
-          className="group rounded p-2 transition-colors hover:bg-primary-300"
+          className="group rounded p-2 transition-colors active:bg-primary-300 sm:hover:bg-primary-300"
         >
-          <EditIcon className="size-4 transition-colors group-hover:text-background" />
+          <EditIcon className="size-4 transition-colors group-active:text-background sm:group-hover:text-background" />
         </button>
         <button
           onClick={handleOnDelete}
-          className="group rounded p-2 transition-colors hover:bg-red-300"
+          className="group rounded p-2 transition-colors active:bg-red-300 sm:hover:bg-red-300"
         >
-          <DeleteIcon className="size-4 transition-colors group-hover:text-background" />
+          <DeleteIcon className="size-4 transition-colors group-active:text-background sm:group-hover:text-background" />
         </button>
       </div>
     </div>

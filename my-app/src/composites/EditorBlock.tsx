@@ -11,17 +11,14 @@ import {
   Necessity,
   OUTCOME_TYPE_MAP,
   SpendingType,
-  USER_TOKEN_SEPARATOR,
 } from '@/utils/constants';
+import { handleFormatUserToken } from '@/utils/handleFormatUserToken';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import { useSession } from 'next-auth/react';
 import { ChangeEvent, FormEvent, useCallback, useRef, useState } from 'react';
-import { v4 as uuid } from 'uuid';
 
 interface Props {
-  type: SpendingType;
-  date: Date;
-  data?: SpendingRecord;
+  data: SpendingRecord;
   groupId?: string;
   memberEmail?: string;
   reset: () => void;
@@ -29,18 +26,15 @@ interface Props {
 }
 
 export const EditorBlock = (props: Props) => {
+  const { data, groupId, memberEmail, reset, refreshData } = props;
   const { data: session } = useSession();
   const spendingCategories =
-    props.type === SpendingType.Income ? INCOME_TYPE_MAP : OUTCOME_TYPE_MAP;
+    data.type === SpendingType.Income ? INCOME_TYPE_MAP : OUTCOME_TYPE_MAP;
   const [loading, setLoading] = useState(false);
-  const [amount, setAmount] = useState(props.data?.amount ?? 0);
-  const [selectedNecessity, setSelectedNecessity] = useState(
-    props.data?.necessity,
-  );
-  const [selectedCategory, setSelectedCategory] = useState(
-    props.data?.category,
-  );
-  const [newDesc, setNewDesc] = useState(props.data?.description ?? '');
+  const [amount, setAmount] = useState(data.amount);
+  const [selectedNecessity, setSelectedNecessity] = useState(data.necessity);
+  const [selectedCategory, setSelectedCategory] = useState(data.category);
+  const [newDesc, setNewDesc] = useState(data.description);
   const modalRef = useRef<ModalRef>(null);
 
   const handleEditDesc = (event: ChangeEvent<HTMLInputElement>) => {
@@ -56,17 +50,12 @@ export const EditorBlock = (props: Props) => {
   };
 
   const handleOnSubmit = useCallback(
-    (event: FormEvent) => {
+    async (event: FormEvent) => {
       event.preventDefault();
       let userEmail = session?.user?.email;
-      if (props.memberEmail) {
-        userEmail = props.memberEmail;
-      }
+      if (memberEmail) userEmail = memberEmail;
       if (!userEmail) return;
-      let userToken = userEmail;
-      if (props.groupId) {
-        userToken += USER_TOKEN_SEPARATOR + props.groupId;
-      }
+      const userToken = handleFormatUserToken(userEmail, groupId);
       const formElement = event.target as HTMLFormElement;
       const formData = new FormData(formElement);
       const necessity = formData.get('necessity') as Necessity;
@@ -76,31 +65,23 @@ export const EditorBlock = (props: Props) => {
       if (amount === 0) return;
       setLoading(true);
       const newSpending: SpendingRecord = {
-        ...(props.data ?? {}),
-        id: props.data?.id ?? uuid(),
+        ...data,
+        id: data.id,
         'user-token': userToken,
-        type: props.type,
-        date: props.date.toUTCString(),
+        type: data.type,
+        date: data.date,
         necessity,
         category,
         description,
         amount,
       };
 
-      putItem(newSpending)
-        .then(() => {
-          props.refreshData();
-        })
-        .then(() => {
-          setLoading(false);
-          setNewDesc('');
-          setSelectedNecessity(undefined);
-          setSelectedCategory(undefined);
-          setAmount(0);
-        });
-      props.reset();
+      await putItem(newSpending);
+      refreshData();
+      setLoading(false);
+      reset();
     },
-    [session?.user?.email, props],
+    [session?.user?.email, memberEmail, groupId, data, reset, refreshData],
   );
 
   return (
@@ -109,11 +90,6 @@ export const EditorBlock = (props: Props) => {
         onSubmit={handleOnSubmit}
         className="relative flex h-fit w-full max-w-175 items-center rounded-lg border border-solid border-text"
       >
-        {props.data && (
-          <span className="absolute left-2 top-0 -translate-y-1/2 rounded-full bg-yellow-500 px-1 text-xs">
-            編輯中
-          </span>
-        )}
         <div className="flex h-10 flex-1 items-center text-xs sm:text-sm lg:text-base">
           <Select
             value={selectedNecessity ?? Necessity.Need}

@@ -1,4 +1,4 @@
-import { USER_TOKEN_SEPARATOR } from '@/utils/constants';
+import { handleFormatUserToken } from '@/utils/handleFormatUserToken';
 import { NextResponse } from 'next/server';
 
 export async function PUT(req: Request) {
@@ -32,7 +32,7 @@ export async function GET(req: Request) {
       return NextResponse.json(
         data.filter(
           (item: SpendingRecord) =>
-            item['user-token'] === email + USER_TOKEN_SEPARATOR + groupId,
+            item['user-token'] === handleFormatUserToken(email, groupId),
         ),
       );
     } else if (groupId) {

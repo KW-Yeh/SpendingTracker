@@ -8,6 +8,7 @@ import { SpendingList } from '@/composites/SpendingList';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
+import { useSpendingReducer } from '@/hooks/useSpendingReducer';
 import { SpendingType } from '@/utils/constants';
 import {
   ChangeEvent,
@@ -19,11 +20,7 @@ import {
 } from 'react';
 
 export const SpendingInfoSection = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedData, setSelectedData] = useState<SpendingRecord>();
-  const [selectedType, setSelectedType] = useState<SpendingType>(
-    SpendingType.Outcome,
-  );
+  const [state, dispatch] = useSpendingReducer();
   const [selectedGroup, setSelectedGroup] = useState<string>();
   const [selectedMemberEmail, setSelectedMemberEmail] = useState<string>();
   const { config: userData } = useUserConfigCtx();
@@ -32,7 +29,10 @@ export const SpendingInfoSection = () => {
   const handleOnChangeDate = (event: ChangeEvent) => {
     const date = new Date((event.target as HTMLInputElement).value);
     startTransition(() => {
-      setSelectedDate(date);
+      dispatch({
+        type: 'SET_DATE',
+        payload: date.toUTCString(),
+      });
     });
   };
 
@@ -41,15 +41,8 @@ export const SpendingInfoSection = () => {
   }, [selectedGroup, selectedMemberEmail, syncData]);
 
   const reset = () => {
-    setSelectedData(undefined);
+    dispatch({ type: 'RESET' });
   };
-
-  useEffect(() => {
-    if (selectedData?.id) {
-      setSelectedDate(new Date(selectedData.date));
-      setSelectedMemberEmail(selectedData['user-token']);
-    }
-  }, [selectedData]);
 
   useEffect(() => {
     if (!selectedGroup && userData?.email) {
@@ -73,8 +66,16 @@ export const SpendingInfoSection = () => {
           <RefreshIcon className={`size-4 ${loading ? 'animate-spin' : ''}`} />
         </button>
       </div>
-      <Switch type={selectedType} onChange={setSelectedType} />
-      <DatePicker date={selectedDate} onChange={handleOnChangeDate} />
+      <Switch
+        type={state.type as SpendingType}
+        onChange={(type) => {
+          dispatch({
+            type: 'SET_TYPE',
+            payload: type,
+          });
+        }}
+      />
+      <DatePicker date={new Date(state.date)} onChange={handleOnChangeDate} />
       <div className="flex w-full max-w-175 flex-wrap justify-between gap-2">
         <GroupSelector
           selectedGroup={selectedGroup}
@@ -91,19 +92,23 @@ export const SpendingInfoSection = () => {
         </button>
       </div>
       <EditorBlock
-        key={selectedData?.id}
-        type={selectedType}
-        date={selectedDate}
-        data={selectedData}
+        key={state.id}
+        data={state}
         groupId={selectedGroup}
         memberEmail={selectedMemberEmail}
         refreshData={refreshData}
         reset={reset}
       />
       <SpendingList
-        type={selectedType}
-        date={selectedDate}
-        handleEdit={setSelectedData}
+        type={state.type as SpendingType}
+        date={new Date(state.date)}
+        selectedDataId={state.id}
+        handleEdit={(data) => {
+          dispatch({
+            type: 'RESET',
+            payload: data,
+          });
+        }}
         refreshData={refreshData}
       />
     </div>
