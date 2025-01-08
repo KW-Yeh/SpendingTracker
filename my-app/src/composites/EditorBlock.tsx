@@ -5,25 +5,17 @@ import { Loading } from '@/components/icons/Loading';
 import { Modal } from '@/components/Modal';
 import { NumberKeyboard } from '@/components/NumberKeyboard';
 import { Select } from '@/components/Select';
-import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { putItem } from '@/services/dbHandler';
 import {
-  INCOME_TYPE_OPTIONS,
+  INCOME_TYPE_MAP,
   Necessity,
-  OUTCOME_TYPE_OPTIONS,
+  OUTCOME_TYPE_MAP,
   SpendingType,
   USER_TOKEN_SEPARATOR,
 } from '@/utils/constants';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import { useSession } from 'next-auth/react';
-import {
-  ChangeEvent,
-  FormEvent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { ChangeEvent, FormEvent, useCallback, useRef, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 
 interface Props {
@@ -37,12 +29,9 @@ interface Props {
 }
 
 export const EditorBlock = (props: Props) => {
-  const { syncData } = useGetSpendingCtx();
   const { data: session } = useSession();
   const spendingCategories =
-    props.type === SpendingType.Income
-      ? INCOME_TYPE_OPTIONS
-      : OUTCOME_TYPE_OPTIONS;
+    props.type === SpendingType.Income ? INCOME_TYPE_MAP : OUTCOME_TYPE_MAP;
   const [loading, setLoading] = useState(false);
   const [amount, setAmount] = useState(props.data?.amount ?? 0);
   const [selectedNecessity, setSelectedNecessity] = useState(
@@ -53,13 +42,6 @@ export const EditorBlock = (props: Props) => {
   );
   const [newDesc, setNewDesc] = useState(props.data?.description ?? '');
   const modalRef = useRef<ModalRef>(null);
-
-  useEffect(() => {
-    setAmount(props.data?.amount ?? 0);
-    setNewDesc(props.data?.description ?? '');
-    setSelectedNecessity(props.data?.necessity);
-    setSelectedCategory(props.data?.category);
-  }, [props.data]);
 
   const handleEditDesc = (event: ChangeEvent<HTMLInputElement>) => {
     setNewDesc(event.target.value);
@@ -118,7 +100,7 @@ export const EditorBlock = (props: Props) => {
         });
       props.reset();
     },
-    [session?.user?.email, props, syncData],
+    [session?.user?.email, props],
   );
 
   return (
@@ -139,20 +121,22 @@ export const EditorBlock = (props: Props) => {
             name="necessity"
             onChange={handleSelectNecessity}
           >
-            <Select.Item value={Necessity.Need}>{Necessity.Need}</Select.Item>
-            <Select.Item value={Necessity.NotNeed}>
-              {Necessity.NotNeed}
-            </Select.Item>
+            <Select.Item value={Necessity.Need}>必要花費</Select.Item>
+            <Select.Item value={Necessity.NotNeed}>非必要花費</Select.Item>
           </Select>
           <Select
-            value={selectedCategory ?? spendingCategories[0]}
+            value={selectedCategory ?? spendingCategories[0].value}
             className="h-full py-2 pl-4"
             name="category"
             onChange={handleSelectCategory}
           >
             {spendingCategories.map((category) => (
-              <Select.Item key={category} value={category}>
-                {category}
+              <Select.Item
+                key={category.value}
+                value={category.value}
+                className="min-w-24"
+              >
+                {`${category.value} ${category.label}`}
               </Select.Item>
             ))}
           </Select>

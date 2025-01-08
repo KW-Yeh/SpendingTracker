@@ -91,6 +91,7 @@ export const SpendingInfoSection = () => {
         </button>
       </div>
       <EditorBlock
+        key={selectedData?.id}
         type={selectedType}
         date={selectedDate}
         data={selectedData}

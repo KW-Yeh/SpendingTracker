@@ -36,9 +36,14 @@ export enum Necessity {
   NotNeed = '非',
 }
 
-export const INCOME_TYPE_OPTIONS = ['📈', '💰', '🎁', '✨'];
+const INCOME_TYPE_OPTIONS = ['📈', '💰', '🎁', '✨'];
+const INCOME_WORDINGS = ['投資', '薪資', '獎金', '其他'];
+export const INCOME_TYPE_MAP = INCOME_TYPE_OPTIONS.map((option, index) => ({
+  value: option,
+  label: INCOME_WORDINGS[index],
+}))
 
-export const OUTCOME_TYPE_OPTIONS = [
+const OUTCOME_TYPE_OPTIONS = [
   '🍔',
   '👗',
   '🏠',
@@ -50,6 +55,22 @@ export const OUTCOME_TYPE_OPTIONS = [
   '📉',
   '✨',
 ];
+const OUTCOME_WORDINGS = [
+  '飲食',
+  '服飾',
+  '住宿',
+  '交通',
+  '學習',
+  '娛樂',
+  '日常',
+  '醫療',
+  '投資',
+  '其他',
+];
+export const OUTCOME_TYPE_MAP = OUTCOME_TYPE_OPTIONS.map((option, index) => ({
+  value: option,
+  label: OUTCOME_WORDINGS[index],
+}));
 
 export const WEEKDAY = ['日', '一', '二', '三', '四', '五', '六'];
 

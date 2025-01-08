@@ -38,7 +38,7 @@ export const Select = (props: Props) => {
     if (openOptions && ref.current) {
       let maxWidth = 0;
       ref.current.querySelectorAll('button').forEach((button) => {
-        const textElementWidth = button.querySelector('span')?.offsetWidth;
+        const textElementWidth = button.querySelector('span')?.clientWidth;
         maxWidth = Math.max(maxWidth, textElementWidth ?? 0);
       });
       const width = Math.max(ref.current.offsetWidth, maxWidth + 32);
