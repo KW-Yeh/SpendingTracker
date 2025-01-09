@@ -76,7 +76,7 @@ export const SpendingList = (props: Props) => {
                 selected={filter === FilterType.Today}
                 onClick={() => setFilter(FilterType.Today)}
               >
-                {`今天 (${month + 1}/${day})`}
+                {`當日 (${month + 1}/${day})`}
               </FilterBtn>
               <FilterBtn
                 selected={filter === FilterType.ThisMonth}

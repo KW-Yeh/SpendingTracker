@@ -97,8 +97,8 @@ export const EditorBlock = (props: Props) => {
             name="necessity"
             onChange={handleSelectNecessity}
           >
-            <Select.Item value={Necessity.Need}>必要花費</Select.Item>
-            <Select.Item value={Necessity.NotNeed}>非必要花費</Select.Item>
+            <Select.Item value={Necessity.Need}>必要收支</Select.Item>
+            <Select.Item value={Necessity.NotNeed}>額外收支</Select.Item>
           </Select>
           <Select
             value={selectedCategory}
