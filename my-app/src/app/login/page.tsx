@@ -1,7 +1,9 @@
 import { auth, signIn } from '@/auth';
 import { GoogleIcon } from '@/components/icons/GoogleIcon';
 import { LineIcon } from '@/components/icons/LineIcon';
+import { PageTitle } from "@/components/PageTitle";
 import { redirect } from 'next/navigation';
+import { HTMLAttributes, ReactNode } from 'react';
 
 export default async function Home() {
   const session = await auth();
@@ -18,37 +20,48 @@ export default async function Home() {
   if (session?.user) redirect('/');
 
   return (
-    <div className="items-ceenter mx-auto mt-20 flex w-full max-w-80 flex-1 flex-col justify-start gap-6 sm:max-w-96">
-      <div className="divide-y divide-text rounded-2xl border border-solid border-text shadow">
-        <h1 className="p-6 text-xl font-bold">歡迎</h1>
+    <div className="items-center mx-auto mt-20 flex w-full max-w-80 flex-1 flex-col justify-start gap-6 sm:max-w-96">
+      <PageTitle>歡迎使用記帳追蹤</PageTitle>
+      <div className="rounded-2xl border border-solid border-text shadow">
         <div className="flex w-full flex-col items-center gap-2 p-6 sm:gap-4">
-          <p className="mb-4 text-sm sm:text-base">
-            選擇一種登入方式並開始你的消費紀錄！
-          </p>
-          <button
+          <h2 className="mb-4 w-full text-start text-lg font-bold sm:text-xl">
+            Login with
+          </h2>
+          <SocialButton
+            icon={<GoogleIcon className="size-5 text-background" />}
+            type="Google"
             onClick={handleLoginGoogle}
-            className="grid w-full grid-cols-3 gap-2 rounded-md bg-red-300 py-4 pl-4 pr-14 font-bold transition-colors hover:bg-red-200 sm:pl-6"
-          >
-            <span className="col-span-1 flex h-full items-center justify-end">
-              <GoogleIcon className="size-4" />
-            </span>
-            <span className="col-span-2 h-full text-start text-sm sm:text-base">
-              登入 Google 帳號
-            </span>
-          </button>
-          <button
+            className="bg-red-500 hover:bg-red-700"
+          />
+          <SocialButton
+            icon={<LineIcon className="size-5 text-background" />}
+            type="Line"
             onClick={handleLoginLine}
-            className="grid w-full grid-cols-3 gap-2 rounded-md bg-green-300 py-4 pl-4 pr-14 font-bold transition-colors hover:bg-green-200 sm:pl-6"
-          >
-            <span className="col-span-1 flex h-full items-center justify-end">
-              <LineIcon className="size-4" />
-            </span>
-            <span className="col-span-2 h-full text-start text-sm sm:text-base">
-              登入 Line 帳號
-            </span>
-          </button>
+            className="bg-green-500 hover:bg-green-700"
+          />
         </div>
       </div>
     </div>
   );
 }
+
+interface SocialButtonProps extends HTMLAttributes<HTMLButtonElement> {
+  icon: ReactNode;
+  type: string;
+}
+
+const SocialButton = (props: SocialButtonProps) => {
+  const { onClick, className = '', icon, type, ...legacy } = props;
+  return (
+    <button
+      onClick={onClick}
+      className={`flex w-full items-center gap-10 rounded-md p-4 transition-colors sm:gap-16 ${className}`}
+      {...legacy}
+    >
+      {icon}
+      <p className="text-sm text-background sm:text-base">
+        Login with <strong className="font-bold">{type}</strong>
+      </p>
+    </button>
+  );
+};

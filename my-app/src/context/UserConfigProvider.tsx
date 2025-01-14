@@ -2,6 +2,7 @@
 
 import { getUser, putUser } from '@/services/dbHandler';
 import { useSession } from 'next-auth/react';
+import { redirect, usePathname } from 'next/navigation';
 import {
   createContext,
   ReactNode,
@@ -26,7 +27,8 @@ const INIT_CTX_VAL: {
 export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
   const [config, setConfig] = useState<User>();
   const [loading, setLoading] = useState(true);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const pathname = usePathname();
 
   const handleState = (value: User) => {
     setConfig(value);
@@ -86,11 +88,19 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
     [loading, config, syncUser],
   );
 
-  useEffect(() => {
-    if (session?.user?.email) {
-      syncUser();
+  const handleLogin = useCallback(() => {
+    if (pathname !== '/login') {
+      redirect('/login');
     }
-  }, [session?.user?.email, syncUser]);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      syncUser();
+    } else if (status === 'unauthenticated') {
+      handleLogin();
+    }
+  }, [syncUser, status, handleLogin]);
 
   return <Ctx.Provider value={ctxVal}>{children}</Ctx.Provider>;
 };

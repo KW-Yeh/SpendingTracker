@@ -48,7 +48,7 @@ export const deleteGroup = async (id: string) => {
   });
 };
 
-export const getGroups = async (groupId?: string | string[]) => {
+export const getGroups = async (groupId: string | string[]) => {
   const groupList = Array.isArray(groupId) ? groupId : [groupId];
   return fetch(`/api/aws/groups?ids=${JSON.stringify(groupList)}`, {
     method: 'GET',

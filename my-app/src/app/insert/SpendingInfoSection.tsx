@@ -194,13 +194,13 @@ const Switch = ({
   return (
     <div className="flex items-center gap-1 text-sm sm:text-base">
       <button
-        className={`rounded-l border border-solid border-red-500 px-6 py-2 text-center transition-colors ${type === SpendingType.Outcome ? 'bg-red-300' : 'text-red-500 hover:bg-red-300'}`}
+        className={`rounded-l border border-solid border-red-500 px-6 py-2 text-center transition-colors ${type === SpendingType.Outcome ? 'bg-red-300' : 'text-red-500 active:bg-red-300 active:text-text sm:hover:bg-red-300 sm:hover:text-text'}`}
         onClick={() => handleOnClick(SpendingType.Outcome)}
       >
         支出
       </button>
       <button
-        className={`rounded-r border border-solid border-green-500 px-6 py-2 text-center transition-colors ${type === SpendingType.Income ? 'bg-green-300' : 'text-green-500 hover:bg-green-300'}`}
+        className={`rounded-r border border-solid border-green-500 px-6 py-2 text-center transition-colors ${type === SpendingType.Income ? 'bg-green-300' : 'text-green-500 active:bg-green-300 active:text-text sm:hover:bg-green-300 sm:hover:text-text'}`}
         onClick={() => handleOnClick(SpendingType.Income)}
       >
         收入
