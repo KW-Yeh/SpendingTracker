@@ -68,7 +68,7 @@ export const InviteConfirm = () => {
   ]);
 
   useEffect(() => {
-    if (!loadingUserData && config?.email) {
+    if (!loadingUserData && config?.email && id) {
       syncGroup(id);
     } else if (status === 'unauthenticated') {
       alert('請先登入再加入群組');

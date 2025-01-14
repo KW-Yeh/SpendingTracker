@@ -14,7 +14,7 @@ import {
 const INIT_CTX_VAL: {
   loading: boolean;
   groups: Group[];
-  syncGroup: (groupId?: string | string[]) => void;
+  syncGroup: (groupId: string | string[]) => void;
 } = {
   loading: true,
   groups: [],
@@ -32,7 +32,7 @@ export const GroupProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const queryGroup = useCallback((groupId?: string | string[]) => {
+  const queryGroup = useCallback((groupId: string | string[]) => {
     getGroups(groupId)
       .then((res) => {
         handleState(res);
@@ -41,7 +41,7 @@ export const GroupProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const syncGroup = useCallback(
-    (groupId?: string | string[]) => {
+    (groupId: string | string[]) => {
       setLoading(true);
       queryGroup(groupId);
     },
