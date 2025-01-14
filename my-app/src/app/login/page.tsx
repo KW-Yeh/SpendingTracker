@@ -1,7 +1,7 @@
 import { auth, signIn } from '@/auth';
 import { GoogleIcon } from '@/components/icons/GoogleIcon';
 import { LineIcon } from '@/components/icons/LineIcon';
-import { PageTitle } from "@/components/PageTitle";
+import { PageTitle } from '@/components/PageTitle';
 import { redirect } from 'next/navigation';
 import { HTMLAttributes, ReactNode } from 'react';
 
@@ -20,7 +20,7 @@ export default async function Home() {
   if (session?.user) redirect('/');
 
   return (
-    <div className="items-center mx-auto mt-20 flex w-full max-w-80 flex-1 flex-col justify-start gap-6 sm:max-w-96">
+    <div className="mx-auto mt-20 flex w-80 flex-1 flex-col items-center justify-start gap-6">
       <PageTitle>歡迎使用記帳追蹤</PageTitle>
       <div className="rounded-2xl border border-solid border-text shadow">
         <div className="flex w-full flex-col items-center gap-2 p-6 sm:gap-4">
@@ -28,16 +28,16 @@ export default async function Home() {
             Login with
           </h2>
           <SocialButton
-            icon={<GoogleIcon className="size-5 text-background" />}
+            icon={<GoogleIcon className="size-5" />}
             type="Google"
             onClick={handleLoginGoogle}
-            className="bg-red-500 hover:bg-red-700"
+            className="bg-red-500 text-background hover:bg-red-700"
           />
           <SocialButton
-            icon={<LineIcon className="size-5 text-background" />}
+            icon={<LineIcon className="size-5" />}
             type="Line"
             onClick={handleLoginLine}
-            className="bg-green-500 hover:bg-green-700"
+            className="bg-green-500 text-background hover:bg-green-700"
           />
         </div>
       </div>
@@ -55,11 +55,11 @@ const SocialButton = (props: SocialButtonProps) => {
   return (
     <button
       onClick={onClick}
-      className={`flex w-full items-center gap-10 rounded-md p-4 transition-colors sm:gap-16 ${className}`}
+      className={`flex w-full items-center gap-6 rounded-md p-4 transition-colors ${className}`}
       {...legacy}
     >
       {icon}
-      <p className="text-sm text-background sm:text-base">
+      <p className="text-sm sm:text-base">
         Login with <strong className="font-bold">{type}</strong>
       </p>
     </button>
