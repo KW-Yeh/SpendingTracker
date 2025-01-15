@@ -33,7 +33,7 @@ const RouteCard = ({ href, desc }: { href: string; desc: string }) => {
     <Link
       key={href}
       href={href}
-      className="flex w-80 flex-col items-center rounded-xl border border-solid border-gray-300 bg-background p-2 shadow-lg shadow-transparent transition-all sm:hover:shadow-primary-100"
+      className="flex w-80 flex-col items-center rounded-xl border border-solid border-gray-300 bg-background p-2 shadow-lg shadow-transparent transition-all active:shadow-primary-100 sm:hover:shadow-primary-100"
     >
       <h3 className="my-4 text-lg font-bold sm:text-xl">{MENU_CONFIG[href]}</h3>
       <p className="mb-4 text-balance px-2 text-center text-sm text-gray-500">
