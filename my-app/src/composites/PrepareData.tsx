@@ -1,21 +1,8 @@
 'use client';
 
-import { useGroupCtx } from '@/context/GroupProvider';
-import { useGetSpendingCtx } from '@/context/SpendingProvider';
-import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { useEffect } from 'react';
+import { usePrepareData } from '@/hooks/usePrepareData';
 
 export const PrepareData = () => {
-  const { config } = useUserConfigCtx();
-  const { syncData } = useGetSpendingCtx();
-  const { syncGroup } = useGroupCtx();
-
-  useEffect(() => {
-    if (config) {
-      syncData(undefined, config.email);
-      syncGroup(config.groups);
-    }
-  }, [config, syncData, syncGroup]);
-
+  usePrepareData();
   return <></>;
 };

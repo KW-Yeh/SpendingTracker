@@ -3,19 +3,18 @@
 import { Loading } from '@/components/icons/Loading';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
-import { putGroup, putUser } from '@/services/dbHandler';
+import { getGroups, putGroup, putUser } from '@/services/dbHandler';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { redirect, useParams } from 'next/navigation';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export const InviteConfirm = () => {
   const { id } = useParams();
   const { status } = useSession();
   const { syncUser, config, loading: loadingUserData } = useUserConfigCtx();
-  const { groups, syncGroup } = useGroupCtx();
-
-  const matchedGroup = useMemo(() => groups[0], [groups]);
+  const { syncGroup } = useGroupCtx();
+  const [matchedGroup, setMatchedGroup] = useState<Group>();
 
   const handleUpdateUser = useCallback(async (config: User, id: string) => {
     const userGroups = new Set(config.groups);
@@ -69,7 +68,11 @@ export const InviteConfirm = () => {
 
   useEffect(() => {
     if (!loadingUserData && config?.email && id) {
-      syncGroup(id);
+      getGroups(id)
+        .then((res) => {
+          setMatchedGroup(res[0]);
+        })
+        .catch(console.error);
     } else if (status === 'unauthenticated') {
       alert('請先登入再加入群組');
       redirect('/login');
@@ -84,16 +87,14 @@ export const InviteConfirm = () => {
     );
 
   return (
-    <div className="m-auto flex w-full max-w-80 flex-col rounded-xl border border-solid border-gray-300 bg-background py-4 shadow">
-      <h1 className="mb-6 w-full px-4 text-start text-lg font-bold sm:text-xl">
+    <div className="flex w-80 flex-col rounded-2xl border border-solid border-gray-300 bg-background pb-4 pt-5 shadow">
+      <h1 className="mb-6 w-full px-5 text-start text-lg sm:text-xl">
         是否加入
-        <span className="clipped-text gradient-r-from-purple-to-blue">
-          {matchedGroup.name}
-        </span>
-        群組?
+        <strong className="font-bold">{matchedGroup.name}</strong>
+        群組？
       </h1>
       <p className="flex flex-wrap items-center gap-2 px-4 pb-4 text-sm sm:text-base">
-        群組成員有:
+        群組成員有：
         {matchedGroup.users.map((user) => (
           <Image
             src={user.image}
@@ -110,14 +111,14 @@ export const InviteConfirm = () => {
         <button
           type="button"
           onClick={() => redirect('/group')}
-          className="rounded-md border border-solid border-red-500 px-6 py-1 text-red-500 transition-colors active:bg-red-500 active:text-background sm:hover:bg-red-500 sm:hover:text-background"
+          className="rounded border border-solid border-red-500 px-6 py-1 text-red-500 transition-colors active:bg-red-500 active:text-background sm:hover:bg-red-500 sm:hover:text-background"
         >
           取消
         </button>
         <button
           type="button"
           onClick={handleJoinGroup}
-          className="rounded-md border border-solid border-green-500 bg-green-500 px-6 py-1 text-background transition-colors active:bg-green-300 sm:hover:bg-green-300"
+          className="rounded border border-solid border-green-500 bg-green-500 px-6 py-1 text-background transition-colors active:border-green-400 active:bg-green-400 sm:hover:border-green-400 sm:hover:bg-green-400"
         >
           加入
         </button>

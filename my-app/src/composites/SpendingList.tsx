@@ -151,7 +151,7 @@ const Item = ({
 
   return (
     <div
-      className={`grid grid-cols-12 items-center gap-2 rounded border-l-4 border-solid p-2 transition-all odd:bg-gray-200 ${green ? 'border-green-300' : 'border-red-300'} ${id === spending.id ? 'shadow-[0_0_0_1px_#F6CF08]' : ''}`}
+      className={`grid grid-cols-12 items-center gap-2 rounded border-l-4 border-solid p-2 transition-all odd:bg-gray-100 ${green ? 'border-green-300' : 'border-red-300'} ${id === spending.id ? 'shadow-[0_0_0_1px_#F6CF08]' : ''}`}
     >
       <div className="col-span-1 text-center">{spending.necessity}</div>
       <div className="col-span-1 flex items-center justify-center">
