@@ -1,14 +1,7 @@
 'use client';
 import { CaretDown } from '@/components/icons/CaretDown';
 import useFocusRef from '@/hooks/useFocusRef';
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { createContext, ReactNode, useContext, useState } from 'react';
 
 interface Props {
   value?: string;
@@ -31,22 +24,9 @@ export const Select = (props: Props) => {
     name,
   } = props;
   const [openOptions, setOpenOptions] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
   const ref = useFocusRef<HTMLDivElement>(() => {
     setOpenOptions(false);
   });
-
-  useEffect(() => {
-    if (openOptions && menuRef.current) {
-      let maxWidth = 0;
-      menuRef.current.querySelectorAll('button').forEach((button) => {
-        const textElementWidth = button.querySelector('span')?.clientWidth;
-        maxWidth = Math.max(maxWidth, textElementWidth ?? 0);
-      });
-      const width = Math.max(menuRef.current.offsetWidth, maxWidth + 32);
-      menuRef.current.style.width = `${width}px`;
-    }
-  }, [openOptions, menuRef]);
 
   return (
     <Ctx.Provider
@@ -68,8 +48,7 @@ export const Select = (props: Props) => {
           <CaretDown className={`size-2 shrink-0 ${caretStyle}`} />
         </button>
         <div
-          ref={menuRef}
-          className={`${menuStyle} absolute top-full z-40 flex min-w-16 flex-col divide-y divide-gray-300 rounded-md bg-background py-2 shadow transition-all ${openOptions ? 'visible opacity-100' : 'invisible opacity-0'}`}
+          className={`${menuStyle} absolute top-full z-40 flex w-fit min-w-16 flex-col divide-y divide-gray-300 rounded-md bg-background py-2 shadow transition-all ${openOptions ? 'visible opacity-100' : 'invisible opacity-0'}`}
         >
           {children}
         </div>

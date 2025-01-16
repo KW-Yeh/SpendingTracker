@@ -90,7 +90,7 @@ export const EditorBlock = (props: Props) => {
         onSubmit={handleOnSubmit}
         className="relative flex h-fit w-full max-w-175 items-center rounded-lg border border-solid border-text"
       >
-        <div className="flex h-10 flex-1 items-center text-xs sm:text-sm lg:text-base">
+        <div className="flex h-10 flex-1 items-center text-xs sm:h-12 sm:text-sm lg:text-base">
           <Select
             value={selectedNecessity}
             className="h-full py-2 pl-4"

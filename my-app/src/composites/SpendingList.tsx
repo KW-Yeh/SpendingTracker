@@ -2,9 +2,16 @@ import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { EditIcon } from '@/components/icons/EditIcon';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { deleteItem } from '@/services/dbHandler';
-import { SpendingType } from '@/utils/constants';
+import { Necessity, SpendingType } from '@/utils/constants';
 import { normalizeNumber } from '@/utils/normalizeNumber';
-import { ReactNode, useCallback, useState, MouseEvent, useEffect } from 'react';
+import {
+  ReactNode,
+  useCallback,
+  useState,
+  MouseEvent,
+  useEffect,
+  useMemo,
+} from 'react';
 
 interface Props {
   date: Date;
@@ -87,11 +94,10 @@ export const SpendingList = (props: Props) => {
             </div>
             <span>{`總共: $${normalizeNumber(totalAmount)}`}</span>
           </div>
-          <div className="scrollbar flex h-80 w-full flex-col gap-1 overflow-y-auto overflow-x-hidden p-1">
+          <div className="scrollbar flex h-80 w-full flex-col gap-1 overflow-y-auto overflow-x-hidden px-1 py-2">
             {filteredData.map((spending, index) => (
               <Item
                 key={`${spending.id}-${index.toString()}`}
-                green={type === SpendingType.Income}
                 spending={spending}
                 id={selectedDataId}
                 handleEdit={handleEdit}
@@ -127,13 +133,11 @@ const FilterBtn = ({
 
 const Item = ({
   spending,
-  green,
   id,
   handleEdit,
   refreshData,
 }: {
   spending: SpendingRecord;
-  green: boolean;
   id: string;
   handleEdit: (record: SpendingRecord) => void;
   refreshData: () => void;
@@ -141,6 +145,8 @@ const Item = ({
   const handleOnEdit = () => {
     handleEdit(spending);
   };
+
+  const isSelected = useMemo(() => id === spending.id, [id, spending.id]);
 
   const handleOnDelete = useCallback(() => {
     if (!confirm('確定要刪除這筆資料嗎?')) return;
@@ -151,8 +157,13 @@ const Item = ({
 
   return (
     <div
-      className={`grid grid-cols-12 items-center gap-2 rounded border-l-4 border-solid p-2 transition-all odd:bg-gray-100 ${green ? 'border-green-300' : 'border-red-300'} ${id === spending.id ? 'shadow-[0_0_0_1px_#F6CF08]' : ''}`}
+      className={`relative grid grid-cols-12 items-center gap-2 rounded border-l-4 border-solid p-2 transition-all odd:bg-gray-100 ${spending.necessity === Necessity.Need ? 'border-gray-300' : 'border-orange-300'} ${isSelected ? 'border-transparent shadow-[0_0_0_2px_#fde047]' : 'active:bg-gray-200 sm:hover:bg-gray-200'}`}
     >
+      {isSelected && (
+        <span className="absolute left-1 top-0 -translate-y-1/2 rounded-full bg-yellow-300 px-2 text-xs font-bold">
+          編輯中
+        </span>
+      )}
       <div className="col-span-1 text-center">{spending.necessity}</div>
       <div className="col-span-1 flex items-center justify-center">
         <div className="rounded border border-solid border-text p-1">
