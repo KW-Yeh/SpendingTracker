@@ -153,7 +153,7 @@ const GroupSelector = ({
         name="group"
         value={group?.name ?? '個人'}
         onChange={handleOnSelectGroup}
-        className="max-w-24 rounded-md border border-solid border-gray-300 px-2 py-1 transition-colors active:border-text sm:hover:border-text"
+        className="max-w-24 rounded-full border border-solid border-gray-300 px-2 py-1 transition-colors active:border-text sm:hover:border-text"
         menuStyle="max-w-32"
       >
         <Select.Item value="">個人</Select.Item>
@@ -172,7 +172,7 @@ const GroupSelector = ({
             name="member"
             value={selectedMember?.name ?? '全部'}
             onChange={onSelectMemberEmail}
-            className="max-w-24 rounded-md border border-solid border-gray-300 px-2 py-1 transition-colors active:border-text sm:hover:border-text"
+            className="max-w-24 rounded-full border border-solid border-gray-300 px-2 py-1 transition-colors active:border-text sm:hover:border-text"
           >
             <Select.Item value="">全部</Select.Item>
             {group.users.map((user) => (
