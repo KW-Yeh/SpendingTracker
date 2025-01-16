@@ -138,13 +138,21 @@ const GroupSelector = ({
     [group?.users, selectedMemberEmail],
   );
 
+  const handleOnSelectGroup = useCallback(
+    (groupId: string) => {
+      if (loading) return;
+      onSelectGroup(groupId);
+    },
+    [onSelectGroup],
+  );
+
   return (
     <div className="flex items-center gap-1 text-sm sm:text-base">
       <span>群組</span>
       <Select
         name="group"
         value={group?.name ?? '個人'}
-        onChange={onSelectGroup}
+        onChange={handleOnSelectGroup}
         className="max-w-24 rounded-md border border-solid border-gray-300 px-2 py-1 transition-colors active:border-text sm:hover:border-text"
         menuStyle="max-w-32"
       >
