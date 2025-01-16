@@ -6,6 +6,7 @@ import {
   ReactNode,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 
@@ -30,21 +31,22 @@ export const Select = (props: Props) => {
     name,
   } = props;
   const [openOptions, setOpenOptions] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const ref = useFocusRef<HTMLDivElement>(() => {
     setOpenOptions(false);
   });
 
   useEffect(() => {
-    if (openOptions && ref.current) {
+    if (openOptions && menuRef.current) {
       let maxWidth = 0;
-      ref.current.querySelectorAll('button').forEach((button) => {
+      menuRef.current.querySelectorAll('button').forEach((button) => {
         const textElementWidth = button.querySelector('span')?.clientWidth;
         maxWidth = Math.max(maxWidth, textElementWidth ?? 0);
       });
-      const width = Math.max(ref.current.offsetWidth, maxWidth + 32);
-      ref.current.style.width = `${width}px`;
+      const width = Math.max(menuRef.current.offsetWidth, maxWidth + 32);
+      menuRef.current.style.width = `${width}px`;
     }
-  }, [openOptions, ref]);
+  }, [openOptions, menuRef]);
 
   return (
     <Ctx.Provider
@@ -54,7 +56,7 @@ export const Select = (props: Props) => {
         close: () => setOpenOptions(false),
       }}
     >
-      <div className="relative">
+      <div ref={ref} className="relative">
         <button
           className={`${className} flex items-center justify-between gap-1`}
           type="button"
@@ -66,7 +68,7 @@ export const Select = (props: Props) => {
           <CaretDown className={`size-2 shrink-0 ${caretStyle}`} />
         </button>
         <div
-          ref={ref}
+          ref={menuRef}
           className={`${menuStyle} absolute top-full z-40 flex min-w-16 flex-col divide-y divide-gray-300 rounded-md bg-background py-2 shadow transition-all ${openOptions ? 'visible opacity-100' : 'invisible opacity-0'}`}
         >
           {children}

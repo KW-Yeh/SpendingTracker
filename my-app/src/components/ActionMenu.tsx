@@ -21,7 +21,7 @@ export const ActionMenu = (props: Props) => {
   });
 
   return (
-    <div className="relative">
+    <div ref={ref} className="relative">
       <button
         type="button"
         onClick={() => {
@@ -32,7 +32,6 @@ export const ActionMenu = (props: Props) => {
         <ActionMenuIcon className="size-4" />
       </button>
       <div
-        ref={ref}
         className={`absolute right-3 top-full z-30 flex w-fit flex-col divide-y divide-gray-300 rounded-md bg-background py-1 shadow transition-all ${open ? 'opacity-100' : 'hidden opacity-0'}`}
       >
         {options.map((option) => (
