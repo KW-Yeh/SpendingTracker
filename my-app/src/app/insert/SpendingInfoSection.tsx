@@ -143,7 +143,7 @@ const GroupSelector = ({
       if (loading) return;
       onSelectGroup(groupId);
     },
-    [onSelectGroup],
+    [onSelectGroup, loading],
   );
 
   return (
