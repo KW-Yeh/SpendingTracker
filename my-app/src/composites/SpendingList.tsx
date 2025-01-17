@@ -3,6 +3,7 @@ import { EditIcon } from '@/components/icons/EditIcon';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { deleteItem } from '@/services/dbHandler';
 import { Necessity, SpendingType } from '@/utils/constants';
+import { formatDate } from '@/utils/formatDate';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import {
   ReactNode,
@@ -164,7 +165,9 @@ const Item = ({
           編輯中
         </span>
       )}
-      <div className="col-span-1 text-center">{spending.necessity}</div>
+      <div className="col-span-2 text-center text-xs sm:col-span-1 sm:text-sm">
+        {formatDate(spending.date)}
+      </div>
       <div className="col-span-1 flex items-center justify-center">
         <div className="rounded border border-solid border-text p-1">
           {spending.category}
@@ -172,7 +175,7 @@ const Item = ({
       </div>
       <div
         title={spending.description}
-        className="col-span-5 overflow-hidden text-ellipsis whitespace-nowrap"
+        className="col-span-4 overflow-hidden text-ellipsis whitespace-nowrap sm:col-span-5"
       >
         {spending.description}
       </div>
