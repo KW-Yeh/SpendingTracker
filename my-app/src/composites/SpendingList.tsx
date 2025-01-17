@@ -183,7 +183,9 @@ const Item = ({
     setDeleting(true);
     deleteItem(spending.id).then(() => {
       refreshData();
-      setDeleting(false);
+      requestAnimationFrame(() => {
+        setDeleting(false);
+      });
     });
   }, [spending.id, refreshData]);
 
