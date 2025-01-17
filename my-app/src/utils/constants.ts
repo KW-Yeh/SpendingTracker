@@ -73,5 +73,3 @@ export const OUTCOME_TYPE_MAP = OUTCOME_TYPE_OPTIONS.map((option, index) => ({
 }));
 
 export const WEEKDAY = ['日', '一', '二', '三', '四', '五', '六'];
-
-export const USER_TOKEN_SEPARATOR = ';group:';

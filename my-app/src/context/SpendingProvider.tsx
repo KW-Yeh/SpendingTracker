@@ -36,7 +36,7 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const queryItem = useCallback(
-    (groupId?: string, email?: string) => {
+    (email: string, groupId?: string) => {
       getItems(groupId, email)
         .then((res) => {
           handleState(res);
@@ -48,9 +48,9 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
 
   const syncData = useCallback(
     (groupId?: string, email?: string) => {
-      if (!groupId && !email) return;
+      if (!email) return;
       setLoading(true);
-      queryItem(groupId, email);
+      queryItem(email, groupId);
     },
     [queryItem],
   );

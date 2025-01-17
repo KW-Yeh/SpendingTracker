@@ -56,6 +56,7 @@ const reducer = (state: SpendingRecord, action: Action) => {
         action.payload ?? {
           ...state,
           id: uuid(),
+          date: new Date().toISOString(),
           amount: 0,
           description: '',
         }

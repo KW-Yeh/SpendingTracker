@@ -1,4 +1,3 @@
-import { handleFormatUserToken } from '@/utils/handleFormatUserToken';
 import { NextResponse } from 'next/server';
 
 export async function PUT(req: Request) {
@@ -21,31 +20,35 @@ export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
     const queryParams = url.searchParams;
-    const groupId = queryParams.get('id');
+    const groupId = queryParams.get('groupId');
     const email = queryParams.get('email');
+    if (groupId) {
+      const data = await fetch(
+        `${process.env.AWS_API_GATEWAY_URL}/items/id/${groupId}`,
+        {
+          method: 'GET',
+        },
+      )
+        .then((res) => res.json())
+        .then((res) => res.sort(sortData));
+      return NextResponse.json(data);
+    }
+    if (email) {
+      const data = await fetch(
+        `${process.env.AWS_API_GATEWAY_URL}/items/user/${email}`,
+        {
+          method: 'GET',
+        },
+      )
+        .then((res) => res.json())
+        .then((res) => res.sort(sortData));
+      return NextResponse.json(data);
+    }
     const data = await fetch(`${process.env.AWS_API_GATEWAY_URL}/items`, {
       method: 'GET',
     })
       .then((res) => res.json())
       .then((res) => res.sort(sortData));
-    if (groupId && email) {
-      return NextResponse.json(
-        data.filter(
-          (item: SpendingRecord) =>
-            item['user-token'] === handleFormatUserToken(email, groupId),
-        ),
-      );
-    } else if (groupId) {
-      return NextResponse.json(
-        data.filter((item: SpendingRecord) =>
-          item['user-token'].includes(groupId),
-        ),
-      );
-    } else if (email) {
-      return NextResponse.json(
-        data.filter((item: SpendingRecord) => item['user-token'] === email),
-      );
-    }
     return NextResponse.json(data);
   } catch (error) {
     console.error(error);
@@ -58,7 +61,7 @@ export async function DELETE(req: Request) {
     const url = new URL(req.url);
     const queryParams = url.searchParams;
     const id = queryParams.get('id');
-    return await fetch(`${process.env.AWS_API_GATEWAY_URL}/items/${id}`, {
+    return await fetch(`${process.env.AWS_API_GATEWAY_URL}/items/id/${id}`, {
       method: 'DELETE',
     });
   } catch (error) {

@@ -1,6 +1,7 @@
 interface SpendingRecord {
   id: string;
   'user-token': string;
+  groupId?: string;
   type: string;
   date: string;
   necessity: string;

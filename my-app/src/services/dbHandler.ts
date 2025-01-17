@@ -1,7 +1,7 @@
 /** Item **/
 
 export const putItem = async (data: SpendingRecord) => {
-  return fetch(`/api/aws/items`, {
+  return fetch('/api/aws/items', {
     method: 'PUT',
     body: JSON.stringify(data),
   });
@@ -14,19 +14,23 @@ export const deleteItem = async (id: string) => {
 };
 
 export const getItems = async (groupId?: string, email?: string) => {
-  const queryStringList: string[] = [];
   if (groupId) {
-    queryStringList.push(`id=${groupId}`);
+    return fetch(`/api/aws/items?groupId=${groupId}`, {
+      method: 'GET',
+    })
+      .then((res) => res.json())
+      .then((res) => res as SpendingRecord[]);
   }
   if (email) {
-    queryStringList.push(`email=${email}`);
-  }
-  return fetch(
-    `/api/aws/items${queryStringList.length > 0 ? `?${queryStringList.join('&')}` : ''}`,
-    {
+    return fetch(`/api/aws/items?email=${email}`, {
       method: 'GET',
-    },
-  )
+    })
+      .then((res) => res.json())
+      .then((res) => res as SpendingRecord[]);
+  }
+  return fetch('/api/aws/items', {
+    method: 'GET',
+  })
     .then((res) => res.json())
     .then((res) => res as SpendingRecord[]);
 };

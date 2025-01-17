@@ -12,7 +12,6 @@ import {
   OUTCOME_TYPE_MAP,
   SpendingType,
 } from '@/utils/constants';
-import { handleFormatUserToken } from '@/utils/handleFormatUserToken';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import { useSession } from 'next-auth/react';
 import { ChangeEvent, FormEvent, useCallback, useRef, useState } from 'react';
@@ -55,7 +54,6 @@ export const EditorBlock = (props: Props) => {
       let userEmail = session?.user?.email;
       if (memberEmail) userEmail = memberEmail;
       if (!userEmail) return;
-      const userToken = handleFormatUserToken(userEmail, groupId);
       const formElement = event.target as HTMLFormElement;
       const formData = new FormData(formElement);
       const necessity = formData.get('necessity') as Necessity;
@@ -67,7 +65,8 @@ export const EditorBlock = (props: Props) => {
       const newSpending: SpendingRecord = {
         ...data,
         id: data.id,
-        'user-token': userToken,
+        'user-token': userEmail,
+        groupId,
         type: data.type,
         date: data.date,
         necessity,

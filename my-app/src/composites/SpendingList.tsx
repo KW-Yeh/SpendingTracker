@@ -1,3 +1,4 @@
+import { CloseIcon } from '@/components/icons/CloseIcon';
 import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { EditIcon } from '@/components/icons/EditIcon';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
@@ -19,7 +20,9 @@ interface Props {
   type: SpendingType;
   selectedDataId: string;
   handleEdit: (record: SpendingRecord) => void;
+  memberEmail?: string;
   refreshData: () => void;
+  reset: () => void;
 }
 
 enum FilterType {
@@ -28,7 +31,15 @@ enum FilterType {
 }
 
 export const SpendingList = (props: Props) => {
-  const { date, type, selectedDataId, handleEdit, refreshData } = props;
+  const {
+    date,
+    type,
+    selectedDataId,
+    memberEmail,
+    handleEdit,
+    refreshData,
+    reset,
+  } = props;
   const { loading, data } = useGetSpendingCtx();
   const [isInitialed, setIsInitialed] = useState(false);
   const [filter, setFilter] = useState(FilterType.Today);
@@ -59,9 +70,14 @@ export const SpendingList = (props: Props) => {
 
   useEffect(() => {
     setFilteredData(
-      [...data].filter((data) => data.type === type && checkDate(data.date)),
+      [...data].filter(
+        (data) =>
+          (memberEmail === '' || data['user-token'] === memberEmail) &&
+          data.type === type &&
+          checkDate(data.date),
+      ),
     );
-  }, [checkDate, data, type]);
+  }, [loading, memberEmail, checkDate, data, type]);
 
   useEffect(() => {
     if (!loading) {
@@ -103,6 +119,7 @@ export const SpendingList = (props: Props) => {
                 id={selectedDataId}
                 handleEdit={handleEdit}
                 refreshData={refreshData}
+                reset={reset}
               />
             ))}
           </div>
@@ -137,33 +154,53 @@ const Item = ({
   id,
   handleEdit,
   refreshData,
+  reset,
 }: {
   spending: SpendingRecord;
   id: string;
   handleEdit: (record: SpendingRecord) => void;
   refreshData: () => void;
+  reset: () => void;
 }) => {
+  const [deleting, setDeleting] = useState(false);
   const handleOnEdit = () => {
     handleEdit(spending);
   };
 
   const isSelected = useMemo(() => id === spending.id, [id, spending.id]);
 
+  const additionalStyle = useMemo(() => {
+    if (deleting) {
+      return 'border-transparent shadow-[0_0_0_2px_#fca5a5]';
+    } else if (isSelected) {
+      return 'border-transparent shadow-[0_0_0_2px_#fde047]';
+    }
+    return 'active:bg-gray-200 sm:hover:bg-gray-200';
+  }, [deleting, isSelected]);
+
   const handleOnDelete = useCallback(() => {
     if (!confirm('確定要刪除這筆資料嗎?')) return;
+    setDeleting(true);
     deleteItem(spending.id).then(() => {
       refreshData();
+      setDeleting(false);
     });
   }, [spending.id, refreshData]);
 
   return (
     <div
-      className={`relative grid grid-cols-12 items-center gap-2 rounded border-l-4 border-solid p-2 transition-all odd:bg-gray-100 ${spending.necessity === Necessity.Need ? 'border-gray-300' : 'border-orange-300'} ${isSelected ? 'border-transparent shadow-[0_0_0_2px_#fde047]' : 'active:bg-gray-200 sm:hover:bg-gray-200'}`}
+      className={`relative grid grid-cols-12 items-center gap-2 rounded border-l-4 border-solid p-2 transition-all odd:bg-gray-100 ${spending.necessity === Necessity.Need ? 'border-gray-300' : 'border-orange-300'} ${additionalStyle}`}
     >
-      {isSelected && (
-        <span className="absolute left-1 top-0 -translate-y-1/2 rounded-full bg-yellow-300 px-2 text-xs font-bold">
-          編輯中
+      {deleting ? (
+        <span className="absolute left-1 top-0 -translate-y-1/2 rounded-full bg-red-300 px-2 text-xs font-bold">
+          刪除中
         </span>
+      ) : (
+        isSelected && (
+          <span className="absolute left-1 top-0 -translate-y-1/2 rounded-full bg-yellow-300 px-2 text-xs font-bold">
+            編輯中
+          </span>
+        )
       )}
       <div className="col-span-2 text-center text-xs sm:col-span-1 sm:text-sm">
         {formatDate(spending.date)}
@@ -183,12 +220,21 @@ const Item = ({
         ${normalizeNumber(spending.amount)}
       </div>
       <div className="col-span-3 flex items-center justify-end gap-px">
-        <button
-          onClick={handleOnEdit}
-          className="group rounded p-2 transition-colors active:bg-primary-300 sm:hover:bg-primary-300"
-        >
-          <EditIcon className="size-4 transition-colors group-active:text-background sm:group-hover:text-background" />
-        </button>
+        {isSelected ? (
+          <button
+            onClick={reset}
+            className="group rounded p-2 transition-colors active:bg-primary-300 sm:hover:bg-primary-300"
+          >
+            <CloseIcon className="size-4 transition-colors group-active:text-background sm:group-hover:text-background" />
+          </button>
+        ) : (
+          <button
+            onClick={handleOnEdit}
+            className="group rounded p-2 transition-colors active:bg-primary-300 sm:hover:bg-primary-300"
+          >
+            <EditIcon className="size-4 transition-colors group-active:text-background sm:group-hover:text-background" />
+          </button>
+        )}
         <button
           onClick={handleOnDelete}
           className="group rounded p-2 transition-colors active:bg-red-300 sm:hover:bg-red-300"

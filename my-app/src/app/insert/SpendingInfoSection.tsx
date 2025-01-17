@@ -25,6 +25,7 @@ export const SpendingInfoSection = () => {
   const [selectedMemberEmail, setSelectedMemberEmail] = useState<string>();
   const { config: userData } = useUserConfigCtx();
   const { syncData, loading } = useGetSpendingCtx();
+  const { syncGroup } = useGroupCtx();
 
   const handleOnChangeDate = (event: ChangeEvent) => {
     const date = new Date((event.target as HTMLInputElement).value);
@@ -53,6 +54,12 @@ export const SpendingInfoSection = () => {
   useEffect(() => {
     refreshData();
   }, [refreshData]);
+
+  useEffect(() => {
+    if (userData) {
+      syncGroup(userData.groups);
+    }
+  }, [syncGroup, userData]);
 
   return (
     <div className="relative flex w-full flex-1 flex-col items-center gap-4 p-6">
@@ -83,13 +90,6 @@ export const SpendingInfoSection = () => {
           onSelectGroup={setSelectedGroup}
           onSelectMemberEmail={setSelectedMemberEmail}
         />
-        <button
-          type="button"
-          onClick={reset}
-          className="w-fit rounded-md border border-solid border-gray-300 px-2 py-1 text-xs transition-colors active:border-text sm:text-sm sm:hover:border-text lg:text-base"
-        >
-          重置編輯器
-        </button>
       </div>
       <EditorBlock
         key={state.id}
@@ -109,7 +109,9 @@ export const SpendingInfoSection = () => {
             payload: data,
           });
         }}
+        memberEmail={selectedMemberEmail}
         refreshData={refreshData}
+        reset={reset}
       />
     </div>
   );
@@ -154,7 +156,7 @@ const GroupSelector = ({
         value={group?.name ?? '個人'}
         onChange={handleOnSelectGroup}
         className="max-w-24 rounded-full border border-solid border-gray-300 px-3 py-1 transition-colors active:border-text sm:hover:border-text"
-        menuStyle="max-w-32"
+        menuStyle="max-w-60"
       >
         <Select.Item value="">個人</Select.Item>
         {!loading &&
