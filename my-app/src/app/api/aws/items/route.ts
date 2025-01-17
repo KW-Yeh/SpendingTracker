@@ -41,7 +41,8 @@ export async function GET(req: Request) {
         },
       )
         .then((res) => res.json())
-        .then((res) => res.sort(sortData));
+        .then((res: SpendingRecord[]) => res.sort(sortData))
+        .then((res) => res.filter((d) => !d.groupId || d.groupId === ''));
       return NextResponse.json(data);
     }
     const data = await fetch(`${process.env.AWS_API_GATEWAY_URL}/items`, {
