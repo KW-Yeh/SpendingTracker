@@ -52,12 +52,9 @@ export const SpendingInfoSection = () => {
   }, [selectedGroup, userData?.email]);
 
   useEffect(() => {
-    refreshData();
-  }, [refreshData]);
-
-  useEffect(() => {
     if (userData) {
       syncGroup(userData.groups);
+      syncData(undefined, userData.email);
     }
   }, [syncGroup, userData]);
 
@@ -96,7 +93,6 @@ export const SpendingInfoSection = () => {
         data={state}
         groupId={selectedGroup}
         memberEmail={selectedMemberEmail}
-        refreshData={refreshData}
         reset={reset}
       />
       <SpendingList
@@ -129,6 +125,7 @@ const GroupSelector = ({
   onSelectMemberEmail: (email?: string) => void;
 }) => {
   const { groups, loading } = useGroupCtx();
+  const { syncData } = useGetSpendingCtx();
 
   const group = useMemo(
     () => groups.find((group) => group.id === selectedGroup),
@@ -144,6 +141,7 @@ const GroupSelector = ({
     (groupId: string) => {
       if (loading) return;
       onSelectGroup(groupId);
+      syncData(groupId, undefined);
     },
     [onSelectGroup, loading],
   );

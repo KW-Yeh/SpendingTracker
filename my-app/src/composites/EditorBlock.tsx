@@ -5,6 +5,7 @@ import { Loading } from '@/components/icons/Loading';
 import { Modal } from '@/components/Modal';
 import { NumberKeyboard } from '@/components/NumberKeyboard';
 import { Select } from '@/components/Select';
+import { useGetSpendingCtx } from "@/context/SpendingProvider";
 import { putItem } from '@/services/dbHandler';
 import {
   INCOME_TYPE_MAP,
@@ -21,12 +22,12 @@ interface Props {
   groupId?: string;
   memberEmail?: string;
   reset: () => void;
-  refreshData: () => void;
 }
 
 export const EditorBlock = (props: Props) => {
-  const { data, groupId, memberEmail, reset, refreshData } = props;
+  const { data, groupId, memberEmail, reset } = props;
   const { data: session } = useSession();
+  const { syncData } = useGetSpendingCtx();
   const spendingCategories =
     data.type === SpendingType.Income ? INCOME_TYPE_MAP : OUTCOME_TYPE_MAP;
   const [loading, setLoading] = useState(false);
@@ -76,11 +77,11 @@ export const EditorBlock = (props: Props) => {
       };
 
       await putItem(newSpending);
-      refreshData();
+      syncData(groupId, userEmail);
       setLoading(false);
       reset();
     },
-    [session?.user?.email, memberEmail, groupId, data, reset, refreshData],
+    [session?.user?.email, memberEmail, groupId, data, reset, syncData],
   );
 
   return (

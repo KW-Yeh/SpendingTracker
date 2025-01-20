@@ -41,7 +41,6 @@ export const SpendingList = (props: Props) => {
     reset,
   } = props;
   const { loading, data } = useGetSpendingCtx();
-  const [isInitialed, setIsInitialed] = useState(false);
   const [filter, setFilter] = useState(FilterType.Today);
   const [filteredData, setFilteredData] = useState<SpendingRecord[]>([]);
   const year = date.getFullYear();
@@ -79,20 +78,14 @@ export const SpendingList = (props: Props) => {
     );
   }, [loading, memberEmail, checkDate, data, type]);
 
-  useEffect(() => {
-    if (!loading) {
-      setIsInitialed(true);
-    }
-  }, [loading]);
-
   return (
     <div className="flex w-full max-w-175 flex-1 flex-col justify-end gap-2 text-xs sm:text-sm lg:text-base">
-      {!isInitialed && (
+      {loading && (
         <div className="mb-2 flex w-full items-center justify-center pb-80">
           <span>Loading...</span>
         </div>
       )}
-      {isInitialed && (
+      {!loading && (
         <>
           <div className="flex w-full items-center justify-between px-1">
             <div className="flex items-center gap-2">
