@@ -28,11 +28,7 @@ export const getItems = async (groupId?: string, email?: string) => {
       .then((res) => res.json())
       .then((res) => res as SpendingRecord[]);
   }
-  return fetch('/api/aws/items', {
-    method: 'GET',
-  })
-    .then((res) => res.json())
-    .then((res) => res as SpendingRecord[]);
+  return Promise.reject('缺少群組 ID 或信箱資訊');
 };
 
 /** Item **/

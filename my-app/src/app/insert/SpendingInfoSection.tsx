@@ -125,6 +125,7 @@ const GroupSelector = ({
   onSelectMemberEmail: (email?: string) => void;
 }) => {
   const { groups, loading } = useGroupCtx();
+  const { config: userData } = useUserConfigCtx();
   const { syncData } = useGetSpendingCtx();
 
   const group = useMemo(
@@ -141,9 +142,13 @@ const GroupSelector = ({
     (groupId: string) => {
       if (loading) return;
       onSelectGroup(groupId);
-      syncData(groupId, undefined);
+      if (groupId === '' && userData) {
+        syncData(undefined, userData.email);
+      } else if (groupId !== '') {
+        syncData(groupId, undefined);
+      }
     },
-    [onSelectGroup, loading],
+    [onSelectGroup, loading, userData],
   );
 
   return (
