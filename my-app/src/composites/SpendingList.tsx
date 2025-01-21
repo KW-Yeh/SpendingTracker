@@ -188,7 +188,7 @@ const Item = ({
 
   return (
     <div
-      className={`relative grid grid-cols-12 items-center gap-2 rounded border-l-4 border-solid p-2 transition-all odd:bg-gray-100 ${spending.necessity === Necessity.Need ? 'border-gray-300' : 'border-orange-300'} ${additionalStyle}`}
+      className={`relative grid grid-cols-12 items-center gap-2 rounded border-l-4 border-solid p-2 transition-all odd:bg-gray-100 ${spending.necessity === Necessity.NotNeed ? 'border-gray-300' : 'border-orange-300'} ${additionalStyle}`}
     >
       {deleting ? (
         <span className="absolute left-1 top-0 -translate-y-1/2 rounded-full bg-red-300 px-2 text-xs font-bold">
