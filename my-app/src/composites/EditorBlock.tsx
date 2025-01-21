@@ -5,7 +5,7 @@ import { Loading } from '@/components/icons/Loading';
 import { Modal } from '@/components/Modal';
 import { NumberKeyboard } from '@/components/NumberKeyboard';
 import { Select } from '@/components/Select';
-import { useGetSpendingCtx } from "@/context/SpendingProvider";
+import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { putItem } from '@/services/dbHandler';
 import {
   INCOME_TYPE_MAP,
@@ -67,7 +67,7 @@ export const EditorBlock = (props: Props) => {
         ...data,
         id: data.id,
         'user-token': userEmail,
-        groupId,
+        groupId: groupId || undefined,
         type: data.type,
         date: data.date,
         necessity,

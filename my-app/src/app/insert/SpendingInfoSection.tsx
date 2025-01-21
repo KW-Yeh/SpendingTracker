@@ -42,7 +42,7 @@ export const SpendingInfoSection = () => {
       if (_groupId === selectedGroup) return;
       if (_groupId === '' && userData) {
         syncData(undefined, userData.email);
-      } else if (_groupId !== '') {
+      } else {
         syncData(_groupId, undefined);
       }
     },
