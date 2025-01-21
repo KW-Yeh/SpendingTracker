@@ -68,6 +68,18 @@ export const SpendingList = (props: Props) => {
     0,
   );
 
+  const surplus = useMemo(
+    () =>
+      [...data].reduce(
+        (acc, spending) =>
+          spending.type === SpendingType.Income
+            ? acc + spending.amount
+            : acc - spending.amount,
+        0,
+      ),
+    [data],
+  );
+
   useEffect(() => {
     if (loading) {
       setIsInit(true);
@@ -103,7 +115,7 @@ export const SpendingList = (props: Props) => {
                 selected={filter === FilterType.ThisMonth}
                 onClick={() => setFilter(FilterType.ThisMonth)}
               >
-                {`當月 (${month + 1}月)`}
+                {`當月 (盈餘 $${normalizeNumber(surplus)})`}
               </FilterBtn>
             </div>
             <span>{`總共: $${normalizeNumber(totalAmount)}`}</span>
