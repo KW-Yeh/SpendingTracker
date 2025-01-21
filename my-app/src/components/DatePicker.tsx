@@ -26,13 +26,6 @@ export const DatePicker = (props: Props) => {
     inputRef.current.showPicker();
   };
 
-  const handleSetToday = () => {
-    const inputElement = inputRef.current;
-    if (!inputElement) return;
-    setValue(inputElement, new Date().toISOString().slice(0, 10));
-    inputElement.dispatchEvent(new Event('change', { bubbles: true }));
-  };
-
   return (
     <div className="relative flex items-center">
       <input
@@ -49,27 +42,6 @@ export const DatePicker = (props: Props) => {
         <span>{`${year} 年 ${month + 1} 月 ${day} 日 (週${WEEKDAY[weekday]})`}</span>
         <CalendarIcon className="size-4 sm:size-5" />
       </button>
-      <button
-        type="button"
-        className="z-20 ml-4 rounded-md border border-solid border-gray-300 bg-background px-3 py-1 text-sm transition-colors active:border-text sm:hover:border-text"
-        onClick={handleSetToday}
-      >
-        選擇今日
-      </button>
     </div>
   );
 };
-
-function setValue(element: HTMLInputElement, value: string) {
-  const setter = Object.getOwnPropertyDescriptor(element, 'value')?.set;
-  const prototype = Object.getPrototypeOf(element);
-  const prototypeSetter = Object.getOwnPropertyDescriptor(
-    prototype,
-    'value',
-  )?.set;
-  if (setter && prototypeSetter && setter !== prototypeSetter) {
-    prototypeSetter.call(element, value);
-  } else if (setter) {
-    setter.call(element, value);
-  }
-}
