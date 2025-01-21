@@ -12,6 +12,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
@@ -34,7 +35,7 @@ export const SpendingList = (props: Props) => {
   const { loading, data } = useGetSpendingCtx();
   const [filter, setFilter] = useState(FilterType.Today);
   const [filteredData, setFilteredData] = useState<SpendingRecord[]>([]);
-  const [isInit, setIsInit] = useState(true);
+  const isInited = useRef(false);
   const year = date.getFullYear();
   const month = date.getMonth();
   const day = date.getDate();
@@ -72,8 +73,8 @@ export const SpendingList = (props: Props) => {
   );
 
   useEffect(() => {
-    if (loading) {
-      setIsInit(true);
+    if (!loading && !isInited.current) {
+      isInited.current = true;
     }
     setFilteredData(
       [...data].filter(
@@ -87,12 +88,12 @@ export const SpendingList = (props: Props) => {
 
   return (
     <div className="flex w-full max-w-175 flex-1 flex-col justify-end gap-2 text-xs sm:text-sm lg:text-base">
-      {!isInit && (
+      {!isInited.current && (
         <div className="mb-2 flex w-full items-center justify-center pb-80">
           <span>Loading...</span>
         </div>
       )}
-      {isInit && (
+      {isInited.current && (
         <>
           <div className="flex w-full items-center justify-between px-1">
             <div className="flex items-center gap-2">
