@@ -21,7 +21,6 @@ interface Props {
   selectedDataId: string;
   handleEdit: (record: SpendingRecord) => void;
   memberEmail?: string;
-  refreshData: () => void;
   reset: () => void;
 }
 
@@ -31,15 +30,7 @@ enum FilterType {
 }
 
 export const SpendingList = (props: Props) => {
-  const {
-    date,
-    type,
-    selectedDataId,
-    memberEmail,
-    handleEdit,
-    refreshData,
-    reset,
-  } = props;
+  const { date, type, selectedDataId, memberEmail, handleEdit, reset } = props;
   const { loading, data } = useGetSpendingCtx();
   const [filter, setFilter] = useState(FilterType.Today);
   const [filteredData, setFilteredData] = useState<SpendingRecord[]>([]);
@@ -127,7 +118,6 @@ export const SpendingList = (props: Props) => {
                 spending={spending}
                 id={selectedDataId}
                 handleEdit={handleEdit}
-                refreshData={refreshData}
                 reset={reset}
               />
             ))}
@@ -162,13 +152,11 @@ const Item = ({
   spending,
   id,
   handleEdit,
-  refreshData,
   reset,
 }: {
   spending: SpendingRecord;
   id: string;
   handleEdit: (record: SpendingRecord) => void;
-  refreshData: () => void;
   reset: () => void;
 }) => {
   const [deleting, setDeleting] = useState(false);
@@ -191,12 +179,11 @@ const Item = ({
     if (!confirm('確定要刪除這筆資料嗎?')) return;
     setDeleting(true);
     deleteItem(spending.id).then(() => {
-      refreshData();
       requestAnimationFrame(() => {
         setDeleting(false);
       });
     });
-  }, [spending.id, refreshData]);
+  }, [spending.id]);
 
   return (
     <div

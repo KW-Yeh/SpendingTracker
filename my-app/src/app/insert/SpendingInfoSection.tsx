@@ -21,7 +21,7 @@ import {
 
 export const SpendingInfoSection = () => {
   const [state, dispatch] = useSpendingReducer();
-  const [selectedGroup, setSelectedGroup] = useState<string>();
+  const [selectedGroup, setSelectedGroup] = useState<string>('');
   const [selectedMemberEmail, setSelectedMemberEmail] = useState<string>();
   const { config: userData } = useUserConfigCtx();
   const { syncData, loading } = useGetSpendingCtx();
@@ -37,9 +37,17 @@ export const SpendingInfoSection = () => {
     });
   };
 
-  const refreshData = useCallback(() => {
-    syncData(selectedGroup, selectedMemberEmail);
-  }, [selectedGroup, selectedMemberEmail, syncData]);
+  const refreshData = useCallback(
+    (_groupId: string) => {
+      if (_groupId === selectedGroup) return;
+      if (_groupId === '' && userData) {
+        syncData(undefined, userData.email);
+      } else if (_groupId !== '') {
+        syncData(_groupId, undefined);
+      }
+    },
+    [selectedGroup, userData, syncData],
+  );
 
   const reset = () => {
     dispatch({ type: 'RESET' });
@@ -56,14 +64,14 @@ export const SpendingInfoSection = () => {
       syncGroup(userData.groups);
       syncData(undefined, userData.email);
     }
-  }, [syncGroup, userData]);
+  }, [syncData, syncGroup, userData]);
 
   return (
     <div className="relative flex w-full flex-1 flex-col items-center gap-4 p-6">
       <div className="absolute right-6 top-6">
         <button
           type="button"
-          onClick={refreshData}
+          onClick={() => refreshData(selectedGroup ?? '')}
           disabled={loading}
           className="rounded-md bg-gray-300 p-2 transition-colors active:bg-gray-400 sm:hover:bg-gray-400"
         >
@@ -86,6 +94,7 @@ export const SpendingInfoSection = () => {
           selectedMemberEmail={selectedMemberEmail}
           onSelectGroup={setSelectedGroup}
           onSelectMemberEmail={setSelectedMemberEmail}
+          refreshData={refreshData}
         />
       </div>
       <EditorBlock
@@ -106,7 +115,6 @@ export const SpendingInfoSection = () => {
           });
         }}
         memberEmail={selectedMemberEmail}
-        refreshData={refreshData}
         reset={reset}
       />
     </div>
@@ -118,15 +126,15 @@ const GroupSelector = ({
   selectedMemberEmail,
   onSelectGroup,
   onSelectMemberEmail,
+  refreshData,
 }: {
   selectedGroup?: string;
   selectedMemberEmail?: string;
   onSelectGroup: (groupId: string) => void;
   onSelectMemberEmail: (email?: string) => void;
+  refreshData: (groupId: string) => void;
 }) => {
   const { groups, loading } = useGroupCtx();
-  const { config: userData } = useUserConfigCtx();
-  const { syncData } = useGetSpendingCtx();
 
   const group = useMemo(
     () => groups.find((group) => group.id === selectedGroup),
@@ -142,13 +150,9 @@ const GroupSelector = ({
     (groupId: string) => {
       if (loading) return;
       onSelectGroup(groupId);
-      if (groupId === '' && userData) {
-        syncData(undefined, userData.email);
-      } else if (groupId !== '') {
-        syncData(groupId, undefined);
-      }
+      refreshData(groupId);
     },
-    [onSelectGroup, loading, userData],
+    [loading, onSelectGroup, refreshData],
   );
 
   return (
