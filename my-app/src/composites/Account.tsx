@@ -14,14 +14,14 @@ export const Account = (props: Props) => {
   const { session, close } = props;
   return (
     <div className="relative mb-4 flex w-full items-center gap-3 p-4">
-      <div className="size-14 shrink-0 rounded-full bg-gray-500 p-px">
+      <div className="size-12 shrink-0 rounded-full bg-gray-500 p-px">
         {session?.user && (
           <Image
             src={session.user.image ?? ''}
             alt={session.user.email ?? ''}
-            width={56}
-            height={56}
-            className="size-full rounded-full"
+            width={48}
+            height={48}
+            className="rounded-full"
           />
         )}
       </div>
@@ -37,8 +37,10 @@ export const Account = (props: Props) => {
         <button
           type="button"
           onClick={async () => {
-            await signOut();
-            close();
+            if (confirm('確定要登出嗎？')) {
+              await signOut();
+              close();
+            }
           }}
           className="absolute right-2 top-4 flex shrink-0 items-center justify-center rounded-md p-2 text-red-300 transition-all hover:bg-red-100 hover:text-red-500"
         >

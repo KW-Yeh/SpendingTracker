@@ -37,17 +37,17 @@ export const SpendingInfoSection = () => {
     });
   };
 
-  const refreshData = useCallback(
-    (_groupId: string) => {
-      if (_groupId === selectedGroup) return;
-      if (_groupId === '' && userData) {
-        syncData(undefined, userData.email);
-      } else {
-        syncData(_groupId, undefined);
-      }
-    },
-    [selectedGroup, userData, syncData],
-  );
+  const refreshData = useCallback(() => {
+    syncData(selectedGroup || undefined, userData?.email);
+  }, [selectedGroup, syncData, userData?.email]);
+
+  useEffect(() => {
+    if (selectedGroup === '' && userData) {
+      syncData(undefined, userData.email);
+    } else {
+      syncData(selectedGroup, undefined);
+    }
+  }, [selectedGroup, userData, syncData]);
 
   const reset = () => {
     dispatch({ type: 'RESET' });
@@ -71,9 +71,9 @@ export const SpendingInfoSection = () => {
       <div className="absolute right-6 top-6">
         <button
           type="button"
-          onClick={() => refreshData(selectedGroup ?? '')}
+          onClick={refreshData}
           disabled={loading}
-          className="rounded-md bg-gray-300 p-2 transition-colors active:bg-gray-400 sm:hover:bg-gray-400"
+          className="rounded-md bg-gray-200 p-2 transition-colors active:bg-gray-300 sm:hover:bg-gray-300"
         >
           <RefreshIcon className={`size-4 ${loading ? 'animate-spin' : ''}`} />
         </button>
@@ -94,7 +94,6 @@ export const SpendingInfoSection = () => {
           selectedMemberEmail={selectedMemberEmail}
           onSelectGroup={setSelectedGroup}
           onSelectMemberEmail={setSelectedMemberEmail}
-          refreshData={refreshData}
         />
       </div>
       <EditorBlock
@@ -114,6 +113,7 @@ export const SpendingInfoSection = () => {
             payload: data,
           });
         }}
+        refreshData={refreshData}
         memberEmail={selectedMemberEmail}
         reset={reset}
       />
@@ -126,13 +126,11 @@ const GroupSelector = ({
   selectedMemberEmail,
   onSelectGroup,
   onSelectMemberEmail,
-  refreshData,
 }: {
   selectedGroup?: string;
   selectedMemberEmail?: string;
   onSelectGroup: (groupId: string) => void;
   onSelectMemberEmail: (email?: string) => void;
-  refreshData: (groupId: string) => void;
 }) => {
   const { groups, loading } = useGroupCtx();
 
@@ -150,9 +148,8 @@ const GroupSelector = ({
     (groupId: string) => {
       if (loading) return;
       onSelectGroup(groupId);
-      refreshData(groupId);
     },
-    [loading, onSelectGroup, refreshData],
+    [loading, onSelectGroup],
   );
 
   return (

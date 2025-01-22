@@ -106,7 +106,7 @@ const GroupCard = ({
         refresh();
         break;
       case 'delete':
-        if (!confirm('確定要刪除此群組嗎?')) return;
+        if (!confirm('確定要刪除此群組嗎?（此動作會將所有人剔除該群組）')) return;
         setLoading(true);
         const groupUserEmails = group.users.map((user) => user.email);
         const users = await Promise.all(groupUserEmails.map(getUser));

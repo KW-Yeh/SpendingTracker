@@ -1,20 +1,13 @@
 import { CloseIcon } from '@/components/icons/CloseIcon';
 import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { EditIcon } from '@/components/icons/EditIcon';
+import { Select } from '@/components/Select';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { deleteItem } from '@/services/dbHandler';
 import { Necessity, SpendingType } from '@/utils/constants';
 import { formatDate } from '@/utils/formatDate';
 import { normalizeNumber } from '@/utils/normalizeNumber';
-import {
-  MouseEvent,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 interface Props {
   date: Date;
@@ -22,6 +15,7 @@ interface Props {
   selectedDataId: string;
   handleEdit: (record: SpendingRecord) => void;
   memberEmail?: string;
+  refreshData: () => void;
   reset: () => void;
 }
 
@@ -31,11 +25,19 @@ enum FilterType {
 }
 
 export const SpendingList = (props: Props) => {
-  const { date, type, selectedDataId, memberEmail, handleEdit, reset } = props;
+  const {
+    date,
+    type,
+    selectedDataId,
+    memberEmail,
+    handleEdit,
+    refreshData,
+    reset,
+  } = props;
   const { loading, data } = useGetSpendingCtx();
   const [filter, setFilter] = useState(FilterType.Today);
   const [filteredData, setFilteredData] = useState<SpendingRecord[]>([]);
-  const isInited = useRef(false);
+  const isInitialized = useRef(false);
   const year = date.getFullYear();
   const month = date.getMonth();
   const day = date.getDate();
@@ -60,21 +62,12 @@ export const SpendingList = (props: Props) => {
     0,
   );
 
-  const surplus = useMemo(
-    () =>
-      [...data].reduce(
-        (acc, spending) =>
-          spending.type === SpendingType.Income
-            ? acc + spending.amount
-            : acc - spending.amount,
-        0,
-      ),
-    [data],
-  );
+  const today = useMemo(() => `當天 ${month + 1}/${day}`, [day, month]);
+  const thisMonth = useMemo(() => `當月 ${month + 1}月`, [month]);
 
   useEffect(() => {
-    if (!loading && !isInited.current) {
-      isInited.current = true;
+    if (!loading && !isInitialized.current) {
+      isInitialized.current = true;
     }
     setFilteredData(
       [...data].filter(
@@ -88,29 +81,28 @@ export const SpendingList = (props: Props) => {
 
   return (
     <div className="flex w-full max-w-175 flex-1 flex-col justify-end gap-2 text-xs sm:text-sm lg:text-base">
-      {!isInited.current && (
+      {!isInitialized.current && (
         <div className="mb-2 flex w-full items-center justify-center pb-80">
           <span>Loading...</span>
         </div>
       )}
-      {isInited.current && (
+      {isInitialized.current && (
         <>
-          <div className="flex w-full items-center justify-between px-1">
-            <div className="flex items-center gap-2">
-              <FilterBtn
-                selected={filter === FilterType.Today}
-                onClick={() => setFilter(FilterType.Today)}
-              >
-                {`當日 (${month + 1}/${day})`}
-              </FilterBtn>
-              <FilterBtn
-                selected={filter === FilterType.ThisMonth}
-                onClick={() => setFilter(FilterType.ThisMonth)}
-              >
-                {`當月 (盈餘 $${normalizeNumber(surplus)})`}
-              </FilterBtn>
-            </div>
-            <span>{`總共: $${normalizeNumber(totalAmount)}`}</span>
+          <div className="flex w-full items-end justify-between px-1">
+            <Select
+              name="filter"
+              className="rounded-full border border-solid px-3 py-1 transition-colors active:border-text sm:hover:border-text"
+              value={filter === FilterType.Today ? today : thisMonth}
+              onChange={(value) => setFilter(Number(value))}
+            >
+              <Select.Item value={FilterType.Today.toString()}>
+                {today}
+              </Select.Item>
+              <Select.Item value={FilterType.ThisMonth.toString()}>
+                {thisMonth}
+              </Select.Item>
+            </Select>
+            <span className="text-gray-500">{`總共: $${normalizeNumber(totalAmount)}`}</span>
           </div>
           <div className="scrollbar flex h-80 w-full flex-col gap-1 overflow-y-auto overflow-x-hidden px-1 py-2">
             {filteredData.map((spending, index) => (
@@ -119,6 +111,7 @@ export const SpendingList = (props: Props) => {
                 spending={spending}
                 id={selectedDataId}
                 handleEdit={handleEdit}
+                refreshData={refreshData}
                 reset={reset}
               />
             ))}
@@ -129,35 +122,17 @@ export const SpendingList = (props: Props) => {
   );
 };
 
-const FilterBtn = ({
-  children,
-  selected,
-  onClick,
-}: {
-  children: ReactNode;
-  selected: boolean;
-  onClick: (event: MouseEvent) => void;
-}) => {
-  return (
-    <button
-      type="button"
-      className={`rounded border border-solid px-2 py-1 transition-colors ${selected ? 'border-text bg-primary-100 text-black' : 'border-gray-300 active:border-text sm:hover:border-text'}`}
-      onClick={onClick}
-    >
-      {children}
-    </button>
-  );
-};
-
 const Item = ({
   spending,
   id,
   handleEdit,
+  refreshData,
   reset,
 }: {
   spending: SpendingRecord;
   id: string;
   handleEdit: (record: SpendingRecord) => void;
+  refreshData: () => void;
   reset: () => void;
 }) => {
   const [deleting, setDeleting] = useState(false);
@@ -182,13 +157,14 @@ const Item = ({
     deleteItem(spending.id).then(() => {
       requestAnimationFrame(() => {
         setDeleting(false);
+        refreshData();
       });
     });
-  }, [spending.id]);
+  }, [refreshData, spending.id]);
 
   return (
     <div
-      className={`relative grid grid-cols-12 items-center gap-2 rounded border-l-4 border-solid p-2 transition-all odd:bg-gray-100 ${spending.necessity === Necessity.NotNeed ? 'border-gray-300' : 'border-orange-300'} ${additionalStyle}`}
+      className={`relative flex items-center gap-2 rounded border-l-4 border-solid p-2 transition-all odd:bg-gray-100 ${spending.necessity === Necessity.NotNeed ? 'border-gray-300' : 'border-orange-300'} ${additionalStyle}`}
     >
       {deleting ? (
         <span className="absolute left-1 top-0 -translate-y-1/2 rounded-full bg-red-300 px-2 text-xs font-bold">
@@ -201,24 +177,22 @@ const Item = ({
           </span>
         )
       )}
-      <div className="col-span-2 text-center text-xs sm:col-span-1 sm:text-sm">
+      <div className="w-8 text-center text-xs sm:col-span-1 sm:text-sm">
         {formatDate(spending.date)}
       </div>
-      <div className="col-span-1 flex items-center justify-center">
+      <div className="flex w-7 items-center justify-center">
         <div className="rounded border border-solid border-text p-1">
           {spending.category}
         </div>
       </div>
       <div
         title={spending.description}
-        className="col-span-4 overflow-hidden text-ellipsis whitespace-nowrap sm:col-span-5"
+        className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap sm:col-span-5"
       >
         {spending.description}
       </div>
-      <div className="col-span-2 text-end">
-        ${normalizeNumber(spending.amount)}
-      </div>
-      <div className="col-span-3 flex items-center justify-end gap-px">
+      <div className="w-fit text-end">${normalizeNumber(spending.amount)}</div>
+      <div className="flex w-16 items-center justify-end">
         {isSelected ? (
           <button
             onClick={reset}

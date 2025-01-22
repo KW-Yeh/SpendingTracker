@@ -48,7 +48,7 @@ export const Select = (props: Props) => {
           <CaretDown className={`size-2 shrink-0 ${caretStyle}`} />
         </button>
         <div
-          className={`${menuStyle} absolute top-full z-40 flex w-fit min-w-16 flex-col divide-y divide-gray-300 rounded-md bg-background py-2 shadow transition-all ${openOptions ? 'visible opacity-100' : 'invisible opacity-0'}`}
+          className={`${menuStyle} absolute top-full z-40 flex w-fit min-w-16 flex-col divide-y divide-gray-300 rounded-lg bg-background py-2 shadow transition-all ${openOptions ? 'visible opacity-100' : 'invisible opacity-0'}`}
         >
           {children}
         </div>
