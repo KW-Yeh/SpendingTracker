@@ -4,7 +4,7 @@ import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { calSpending2Chart } from '@/utils/calSpending2Chart';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import dynamic from 'next/dynamic';
-import { useEffect, useState, useTransition } from 'react';
+import { startTransition, useEffect, useMemo, useState } from 'react';
 import {
   Bar,
   CartesianGrid,
@@ -54,7 +54,7 @@ const renderCustomizedLabel = (props: {
 
 export const ChartBlock = () => {
   const { data } = useGetSpendingCtx();
-  const [loading, startTransition] = useTransition();
+  const [loading, setLoading] = useState(true);
   const [chartData, setChartData] = useState<PieChartData>({
     income: {
       list: [],
@@ -71,16 +71,20 @@ export const ChartBlock = () => {
   });
   const [detailData, setDetailData] = useState<PieChartDataItem[]>([]);
 
+  const formattedData = useMemo(() => calSpending2Chart(data), [data]);
+
   useEffect(() => {
-    startTransition(() => {
-      const formattedData = calSpending2Chart(data);
-      setChartData(formattedData);
-      setDetailData([
-        ...formattedData.outcome.list,
-        ...formattedData.income.list,
-      ]);
-    });
-  }, [data]);
+    if (formattedData.income.total > 0 || formattedData.outcome.total > 0) {
+      startTransition(() => {
+        setChartData(formattedData);
+        setDetailData([
+          ...formattedData.outcome.list,
+          ...formattedData.income.list,
+        ]);
+        setLoading(false);
+      });
+    }
+  }, [formattedData]);
 
   if (loading) return <div>Loading...</div>;
 
