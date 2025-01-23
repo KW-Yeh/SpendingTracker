@@ -85,7 +85,7 @@ const Item = ({
         onChange(value);
         close();
       }}
-      className={`flex w-full bg-transparent px-4 py-2 transition-colors hover:bg-gray-300 ${className} ${current === value ? '' : ''}`}
+      className={`flex w-full px-4 py-2 transition-colors ${className} ${current === value ? 'bg-gray-300' : 'hover:bg-gray-300'}`}
     >
       <span className="overflow-hidden text-ellipsis whitespace-nowrap">
         {children}
