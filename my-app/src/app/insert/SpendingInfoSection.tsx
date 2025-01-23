@@ -3,8 +3,8 @@
 import { DatePicker } from '@/components/DatePicker';
 import { RefreshIcon } from '@/components/icons/RefreshIcon';
 import { Select } from '@/components/Select';
-import { EditorBlock } from '@/composites/EditorBlock';
-import { SpendingList } from '@/composites/SpendingList';
+import { EditorBlock } from '@/app/insert/EditorBlock';
+import { SpendingList } from '@/app/insert/SpendingList';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';

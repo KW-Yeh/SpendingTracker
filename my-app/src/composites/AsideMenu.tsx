@@ -12,7 +12,13 @@ import { MENU_CONFIG } from '@/utils/constants';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ReactNode, useCallback, useEffect, useRef } from 'react';
+import {
+  ReactNode,
+  startTransition,
+  useCallback,
+  useEffect,
+  useRef,
+} from 'react';
 
 interface Props {
   isOpen: boolean;
@@ -29,7 +35,7 @@ export const AsideMenu = (props: Props) => {
   });
 
   const close = useCallback(() => {
-    requestAnimationFrame(() => {
+    startTransition(() => {
       if (!bgRef.current || !asideRef.current) return;
       bgRef.current.style.right = '100%';
       asideRef.current.style.left = '-288px';
@@ -37,7 +43,7 @@ export const AsideMenu = (props: Props) => {
   }, [asideRef]);
 
   const open = useCallback(() => {
-    requestAnimationFrame(() => {
+    startTransition(() => {
       if (!bgRef.current || !asideRef.current) return;
       bgRef.current.style.right = '0';
       asideRef.current.style.left = '0';

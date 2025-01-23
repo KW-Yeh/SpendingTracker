@@ -33,3 +33,27 @@ interface ModalRef {
   open: () => void;
   close: () => void;
 }
+
+interface PieChartData {
+  income: {
+    total: number;
+    necessary: number;
+    unnecessary: number;
+    list: PieChartDataItem[];
+  };
+  outcome: {
+    total: number;
+    necessary: number;
+    unnecessary: number;
+    list: PieChartDataItem[];
+  };
+}
+
+interface PieChartDataItem {
+  id: string;
+  name: string;
+  value: number;
+  necessary: number;
+  unnecessary: number;
+  color: string;
+}

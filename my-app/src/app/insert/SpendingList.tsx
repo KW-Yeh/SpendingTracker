@@ -7,7 +7,14 @@ import { deleteItem } from '@/services/dbHandler';
 import { Necessity, SpendingType } from '@/utils/constants';
 import { formatDate } from '@/utils/formatDate';
 import { normalizeNumber } from '@/utils/normalizeNumber';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 interface Props {
   date: Date;
@@ -155,7 +162,7 @@ const Item = ({
     if (!confirm('確定要刪除這筆資料嗎?')) return;
     setDeleting(true);
     deleteItem(spending.id).then(() => {
-      requestAnimationFrame(() => {
+      startTransition(() => {
         setDeleting(false);
         refreshData();
       });
