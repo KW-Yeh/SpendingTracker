@@ -2,7 +2,7 @@
 
 import { Necessity, SpendingType } from '@/utils/constants';
 import { useReducer } from 'react';
-import { v4 as uuid } from 'uuid';
+import { v7 as uuid } from 'uuid';
 
 type Action =
   | {

@@ -12,7 +12,7 @@ import { useGroupCtx } from '@/context/GroupProvider';
 import { deleteGroup, getUser, putGroup, putUser } from '@/services/dbHandler';
 import Image from 'next/image';
 import { useCallback, useRef, useState } from 'react';
-import { v4 as uuid } from 'uuid';
+import { v7 as uuid } from 'uuid';
 import QRCode from 'react-qr-code';
 
 export const Dashboard = () => {
