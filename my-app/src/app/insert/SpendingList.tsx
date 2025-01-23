@@ -188,7 +188,7 @@ const Item = ({
         {formatDate(spending.date)}
       </div>
       <div className="flex w-7 items-center justify-center">
-        <div className="rounded border border-solid border-text p-1">
+        <div className="rounded-full border border-solid border-text p-1">
           {spending.category}
         </div>
       </div>

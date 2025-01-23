@@ -218,11 +218,11 @@ export const ChartBlock = () => {
                 outerRadius={90}
               >
                 <Cell
-                  className="transition-colors hover:fill-yellow-300 hover:outline-0"
+                  className="transition-colors hover:fill-yellow-300 hover:outline-0 active:outline-0"
                   fill="#faa5a5"
                 />
                 <Cell
-                  className="transition-colors hover:fill-yellow-300 hover:outline-0"
+                  className="transition-colors hover:fill-yellow-300 hover:outline-0 active:outline-0"
                   fill="#82ca9d"
                 />
               </Pie>
@@ -237,7 +237,7 @@ export const ChartBlock = () => {
               >
                 {detailData.map((entry, index) => (
                   <Cell
-                    className="transition-colors hover:fill-yellow-300 hover:outline-0"
+                    className="transition-colors hover:fill-yellow-300 hover:outline-0 active:outline-0"
                     key={`cell-${index}`}
                     fill={entry.color}
                   />
