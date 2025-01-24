@@ -188,8 +188,22 @@ export const ChartBlock = () => {
         <>
           <ChartContainer title="收支比例與各項占比">
             <ul className="w-full list-disc pl-6">
-              <li>總收入: ${normalizeNumber(chartData.income.total)}</li>
-              <li>總支出: ${normalizeNumber(chartData.outcome.total)}</li>
+              <li>
+                【總收入】
+                {(
+                  (chartData.income.total * 100) /
+                  (chartData.income.total + chartData.outcome.total)
+                ).toFixed(2)}
+                %
+              </li>
+              <li>
+                【總支出】
+                {(
+                  (chartData.outcome.total * 100) /
+                  (chartData.income.total + chartData.outcome.total)
+                ).toFixed(2)}
+                %
+              </li>
             </ul>
             <PieChart width={300} height={250}>
               <Pie
@@ -240,12 +254,12 @@ export const ChartBlock = () => {
               <Tooltip />
             </PieChart>
             <CostTable
-              title="支出各項資訊"
+              title={`支出各項資訊 ${normalizeNumber(chartData.outcome.total)}`}
               total={chartData.outcome.total}
               list={chartData.outcome.list}
             />
             <CostTable
-              title="收入各項資訊"
+              title={`收入各項資訊 ${normalizeNumber(chartData.income.total)}`}
               total={chartData.income.total}
               list={chartData.income.list}
             />
@@ -254,10 +268,20 @@ export const ChartBlock = () => {
           <ChartContainer title="各項開銷之必要與非必要占比">
             <ul className="w-full list-disc pl-6">
               <li>
-                總必要開銷: ${normalizeNumber(chartData.income.necessary)}
+                【總必要開銷】
+                {(
+                  (chartData.income.necessary * 100) /
+                  (chartData.income.necessary + chartData.income.unnecessary)
+                ).toFixed(2)}
+                %
               </li>
               <li>
-                總額外開銷: ${normalizeNumber(chartData.outcome.unnecessary)}
+                【總額外開銷】
+                {(
+                  (chartData.income.unnecessary * 100) /
+                  (chartData.income.necessary + chartData.income.unnecessary)
+                ).toFixed(2)}
+                %
               </li>
             </ul>
             <BarChart
