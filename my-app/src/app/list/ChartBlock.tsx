@@ -254,12 +254,12 @@ export const ChartBlock = () => {
               <Tooltip />
             </PieChart>
             <CostTable
-              title={`支出各項資訊 ${normalizeNumber(chartData.outcome.total)}`}
+              title={`支出各項資訊 $${normalizeNumber(chartData.outcome.total)}`}
               total={chartData.outcome.total}
               list={chartData.outcome.list}
             />
             <CostTable
-              title={`收入各項資訊 ${normalizeNumber(chartData.income.total)}`}
+              title={`收入各項資訊 $${normalizeNumber(chartData.income.total)}`}
               total={chartData.income.total}
               list={chartData.income.list}
             />
