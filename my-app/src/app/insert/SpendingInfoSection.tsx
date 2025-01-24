@@ -1,10 +1,10 @@
 'use client';
 
+import { EditorBlock } from '@/app/insert/EditorBlock';
+import { SpendingList } from '@/app/insert/SpendingList';
 import { DatePicker } from '@/components/DatePicker';
 import { RefreshIcon } from '@/components/icons/RefreshIcon';
 import { Select } from '@/components/Select';
-import { EditorBlock } from '@/app/insert/EditorBlock';
-import { SpendingList } from '@/app/insert/SpendingList';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
@@ -18,6 +18,7 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { v7 as uuid } from 'uuid';
 
 export const SpendingInfoSection = () => {
   const [state, dispatch] = useSpendingReducer();
@@ -50,7 +51,15 @@ export const SpendingInfoSection = () => {
   }, [selectedGroup, userData, syncData]);
 
   const reset = () => {
-    dispatch({ type: 'RESET' });
+    dispatch({
+      type: 'RESET',
+      payload: {
+        id: uuid(),
+        date: new Date().toUTCString(),
+        amount: 0,
+        description: '',
+      },
+    });
   };
 
   useEffect(() => {
@@ -60,11 +69,10 @@ export const SpendingInfoSection = () => {
   }, [selectedGroup, userData?.email]);
 
   useEffect(() => {
-    if (userData) {
+    if (userData?.groups) {
       syncGroup(userData.groups);
-      syncData(undefined, userData.email);
     }
-  }, [syncData, syncGroup, userData]);
+  }, [syncGroup, userData?.groups]);
 
   return (
     <div className="relative flex w-full flex-1 flex-col items-center gap-4 p-6">

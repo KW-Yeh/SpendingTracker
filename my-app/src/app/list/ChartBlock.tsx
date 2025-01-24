@@ -1,6 +1,8 @@
 'use client';
+
 import { ChartContainer } from '@/app/list/ChartContainer';
-import { Select } from '@/components/Select';
+import { CostTable } from '@/app/list/CostTable';
+import { Filter } from '@/app/list/Filter';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
@@ -16,14 +18,13 @@ import {
 } from 'react';
 import {
   Bar,
-  CartesianGrid,
   Cell,
   Label,
+  LabelList,
   Legend,
   Pie,
   Tooltip,
   XAxis,
-  YAxis,
 } from 'recharts';
 
 const PieChart = dynamic(() => import('recharts').then((mod) => mod.PieChart), {
@@ -34,7 +35,7 @@ const BarChart = dynamic(() => import('recharts').then((mod) => mod.BarChart), {
   ssr: false,
 });
 
-const renderCustomizedLabel = (props: {
+const renderCustomizedLabelForPieCell = (props: {
   cx: number;
   cy: number;
   midAngle: number;
@@ -58,6 +59,29 @@ const renderCustomizedLabel = (props: {
       className="rounded-md bg-background p-1 text-xs"
     >
       {name}
+    </text>
+  );
+};
+
+const renderCustomizedLabelForBar = (props: {
+  x?: number | string;
+  y?: number | string;
+  width?: number | string;
+  height?: number | string;
+  value?: number | string;
+}) => {
+  const { x = 0, y = 0, width = 0, height = 0, value = 0 } = props;
+  const percent = Number(value).toFixed(0);
+  if (Number(percent) < 25) return null;
+  return (
+    <text
+      x={Number(x) + Number(width) / 2}
+      y={Number(y) + Number(height) / 2}
+      fill="#fff"
+      textAnchor="middle"
+      dominantBaseline="middle"
+    >
+      {percent}%
     </text>
   );
 };
@@ -141,59 +165,22 @@ export const ChartBlock = () => {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="flex items-center gap-4">
-        <Select
-          name="group"
-          value={group?.name ?? '個人'}
-          onChange={(_id) => {
-            setGroupId(_id);
-            refreshData(_id);
-          }}
-          className="w-36 rounded-full border border-solid border-gray-300 px-4 py-1 transition-colors active:border-text sm:hover:border-text"
-          menuStyle="max-w-60"
-        >
-          <Select.Item value="">個人</Select.Item>
-          {!loadingGroups &&
-            groups.map((group) => (
-              <Select.Item key={group.id} value={group.id}>
-                {group.name}
-              </Select.Item>
-            ))}
-        </Select>
-        <div className="flex items-center justify-center gap-2 rounded-full border border-solid border-gray-300 px-4 py-1">
-          <Select name="year" value={year} onChange={setYear}>
-            {Array(11)
-              .fill(0)
-              .map((_, i) => (
-                <Select.Item
-                  key={`${today.getFullYear() - 5 + i}`}
-                  value={`${today.getFullYear() - 5 + i}`}
-                >
-                  {`${today.getFullYear() - 5 + i}`}
-                </Select.Item>
-              ))}
-          </Select>
-          <span>年</span>
-          <Select
-            name="month"
-            value={month}
-            onChange={setMonth}
-            className="w-8"
-          >
-            {Array(12)
-              .fill(0)
-              .map((_, i) => (
-                <Select.Item
-                  key={(i + 1).toString()}
-                  value={(i + 1).toString()}
-                >
-                  {i + 1}
-                </Select.Item>
-              ))}
-          </Select>
-          <span>月</span>
-        </div>
-      </div>
+      <Filter
+        refreshData={refreshData}
+        groupOptions={{
+          setGroupId,
+          loadingGroups,
+          groups,
+          group,
+        }}
+        dateOptions={{
+          today,
+          year,
+          setYear,
+          month,
+          setMonth,
+        }}
+      />
 
       {loading && <div>Loading...</div>}
       {isNoData && <div>無資料</div>}
@@ -211,7 +198,7 @@ export const ChartBlock = () => {
                   { name: '收入', value: chartData.income.total },
                 ]}
                 dataKey="value"
-                label={renderCustomizedLabel}
+                label={renderCustomizedLabelForPieCell}
                 cx="50%"
                 cy="50%"
                 innerRadius={85}
@@ -252,6 +239,16 @@ export const ChartBlock = () => {
 
               <Tooltip />
             </PieChart>
+            <CostTable
+              title="支出各項資訊"
+              total={chartData.outcome.total}
+              list={chartData.outcome.list}
+            />
+            <CostTable
+              title="收入各項資訊"
+              total={chartData.income.total}
+              list={chartData.income.list}
+            />
           </ChartContainer>
 
           <ChartContainer title="各項開銷之必要與非必要占比">
@@ -266,14 +263,16 @@ export const ChartBlock = () => {
             <BarChart
               width={300}
               height={250}
-              data={chartData.outcome.list}
+              data={chartData.outcome.list.map((item) => ({
+                ...item,
+                necessaryPercentage: (item.necessary / item.value) * 100,
+                unnecessaryPercentage: (item.unnecessary / item.value) * 100,
+              }))}
               margin={{
                 top: 24,
               }}
             >
-              <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
-              <YAxis />
               <Tooltip />
               <Legend
                 align="right"
@@ -283,8 +282,18 @@ export const ChartBlock = () => {
                   { value: '額外開銷', type: 'rect', color: '#82ca9d' },
                 ]}
               />
-              <Bar dataKey="necessary" stackId="a" fill="#8884d8" />
-              <Bar dataKey="unnecessary" stackId="a" fill="#82ca9d" />
+              <Bar dataKey="necessaryPercentage" stackId="a" fill="#8884d8">
+                <LabelList
+                  dataKey="necessaryPercentage"
+                  content={renderCustomizedLabelForBar}
+                />
+              </Bar>
+              <Bar dataKey="unnecessaryPercentage" stackId="a" fill="#82ca9d">
+                <LabelList
+                  dataKey="unnecessaryPercentage"
+                  content={renderCustomizedLabelForBar}
+                />
+              </Bar>
             </BarChart>
           </ChartContainer>
         </>

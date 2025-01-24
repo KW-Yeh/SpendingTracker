@@ -16,6 +16,7 @@ import {
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import { useSession } from 'next-auth/react';
 import { ChangeEvent, FormEvent, useCallback, useRef, useState } from 'react';
+import { v7 as uuid } from 'uuid';
 
 interface Props {
   data: SpendingRecord;
@@ -65,7 +66,7 @@ export const EditorBlock = (props: Props) => {
       setLoading(true);
       const newSpending: SpendingRecord = {
         ...data,
-        id: data.id,
+        id: data.id || uuid(),
         'user-token': userEmail,
         groupId: groupId || undefined,
         type: data.type,

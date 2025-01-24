@@ -2,7 +2,6 @@
 
 import { Necessity, SpendingType } from '@/utils/constants';
 import { useReducer } from 'react';
-import { v7 as uuid } from 'uuid';
 
 type Action =
   | {
@@ -35,14 +34,14 @@ type Action =
     }
   | {
       type: 'RESET';
-      payload?: SpendingRecord;
+      payload?: Partial<SpendingRecord>;
     };
 
 const INITIAL_STATE: SpendingRecord = {
-  id: uuid(),
+  id: '',
   amount: 0,
   category: '🍔',
-  date: new Date().toISOString(),
+  date: new Date().toUTCString(),
   description: '',
   necessity: Necessity.Need,
   'user-token': '',
@@ -52,15 +51,7 @@ const INITIAL_STATE: SpendingRecord = {
 const reducer = (state: SpendingRecord, action: Action) => {
   switch (action.type) {
     case 'RESET':
-      return (
-        action.payload ?? {
-          ...state,
-          id: uuid(),
-          date: new Date().toISOString(),
-          amount: 0,
-          description: '',
-        }
-      );
+      return { ...INITIAL_STATE, ...action.payload };
     case 'SET_AMOUNT':
       return { ...state, amount: action.payload };
     case 'SET_CATEGORY':
