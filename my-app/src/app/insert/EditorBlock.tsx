@@ -1,7 +1,8 @@
 'use client';
 
-import { EnterIcon } from '@/components/icons/EnterIcon';
+import { CalculatorIcon } from '@/components/icons/CalculatorIcon';
 import { Loading } from '@/components/icons/Loading';
+import { SendIcon } from '@/components/icons/SendIcon';
 import { Modal } from '@/components/Modal';
 import { NumberKeyboard } from '@/components/NumberKeyboard';
 import { Select } from '@/components/Select';
@@ -15,7 +16,14 @@ import {
 } from '@/utils/constants';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import { useSession } from 'next-auth/react';
-import { ChangeEvent, FormEvent, useCallback, useRef, useState } from 'react';
+import {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { v7 as uuid } from 'uuid';
 
 interface Props {
@@ -37,6 +45,7 @@ export const EditorBlock = (props: Props) => {
   const [selectedCategory, setSelectedCategory] = useState(data.category);
   const [newDesc, setNewDesc] = useState(data.description);
   const modalRef = useRef<ModalRef>(null);
+  const [isNoAmount, setIsNoAmount] = useState(false);
 
   const handleEditDesc = (event: ChangeEvent<HTMLInputElement>) => {
     setNewDesc(event.target.value);
@@ -62,7 +71,10 @@ export const EditorBlock = (props: Props) => {
       const category = formData.get('category') as string;
       const description = formData.get('description') as string;
       const amount = Math.abs(parseInt(formData.get('amount') as string));
-      if (amount === 0) return;
+      if (amount === 0) {
+        setIsNoAmount(true);
+        return;
+      }
       setLoading(true);
       const newSpending: SpendingRecord = {
         ...data,
@@ -84,6 +96,12 @@ export const EditorBlock = (props: Props) => {
     },
     [session?.user?.email, memberEmail, groupId, data, reset, syncData],
   );
+
+  useEffect(() => {
+    if (amount !== 0) {
+      setIsNoAmount(false);
+    }
+  }, [amount]);
 
   return (
     <>
@@ -130,10 +148,13 @@ export const EditorBlock = (props: Props) => {
           <button
             type="button"
             onClick={() => modalRef.current?.open()}
-            className="flex h-full w-16 items-center gap-1 p-2 sm:w-24"
+            className={`mr-1 flex h-full w-20 items-center justify-between gap-1 p-2 sm:w-24 ${isNoAmount ? 'text-red-500' : ''}`}
           >
-            <span>$</span>
-            <span>{normalizeNumber(amount)}</span>
+            <span className="flex items-center gap-1">
+              <span>$</span>
+              <span>{normalizeNumber(amount)}</span>
+            </span>
+            <CalculatorIcon className="size-4" />
             <input
               type="text"
               name="amount"
@@ -143,18 +164,22 @@ export const EditorBlock = (props: Props) => {
             />
           </button>
         </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="flex h-full w-12 shrink-0 items-center justify-center rounded-r-lg border-l border-solid border-text bg-primary-100 p-2 transition-colors active:bg-primary-300 sm:w-12 sm:hover:bg-primary-300"
-        >
-          {loading && (
-            <Loading className="size-3 animate-spin text-white sm:size-4" />
-          )}
-          {!loading && <EnterIcon className="size-3 sm:size-4" />}
-        </button>
+        <div className="flex items-center justify-center border-l border-solid border-text">
+          <button
+            type="submit"
+            disabled={loading}
+            className="group flex shrink-0 items-center justify-center rounded-r-lg bg-primary-100 p-3 transition-colors active:bg-primary-300 disabled:bg-gray-300 sm:hover:bg-primary-300"
+          >
+            {loading && (
+              <Loading className="size-3 animate-spin text-white sm:size-4" />
+            )}
+            {!loading && (
+              <SendIcon className="size-4 -translate-x-px rotate-45" />
+            )}
+          </button>
+        </div>
       </form>
-      <Modal ref={modalRef} className="w-72 sm:w-80" title="你的花費">
+      <Modal ref={modalRef} className="sm:max-w-96" title="你的花費">
         <NumberKeyboard
           default={amount}
           onConfirm={(val) => {

@@ -82,21 +82,21 @@ export const SpendingItem = (props: Props) => {
             onClick={reset}
             className="group rounded p-2 transition-colors active:bg-primary-300 sm:hover:bg-primary-300"
           >
-            <CloseIcon className="size-4 transition-colors group-active:text-background sm:group-hover:text-background" />
+            <CloseIcon className="size-3 transition-colors group-active:text-background sm:size-4 sm:group-hover:text-background" />
           </button>
         ) : (
           <button
             onClick={handleOnEdit}
             className="group rounded p-2 transition-colors active:bg-primary-300 sm:hover:bg-primary-300"
           >
-            <EditIcon className="size-4 transition-colors group-active:text-background sm:group-hover:text-background" />
+            <EditIcon className="size-3 transition-colors group-active:text-background sm:size-4 sm:group-hover:text-background" />
           </button>
         )}
         <button
           onClick={handleOnDelete}
           className="group rounded p-2 transition-colors active:bg-red-300 sm:hover:bg-red-300"
         >
-          <DeleteIcon className="size-4 transition-colors group-active:text-background sm:group-hover:text-background" />
+          <DeleteIcon className="size-3 transition-colors group-active:text-background sm:size-4 sm:group-hover:text-background" />
         </button>
       </div>
     </div>
