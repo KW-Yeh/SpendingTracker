@@ -171,7 +171,7 @@ export const EditorBlock = (props: Props) => {
             className="group flex shrink-0 items-center justify-center rounded-r-lg bg-primary-100 p-3 transition-colors active:bg-primary-300 disabled:bg-gray-300 sm:hover:bg-primary-300"
           >
             {loading && (
-              <Loading className="size-3 animate-spin text-white sm:size-4" />
+              <Loading className="size-4 animate-spin text-white" />
             )}
             {!loading && (
               <SendIcon className="size-4 -translate-x-px rotate-45" />
