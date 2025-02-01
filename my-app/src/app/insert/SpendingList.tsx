@@ -45,9 +45,9 @@ export const SpendingList = (props: Props) => {
         return date.getFullYear() === year && date.getMonth() === month;
       }
       return (
-        date.getFullYear() === year &&
-        date.getMonth() === month &&
-        date.getDate() === day
+        date.getFullYear() === new Date().getFullYear() &&
+        date.getMonth() === new Date().getMonth() &&
+        date.getDate() === new Date().getDate()
       );
     },
     [day, month, year, filter],
