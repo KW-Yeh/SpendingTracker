@@ -164,11 +164,11 @@ export const EditorBlock = (props: Props) => {
             />
           </button>
         </div>
-        <div className="flex items-center justify-center border-l border-solid border-text">
+        <div className="flex h-full items-center justify-center border-l border-solid border-text">
           <button
             type="submit"
             disabled={loading}
-            className="group flex shrink-0 items-center justify-center rounded-r-lg bg-primary-100 p-3 transition-colors active:bg-primary-300 disabled:bg-gray-300 sm:hover:bg-primary-300"
+            className="group flex h-full shrink-0 items-center justify-center rounded-r-lg bg-primary-100 p-3 transition-colors active:bg-primary-300 disabled:bg-gray-300 sm:hover:bg-primary-300"
           >
             {loading && (
               <Loading className="size-4 animate-spin text-white" />

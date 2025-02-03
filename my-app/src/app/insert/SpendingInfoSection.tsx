@@ -16,6 +16,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { v7 as uuid } from 'uuid';
@@ -208,21 +209,59 @@ const Switch = ({
   type: SpendingType;
   onChange: (type: SpendingType) => void;
 }) => {
+  const leftRef = useRef<HTMLButtonElement>(null);
+  const rightRef = useRef<HTMLButtonElement>(null);
+  const blockRef = useRef<HTMLDivElement>(null);
+
   const handleOnClick = (type: SpendingType) => {
     startTransition(() => {
       onChange(type);
     });
   };
+
+  useEffect(() => {
+    const leftButton = leftRef.current;
+    const rightButton = rightRef.current;
+    const block = blockRef.current;
+
+    requestAnimationFrame(() => {
+      if (leftButton && rightButton && block) {
+        const leftWidth = leftButton.offsetWidth;
+        const rightWidth = rightButton.offsetWidth;
+        const leftLeft = leftButton.offsetLeft;
+        const rightLeft = rightButton.offsetLeft;
+
+        if (type === SpendingType.Outcome) {
+          block.style.left = `${leftLeft}px`;
+          block.style.width = `${leftWidth}px`;
+          block.style.backgroundColor = '#fca5a5';
+        } else {
+          block.style.left = `${rightLeft}px`;
+          block.style.width = `${rightWidth}px`;
+          block.style.backgroundColor = '#86efac';
+        }
+      }
+    });
+  }, [type]);
+
   return (
-    <div className="flex items-center gap-1 text-sm sm:text-base">
+    <div
+      className={`relative flex items-center gap-1 rounded-lg border-2 border-solid p-1 text-sm sm:text-base ${type === SpendingType.Outcome ? 'border-red-500' : 'border-green-500'}`}
+    >
+      <div
+        ref={blockRef}
+        className="absolute bottom-1 top-1 z-10 rounded transition-all"
+      ></div>
       <button
-        className={`rounded-l border border-solid border-red-500 px-6 py-2 text-center transition-colors ${type === SpendingType.Outcome ? 'bg-red-300' : 'text-red-500 active:bg-red-300 active:text-text sm:hover:bg-red-300 sm:hover:text-text'}`}
+        ref={leftRef}
+        className={`z-20 bg-transparent px-6 py-2 text-center font-semibold transition-colors ${type === SpendingType.Outcome ? 'text-text' : 'text-gray-500 active:text-text sm:hover:text-text'}`}
         onClick={() => handleOnClick(SpendingType.Outcome)}
       >
         支出
       </button>
       <button
-        className={`rounded-r border border-solid border-green-500 px-6 py-2 text-center transition-colors ${type === SpendingType.Income ? 'bg-green-300' : 'text-green-500 active:bg-green-300 active:text-text sm:hover:bg-green-300 sm:hover:text-text'}`}
+        ref={rightRef}
+        className={`z-20 bg-transparent px-6 py-2 text-center font-semibold transition-colors ${type === SpendingType.Income ? 'text-text' : 'text-gray-500 active:text-text sm:hover:text-text'}`}
         onClick={() => handleOnClick(SpendingType.Income)}
       >
         收入
