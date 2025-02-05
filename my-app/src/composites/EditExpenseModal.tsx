@@ -142,7 +142,7 @@ export const EditExpenseModal = (props: Props) => {
     <Modal
       ref={ref}
       onClose={cancel}
-      className="flex w-full flex-col max-sm:h-full max-sm:rounded-none sm:max-w-96"
+      className="flex w-full flex-col overflow-y-auto max-sm:h-full max-sm:rounded-none sm:max-w-96"
       title={isNewData ? '新增記錄' : '修改記錄'}
     >
       <form className="flex flex-1 flex-col gap-2" onSubmit={handleOnSubmit}>
