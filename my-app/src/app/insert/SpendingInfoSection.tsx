@@ -132,7 +132,7 @@ export const SpendingInfoSection = () => {
 
       <button
         type="button"
-        className="fixed bottom-8 z-40 mx-auto w-40 rounded-full border border-solid border-gray-300 p-4 font-bold shadow transition-colors active:border-text sm:hover:border-text"
+        className="fixed bottom-8 z-40 mx-auto w-40 rounded-full border border-solid border-gray-300 bg-background p-4 font-bold shadow transition-colors active:border-text sm:hover:border-text"
         onClick={() => {
           setIsNewData(true);
           modalRef.current?.open();
