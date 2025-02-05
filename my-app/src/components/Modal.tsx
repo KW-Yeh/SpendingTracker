@@ -34,7 +34,7 @@ export const Modal = forwardRef<ModalRef, Props>((props, ref) => {
     <div className="fixed bottom-0 left-0 right-0 top-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
       <div
         ref={contentRef}
-        className={`relative w-fit rounded-3xl bg-background p-6 ${props.className}`}
+        className={`relative rounded-3xl bg-background p-6 ${props.className}`}
       >
         <button
           type="button"

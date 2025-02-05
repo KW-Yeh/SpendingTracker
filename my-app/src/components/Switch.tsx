@@ -7,16 +7,18 @@ interface Props {
   option2: Option;
   value: string;
   onChange: (value: string) => void;
+  className?: string;
 }
 
 type Option = {
   label: ReactNode;
   value: string;
   onSelectColor: string;
+  className?: string;
 };
 
 export const Switch = (props: Props) => {
-  const { option1, option2, value, onChange } = props;
+  const { option1, option2, value, className = '', onChange } = props;
 
   const option1Ref = useRef<HTMLButtonElement>(null);
   const option2Ref = useRef<HTMLButtonElement>(null);
@@ -55,7 +57,7 @@ export const Switch = (props: Props) => {
 
   return (
     <div
-      className={`relative flex items-center gap-1 rounded-lg border border-solid border-text p-1 text-sm sm:text-base`}
+      className={`relative flex w-fit items-center gap-1 rounded-lg border border-solid border-text p-1 ${className}`}
     >
       <div
         ref={floatingBlockRef}
@@ -63,14 +65,16 @@ export const Switch = (props: Props) => {
       ></div>
       <button
         ref={option1Ref}
-        className={`z-20 bg-transparent px-6 py-2 text-center font-semibold transition-colors ${value === option1.value ? 'text-text' : 'text-gray-500 active:text-text sm:hover:text-text'}`}
+        type="button"
+        className={`z-20 bg-transparent px-6 py-2 text-center font-semibold transition-colors ${option1.className} ${value === option1.value ? 'text-text' : 'text-gray-500 active:text-text sm:hover:text-text'}`}
         onClick={() => handleOnClick(option1.value)}
       >
         {option1.label}
       </button>
       <button
         ref={option2Ref}
-        className={`z-20 bg-transparent px-6 py-2 text-center font-semibold transition-colors ${value === option2.value ? 'text-text' : 'text-gray-500 active:text-text sm:hover:text-text'}`}
+        type="button"
+        className={`z-20 bg-transparent px-6 py-2 text-center font-semibold transition-colors ${option2.className} ${value === option2.value ? 'text-text' : 'text-gray-500 active:text-text sm:hover:text-text'}`}
         onClick={() => handleOnClick(option2.value)}
       >
         {option2.label}

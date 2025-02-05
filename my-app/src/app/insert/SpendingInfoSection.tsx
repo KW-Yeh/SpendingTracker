@@ -1,22 +1,22 @@
 'use client';
 
-import { EditorBlock } from '@/app/insert/EditorBlock';
 import { SpendingList } from '@/app/insert/SpendingList';
 import { DatePicker } from '@/components/DatePicker';
 import { RefreshIcon } from '@/components/icons/RefreshIcon';
-import { Select } from '@/components/Select';
 import { Switch } from '@/components/Switch';
+import { EditExpenseModal } from '@/composites/EditExpenseModal';
+import { GroupSelector } from '@/composites/GroupSelector';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { useSpendingReducer } from '@/hooks/useSpendingReducer';
-import { SpendingType } from '@/utils/constants';
+import { DateFilter, SpendingType } from '@/utils/constants';
 import {
   ChangeEvent,
   startTransition,
   useCallback,
   useEffect,
-  useMemo,
+  useRef,
   useState,
 } from 'react';
 import { v7 as uuid } from 'uuid';
@@ -28,6 +28,9 @@ export const SpendingInfoSection = () => {
   const { config: userData } = useUserConfigCtx();
   const { syncData, loading } = useGetSpendingCtx();
   const { syncGroup } = useGroupCtx();
+  const modalRef = useRef<ModalRef>(null);
+  const [isNewData, setIsNewData] = useState(false);
+  const [filter, setFilter] = useState(DateFilter.Day);
 
   const handleOnChangeDate = (event: ChangeEvent) => {
     const date = new Date((event.target as HTMLInputElement).value);
@@ -89,6 +92,7 @@ export const SpendingInfoSection = () => {
       </div>
       <Switch
         value={state.type}
+        className="text-sm sm:text-base"
         onChange={(type) => {
           dispatch({
             type: 'SET_TYPE',
@@ -106,8 +110,37 @@ export const SpendingInfoSection = () => {
           onSelectColor: '#86efac',
         }}
       />
-      <DatePicker date={new Date(state.date)} onChange={handleOnChangeDate} />
-      <div className="flex w-full max-w-175 flex-wrap justify-between gap-2">
+      <div className="flex w-full max-w-175 items-center justify-center gap-2">
+        <DatePicker date={new Date(state.date)} onChange={handleOnChangeDate} />
+        <div className="flex items-center divide-x divide-gray-300 rounded border border-solid border-gray-300 text-sm">
+          <button
+            type="button"
+            onClick={() => setFilter(DateFilter.Day)}
+            className={`rounded-l-[3px] px-4 py-1 transition-colors ${filter === DateFilter.Day ? 'bg-gray-300' : 'bg-background'}`}
+          >
+            日
+          </button>
+          <button
+            type="button"
+            onClick={() => setFilter(DateFilter.Month)}
+            className={`rounded-r-[3px] px-4 py-1 transition-colors ${filter === DateFilter.Month ? 'bg-gray-300' : 'bg-background'}`}
+          >
+            月
+          </button>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        className="fixed bottom-8 mx-auto w-40 rounded-full border border-solid border-gray-300 p-4 font-bold shadow transition-colors active:border-text sm:hover:border-text"
+        onClick={() => {
+          setIsNewData(true);
+          modalRef.current?.open();
+        }}
+      >
+        記帳
+      </button>
+      <div className="flex w-full max-w-175 items-center gap-2">
         <GroupSelector
           selectedGroup={selectedGroup}
           selectedMemberEmail={selectedMemberEmail}
@@ -115,15 +148,9 @@ export const SpendingInfoSection = () => {
           onSelectMemberEmail={setSelectedMemberEmail}
         />
       </div>
-      <EditorBlock
-        key={state.id}
-        data={state}
-        groupId={selectedGroup}
-        memberEmail={selectedMemberEmail}
-        reset={reset}
-      />
       <SpendingList
         type={state.type as SpendingType}
+        dateFilter={filter}
         date={new Date(state.date)}
         selectedDataId={state.id}
         handleEdit={(data) => {
@@ -131,83 +158,19 @@ export const SpendingInfoSection = () => {
             type: 'RESET',
             payload: data,
           });
+          setIsNewData(false);
+          modalRef.current?.open();
         }}
         refreshData={refreshData}
         memberEmail={selectedMemberEmail}
         reset={reset}
       />
-    </div>
-  );
-};
-
-const GroupSelector = ({
-  selectedGroup,
-  selectedMemberEmail,
-  onSelectGroup,
-  onSelectMemberEmail,
-}: {
-  selectedGroup?: string;
-  selectedMemberEmail?: string;
-  onSelectGroup: (groupId: string) => void;
-  onSelectMemberEmail: (email?: string) => void;
-}) => {
-  const { groups, loading } = useGroupCtx();
-
-  const group = useMemo(
-    () => groups.find((group) => group.id === selectedGroup),
-    [groups, selectedGroup],
-  );
-
-  const selectedMember = useMemo(
-    () => group?.users.find((user) => user.email === selectedMemberEmail),
-    [group?.users, selectedMemberEmail],
-  );
-
-  const handleOnSelectGroup = useCallback(
-    (groupId: string) => {
-      if (loading) return;
-      onSelectGroup(groupId);
-    },
-    [loading, onSelectGroup],
-  );
-
-  return (
-    <div className="flex items-center gap-1 text-sm sm:text-base">
-      <span>群組</span>
-      <Select
-        name="group"
-        value={group?.name ?? '個人'}
-        onChange={handleOnSelectGroup}
-        className="max-w-24 rounded-full border border-solid border-gray-300 px-3 py-1 transition-colors active:border-text sm:hover:border-text"
-        menuStyle="max-w-60"
-      >
-        <Select.Item value="">個人</Select.Item>
-        {!loading &&
-          groups.map((group) => (
-            <Select.Item key={group.id} value={group.id}>
-              {group.name}
-            </Select.Item>
-          ))}
-      </Select>
-
-      {group && (
-        <>
-          <span className="ml-2">成員</span>
-          <Select
-            name="member"
-            value={selectedMember?.name ?? '全部'}
-            onChange={onSelectMemberEmail}
-            className="max-w-24 rounded-full border border-solid border-gray-300 px-3 py-1 transition-colors active:border-text sm:hover:border-text"
-          >
-            <Select.Item value="">全部</Select.Item>
-            {group.users.map((user) => (
-              <Select.Item key={user.email} value={user.email}>
-                {user.name}
-              </Select.Item>
-            ))}
-          </Select>
-        </>
-      )}
+      <EditExpenseModal
+        ref={modalRef}
+        data={state}
+        isNewData={isNewData}
+        reset={reset}
+      />
     </div>
   );
 };
