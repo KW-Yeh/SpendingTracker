@@ -81,6 +81,7 @@ export const EditExpenseModal = (props: Props) => {
       syncData(groupId, userEmail);
       setLoading(false);
       reset();
+      ref.current?.close();
     },
     [
       session?.user?.email,
@@ -92,6 +93,7 @@ export const EditExpenseModal = (props: Props) => {
       selectedCategory,
       syncData,
       reset,
+      ref,
     ],
   );
 
@@ -100,6 +102,16 @@ export const EditExpenseModal = (props: Props) => {
       setIsNoAmount(false);
     }
   }, [amount]);
+
+  useEffect(() => {
+    setSpendingType(data.type);
+    setNecessity(data.necessity);
+    setSelectedCategory(data.category);
+    setAmount(data.amount);
+    setMemberEmail(data['user-token']);
+    setGroupId(data.groupId);
+    setLoading(false);
+  }, [data]);
 
   return (
     <Modal
@@ -182,6 +194,7 @@ export const EditExpenseModal = (props: Props) => {
                 className="col-span-1 rounded bg-background px-2 py-1 focus:outline-0"
                 autoComplete="off"
                 placeholder="描述"
+                defaultValue={data.description}
               />
               <datalist id="common-description">
                 <option value="早餐"></option>
@@ -215,7 +228,7 @@ export const EditExpenseModal = (props: Props) => {
             className="flex w-36 items-center justify-center rounded-lg bg-text p-2 text-background"
           >
             {loading && (
-              <Loading className="size-4 animate-spin py-1 text-white" />
+              <Loading className="size-6 animate-spin py-1 text-white" />
             )}
             {!loading && <span>送出</span>}
           </button>
