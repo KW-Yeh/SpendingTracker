@@ -51,6 +51,14 @@ export const EditExpenseModal = (props: Props) => {
     [data.type],
   );
 
+  const resetStates = useCallback(() => {
+    setSpendingType(SpendingType.Outcome);
+    setNecessity(Necessity.Need);
+    setSelectedCategory('');
+    setAmount(0);
+    setGroupId(undefined);
+  }, []);
+
   const handleOnSubmit = useCallback(
     async (event: FormEvent) => {
       event.preventDefault();
@@ -81,6 +89,7 @@ export const EditExpenseModal = (props: Props) => {
       syncData(groupId, userEmail);
       setLoading(false);
       reset();
+      resetStates();
       ref.current?.close();
     },
     [
@@ -93,6 +102,7 @@ export const EditExpenseModal = (props: Props) => {
       selectedCategory,
       syncData,
       reset,
+      resetStates,
       ref,
     ],
   );
