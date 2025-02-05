@@ -7,6 +7,7 @@ import { ChangeEvent, useRef } from 'react';
 interface Props {
   date: Date;
   onChange: (event: ChangeEvent) => void;
+  className?: string;
 }
 
 export const DatePicker = (props: Props) => {
@@ -36,7 +37,7 @@ export const DatePicker = (props: Props) => {
       />
       <button
         type="button"
-        className="z-20 flex items-center justify-between gap-4 bg-background p-4 text-base sm:text-lg"
+        className={`z-20 flex items-center justify-between gap-4 bg-background text-base sm:text-lg ${props.className}`}
         onClick={showPicker}
       >
         <span>{`${year} 年 ${month + 1} 月 ${day} 日 (週${WEEKDAY[weekday]})`}</span>

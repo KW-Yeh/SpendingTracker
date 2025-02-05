@@ -7,11 +7,13 @@ interface Props {
   children: ReactNode;
   className?: string;
   title: ReactNode;
+  onClose?: () => void;
 }
 
 export const Modal = forwardRef<ModalRef, Props>((props, ref) => {
   const [open, setOpen] = useState(false);
   const contentRef = useFocusRef<HTMLDivElement>(() => {
+    props.onClose?.();
     setOpen(false);
   });
 
@@ -25,6 +27,7 @@ export const Modal = forwardRef<ModalRef, Props>((props, ref) => {
   }));
 
   const handleCloseModal = () => {
+    props.onClose?.();
     setOpen(false);
   };
 

@@ -1,4 +1,5 @@
 'use client';
+import { DatePicker } from '@/components/DatePicker';
 import { Loading } from '@/components/icons/Loading';
 import { Modal } from '@/components/Modal';
 import { NumberKeyboard, NumberKeyboardRef } from '@/components/NumberKeyboard';
@@ -14,6 +15,7 @@ import {
 } from '@/utils/constants';
 import { useSession } from 'next-auth/react';
 import {
+  ChangeEvent,
   FormEvent,
   RefObject,
   useCallback,
@@ -42,14 +44,20 @@ export const EditExpenseModal = (props: Props) => {
   const [amount, setAmount] = useState(data.amount);
   const [isNoAmount, setIsNoAmount] = useState(false);
   const [memberEmail, setMemberEmail] = useState<string>();
+  const [date, setDate] = useState(data.date);
   const [groupId, setGroupId] = useState<string>();
   const [loading, setLoading] = useState(false);
 
   const spendingCategories = useMemo(
     () =>
-      data.type === SpendingType.Income ? INCOME_TYPE_MAP : OUTCOME_TYPE_MAP,
-    [data.type],
+      spendingType === SpendingType.Income ? INCOME_TYPE_MAP : OUTCOME_TYPE_MAP,
+    [spendingType],
   );
+
+  const handleOnChangeDate = (event: ChangeEvent) => {
+    const date = new Date((event.target as HTMLInputElement).value);
+    setDate(date.toUTCString());
+  };
 
   const resetStates = useCallback(() => {
     setSpendingType(SpendingType.Outcome);
@@ -58,6 +66,12 @@ export const EditExpenseModal = (props: Props) => {
     setAmount(0);
     setGroupId(undefined);
   }, []);
+
+  const cancel = useCallback(() => {
+    reset();
+    resetStates();
+    ref.current?.close();
+  }, [ref, reset, resetStates]);
 
   const handleOnSubmit = useCallback(
     async (event: FormEvent) => {
@@ -78,7 +92,7 @@ export const EditExpenseModal = (props: Props) => {
         'user-token': userEmail,
         groupId: groupId || undefined,
         type: spendingType,
-        date: data.date,
+        date,
         necessity,
         category: selectedCategory,
         description,
@@ -98,6 +112,7 @@ export const EditExpenseModal = (props: Props) => {
       data,
       groupId,
       spendingType,
+      date,
       necessity,
       selectedCategory,
       syncData,
@@ -126,10 +141,11 @@ export const EditExpenseModal = (props: Props) => {
   return (
     <Modal
       ref={ref}
-      className="w-full max-sm:mt-auto max-sm:rounded-b-none sm:max-w-96"
+      onClose={cancel}
+      className="flex w-full flex-col max-sm:h-full max-sm:rounded-none sm:max-w-96"
       title={isNewData ? '新增記錄' : '修改記錄'}
     >
-      <form className="flex flex-col gap-2" onSubmit={handleOnSubmit}>
+      <form className="flex flex-1 flex-col gap-2" onSubmit={handleOnSubmit}>
         <div className="flex flex-col gap-2">
           <div className="flex flex-col gap-2">
             <Switch
@@ -192,6 +208,14 @@ export const EditExpenseModal = (props: Props) => {
               onSelectMemberEmail={setMemberEmail}
             />
           </fieldset>
+          <fieldset className="rounded-lg p-1">
+            <legend className="font-bold">日期</legend>
+            <DatePicker
+              date={new Date(date)}
+              className="rounded-full border border-solid border-gray-300 px-4 py-1"
+              onChange={handleOnChangeDate}
+            />
+          </fieldset>
         </div>
         <fieldset className="p-1">
           <legend className="font-bold">金額</legend>
@@ -231,11 +255,19 @@ export const EditExpenseModal = (props: Props) => {
             />
           </div>
         </fieldset>
-        <div className="flex w-full items-center justify-end py-2">
+        <div className="flex w-full flex-1 items-end justify-between py-2">
+          <button
+            disabled={loading}
+            type="button"
+            onClick={cancel}
+            className="flex w-24 items-center justify-center rounded-lg border border-solid border-red-300 bg-background p-2 text-red-300 transition-colors active:border-red-500 active:text-red-500 sm:hover:border-red-500 sm:hover:text-red-500"
+          >
+            <span>取消</span>
+          </button>
           <button
             disabled={loading}
             type="submit"
-            className="flex w-36 items-center justify-center rounded-lg bg-text p-2 text-background"
+            className="flex w-36 items-center justify-center rounded-lg border border-solid border-text bg-text p-2 text-background transition-all active:bg-gray-600 sm:hover:bg-gray-600"
           >
             {loading && (
               <Loading className="size-6 animate-spin py-1 text-white" />

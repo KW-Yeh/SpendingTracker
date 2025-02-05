@@ -111,7 +111,11 @@ export const SpendingInfoSection = () => {
         }}
       />
       <div className="flex w-full max-w-175 items-center justify-center gap-2">
-        <DatePicker date={new Date(state.date)} onChange={handleOnChangeDate} />
+        <DatePicker
+          date={new Date(state.date)}
+          className="p-4"
+          onChange={handleOnChangeDate}
+        />
         <div className="flex items-center divide-x divide-gray-300 rounded border border-solid border-gray-300 text-sm">
           <button
             type="button"
