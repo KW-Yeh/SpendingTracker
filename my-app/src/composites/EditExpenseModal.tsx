@@ -13,6 +13,7 @@ import {
   OUTCOME_TYPE_MAP,
   SpendingType,
 } from '@/utils/constants';
+import { normalizeNumber } from '@/utils/normalizeNumber';
 import { useSession } from 'next-auth/react';
 import {
   ChangeEvent,
@@ -55,9 +56,21 @@ export const EditExpenseModal = (props: Props) => {
   );
 
   const handleOnChangeDate = (event: ChangeEvent) => {
-    const date = new Date((event.target as HTMLInputElement).value);
-    setDate(date.toUTCString());
+    const _date = new Date((event.target as HTMLInputElement).value);
+    setDate(_date.toUTCString());
   };
+
+  const handleToPreviousDay = useCallback(() => {
+    const _date = new Date(date);
+    _date.setDate(_date.getDate() - 1);
+    setDate(_date.toUTCString());
+  }, [date]);
+
+  const handleToNextDay = useCallback(() => {
+    const _date = new Date(date);
+    _date.setDate(_date.getDate() + 1);
+    setDate(_date.toUTCString());
+  }, [date]);
 
   const resetStates = useCallback(() => {
     setSpendingType(SpendingType.Outcome);
@@ -142,12 +155,15 @@ export const EditExpenseModal = (props: Props) => {
     <Modal
       ref={ref}
       onClose={cancel}
-      className="flex w-full flex-col overflow-y-auto max-sm:h-full max-sm:rounded-none sm:max-w-96"
+      className="flex w-full max-w-96 flex-col"
       title={isNewData ? '新增記錄' : '修改記錄'}
     >
-      <form className="flex flex-1 flex-col gap-2" onSubmit={handleOnSubmit}>
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-col gap-2">
+      <form
+        className="flex w-full flex-1 flex-col gap-2"
+        onSubmit={handleOnSubmit}
+      >
+        <div className="flex w-full flex-col gap-2">
+          <div className="flex items-center gap-2">
             <Switch
               option1={{
                 label: '支出',
@@ -183,78 +199,92 @@ export const EditExpenseModal = (props: Props) => {
               onChange={setNecessity}
             />
           </div>
-          <fieldset className="rounded-lg p-1">
+          <fieldset className="w-full rounded-lg p-1">
             <legend className="font-bold">類型</legend>
-            <div className="flex w-full flex-wrap items-start gap-2">
-              {spendingCategories.map((category) => (
-                <button
-                  type="button"
-                  key={category.value}
-                  disabled={category.value === selectedCategory}
-                  onClick={() => setSelectedCategory(category.value)}
-                  className="rounded border border-solid border-gray-300 px-2 py-1 disabled:bg-gray-300"
-                >
-                  {`${category.value} ${category.label}`}
-                </button>
-              ))}
+            <div className="grid w-full grid-cols-1 overflow-hidden">
+              <div className="scrollbar col-span-1 flex items-center gap-2 overflow-x-auto max-sm:pb-2">
+                {spendingCategories.map((category) => (
+                  <button
+                    type="button"
+                    key={category.value}
+                    disabled={category.value === selectedCategory}
+                    onClick={() => setSelectedCategory(category.value)}
+                    className="shrink-0 rounded border border-solid border-gray-300 px-2 py-1 disabled:bg-gray-300"
+                  >
+                    {`${category.value} ${category.label}`}
+                  </button>
+                ))}
+              </div>
             </div>
-          </fieldset>
-          <fieldset className="rounded-lg p-1">
-            <legend className="font-bold">群組</legend>
-            <GroupSelector
-              selectedGroup={groupId}
-              selectedMemberEmail={memberEmail}
-              onSelectGroup={setGroupId}
-              onSelectMemberEmail={setMemberEmail}
-            />
-          </fieldset>
-          <fieldset className="rounded-lg p-1">
-            <legend className="font-bold">日期</legend>
-            <DatePicker
-              date={new Date(date)}
-              className="rounded-full border border-solid border-gray-300 px-4 py-1"
-              onChange={handleOnChangeDate}
-            />
           </fieldset>
         </div>
-        <fieldset className="p-1">
-          <legend className="font-bold">金額</legend>
-          <div className="rounded-lg bg-gray-300 p-1">
-            <div className="grid w-full grid-cols-2 gap-2 p-1">
-              <input
-                list="common-description"
-                id="description"
-                name="description"
-                className="col-span-1 rounded bg-background px-2 py-1 focus:outline-0"
-                autoComplete="off"
-                placeholder="描述"
-                defaultValue={data.description}
-              />
-              <datalist id="common-description">
-                <option value="早餐"></option>
-                <option value="午餐"></option>
-                <option value="晚餐"></option>
-                <option value="點心"></option>
-                <option value="飲料"></option>
-                <option value="加油"></option>
-                <option value="薪水"></option>
-                <option value="加值(悠遊)"></option>
-                <option value="加值(高鐵)"></option>
-              </datalist>
-              <input
-                type="text"
-                className={`col-span-1 rounded border border-solid bg-background px-2 py-1 text-end focus:outline-0 ${isNoAmount ? 'border-red-500' : 'border-transparent'}`}
-                value={'$ ' + amount}
-                readOnly
-              />
+        <div className="flex items-center gap-2">
+          <span>群組</span>
+          <GroupSelector
+            selectedGroup={groupId}
+            selectedMemberEmail={memberEmail}
+            onSelectGroup={setGroupId}
+            onSelectMemberEmail={setMemberEmail}
+          />
+        </div>
+        <div className="flex flex-col rounded-lg bg-gray-300 p-1">
+          <div className="flex w-full items-center justify-between px-2">
+            <DatePicker
+              date={new Date(date)}
+              className="bg-transparent py-1 text-base"
+              onChange={handleOnChangeDate}
+            />
+            <div className="flex items-center gap-4">
+              <button
+                type="button"
+                onClick={handleToPreviousDay}
+                className="size-6 rounded-full transition-colors active:bg-gray-500 active:text-background sm:hover:bg-gray-500 sm:hover:text-background"
+              >
+                {'<'}
+              </button>
+              <button
+                type="button"
+                onClick={handleToNextDay}
+                className="size-6 rounded-full transition-colors active:bg-gray-500 active:text-background sm:hover:bg-gray-500 sm:hover:text-background"
+              >
+                {'>'}
+              </button>
             </div>
-            <NumberKeyboard
-              ref={numberKeyboardRef}
-              default={data.amount}
-              onChange={setAmount}
+          </div>
+          <div className="grid w-full grid-cols-2 gap-2 p-1">
+            <input
+              list="common-description"
+              id="description"
+              name="description"
+              className="col-span-1 rounded bg-background px-2 py-1 focus:outline-0"
+              autoComplete="off"
+              placeholder="描述"
+              defaultValue={data.description}
+            />
+            <datalist id="common-description">
+              <option value="早餐"></option>
+              <option value="午餐"></option>
+              <option value="晚餐"></option>
+              <option value="點心"></option>
+              <option value="飲料"></option>
+              <option value="加油"></option>
+              <option value="薪水"></option>
+              <option value="加值(悠遊)"></option>
+              <option value="加值(高鐵)"></option>
+            </datalist>
+            <input
+              type="text"
+              className={`col-span-1 rounded border border-solid bg-background px-2 py-1 text-end focus:outline-0 ${isNoAmount ? 'border-red-500' : 'border-transparent'}`}
+              value={'$ ' + normalizeNumber(amount)}
+              readOnly
             />
           </div>
-        </fieldset>
+          <NumberKeyboard
+            ref={numberKeyboardRef}
+            default={data.amount}
+            onChange={setAmount}
+          />
+        </div>
         <div className="flex w-full flex-1 items-end justify-between py-2">
           <button
             disabled={loading}

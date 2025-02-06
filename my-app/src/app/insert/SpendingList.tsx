@@ -79,18 +79,22 @@ export const SpendingList = (props: Props) => {
           <div className="flex w-full items-end justify-end px-1">
             <span className="text-gray-500">{`總共: $${normalizeNumber(totalAmount)}`}</span>
           </div>
-          <div className="scrollbar flex w-full h-96 flex-col gap-1 overflow-y-auto overflow-x-hidden px-1 py-2">
-            {filteredData.map((spending, index) => (
-              <SpendingItem
-                key={`${spending.id}-${index.toString()}`}
-                spending={spending}
-                id={selectedDataId}
-                handleEdit={handleEdit}
-                refreshData={refreshData}
-                reset={reset}
-              />
-            ))}
-          </div>
+          {totalAmount === 0 ? (
+            <span className="w-full text-center">查無資料</span>
+          ) : (
+            <div className="scrollbar flex h-96 w-full flex-col gap-1 overflow-y-auto overflow-x-hidden px-1 py-2">
+              {filteredData.map((spending, index) => (
+                <SpendingItem
+                  key={`${spending.id}-${index.toString()}`}
+                  spending={spending}
+                  id={selectedDataId}
+                  handleEdit={handleEdit}
+                  refreshData={refreshData}
+                  reset={reset}
+                />
+              ))}
+            </div>
+          )}
         </>
       )}
     </div>

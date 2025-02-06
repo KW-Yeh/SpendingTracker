@@ -2,7 +2,7 @@
 
 import { CalendarIcon } from '@/components/icons/CalendarIcon';
 import { WEEKDAY } from '@/utils/constants';
-import { ChangeEvent, useRef } from 'react';
+import { ChangeEvent, useMemo, useRef } from 'react';
 
 interface Props {
   date: Date;
@@ -16,6 +16,19 @@ export const DatePicker = (props: Props) => {
   const month = props.date.getMonth();
   const day = props.date.getDate();
   const weekday = props.date.getDay();
+
+  const wording = useMemo(() => {
+    const today = new Date();
+    if (
+      today.getFullYear() === year &&
+      today.getMonth() === month &&
+      today.getDate() === day
+    ) {
+      return `今天（週${WEEKDAY[weekday]}）`;
+    } else {
+      return `${year} 年 ${month + 1} 月 ${day} 日（週${WEEKDAY[weekday]}）`;
+    }
+  }, [year, month, day, weekday]);
 
   const showPicker = () => {
     if (!inputRef.current) return;
@@ -37,11 +50,11 @@ export const DatePicker = (props: Props) => {
       />
       <button
         type="button"
-        className={`z-20 flex items-center justify-between gap-4 bg-background text-base sm:text-lg ${props.className}`}
+        className={`z-20 flex items-center justify-between gap-4 bg-background ${props.className}`}
         onClick={showPicker}
       >
-        <span>{`${year} 年 ${month + 1} 月 ${day} 日 (週${WEEKDAY[weekday]})`}</span>
-        <CalendarIcon className="size-4 sm:size-5" />
+        <span>{wording}</span>
+        <CalendarIcon className="size-4" />
       </button>
     </div>
   );
