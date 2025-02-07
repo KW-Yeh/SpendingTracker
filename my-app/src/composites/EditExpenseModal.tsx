@@ -202,14 +202,14 @@ export const EditExpenseModal = (props: Props) => {
           <fieldset className="w-full rounded-lg p-1">
             <legend className="font-bold">類型</legend>
             <div className="grid w-full grid-cols-1 overflow-hidden">
-              <div className="scrollbar col-span-1 flex items-center gap-2 overflow-x-auto max-sm:pb-2">
+              <div className="scrollbar col-span-1 flex items-center gap-1 overflow-x-auto max-sm:pb-2">
                 {spendingCategories.map((category) => (
                   <button
                     type="button"
                     key={category.value}
                     disabled={category.value === selectedCategory}
                     onClick={() => setSelectedCategory(category.value)}
-                    className="shrink-0 rounded border border-solid border-gray-300 px-2 py-1 disabled:bg-gray-300"
+                    className="shrink-0 rounded-md border border-b-2 border-r-2 border-solid border-gray-300 px-2 py-1 text-gray-500 grayscale transition-all active:text-text active:grayscale-0 disabled:border-primary-500 disabled:text-text disabled:grayscale-0 sm:hover:text-text sm:hover:grayscale-0"
                   >
                     {`${category.value} ${category.label}`}
                   </button>
@@ -238,14 +238,14 @@ export const EditExpenseModal = (props: Props) => {
               <button
                 type="button"
                 onClick={handleToPreviousDay}
-                className="size-6 rounded-full transition-colors active:bg-gray-500 active:text-background sm:hover:bg-gray-500 sm:hover:text-background"
+                className="size-6 rounded-full font-bold transition-colors active:bg-gray-500 active:text-background sm:hover:bg-gray-500 sm:hover:text-background"
               >
                 {'<'}
               </button>
               <button
                 type="button"
                 onClick={handleToNextDay}
-                className="size-6 rounded-full transition-colors active:bg-gray-500 active:text-background sm:hover:bg-gray-500 sm:hover:text-background"
+                className="size-6 rounded-full font-bold transition-colors active:bg-gray-500 active:text-background sm:hover:bg-gray-500 sm:hover:text-background"
               >
                 {'>'}
               </button>

@@ -4,6 +4,7 @@ import { SpendingList } from '@/app/insert/SpendingList';
 import { DatePicker } from '@/components/DatePicker';
 import { RefreshIcon } from '@/components/icons/RefreshIcon';
 import { Switch } from '@/components/Switch';
+import { AddExpenseBtn } from '@/composites/AddExpenseBtn';
 import { EditExpenseModal } from '@/composites/EditExpenseModal';
 import { GroupSelector } from '@/composites/GroupSelector';
 import { useGroupCtx } from '@/context/GroupProvider';
@@ -133,17 +134,6 @@ export const SpendingInfoSection = () => {
           </button>
         </div>
       </div>
-
-      <button
-        type="button"
-        className="fixed bottom-8 z-40 mx-auto w-40 rounded-full border border-solid border-gray-300 bg-background p-4 font-bold shadow transition-colors active:border-text sm:hover:border-text"
-        onClick={() => {
-          setIsNewData(true);
-          modalRef.current?.open();
-        }}
-      >
-        記帳
-      </button>
       <div className="flex w-full max-w-175 items-center gap-2">
         <GroupSelector
           selectedGroup={selectedGroup}
@@ -169,6 +159,18 @@ export const SpendingInfoSection = () => {
         memberEmail={selectedMemberEmail}
         reset={reset}
       />
+
+      <AddExpenseBtn
+        onClick={() => {
+          setIsNewData(true);
+          modalRef.current?.open();
+        }}
+        borderStyle="conic-gradient-from-purple-to-red"
+      >
+        <span className="clipped-text gradient-r-from-purple-to-blue text-base font-bold">
+          記帳
+        </span>
+      </AddExpenseBtn>
       <EditExpenseModal
         ref={modalRef}
         data={state}
