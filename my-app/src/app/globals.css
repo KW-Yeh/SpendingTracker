@@ -6,11 +6,11 @@
     --background: #F7F9FB;
     --text: #333333;
 
-    --primary-100: #8BC2F2;
-    --primary-300: #51A3E5;
-    --primary-500: #1CB5D9;
-    --primary-700: #0D69C0;
-    --primary-900: #0A416F;
+    --primary-100: oklch(0.909091 0.124 239.5);
+    --primary-300: oklch(0.818182 0.124 239.5);
+    --primary-500: oklch(0.727273 0.124 239.5);
+    --primary-700: oklch(0.636364 0.124 239.5);
+    --primary-900: oklch(0.545455 0.124 239.5);
 }
 
 body {

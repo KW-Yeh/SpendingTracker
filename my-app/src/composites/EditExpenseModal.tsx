@@ -168,13 +168,13 @@ export const EditExpenseModal = (props: Props) => {
               option1={{
                 label: '支出',
                 value: SpendingType.Outcome,
-                onSelectColor: '#fca5a5',
+                onSelectColor: 'oklch(0.83 0.124 29.5)',
                 className: '!px-2',
               }}
               option2={{
                 label: '收入',
                 value: SpendingType.Income,
-                onSelectColor: '#86efac',
+                onSelectColor: 'oklch(0.83 0.124 149.5)',
                 className: '!px-2',
               }}
               value={spendingType}
@@ -185,7 +185,7 @@ export const EditExpenseModal = (props: Props) => {
               option1={{
                 label: '必要開銷',
                 value: Necessity.Need,
-                onSelectColor: '#fdba74',
+                onSelectColor: 'oklch(0.83 0.124 59.5)',
                 className: '!px-2',
               }}
               option2={{
@@ -202,14 +202,14 @@ export const EditExpenseModal = (props: Props) => {
           <fieldset className="w-full rounded-lg p-1">
             <legend className="font-bold">類型</legend>
             <div className="grid w-full grid-cols-1 overflow-hidden">
-              <div className="scrollbar col-span-1 flex items-center gap-1 overflow-x-auto max-sm:pb-2">
+              <div className="scrollbar col-span-1 flex h-12 items-start gap-1 overflow-x-auto max-sm:pb-2">
                 {spendingCategories.map((category) => (
                   <button
                     type="button"
                     key={category.value}
                     disabled={category.value === selectedCategory}
                     onClick={() => setSelectedCategory(category.value)}
-                    className="shrink-0 rounded-md border border-b-2 border-r-2 border-solid border-gray-300 px-2 py-1 text-gray-500 grayscale transition-all active:text-text active:grayscale-0 disabled:border-primary-500 disabled:text-text disabled:grayscale-0 sm:hover:text-text sm:hover:grayscale-0"
+                    className="shrink-0 select-none rounded-md border border-solid border-gray-300 px-2 py-1 text-gray-500 transition-all active:text-text disabled:border-primary-500 disabled:bg-primary-100 disabled:text-text sm:hover:text-text"
                   >
                     {`${category.value} ${category.label}`}
                   </button>
