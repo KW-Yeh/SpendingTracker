@@ -42,7 +42,7 @@ export const AddExpenseBtn = (props: Props) => {
   return (
     <button
       type="button"
-      className={`fixed bottom-8 z-30 mx-auto flex w-40 overflow-hidden rounded-full p-px shadow-md transition-all ${className}`}
+      className={`transition-spring fixed bottom-8 z-30 mx-auto flex w-40 overflow-hidden rounded-full p-px shadow-md transition-all active:scale-105 sm:hover:scale-105 ${className}`}
       {...legacy}
       onMouseOver={() => setIsHover(true)}
       onMouseOut={() => setIsHover(false)}

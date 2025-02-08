@@ -169,13 +169,13 @@ export const EditExpenseModal = (props: Props) => {
                 label: '支出',
                 value: SpendingType.Outcome,
                 onSelectColor: 'oklch(0.83 0.124 29.5)',
-                className: '!px-2',
+                className: '!px-2 !py-1',
               }}
               option2={{
                 label: '收入',
                 value: SpendingType.Income,
                 onSelectColor: 'oklch(0.83 0.124 149.5)',
-                className: '!px-2',
+                className: '!px-2 !py-1',
               }}
               value={spendingType}
               className="text-sm"
@@ -186,13 +186,13 @@ export const EditExpenseModal = (props: Props) => {
                 label: '必要開銷',
                 value: Necessity.Need,
                 onSelectColor: 'oklch(0.83 0.124 59.5)',
-                className: '!px-2',
+                className: '!px-2 !py-1',
               }}
               option2={{
                 label: '額外開銷',
                 value: Necessity.NotNeed,
                 onSelectColor: '#d1d5db',
-                className: '!px-2',
+                className: '!px-2 !py-1',
               }}
               value={necessity}
               className="text-sm"
