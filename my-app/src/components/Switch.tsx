@@ -69,7 +69,7 @@ export const Switch = (props: Props) => {
       ref={containerRef}
       type="button"
       onClick={handleOnClick}
-      className={`relative flex w-fit items-center gap-1 rounded-full border border-solid border-text p-1 ${className}`}
+      className={`relative flex w-fit items-center gap-1 rounded-full p-1 ${className}`}
     >
       <div
         ref={floatingBlockRef}
@@ -77,13 +77,13 @@ export const Switch = (props: Props) => {
       ></div>
       <span
         ref={option1Ref}
-        className={`z-20 bg-transparent px-6 py-2 text-center font-semibold transition-colors ${option1.className} ${value === option1.value ? 'text-text' : 'text-gray-500 active:text-text sm:hover:text-text'}`}
+        className={`z-20 bg-transparent px-6 py-2 text-center font-semibold transition-colors text-text ${option1.className} ${value === option1.value ? '' : 'opacity-50 active:opacity-100 sm:hover:opacity-100'}`}
       >
         {option1.label}
       </span>
       <span
         ref={option2Ref}
-        className={`z-20 bg-transparent px-6 py-2 text-center font-semibold transition-colors ${option2.className} ${value === option2.value ? 'text-text' : 'text-gray-500 active:text-text sm:hover:text-text'}`}
+        className={`z-20 bg-transparent px-6 py-2 text-center font-semibold transition-colors text-text ${option2.className} ${value === option2.value ? '' : 'opacity-50 active:opacity-100 sm:hover:opacity-100'}`}
       >
         {option2.label}
       </span>
