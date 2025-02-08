@@ -163,29 +163,29 @@ export const EditExpenseModal = (props: Props) => {
         onSubmit={handleOnSubmit}
       >
         <div className="flex w-full flex-col gap-2">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col gap-2">
             <Switch
               option1={{
                 label: '支出',
                 value: SpendingType.Outcome,
-                onSelectColor: 'oklch(0.83 0.124 29.5)',
+                onSelectColor: '#d1d5db',
                 className: '!px-2 !py-1',
               }}
               option2={{
                 label: '收入',
                 value: SpendingType.Income,
-                onSelectColor: 'oklch(0.83 0.124 149.5)',
+                onSelectColor: '#d1d5db',
                 className: '!px-2 !py-1',
               }}
               value={spendingType}
-              className="text-sm"
+              className="w-full text-sm"
               onChange={setSpendingType}
             />
             <Switch
               option1={{
                 label: '必要開銷',
                 value: Necessity.Need,
-                onSelectColor: 'oklch(0.83 0.124 59.5)',
+                onSelectColor: '#d1d5db',
                 className: '!px-2 !py-1',
               }}
               option2={{
@@ -195,7 +195,7 @@ export const EditExpenseModal = (props: Props) => {
                 className: '!px-2 !py-1',
               }}
               value={necessity}
-              className="text-sm"
+              className="w-full text-sm"
               onChange={setNecessity}
             />
           </div>
@@ -209,7 +209,7 @@ export const EditExpenseModal = (props: Props) => {
                     key={category.value}
                     disabled={category.value === selectedCategory}
                     onClick={() => setSelectedCategory(category.value)}
-                    className="shrink-0 select-none rounded-md border border-solid border-gray-300 px-2 py-1 text-gray-500 transition-all active:text-text disabled:border-primary-500 disabled:bg-primary-100 disabled:text-text sm:hover:text-text"
+                    className="shrink-0 select-none rounded-md border border-solid border-gray-300 px-2 py-1 text-gray-500 transition-all disabled:border-text disabled:text-text"
                   >
                     {`${category.value} ${category.label}`}
                   </button>
