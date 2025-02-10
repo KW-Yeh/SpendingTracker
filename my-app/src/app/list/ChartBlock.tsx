@@ -270,16 +270,16 @@ export const ChartBlock = () => {
               <li>
                 【總必要開銷】
                 {(
-                  (chartData.income.necessary * 100) /
-                  (chartData.income.necessary + chartData.income.unnecessary)
+                  (chartData.outcome.necessary * 100) /
+                  (chartData.outcome.necessary + chartData.outcome.unnecessary)
                 ).toFixed(2)}
                 %
               </li>
               <li>
                 【總額外開銷】
                 {(
-                  (chartData.income.unnecessary * 100) /
-                  (chartData.income.necessary + chartData.income.unnecessary)
+                  (chartData.outcome.unnecessary * 100) /
+                  (chartData.outcome.necessary + chartData.outcome.unnecessary)
                 ).toFixed(2)}
                 %
               </li>
