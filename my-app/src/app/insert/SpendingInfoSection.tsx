@@ -167,7 +167,7 @@ export const SpendingInfoSection = () => {
         }}
         borderStyle="conic-gradient-from-purple-to-red"
       >
-        <span className="clipped-text gradient-r-from-purple-to-blue text-base font-bold">
+        <span className="text-base font-bold">
           記帳
         </span>
       </AddExpenseBtn>
