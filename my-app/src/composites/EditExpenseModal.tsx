@@ -219,7 +219,7 @@ export const EditExpenseModal = (props: Props) => {
           </fieldset>
         </div>
         <div className="flex items-center gap-2">
-          <span>群組</span>
+          <span className="font-bold">群組</span>
           <GroupSelector
             selectedGroup={groupId}
             selectedMemberEmail={memberEmail}
