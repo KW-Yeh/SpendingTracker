@@ -19,6 +19,12 @@ export const getItems = async (groupId?: string, email?: string, time?: string) 
       method: 'GET',
     })
       .then((res) => res.json())
+      .then(res => {
+        if (res.message === "Internal Server Error") {
+          throw new Error("Internal Server Error")
+        }
+        return res;
+      })
       .then((res) => res as SpendingRecord[]);
   }
   if (email) {
@@ -26,6 +32,12 @@ export const getItems = async (groupId?: string, email?: string, time?: string) 
       method: 'GET',
     })
       .then((res) => res.json())
+      .then(res => {
+        if (res.message === "Internal Server Error") {
+          throw new Error("Internal Server Error")
+        }
+        return res;
+      })
       .then((res) => res as SpendingRecord[]);
   }
   return Promise.reject('缺少群組 ID 或信箱資訊');
