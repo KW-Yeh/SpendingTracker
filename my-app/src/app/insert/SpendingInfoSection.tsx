@@ -17,6 +17,7 @@ import {
   startTransition,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -33,6 +34,8 @@ export const SpendingInfoSection = () => {
   const [isNewData, setIsNewData] = useState(false);
   const [filter, setFilter] = useState(DateFilter.Day);
 
+  const year = useMemo(() => new Date(state.date).getFullYear(), [state.date]);
+
   const handleOnChangeDate = (event: ChangeEvent) => {
     const date = new Date((event.target as HTMLInputElement).value);
     startTransition(() => {
@@ -45,7 +48,7 @@ export const SpendingInfoSection = () => {
 
   const refreshData = useCallback(() => {
     syncData(selectedGroup || undefined, userData?.email, state.date);
-  }, [selectedGroup, syncData, userData?.email, state.date]);
+  }, [selectedGroup, syncData, userData?.email, year]);
 
   useEffect(() => {
     if (selectedGroup === '' && userData) {
@@ -53,7 +56,7 @@ export const SpendingInfoSection = () => {
     } else {
       syncData(selectedGroup, undefined, state.date);
     }
-  }, [selectedGroup, userData, syncData, state.date]);
+  }, [selectedGroup, userData, syncData, year]);
 
   const reset = () => {
     dispatch({
