@@ -49,9 +49,9 @@ export const SpendingInfoSection = () => {
 
   useEffect(() => {
     if (selectedGroup === '' && userData) {
-      syncData(undefined, userData.email);
+      syncData(undefined, userData.email, state.date);
     } else {
-      syncData(selectedGroup, undefined);
+      syncData(selectedGroup, undefined, state.date);
     }
   }, [selectedGroup, userData, syncData]);
 

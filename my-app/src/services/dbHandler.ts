@@ -13,16 +13,16 @@ export const deleteItem = async (id: string) => {
   });
 };
 
-export const getItems = async (groupId?: string, email?: string) => {
+export const getItems = async (groupId?: string, email?: string, time?: string) => {
   if (groupId) {
-    return fetch(`/api/aws/items?groupId=${groupId}`, {
+    return fetch(`/api/aws/items?groupId=${groupId}${time ? `?time=${time}`: ''}`, {
       method: 'GET',
     })
       .then((res) => res.json())
       .then((res) => res as SpendingRecord[]);
   }
   if (email) {
-    return fetch(`/api/aws/items?email=${email}`, {
+    return fetch(`/api/aws/items?email=${email}${time ? `?time=${time}`: ''}`, {
       method: 'GET',
     })
       .then((res) => res.json())

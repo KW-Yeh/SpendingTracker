@@ -14,7 +14,7 @@ import {
 const INIT_CTX_VAL: {
   loading: boolean;
   data: SpendingRecord[];
-  syncData: (groupId?: string, email?: string) => void;
+  syncData: (groupId?: string, email?: string, time?: string) => void;
 } = {
   loading: true,
   data: [],
@@ -36,9 +36,9 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const queryItem = useCallback(
-    (email?: string, groupId?: string) => {
+    (email?: string, groupId?: string, time?: string) => {
       if (!email && !groupId) return;
-      getItems(groupId, email)
+      getItems(groupId, email, time)
         .then((res) => {
           handleState(res);
         })
@@ -48,9 +48,9 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const syncData = useCallback(
-    (groupId?: string, email?: string) => {
+    (groupId?: string, email?: string, time?: string) => {
       setLoading(true);
-      queryItem(email, groupId);
+      queryItem(email, groupId, time);
     },
     [queryItem],
   );
