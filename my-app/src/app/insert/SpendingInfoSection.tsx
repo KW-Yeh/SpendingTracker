@@ -44,8 +44,8 @@ export const SpendingInfoSection = () => {
   };
 
   const refreshData = useCallback(() => {
-    syncData(selectedGroup || undefined, userData?.email);
-  }, [selectedGroup, syncData, userData?.email]);
+    syncData(selectedGroup || undefined, userData?.email, state.date);
+  }, [selectedGroup, syncData, userData?.email, state.date]);
 
   useEffect(() => {
     if (selectedGroup === '' && userData) {
@@ -53,7 +53,7 @@ export const SpendingInfoSection = () => {
     } else {
       syncData(selectedGroup, undefined, state.date);
     }
-  }, [selectedGroup, userData, syncData]);
+  }, [selectedGroup, userData, syncData, state.date]);
 
   const reset = () => {
     dispatch({
