@@ -65,7 +65,7 @@ export const NumberKeyboard = forwardRef<NumberKeyboardRef, Props>(
     }, [amount, onChange]);
 
     return (
-      <div className="grid grid-cols-3 grid-rows-4 gap-1 bg-gray-300 p-1 text-sm sm:text-base">
+      <div className="grid grid-cols-3 grid-rows-4 gap-1 text-sm sm:text-base">
         {KEYS.map((key, index) => (
           <Key
             key={key}
@@ -106,7 +106,7 @@ const Key = (
   return (
     <button
       type="button"
-      className={`${props.className} flex select-none items-center justify-center rounded bg-background px-6 py-3 transition-colors active:bg-gray-300 sm:hover:bg-gray-100`}
+      className={`${props.className} flex select-none border border-solid border-gray-300 items-center justify-center rounded bg-background px-6 py-3 transition-colors active:bg-gray-300 sm:hover:bg-gray-300`}
       onClick={() => props.onClick(props.value)}
     >
       <span>{props.children}</span>

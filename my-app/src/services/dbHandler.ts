@@ -13,28 +13,38 @@ export const deleteItem = async (id: string) => {
   });
 };
 
-export const getItems = async (groupId?: string, email?: string, time?: string) => {
+export const getItems = async (
+  groupId?: string,
+  email?: string,
+  time?: string,
+) => {
   if (groupId) {
-    return fetch(`/api/aws/items?groupId=${groupId}${time ? `?time=${time}`: ''}`, {
-      method: 'GET',
-    })
+    return fetch(
+      `/api/aws/items?groupId=${groupId}${time ? `?time=${time}` : ''}`,
+      {
+        method: 'GET',
+      },
+    )
       .then((res) => res.json())
-      .then(res => {
-        if (res.message === "Internal Server Error") {
-          throw new Error("Internal Server Error")
+      .then((res) => {
+        if (res.message === 'Internal Server Error') {
+          throw new Error('Internal Server Error');
         }
         return res;
       })
       .then((res) => res as SpendingRecord[]);
   }
   if (email) {
-    return fetch(`/api/aws/items?email=${email}${time ? `?time=${time}`: ''}`, {
-      method: 'GET',
-    })
+    return fetch(
+      `/api/aws/items?email=${email}${time ? `?time=${time}` : ''}`,
+      {
+        method: 'GET',
+      },
+    )
       .then((res) => res.json())
-      .then(res => {
-        if (res.message === "Internal Server Error") {
-          throw new Error("Internal Server Error")
+      .then((res) => {
+        if (res.message === 'Internal Server Error') {
+          throw new Error('Internal Server Error');
         }
         return res;
       })

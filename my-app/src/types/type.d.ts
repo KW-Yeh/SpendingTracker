@@ -27,6 +27,7 @@ interface User {
   email: string;
   image: string;
   groups: string[];
+  budgetList?: number[];
 }
 
 interface ModalRef {

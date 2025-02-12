@@ -48,7 +48,7 @@ export const SpendingItem = (props: Props) => {
 
   return (
     <div
-      className={`relative flex items-center gap-2 rounded border-l-4 border-solid p-2 transition-all odd:bg-gray-100 ${spending.necessity === Necessity.NotNeed ? 'border-gray-300' : 'border-orange-300'} ${additionalStyle}`}
+      className={`relative flex h-11 items-center gap-2 rounded border-l-4 border-solid px-2 transition-all odd:bg-gray-100 sm:h-14 ${spending.necessity === Necessity.NotNeed ? 'border-gray-300' : 'border-orange-300'} ${additionalStyle}`}
     >
       {deleting ? (
         <span className="absolute left-1 top-0 -translate-y-1/2 rounded-full bg-red-300 px-2 text-xs font-bold">
@@ -63,11 +63,6 @@ export const SpendingItem = (props: Props) => {
       )}
       <div className="w-8 text-center text-xs sm:col-span-1 sm:text-sm">
         {formatDate(spending.date)}
-      </div>
-      <div className="flex w-7 items-center justify-center">
-        <div className="rounded border border-solid border-text p-1">
-          {spending.category}
-        </div>
       </div>
       <div
         title={spending.description}
