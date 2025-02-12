@@ -48,6 +48,12 @@ export const OverView = (props: Props) => {
     [budgetList],
   );
 
+  const budgetUsage = useMemo(
+    () =>
+      budget !== 0 ? Math.min((usage * 100) / budget, 100).toFixed(0) : '100',
+    [budget, usage],
+  );
+
   const handleSetAvgBudget = (event: ChangeEvent) => {
     const value = parseInt((event.target as HTMLInputElement).value);
     setBudgetList(Array(12).fill(value));
@@ -74,7 +80,7 @@ export const OverView = (props: Props) => {
   }, [user]);
 
   return (
-    <div className="flex w-full sm:max-w-96 flex-col gap-2">
+    <div className="flex w-full flex-col gap-2 sm:max-w-96">
       <div className="flex h-24 w-full items-center gap-4 rounded-md border border-solid border-gray-300 p-2">
         <div className="w-20">
           <PieChart width={80} height={80}>
@@ -97,29 +103,10 @@ export const OverView = (props: Props) => {
               strokeOpacity={0}
             >
               <Label
-                content={({ viewBox }) => {
-                  if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
-                    return (
-                      <text
-                        x={viewBox.cx}
-                        y={viewBox.cy}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                      >
-                        <tspan
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          className="fill-foreground text-sm font-bold"
-                        >
-                          {budget !== 0
-                            ? Math.min((usage * 100) / budget, 100).toFixed(0)
-                            : '100'}
-                          %
-                        </tspan>
-                      </text>
-                    );
-                  }
-                }}
+                value={`${budgetUsage}%`}
+                offset={0}
+                position="center"
+                className="text-sm font-bold"
               />
             </Pie>
           </PieChart>
