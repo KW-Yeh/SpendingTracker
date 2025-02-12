@@ -74,7 +74,7 @@ export const OverView = (props: Props) => {
   }, [user]);
 
   return (
-    <div className="flex w-full max-w-96 flex-col gap-2">
+    <div className="flex w-full sm:max-w-96 flex-col gap-2">
       <div className="flex h-24 w-full items-center gap-4 rounded-md border border-solid border-gray-300 p-2">
         <div className="w-20">
           <PieChart width={80} height={80}>
