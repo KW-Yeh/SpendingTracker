@@ -1,9 +1,9 @@
 import { SpendingItem } from '@/app/insert/SpendingItem';
-import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useEffect, useRef } from 'react';
 
 interface Props {
   data: SpendingRecord[];
+  loading: boolean;
   selectedDataId: string;
   handleEdit: (record: SpendingRecord) => void;
   refreshData: () => void;
@@ -11,8 +11,8 @@ interface Props {
 }
 
 export const SpendingList = (props: Props) => {
-  const { selectedDataId, handleEdit, refreshData, reset, data } = props;
-  const { loading } = useGetSpendingCtx();
+  const { selectedDataId, handleEdit, refreshData, reset, data, loading } =
+    props;
   const isInitialized = useRef(false);
 
   useEffect(() => {

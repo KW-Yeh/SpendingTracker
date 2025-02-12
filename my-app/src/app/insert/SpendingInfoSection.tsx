@@ -214,12 +214,14 @@ export const SpendingInfoSection = () => {
       <div className="flex w-full max-w-175 flex-col gap-2 pb-20">
         <CategoryAccordion
           title="支出"
+          loading={loading}
           data={filteredData}
           categoryMap={OUTCOME_TYPE_MAP}
         >
           {(categoryData) => (
             <SpendingList
               data={categoryData}
+              loading={loading}
               selectedDataId={state.id}
               handleEdit={(_data) => {
                 dispatch({
@@ -236,12 +238,14 @@ export const SpendingInfoSection = () => {
         </CategoryAccordion>
         <CategoryAccordion
           title="收入"
+          loading={loading}
           data={filteredData}
           categoryMap={INCOME_TYPE_MAP}
         >
           {(categoryData) => (
             <SpendingList
               data={categoryData}
+              loading={loading}
               selectedDataId={state.id}
               handleEdit={(_data) => {
                 dispatch({
