@@ -1,7 +1,14 @@
 'use client';
 import { CaretDown } from '@/components/icons/CaretDown';
 import useFocusRef from '@/hooks/useFocusRef';
-import { createContext, ReactNode, useContext, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
 interface Props {
   value?: string;
@@ -11,6 +18,11 @@ interface Props {
   className?: string;
   caretStyle?: string;
   menuStyle?: string;
+}
+
+enum MenuOpenDirection {
+  Up = 'Up',
+  Down = 'Down',
 }
 
 export const Select = (props: Props) => {
@@ -24,9 +36,33 @@ export const Select = (props: Props) => {
     name,
   } = props;
   const [openOptions, setOpenOptions] = useState(false);
+  const [menuMaxHeight, setMenuMaxHeight] = useState(0);
+  const [openDirection, setOpenDirection] = useState<MenuOpenDirection>(
+    MenuOpenDirection.Down,
+  );
   const ref = useFocusRef<HTMLDivElement>(() => {
     setOpenOptions(false);
   });
+
+  const updateMenuHeight = useCallback(() => {
+    const element = ref.current;
+    if (element) {
+      const direction = calOpenDirection(element);
+      setOpenDirection(direction);
+      setMenuMaxHeight(calMenuHeight(element, direction));
+    }
+  }, [ref]);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (element) {
+      updateMenuHeight();
+      window.addEventListener('scroll', updateMenuHeight);
+    }
+    return () => {
+      window.removeEventListener('scroll', updateMenuHeight);
+    };
+  }, [ref, updateMenuHeight]);
 
   return (
     <Ctx.Provider
@@ -48,12 +84,20 @@ export const Select = (props: Props) => {
           <CaretDown className={`size-2 shrink-0 ${caretStyle}`} />
         </button>
         <div
-          className={`${menuStyle} absolute mt-1 top-full left-1 z-40 flex w-fit border border-solid border-gray-300 flex-col divide-y divide-gray-300 rounded-lg bg-background py-2 shadow transition-all ${openOptions ? 'visible opacity-100' : 'invisible opacity-0'}`}
+          className={`${openDirection === MenuOpenDirection.Down ? 'top-full mt-1' : 'bottom-full mb-1'} absolute left-1 z-40 w-fit overflow-hidden rounded-lg border border-solid border-gray-300 bg-background py-2 shadow transition-all ${openOptions ? 'visible opacity-100' : 'invisible opacity-0'}`}
           style={{
             minWidth: (ref.current?.clientWidth ?? 0) - 8 + 'px',
+            maxHeight: menuMaxHeight + 'px',
           }}
         >
-          {children}
+          <div
+            className={`${menuStyle} scrollbar flex h-full w-full flex-col overflow-y-auto overflow-x-hidden`}
+            style={{
+              maxHeight: menuMaxHeight - 8 + 'px',
+            }}
+          >
+            {children}
+          </div>
         </div>
       </div>
       <input value={value} name={name} className="hidden" readOnly></input>
@@ -98,3 +142,25 @@ const Item = ({
 };
 
 Select.Item = Item;
+
+const calOpenDirection = (element: HTMLDivElement) => {
+  const dropdownHeight =
+    element.getBoundingClientRect().bottom -
+    element.getBoundingClientRect().top;
+  return element.getBoundingClientRect().top <
+    (window.innerHeight - dropdownHeight) / 2
+    ? MenuOpenDirection.Down
+    : MenuOpenDirection.Up;
+};
+
+const calMenuHeight = (
+  element: HTMLDivElement | null,
+  openDirection: MenuOpenDirection,
+) => {
+  if (!element) return window.innerHeight * (2 / 5);
+  if (openDirection === MenuOpenDirection.Down) {
+    return window.innerHeight - element.getBoundingClientRect().bottom - 24;
+  } else {
+    return element.getBoundingClientRect().top - 24;
+  }
+};

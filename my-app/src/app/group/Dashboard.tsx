@@ -55,7 +55,7 @@ export const Dashboard = () => {
         <button
           type="button"
           onClick={handleCreateGroup}
-          className="flex items-center rounded-md bg-primary-100 px-4 py-2 transition-colors active:bg-primary-300 sm:hover:bg-primary-300"
+          className="flex items-center rounded-md bg-primary-300 px-4 py-2 transition-colors active:brightness-105 sm:hover:brightness-105"
         >
           <PlusIcon className="mr-2 size-4" />
           <span className="font-semibold">建立群組</span>
@@ -106,7 +106,8 @@ const GroupCard = ({
         refresh();
         break;
       case 'delete':
-        if (!confirm('確定要刪除此群組嗎?（此動作會將所有人剔除該群組）')) return;
+        if (!confirm('確定要刪除此群組嗎?（此動作會將所有人剔除該群組）'))
+          return;
         setLoading(true);
         const groupUserEmails = group.users.map((user) => user.email);
         const users = await Promise.all(groupUserEmails.map(getUser));
@@ -185,24 +186,30 @@ const GroupCard = ({
           ]}
         />
       </div>
-      <Modal ref={modalRef} className="w-72 sm:w-80" title="邀請成員一起記帳！">
+      <Modal
+        ref={modalRef}
+        className="w-full max-w-96"
+        title="邀請成員一起記帳！"
+      >
         <div className="flex w-full flex-col items-center">
-          <QRCode value={inviteLink} size={100} />
+          <QRCode value={inviteLink} size={150} />
         </div>
-        <div className="flex w-full items-center gap-2 pt-6">
+        <div className="flex w-full flex-col gap-2 pt-6">
           <input
             type="text"
-            className="flex-1 rounded border border-solid border-text px-2 py-1"
+            className="w-full bg-transparent underline"
             value={inviteLink}
             readOnly
           />
-          <button
-            type="button"
-            className="rounded bg-primary-100 px-2 py-1 transition-colors active:bg-primary-300 sm:hover:bg-primary-300"
-            onClick={handleCopyInviteLink}
-          >
-            複製
-          </button>
+          <div className="flex w-full items-center justify-end">
+            <button
+              type="button"
+              className="w-36 rounded-md bg-text p-2 font-bold text-background transition-colors active:bg-gray-600 sm:hover:bg-gray-600"
+              onClick={handleCopyInviteLink}
+            >
+              複製
+            </button>
+          </div>
         </div>
       </Modal>
     </div>

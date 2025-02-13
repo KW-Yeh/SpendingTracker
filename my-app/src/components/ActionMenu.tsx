@@ -41,7 +41,7 @@ export const ActionMenu = (props: Props) => {
             onClick={() => {
               onClick(option.value);
             }}
-            className="flex items-center gap-2 whitespace-nowrap rounded px-4 py-2 transition-colors active:bg-primary-100 sm:hover:bg-primary-100"
+            className="flex items-center gap-2 whitespace-nowrap rounded px-4 py-2 transition-colors active:bg-gray-300 sm:hover:bg-gray-300"
           >
             {option.label}
           </button>
