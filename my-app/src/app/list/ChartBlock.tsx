@@ -3,12 +3,13 @@
 import { ChartContainer } from '@/app/list/ChartContainer';
 import { CostTable } from '@/app/list/CostTable';
 import { Filter } from '@/app/list/Filter';
+import { Loading } from '@/components/icons/Loading';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
+import { useMounted } from '@/hooks/useMounted';
 import { calSpending2Chart } from '@/utils/calSpending2Chart';
 import { normalizeNumber } from '@/utils/normalizeNumber';
-import dynamic from 'next/dynamic';
 import {
   startTransition,
   useCallback,
@@ -18,22 +19,16 @@ import {
 } from 'react';
 import {
   Bar,
+  BarChart,
   Cell,
   Label,
   LabelList,
   Legend,
   Pie,
+  PieChart,
   Tooltip,
   XAxis,
 } from 'recharts';
-
-const PieChart = dynamic(() => import('recharts').then((mod) => mod.PieChart), {
-  ssr: false,
-});
-
-const BarChart = dynamic(() => import('recharts').then((mod) => mod.BarChart), {
-  ssr: false,
-});
 
 const renderCustomizedLabelForPieCell = (props: {
   cx: number;
@@ -90,7 +85,7 @@ export const ChartBlock = () => {
   const { config: userData } = useUserConfigCtx();
   const { data, syncData } = useGetSpendingCtx();
   const { groups, loading: loadingGroups } = useGroupCtx();
-  const [loading, setLoading] = useState(true);
+  const isMounted = useMounted();
   const [chartData, setChartData] = useState<PieChartData>({
     income: {
       list: [],
@@ -111,11 +106,47 @@ export const ChartBlock = () => {
   const [month, setMonth] = useState(`${today.getMonth() + 1}`);
   const [groupId, setGroupId] = useState<string>('');
 
+  const totalIncomePercentage = useMemo(() => {
+    if (chartData.income.total === 0) return 0;
+    return (
+      (chartData.income.total * 100) /
+      (chartData.income.total + chartData.outcome.total)
+    );
+  }, [chartData.income.total, chartData.outcome.total]);
+
+  const totalOutcomePercentage = useMemo(() => {
+    if (chartData.outcome.total === 0) return 0;
+    return (
+      (chartData.outcome.total * 100) /
+      (chartData.income.total + chartData.outcome.total)
+    );
+  }, [chartData.income.total, chartData.outcome.total]);
+
+  const totalOutcomeNecessaryPercentage = useMemo(() => {
+    if (chartData.outcome.necessary === 0) return 0;
+    return (
+      (chartData.outcome.necessary * 100) /
+      (chartData.outcome.necessary + chartData.outcome.unnecessary)
+    );
+  }, [chartData.outcome.necessary, chartData.outcome.unnecessary]);
+
+  const totalOutcomeUnnecessaryPercentage = useMemo(() => {
+    if (chartData.outcome.unnecessary === 0) return 0;
+    return (
+      (chartData.outcome.unnecessary * 100) /
+      (chartData.outcome.necessary + chartData.outcome.unnecessary)
+    );
+  }, [chartData.outcome.necessary, chartData.outcome.unnecessary]);
+
   const refreshData = useCallback(
     (_groupId: string) => {
-      syncData(_groupId || undefined, userData?.email);
+      syncData(
+        _groupId || undefined,
+        userData?.email,
+        new Date(Number(year), Number(month) - 1).toUTCString(),
+      );
     },
-    [syncData, userData?.email],
+    [month, syncData, userData?.email, year],
   );
 
   const group = useMemo(
@@ -152,16 +183,9 @@ export const ChartBlock = () => {
           ...formattedData.outcome.list,
           ...formattedData.income.list,
         ]);
-        setLoading(false);
       });
     }
   }, [formattedData]);
-
-  useEffect(() => {
-    if (isNoData) {
-      setLoading(false);
-    }
-  }, [isNoData]);
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -182,77 +206,75 @@ export const ChartBlock = () => {
         }}
       />
 
-      {loading && <div>Loading...</div>}
       {isNoData && <div>無資料</div>}
-      {!loading && !isNoData && (
+      {!isNoData && (
         <>
           <ChartContainer title="收支比例與各項占比">
             <ul className="w-full list-disc pl-6">
               <li>
                 【總收入】
-                {(
-                  (chartData.income.total * 100) /
-                  (chartData.income.total + chartData.outcome.total)
-                ).toFixed(2)}
-                %
+                {totalIncomePercentage.toFixed(2)}%
               </li>
               <li>
                 【總支出】
-                {(
-                  (chartData.outcome.total * 100) /
-                  (chartData.income.total + chartData.outcome.total)
-                ).toFixed(2)}
-                %
+                {totalOutcomePercentage.toFixed(2)}%
               </li>
             </ul>
-            <PieChart width={300} height={250}>
-              <Pie
-                data={[
-                  { name: '支出', value: chartData.outcome.total },
-                  { name: '收入', value: chartData.income.total },
-                ]}
-                dataKey="value"
-                label={renderCustomizedLabelForPieCell}
-                cx="50%"
-                cy="50%"
-                innerRadius={85}
-                outerRadius={90}
-              >
-                <Cell
-                  className="transition-colors hover:fill-yellow-300 hover:outline-0 active:outline-0"
-                  fill="#faa5a5"
-                />
-                <Cell
-                  className="transition-colors hover:fill-yellow-300 hover:outline-0 active:outline-0"
-                  fill="#82ca9d"
-                />
-              </Pie>
-
-              <Pie
-                data={detailData}
-                dataKey="value"
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={80}
-              >
-                {detailData.map((entry, index) => (
+            {isMounted ? (
+              <PieChart width={300} height={250}>
+                <Pie
+                  data={[
+                    { name: '支出', value: chartData.outcome.total },
+                    { name: '收入', value: chartData.income.total },
+                  ]}
+                  dataKey="value"
+                  label={renderCustomizedLabelForPieCell}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={85}
+                  outerRadius={90}
+                >
                   <Cell
                     className="transition-colors hover:fill-yellow-300 hover:outline-0 active:outline-0"
-                    key={`cell-${index}`}
-                    fill={entry.color}
+                    fill="#faa5a5"
                   />
-                ))}
-                <Label
-                  value={`盈餘 $${normalizeNumber(chartData.income.total - chartData.outcome.total)}`}
-                  offset={0}
-                  position="center"
-                  className="text-sm font-bold"
-                />
-              </Pie>
+                  <Cell
+                    className="transition-colors hover:fill-yellow-300 hover:outline-0 active:outline-0"
+                    fill="#82ca9d"
+                  />
+                </Pie>
 
-              <Tooltip />
-            </PieChart>
+                <Pie
+                  data={detailData}
+                  dataKey="value"
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                >
+                  {detailData.map((entry, index) => (
+                    <Cell
+                      className="transition-colors hover:fill-yellow-300 hover:outline-0 active:outline-0"
+                      key={`cell-${index}`}
+                      fill={entry.color}
+                    />
+                  ))}
+                  <Label
+                    value={`盈餘 $${normalizeNumber(chartData.income.total - chartData.outcome.total)}`}
+                    offset={0}
+                    position="center"
+                    className="text-sm font-bold"
+                  />
+                </Pie>
+
+                <Tooltip />
+              </PieChart>
+            ) : (
+              <div className="flex h-[250px] w-full items-center justify-center">
+                <Loading className="size-10 animate-spin py-1 text-gray-500" />
+              </div>
+            )}
+
             <CostTable
               title={`支出各項資訊 $${normalizeNumber(chartData.outcome.total)}`}
               total={chartData.outcome.total}
@@ -269,56 +291,53 @@ export const ChartBlock = () => {
             <ul className="w-full list-disc pl-6">
               <li>
                 【總必要開銷】
-                {(
-                  (chartData.outcome.necessary * 100) /
-                  (chartData.outcome.necessary + chartData.outcome.unnecessary)
-                ).toFixed(2)}
-                %
+                {totalOutcomeNecessaryPercentage.toFixed(2)}%
               </li>
               <li>
                 【總額外開銷】
-                {(
-                  (chartData.outcome.unnecessary * 100) /
-                  (chartData.outcome.necessary + chartData.outcome.unnecessary)
-                ).toFixed(2)}
-                %
+                {totalOutcomeUnnecessaryPercentage.toFixed(2)}%
               </li>
             </ul>
-            <BarChart
-              width={300}
-              height={250}
-              data={chartData.outcome.list.map((item) => ({
-                ...item,
-                necessaryPercentage: (item.necessary / item.value) * 100,
-                unnecessaryPercentage: (item.unnecessary / item.value) * 100,
-              }))}
-              margin={{
-                top: 24,
-              }}
-            >
-              <XAxis dataKey="name" />
-              <Tooltip />
-              <Legend
-                align="right"
-                verticalAlign="bottom"
-                payload={[
-                  { value: '必要開銷', type: 'rect', color: '#8884d8' },
-                  { value: '額外開銷', type: 'rect', color: '#82ca9d' },
-                ]}
-              />
-              <Bar dataKey="necessaryPercentage" stackId="a" fill="#8884d8">
-                <LabelList
-                  dataKey="necessaryPercentage"
-                  content={renderCustomizedLabelForBar}
+            {isMounted ? (
+              <BarChart
+                width={300}
+                height={250}
+                data={chartData.outcome.list.map((item) => ({
+                  ...item,
+                  necessaryPercentage: (item.necessary / item.value) * 100,
+                  unnecessaryPercentage: (item.unnecessary / item.value) * 100,
+                }))}
+                margin={{
+                  top: 24,
+                }}
+              >
+                <XAxis dataKey="name" />
+                <Legend
+                  align="right"
+                  verticalAlign="bottom"
+                  payload={[
+                    { value: '必要開銷', type: 'rect', color: '#8884d8' },
+                    { value: '額外開銷', type: 'rect', color: '#82ca9d' },
+                  ]}
                 />
-              </Bar>
-              <Bar dataKey="unnecessaryPercentage" stackId="a" fill="#82ca9d">
-                <LabelList
-                  dataKey="unnecessaryPercentage"
-                  content={renderCustomizedLabelForBar}
-                />
-              </Bar>
-            </BarChart>
+                <Bar dataKey="necessaryPercentage" stackId="a" fill="#8884d8">
+                  <LabelList
+                    dataKey="necessaryPercentage"
+                    content={renderCustomizedLabelForBar}
+                  />
+                </Bar>
+                <Bar dataKey="unnecessaryPercentage" stackId="a" fill="#82ca9d">
+                  <LabelList
+                    dataKey="unnecessaryPercentage"
+                    content={renderCustomizedLabelForBar}
+                  />
+                </Bar>
+              </BarChart>
+            ) : (
+              <div className="flex h-[250px] w-full items-center justify-center">
+                <Loading className="size-10 animate-spin py-1 text-gray-500" />
+              </div>
+            )}
           </ChartContainer>
         </>
       )}

@@ -9,19 +9,7 @@ export const CostTable = ({
   total: number;
   list: PieChartDataItem[];
 }) => {
-  const largest = list.reduce(
-    (prev, current) => {
-      return prev.value > current.value ? prev : current;
-    },
-    {
-      id: '',
-      name: '',
-      value: 0,
-      necessary: 0,
-      unnecessary: 0,
-      color: '',
-    },
-  );
+  const sortedList = list.sort((a, b) => b.value - a.value);
   return (
     <div className="my-2 flex w-full flex-col gap-2 rounded-xl p-3 shadow">
       <h3 className="text-sm font-semibold">{title}</h3>
@@ -40,11 +28,8 @@ export const CostTable = ({
           </tr>
         </thead>
         <tbody>
-          {list.map((item) => (
-            <tr
-              key={`income-${item.name}`}
-              className={largest.name === item.name ? 'bg-orange-100' : ''}
-            >
+          {sortedList.map((item) => (
+            <tr key={`income-${item.name}`}>
               <td className="col-span-1 border border-solid border-gray-300 px-2 py-px">
                 {item.name}
               </td>

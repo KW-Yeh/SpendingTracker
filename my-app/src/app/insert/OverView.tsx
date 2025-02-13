@@ -5,10 +5,10 @@ import { EditIcon } from '@/components/icons/EditIcon';
 import { Loading } from '@/components/icons/Loading';
 import { Modal } from '@/components/Modal';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
+import { useMounted } from '@/hooks/useMounted';
 import { putUser } from '@/services/dbHandler';
 import { DateFilter } from '@/utils/constants';
 import { normalizeNumber } from '@/utils/normalizeNumber';
-import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import {
   ChangeEvent,
@@ -18,14 +18,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Label, Pie } from 'recharts';
-
-/**
- * https://stackoverflow.com/questions/72311188/hydration-failed-error-using-recharts-with-nextjs
- * */
-const PieChart = dynamic(() => import('recharts').then((mod) => mod.PieChart), {
-  ssr: false,
-});
+import { Label, Pie, PieChart } from 'recharts';
 
 interface Props {
   totalIncome: number;
@@ -47,6 +40,7 @@ export const OverView = (props: Props) => {
   } = props;
   const { syncUser, config: user } = useUserConfigCtx();
   const modalRef = useRef<ModalRef>(null);
+  const isMounted = useMounted();
   const [budgetList, setBudgetList] = useState<number[]>(Array(12).fill(10000));
   const [isUseAvg, setIsUseAvg] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -95,33 +89,39 @@ export const OverView = (props: Props) => {
     <div className="flex w-full flex-col gap-2 sm:max-w-96">
       <div className="relative flex h-24 w-full items-center gap-4 rounded-md border border-solid border-gray-300 p-2">
         <div className="w-20">
-          <PieChart width={80} height={80}>
-            <Pie
-              dataKey="value"
-              data={
-                budget !== 0
-                  ? [
-                      { name: '已使用', value: usage, fill: '#22C55E7F' },
-                      {
-                        name: '剩餘',
-                        value: budget - usage,
-                        fill: '#D1D5DB80',
-                      },
-                    ]
-                  : [{ name: '已使用', value: usage, fill: '#22C55E7F' }]
-              }
-              innerRadius={30}
-              outerRadius={40}
-              strokeOpacity={0}
-            >
-              <Label
-                value={`${budgetUsage}%`}
-                offset={0}
-                position="center"
-                className="text-sm font-bold"
-              />
-            </Pie>
-          </PieChart>
+          {isMounted ? (
+            <PieChart width={80} height={80}>
+              <Pie
+                dataKey="value"
+                data={
+                  budget !== 0
+                    ? [
+                        { name: '已使用', value: usage, fill: '#22C55E7F' },
+                        {
+                          name: '剩餘',
+                          value: budget - usage,
+                          fill: '#D1D5DB80',
+                        },
+                      ]
+                    : [{ name: '已使用', value: usage, fill: '#22C55E7F' }]
+                }
+                innerRadius={30}
+                outerRadius={40}
+                strokeOpacity={0}
+              >
+                <Label
+                  value={`${budgetUsage}%`}
+                  offset={0}
+                  position="center"
+                  className="text-sm font-bold"
+                />
+              </Pie>
+            </PieChart>
+          ) : (
+            <div className="flex w-20 items-center justify-center">
+              <Loading className="size-10 animate-spin py-1 text-gray-500" />
+            </div>
+          )}
         </div>
         <div className="flex flex-1 flex-col">
           <span className="flex items-center gap-1 text-xs text-gray-500 sm:text-sm">

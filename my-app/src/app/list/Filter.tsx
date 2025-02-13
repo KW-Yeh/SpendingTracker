@@ -23,26 +23,27 @@ export const Filter = (props: Props) => {
   const { today, setYear, year, setMonth, month } = dateOptions;
 
   return (
-    <div className="flex items-center gap-4">
-      <Select
-        name="group"
-        value={group?.name ?? '個人'}
-        onChange={(_id) => {
-          setGroupId(_id);
-          refreshData(_id);
-        }}
-        className="w-36 rounded-full border border-solid border-gray-300 px-4 py-1 transition-colors active:border-text sm:hover:border-text"
-        menuStyle="max-w-60"
-      >
-        <Select.Item value="">個人</Select.Item>
-        {!loadingGroups &&
-          groups.map((group) => (
-            <Select.Item key={group.id} value={group.id}>
-              {group.name}
-            </Select.Item>
-          ))}
-      </Select>
-      <div className="flex items-center justify-center gap-2 rounded-full border border-solid border-gray-300 px-4 py-1">
+    <div className="flex w-full items-center gap-4">
+      <div className="flex-1">
+        <Select
+          name="group"
+          value={group?.name ?? '個人'}
+          onChange={(_id) => {
+            setGroupId(_id);
+            refreshData(_id);
+          }}
+          className="w-full rounded-full border border-solid border-gray-300 px-4 py-1 transition-colors active:border-text sm:hover:border-text"
+        >
+          <Select.Item value="">個人</Select.Item>
+          {!loadingGroups &&
+            groups.map((group) => (
+              <Select.Item key={group.id} value={group.id}>
+                {group.name}
+              </Select.Item>
+            ))}
+        </Select>
+      </div>
+      <div className="flex flex-1 items-center justify-center gap-2 rounded-full border border-solid border-gray-300 px-4 py-1">
         <Select name="year" value={year} onChange={setYear}>
           {Array(11)
             .fill(0)

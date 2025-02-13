@@ -12,7 +12,7 @@ export const usePrepareData = () => {
 
   useEffect(() => {
     if (config) {
-      syncData(undefined, config.email);
+      syncData(undefined, config.email, new Date().toUTCString());
       syncGroup(config.groups);
     }
   }, [config, syncData, syncGroup]);
