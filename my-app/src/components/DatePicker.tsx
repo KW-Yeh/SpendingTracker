@@ -8,6 +8,7 @@ interface Props {
   date: Date;
   onChange: (event: ChangeEvent) => void;
   className?: string;
+  labelClassName?: string;
 }
 
 export const DatePicker = (props: Props) => {
@@ -41,7 +42,7 @@ export const DatePicker = (props: Props) => {
   };
 
   return (
-    <div className="relative flex items-center">
+    <div className={`relative flex items-center ${props.className}`}>
       <input
         ref={inputRef}
         type="date"
@@ -50,7 +51,7 @@ export const DatePicker = (props: Props) => {
       />
       <button
         type="button"
-        className={`z-20 flex items-center justify-between gap-4 bg-background ${props.className}`}
+        className={`z-20 flex w-full items-center justify-between gap-4 ${props.labelClassName}`}
         onClick={showPicker}
       >
         <span>{wording}</span>

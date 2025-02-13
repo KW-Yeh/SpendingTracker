@@ -36,7 +36,7 @@ export const Select = (props: Props) => {
         close: () => setOpenOptions(false),
       }}
     >
-      <div ref={ref} className="relative">
+      <div ref={ref} className="relative w-full">
         <button
           className={`${className} flex items-center justify-between gap-1`}
           type="button"
@@ -48,7 +48,10 @@ export const Select = (props: Props) => {
           <CaretDown className={`size-2 shrink-0 ${caretStyle}`} />
         </button>
         <div
-          className={`${menuStyle} absolute top-full z-40 flex w-fit min-w-16 flex-col divide-y divide-gray-300 rounded-lg bg-background py-2 shadow transition-all ${openOptions ? 'visible opacity-100' : 'invisible opacity-0'}`}
+          className={`${menuStyle} absolute mt-1 top-full left-1 z-40 flex w-fit border border-solid border-gray-300 flex-col divide-y divide-gray-300 rounded-lg bg-background py-2 shadow transition-all ${openOptions ? 'visible opacity-100' : 'invisible opacity-0'}`}
+          style={{
+            minWidth: (ref.current?.clientWidth ?? 0) - 8 + 'px',
+          }}
         >
           {children}
         </div>

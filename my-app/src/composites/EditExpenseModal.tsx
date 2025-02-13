@@ -154,11 +154,11 @@ export const EditExpenseModal = (props: Props) => {
       title={isNewData ? '新增記錄' : '修改記錄'}
     >
       <form
-        className="flex w-full flex-1 flex-col gap-2"
+        className="flex w-full flex-1 flex-col gap-4"
         onSubmit={handleOnSubmit}
       >
         <div className="flex w-full flex-col gap-4">
-          <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center justify-between gap-4">
             <Switch
               option1={{
                 label: '支出',
@@ -173,7 +173,7 @@ export const EditExpenseModal = (props: Props) => {
                 className: '!px-2 !py-1',
               }}
               value={spendingType}
-              className="flex-1 text-sm"
+              className="h-10 flex-1 text-sm"
               onChange={setSpendingType}
             />
             <Switch
@@ -190,31 +190,36 @@ export const EditExpenseModal = (props: Props) => {
                 className: '!px-2 !py-1',
               }}
               value={necessity}
-              className="flex-1 text-sm"
+              className="h-10 flex-1 text-sm"
               onChange={setNecessity}
             />
           </div>
-          <div className="flex items-center justify-between gap-2">
-            <GroupSelector
-              selectedGroup={groupId}
-              selectedMemberEmail={memberEmail}
-              onSelectGroup={setGroupId}
-              onSelectMemberEmail={setMemberEmail}
-            />
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-1 items-center gap-2 rounded-md border border-solid border-gray-300">
+              <GroupSelector
+                selectedGroup={groupId}
+                selectedMemberEmail={memberEmail}
+                onSelectGroup={setGroupId}
+                onSelectMemberEmail={setMemberEmail}
+                showMemberSelector={false}
+                selectorStyle="border-0 w-full h-10"
+              />
+            </div>
             <DatePicker
               date={new Date(date)}
-              className="bg-transparent py-1 text-base"
+              className="h-10 flex-1 rounded-md border border-solid border-gray-300 bg-transparent"
+              labelClassName="text-base px-2 py-1"
               onChange={handleOnChangeDate}
             />
           </div>
-          <div className="flex w-full items-center">
-            <fieldset className="flex-1 p-1">
-              <legend className="font-bold">類型</legend>
+          <div className="flex w-full items-center gap-4">
+            <fieldset className="flex-1">
+              {/*<legend className="font-bold">類型</legend>*/}
               <Select
                 name="category"
                 value={`${selectedCategory} ${selectedCategoryLabel}`}
                 onChange={setSelectedCategory}
-                className="rounded-full border border-solid border-gray-300 px-3 py-1 transition-colors active:border-text sm:hover:border-text"
+                className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1 transition-colors active:border-text sm:hover:border-text"
               >
                 {spendingCategories.map((category) => (
                   <Select.Item key={category.value} value={category.value}>
@@ -223,13 +228,13 @@ export const EditExpenseModal = (props: Props) => {
                 ))}
               </Select>
             </fieldset>
-            <fieldset className="flex-1 p-1">
-              <legend className="font-bold">描述</legend>
+            <fieldset className="flex-1">
+              {/*<legend className="font-bold">描述</legend>*/}
               <input
                 list="common-description"
                 id="description"
                 name="description"
-                className="w-full rounded border border-solid border-gray-300 px-2 py-1 focus:outline-0"
+                className="h-10 w-full rounded-md border border-solid border-gray-300 px-2 py-1 focus:outline-0"
                 autoComplete="off"
                 placeholder="描述"
                 defaultValue={data.description}
@@ -248,10 +253,10 @@ export const EditExpenseModal = (props: Props) => {
             </fieldset>
           </div>
         </div>
-        <div className="flex flex-col gap-1 rounded-lg p-1">
+        <div className="flex flex-col gap-1 rounded-lg">
           <input
             type="text"
-            className={`w-full rounded border border-solid px-2 py-1 text-end focus:outline-0 ${isNoAmount ? 'border-red-500' : 'border-gray-300'}`}
+            className={`h-10 w-full rounded border border-solid px-2 py-1 text-end focus:outline-0 ${isNoAmount ? 'border-red-500' : 'border-gray-300'}`}
             value={'$ ' + normalizeNumber(amount)}
             readOnly
           />

@@ -33,15 +33,27 @@ interface Props {
   budget?: number;
   usage?: number;
   filter: DateFilter;
+  dateStr: string;
 }
 
 export const OverView = (props: Props) => {
-  const { totalIncome, totalOutcome, budget = 0, usage = 0, filter } = props;
+  const {
+    totalIncome,
+    totalOutcome,
+    budget = 0,
+    usage = 0,
+    filter,
+    dateStr,
+  } = props;
   const { syncUser, config: user } = useUserConfigCtx();
   const modalRef = useRef<ModalRef>(null);
   const [budgetList, setBudgetList] = useState<number[]>(Array(12).fill(10000));
   const [isUseAvg, setIsUseAvg] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const year = useMemo(() => new Date(dateStr).getFullYear(), [dateStr]);
+  const month = useMemo(() => new Date(dateStr).getMonth(), [dateStr]);
+  const date = useMemo(() => new Date(dateStr).getDate(), [dateStr]);
 
   const avgBudget = useMemo(
     () => Math.floor(budgetList.reduce((acc, cur) => acc + cur, 0) / 12),
@@ -81,7 +93,7 @@ export const OverView = (props: Props) => {
 
   return (
     <div className="flex w-full flex-col gap-2 sm:max-w-96">
-      <div className="flex h-24 w-full items-center gap-4 rounded-md border border-solid border-gray-300 p-2">
+      <div className="relative flex h-24 w-full items-center gap-4 rounded-md border border-solid border-gray-300 p-2">
         <div className="w-20">
           <PieChart width={80} height={80}>
             <Pie
@@ -147,6 +159,14 @@ export const OverView = (props: Props) => {
             <DoubleArrowIcon className="size-3" />
           </Link>
         </div>
+
+        <span className="absolute right-2 top-2 text-xs text-gray-500">
+          {filter === DateFilter.Day
+            ? `${year}-${month + 1}-${date}`
+            : filter === DateFilter.Month
+              ? `${year}-${month + 1}`
+              : year}
+        </span>
       </div>
       <div className="flex w-full items-center gap-5">
         <div className="flex flex-1 flex-col rounded-md bg-red-500/50 px-4 py-2 font-semibold">

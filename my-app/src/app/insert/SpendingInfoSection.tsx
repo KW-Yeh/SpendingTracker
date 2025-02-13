@@ -167,17 +167,19 @@ export const SpendingInfoSection = () => {
         </button>
       </div>
       <div className="flex w-full max-w-175 items-center gap-2">
-        <GroupSelector
-          selectedGroup={selectedGroup}
-          selectedMemberEmail={selectedMemberEmail}
-          onSelectGroup={setSelectedGroup}
-          onSelectMemberEmail={setSelectedMemberEmail}
-        />
+        <div className="">
+          <GroupSelector
+            selectedGroup={selectedGroup}
+            selectedMemberEmail={selectedMemberEmail}
+            onSelectGroup={setSelectedGroup}
+            onSelectMemberEmail={setSelectedMemberEmail}
+          />
+        </div>
       </div>
       <div className="flex w-full max-w-175 items-center justify-between gap-2 sm:justify-center">
         <DatePicker
           date={new Date(state.date)}
-          className="p-4 text-sm sm:text-lg"
+          labelClassName="p-4 text-sm sm:text-lg bg-background"
           onChange={handleOnChangeDate}
         />
         <div className="flex items-center divide-x divide-gray-300 rounded border border-solid border-gray-300 text-sm">
@@ -210,6 +212,7 @@ export const SpendingInfoSection = () => {
         budget={budget}
         usage={totalOutcome}
         filter={filter}
+        dateStr={state.date}
       />
       <div className="flex w-full max-w-175 flex-col gap-2 pb-20">
         <CategoryAccordion
