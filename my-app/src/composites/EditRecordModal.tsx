@@ -14,7 +14,7 @@ const EditRecordModal = ({ recordId }: { recordId: string }) => {
   const [state, dispatch] = useSpendingReducer();
   usePrepareData();
   const { data } = useGetSpendingCtx();
-  const [matchedData, setMatchedData] = useState<SpendingRecord>();
+  const [isMatched, setIsMatched] = useState(false);
 
   const reset = () => {
     dispatch({
@@ -31,7 +31,7 @@ const EditRecordModal = ({ recordId }: { recordId: string }) => {
   useEffect(() => {
     if (data.length > 0) {
       const matched = data.find((record) => record.id === recordId);
-      setMatchedData(matched);
+      setIsMatched(matched !== undefined);
       if (matched) {
         dispatch({
           type: 'RESET',
@@ -40,13 +40,14 @@ const EditRecordModal = ({ recordId }: { recordId: string }) => {
       }
       modalRef.current?.open();
     }
-  }, [data, recordId, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data.length, recordId, dispatch]);
 
   return (
     <EditExpenseModal
       ref={modalRef}
       data={state}
-      isNewData={!!matchedData}
+      isNewData={!isMatched}
       reset={reset}
       onClose={navigator.back}
     />
