@@ -89,10 +89,10 @@ export const EditExpenseModal = (props: Props) => {
   }, []);
 
   const cancel = useCallback(() => {
-    reset && reset();
+    if (reset) reset();
     resetStates();
     ref.current?.close();
-    onClose && onClose();
+    if (onClose) onClose();
   }, [ref, reset, resetStates, onClose]);
 
   const handleOnSubmit = useCallback(
@@ -124,10 +124,10 @@ export const EditExpenseModal = (props: Props) => {
       await putItem(newSpending);
       syncData(groupId, userEmail, date);
       setLoading(false);
-      reset && reset();
+      if (reset) reset();
       resetStates();
       ref.current?.close();
-      onClose && onClose();
+      if (onClose) onClose();
     },
     [
       session?.user?.email,

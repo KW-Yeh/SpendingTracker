@@ -40,7 +40,7 @@ const EditRecordModal = ({ recordId }: { recordId: string }) => {
       }
       modalRef.current?.open();
     }
-  }, [data, recordId]);
+  }, [data, recordId, dispatch]);
 
   return (
     <EditExpenseModal

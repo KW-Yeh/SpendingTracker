@@ -62,12 +62,13 @@ export const SpendingItem = (props: Props) => {
         >
           <EditIcon className="size-3 transition-colors group-active:text-background sm:size-4 sm:group-hover:text-background" />
         </Link>
-        <Link
-          href={`/edit/${spending.id}`}
+        <button
+          type="button"
+          onClick={handleOnDelete}
           className="group rounded p-2 transition-colors active:bg-red-500 sm:hover:bg-red-500"
         >
           <DeleteIcon className="size-3 transition-colors group-active:text-background sm:size-4 sm:group-hover:text-background" />
-        </Link>
+        </button>
       </div>
     </div>
   );

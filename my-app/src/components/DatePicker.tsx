@@ -35,7 +35,7 @@ export const DatePicker = (props: Props) => {
       }
       return `${year} 年 ${month + 1} 月 ${day} 日（週${WEEKDAY[weekday]}）`;
     }
-  }, [year, month, day, weekday]);
+  }, [year, month, day, weekday, props.format]);
 
   const showPicker = () => {
     if (!inputRef.current) return;
