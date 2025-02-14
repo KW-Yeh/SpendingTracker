@@ -6,12 +6,10 @@ import { SpendingList } from '@/app/insert/SpendingList';
 import { DatePicker } from '@/components/DatePicker';
 import { RefreshIcon } from '@/components/icons/RefreshIcon';
 import { AddExpenseBtn } from '@/composites/AddExpenseBtn';
-import { EditExpenseModal } from '@/composites/EditExpenseModal';
 import { GroupSelector } from '@/composites/GroupSelector';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { useSpendingReducer } from '@/hooks/useSpendingReducer';
 import {
   DateFilter,
   INCOME_TYPE_MAP,
@@ -24,27 +22,23 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
-import { v7 as uuid } from 'uuid';
 
 export const SpendingInfoSection = () => {
-  const [state, dispatch] = useSpendingReducer();
   const [selectedGroup, setSelectedGroup] = useState<string>('');
   const [selectedMemberEmail, setSelectedMemberEmail] = useState<string>();
   const { config: userData } = useUserConfigCtx();
   const { syncData, loading, data } = useGetSpendingCtx();
   const { syncGroup } = useGroupCtx();
-  const modalRef = useRef<ModalRef>(null);
-  const [isNewData, setIsNewData] = useState(false);
   const [filter, setFilter] = useState(DateFilter.Day);
   const [filteredData, setFilteredData] = useState<SpendingRecord[]>([]);
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalOutcome, setTotalOutcome] = useState(0);
+  const [date, setDate] = useState<string>(new Date().toUTCString());
 
-  const year = useMemo(() => new Date(state.date).getFullYear(), [state.date]);
-  const month = useMemo(() => new Date(state.date).getMonth(), [state.date]);
+  const year = useMemo(() => new Date(date).getFullYear(), [date]);
+  const month = useMemo(() => new Date(date).getMonth(), [date]);
 
   const budget = useMemo(() => {
     if (!userData?.budgetList) return undefined;
@@ -61,44 +55,41 @@ export const SpendingInfoSection = () => {
   const handleOnChangeDate = (event: ChangeEvent) => {
     const date = new Date((event.target as HTMLInputElement).value);
     startTransition(() => {
-      dispatch({
-        type: 'SET_DATE',
-        payload: date.toUTCString(),
-      });
+      setDate(date.toUTCString());
     });
   };
 
   const checkDate = useCallback(
     (dateStr: string) => {
-      const date = new Date(dateStr);
-      const currentDate = new Date(state.date);
+      const dataDate = new Date(dateStr);
+      const currentDate = new Date(date);
       if (filter === DateFilter.Year) {
-        return date.getFullYear() === currentDate.getFullYear();
+        return dataDate.getFullYear() === currentDate.getFullYear();
       } else if (filter === DateFilter.Month) {
         return (
-          date.getFullYear() === currentDate.getFullYear() &&
-          date.getMonth() === currentDate.getMonth()
+          dataDate.getFullYear() === currentDate.getFullYear() &&
+          dataDate.getMonth() === currentDate.getMonth()
         );
       }
       return (
-        date.getFullYear() === currentDate.getFullYear() &&
-        date.getMonth() === currentDate.getMonth() &&
-        date.getDate() === currentDate.getDate()
+        dataDate.getFullYear() === currentDate.getFullYear() &&
+        dataDate.getMonth() === currentDate.getMonth() &&
+        dataDate.getDate() === currentDate.getDate()
       );
     },
-    [filter, state.date],
+    [filter, date],
   );
 
   const refreshData = useCallback(() => {
-    syncData(selectedGroup || undefined, userData?.email, state.date);
+    syncData(selectedGroup || undefined, userData?.email, date);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedGroup, syncData, userData?.email, year]);
 
   useEffect(() => {
     if (selectedGroup === '' && userData) {
-      syncData(undefined, userData.email, state.date);
+      syncData(undefined, userData.email, date);
     } else {
-      syncData(selectedGroup, undefined, state.date);
+      syncData(selectedGroup, undefined, date);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedGroup, userData, syncData, year]);
@@ -129,18 +120,6 @@ export const SpendingInfoSection = () => {
       );
     }
   }, [checkDate, data, selectedMemberEmail]);
-
-  const reset = () => {
-    dispatch({
-      type: 'RESET',
-      payload: {
-        id: uuid(),
-        date: new Date().toUTCString(),
-        amount: 0,
-        description: '',
-      },
-    });
-  };
 
   useEffect(() => {
     if (!selectedGroup && userData?.email) {
@@ -178,7 +157,7 @@ export const SpendingInfoSection = () => {
       </div>
       <div className="flex w-full max-w-175 items-center justify-between gap-2 sm:justify-center">
         <DatePicker
-          date={new Date(state.date)}
+          date={new Date(date)}
           labelClassName="p-4 text-sm sm:text-lg bg-background"
           onChange={handleOnChangeDate}
         />
@@ -212,7 +191,7 @@ export const SpendingInfoSection = () => {
         budget={budget}
         usage={totalOutcome}
         filter={filter}
-        dateStr={state.date}
+        dateStr={date}
       />
       <div className="flex w-full max-w-175 flex-col gap-2 pb-20">
         <CategoryAccordion
@@ -224,15 +203,6 @@ export const SpendingInfoSection = () => {
             <SpendingList
               data={categoryData}
               loading={loading}
-              selectedDataId={state.id}
-              handleEdit={(_data) => {
-                dispatch({
-                  type: 'RESET',
-                  payload: _data,
-                });
-                setIsNewData(false);
-                modalRef.current?.open();
-              }}
               refreshData={refreshData}
             />
           )}
@@ -246,36 +216,15 @@ export const SpendingInfoSection = () => {
             <SpendingList
               data={categoryData}
               loading={loading}
-              selectedDataId={state.id}
-              handleEdit={(_data) => {
-                dispatch({
-                  type: 'RESET',
-                  payload: _data,
-                });
-                setIsNewData(false);
-                modalRef.current?.open();
-              }}
               refreshData={refreshData}
             />
           )}
         </CategoryAccordion>
       </div>
 
-      <AddExpenseBtn
-        onClick={() => {
-          setIsNewData(true);
-          modalRef.current?.open();
-        }}
-        borderStyle="conic-gradient-from-purple-to-red"
-      >
+      <AddExpenseBtn borderStyle="conic-gradient-from-purple-to-red">
         <span className="text-base font-bold">記帳</span>
       </AddExpenseBtn>
-      <EditExpenseModal
-        ref={modalRef}
-        data={state}
-        isNewData={isNewData}
-        reset={reset}
-      />
     </div>
   );
 };

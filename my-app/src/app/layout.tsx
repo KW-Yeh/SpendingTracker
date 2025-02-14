@@ -21,8 +21,10 @@ export const viewport: Viewport = {
 
 export default function RootLayout({
   children,
+  modal,
 }: Readonly<{
   children: ReactNode;
+  modal: ReactNode;
 }>) {
   return (
     <html lang="zh-Hant">
@@ -33,6 +35,7 @@ export default function RootLayout({
               <SpendingProvider>
                 <Header />
                 {children}
+                {modal}
               </SpendingProvider>
             </UserConfigProvider>
           </GroupProvider>

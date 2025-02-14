@@ -33,11 +33,12 @@ interface Props {
   data: SpendingRecord;
   isNewData: boolean;
   ref: RefObject<ModalRef | null>;
-  reset: () => void;
+  reset?: () => void;
+  onClose?: () => void;
 }
 
 export const EditExpenseModal = (props: Props) => {
-  const { data, isNewData, ref, reset } = props;
+  const { data, isNewData, ref, reset, onClose } = props;
   const { data: session } = useSession();
   const { syncData } = useGetSpendingCtx();
   const numberKeyboardRef = useRef<NumberKeyboardRef>(null);
@@ -88,10 +89,11 @@ export const EditExpenseModal = (props: Props) => {
   }, []);
 
   const cancel = useCallback(() => {
-    reset();
+    reset && reset();
     resetStates();
     ref.current?.close();
-  }, [ref, reset, resetStates]);
+    onClose && onClose();
+  }, [ref, reset, resetStates, onClose]);
 
   const handleOnSubmit = useCallback(
     async (event: FormEvent) => {
@@ -122,9 +124,10 @@ export const EditExpenseModal = (props: Props) => {
       await putItem(newSpending);
       syncData(groupId, userEmail, date);
       setLoading(false);
-      reset();
+      reset && reset();
       resetStates();
       ref.current?.close();
+      onClose && onClose();
     },
     [
       session?.user?.email,
@@ -138,6 +141,7 @@ export const EditExpenseModal = (props: Props) => {
       syncData,
       reset,
       resetStates,
+      onClose,
       ref,
     ],
   );
@@ -165,7 +169,7 @@ export const EditExpenseModal = (props: Props) => {
       ref={ref}
       onClose={cancel}
       className="flex w-full max-w-96 flex-col"
-      title={isNewData ? '新增記錄' : '修改記錄'}
+      title={isNewData ? '新增帳目' : '編輯帳目'}
     >
       <form
         className="flex w-full flex-1 flex-col gap-4"
@@ -228,7 +232,6 @@ export const EditExpenseModal = (props: Props) => {
           </div>
           <div className="flex w-full items-center gap-4">
             <fieldset className="flex-1">
-              {/*<legend className="font-bold">類型</legend>*/}
               <Select
                 name="category"
                 value={`${selectedCategory} ${selectedCategoryLabel}`}
@@ -243,7 +246,6 @@ export const EditExpenseModal = (props: Props) => {
               </Select>
             </fieldset>
             <fieldset className="flex-1">
-              {/*<legend className="font-bold">描述</legend>*/}
               <input
                 list="common-description"
                 id="description"
@@ -254,7 +256,7 @@ export const EditExpenseModal = (props: Props) => {
                 defaultValue={data.description}
               />
               <datalist id="common-description">
-                {DEFAULT_DESC[selectedCategory].map((commonDesc) => (
+                {DEFAULT_DESC[selectedCategory]?.map((commonDesc) => (
                   <option key={commonDesc} value={commonDesc}></option>
                 ))}
               </datalist>

@@ -4,13 +4,11 @@ import { useEffect, useRef } from 'react';
 interface Props {
   data: SpendingRecord[];
   loading: boolean;
-  selectedDataId: string;
-  handleEdit: (record: SpendingRecord) => void;
   refreshData: () => void;
 }
 
 export const SpendingList = (props: Props) => {
-  const { selectedDataId, handleEdit, refreshData, data, loading } =
+  const { refreshData, data, loading } =
     props;
   const isInitialized = useRef(false);
 
@@ -34,8 +32,6 @@ export const SpendingList = (props: Props) => {
             <SpendingItem
               key={`${spending.id}-${index.toString()}`}
               spending={spending}
-              id={selectedDataId}
-              handleEdit={handleEdit}
               refreshData={refreshData}
             />
           ))}

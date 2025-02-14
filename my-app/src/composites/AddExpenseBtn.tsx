@@ -1,28 +1,18 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { HTMLAttributes, useEffect, useRef, useState } from 'react';
+import { v7 as uuid } from 'uuid';
 
 interface Props extends HTMLAttributes<HTMLButtonElement> {
   borderStyle?: string;
-  animationDuration?: {
-    default: string;
-    hover: string;
-  };
 }
 
 export const AddExpenseBtn = (props: Props) => {
-  const {
-    className = '',
-    borderStyle = 'bg-text',
-    animationDuration = {
-      default: '2s',
-      hover: '1.5s',
-    },
-    children,
-    ...legacy
-  } = props;
+  const { className = '', borderStyle = 'bg-text', children } = props;
   const animationWrapperRef = useRef<HTMLDivElement>(null);
   const [isHover, setIsHover] = useState(false);
+  const navigator = useRouter();
 
   useEffect(() => {
     const animationWrapper = animationWrapperRef.current;
@@ -43,7 +33,7 @@ export const AddExpenseBtn = (props: Props) => {
     <button
       type="button"
       className={`transition-spring fixed bottom-8 z-30 mx-auto flex w-40 overflow-hidden rounded-full p-px shadow-md transition-all active:scale-105 sm:hover:scale-105 ${className}`}
-      {...legacy}
+      onClick={() => navigator.push(`/edit/${uuid()}`)}
       onMouseOver={() => setIsHover(true)}
       onMouseOut={() => setIsHover(false)}
     >
@@ -51,13 +41,13 @@ export const AddExpenseBtn = (props: Props) => {
         ref={animationWrapperRef}
         className="absolute -bottom-14 -left-1 -right-1 -top-14 animate-spin"
         style={{
-          animationDuration: animationDuration.hover,
+          animationDuration: '1.5s',
         }}
       >
         <div
           className={`${borderStyle} absolute bottom-0 left-0 right-0 top-0 animate-spin`}
           style={{
-            animationDuration: animationDuration.default,
+            animationDuration: '2s',
           }}
         ></div>
       </div>
