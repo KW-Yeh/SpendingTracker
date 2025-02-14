@@ -9,6 +9,7 @@ import { GroupSelector } from '@/composites/GroupSelector';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { putItem } from '@/services/dbHandler';
 import {
+  DEFAULT_DESC,
   INCOME_TYPE_MAP,
   Necessity,
   OUTCOME_TYPE_MAP,
@@ -176,11 +177,13 @@ export const EditExpenseModal = (props: Props) => {
               option1={{
                 label: '支出',
                 value: SpendingType.Outcome,
+                onSelectColor: '#F56666',
                 className: '!px-2 !py-1',
               }}
               option2={{
                 label: '收入',
                 value: SpendingType.Income,
+                onSelectColor: '#48BB78',
                 className: '!px-2 !py-1',
               }}
               value={spendingType}
@@ -219,7 +222,7 @@ export const EditExpenseModal = (props: Props) => {
               date={new Date(date)}
               className="h-10 flex-1 rounded-md border border-solid border-gray-300 bg-transparent"
               labelClassName="text-base px-2 py-1"
-              format='yyyy/mm/dd'
+              format="yyyy/mm/dd"
               onChange={handleOnChangeDate}
             />
           </div>
@@ -251,15 +254,9 @@ export const EditExpenseModal = (props: Props) => {
                 defaultValue={data.description}
               />
               <datalist id="common-description">
-                <option value="早餐"></option>
-                <option value="午餐"></option>
-                <option value="晚餐"></option>
-                <option value="點心"></option>
-                <option value="飲料"></option>
-                <option value="加油"></option>
-                <option value="薪水"></option>
-                <option value="加值(悠遊)"></option>
-                <option value="加值(高鐵)"></option>
+                {DEFAULT_DESC[selectedCategory].map((commonDesc) => (
+                  <option key={commonDesc} value={commonDesc}></option>
+                ))}
               </datalist>
             </fieldset>
           </div>

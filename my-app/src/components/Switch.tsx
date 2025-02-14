@@ -54,11 +54,17 @@ export const Switch = (props: Props) => {
         if (value === option1.value) {
           block.style.left = `${leftLeft}px`;
           block.style.width = `${leftWidth}px`;
-          if (option1.onSelectColor) leftButton.style.color = option1.onSelectColor;
+          if (option1.onSelectColor)
+            leftButton.style.color = option1.onSelectColor;
+          else leftButton.style.color = '#333333';
+          rightButton.style.color = '#A0AEC0';
         } else {
           block.style.left = `${rightLeft}px`;
           block.style.width = `${rightWidth}px`;
-          if (option2.onSelectColor) rightButton.style.color = option2.onSelectColor;
+          if (option2.onSelectColor)
+            rightButton.style.color = option2.onSelectColor;
+          else rightButton.style.color = '#333333';
+          leftButton.style.color = '#A0AEC0';
         }
       }
     });
@@ -69,7 +75,7 @@ export const Switch = (props: Props) => {
       ref={containerRef}
       type="button"
       onClick={handleOnClick}
-      className={`relative flex w-fit items-center gap-1 bg-gray-300 rounded-md p-1 ${className}`}
+      className={`relative flex w-fit items-center gap-1 rounded-md bg-gray-300 p-1 ${className}`}
     >
       <div
         ref={floatingBlockRef}
@@ -77,13 +83,13 @@ export const Switch = (props: Props) => {
       ></div>
       <span
         ref={option1Ref}
-        className={`z-20 flex-1 bg-transparent px-6 py-2 text-center font-semibold text-text transition-colors ${option1.className} ${value === option1.value ? 'opacity-100' : 'opacity-50'}`}
+        className={`z-20 flex-1 bg-transparent px-6 py-2 text-center font-semibold text-text transition-colors ${option1.className}`}
       >
         {option1.label}
       </span>
       <span
         ref={option2Ref}
-        className={`z-20 flex-1 bg-transparent px-6 py-2 text-center font-semibold text-text transition-colors ${option2.className} ${value === option2.value ? 'opacity-100' : 'opacity-50'}`}
+        className={`z-20 flex-1 bg-transparent px-6 py-2 text-center font-semibold text-text transition-colors ${option2.className}`}
       >
         {option2.label}
       </span>

@@ -41,7 +41,7 @@ const INCOME_WORDINGS = ['投資', '薪資', '獎金', '其他'];
 export const INCOME_TYPE_MAP = INCOME_TYPE_OPTIONS.map((option, index) => ({
   value: option,
   label: INCOME_WORDINGS[index],
-}))
+}));
 
 const OUTCOME_TYPE_OPTIONS = [
   '🍔',
@@ -79,3 +79,19 @@ export enum DateFilter {
   Month = 'Month',
   Year = 'Year',
 }
+
+export const DEFAULT_DESC: Record<string, string[]> = {
+  '🍔': ['早餐', '午餐', '晚餐', '點心', '飲料'],
+  '👗': [],
+  '🏠': [],
+  '🚗': ['加油', '加值(悠遊)', '加值(高鐵)'],
+  '📚': [],
+  '🎲': [],
+  '🧻': [],
+  '💊': [],
+  '📉': [],
+  '📈': [],
+  '💰': ['薪水'],
+  '🎁': [],
+  '✨': [],
+};
