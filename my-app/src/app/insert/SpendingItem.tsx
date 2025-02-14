@@ -1,6 +1,5 @@
 'use client';
 
-import { CloseIcon } from '@/components/icons/CloseIcon';
 import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { EditIcon } from '@/components/icons/EditIcon';
 import { deleteItem } from '@/services/dbHandler';
@@ -14,11 +13,10 @@ interface Props {
   id: string;
   handleEdit: (record: SpendingRecord) => void;
   refreshData: () => void;
-  reset: () => void;
 }
 
 export const SpendingItem = (props: Props) => {
-  const { spending, id, handleEdit, refreshData, reset } = props;
+  const { spending, id, handleEdit, refreshData } = props;
   const [deleting, setDeleting] = useState(false);
   const handleOnEdit = () => {
     handleEdit(spending);
@@ -72,24 +70,15 @@ export const SpendingItem = (props: Props) => {
       </div>
       <div className="w-fit text-end">${normalizeNumber(spending.amount)}</div>
       <div className="flex w-16 items-center justify-end">
-        {isSelected ? (
-          <button
-            onClick={reset}
-            className="group rounded p-2 transition-colors active:bg-primary-300 sm:hover:bg-primary-300"
-          >
-            <CloseIcon className="size-3 transition-colors group-active:text-background sm:size-4 sm:group-hover:text-background" />
-          </button>
-        ) : (
-          <button
-            onClick={handleOnEdit}
-            className="group rounded p-2 transition-colors active:bg-primary-300 sm:hover:bg-primary-300"
-          >
-            <EditIcon className="size-3 transition-colors group-active:text-background sm:size-4 sm:group-hover:text-background" />
-          </button>
-        )}
+        <button
+          onClick={handleOnEdit}
+          className="group rounded p-2 transition-colors active:bg-primary-500 sm:hover:bg-primary-500"
+        >
+          <EditIcon className="size-3 transition-colors group-active:text-background sm:size-4 sm:group-hover:text-background" />
+        </button>
         <button
           onClick={handleOnDelete}
-          className="group rounded p-2 transition-colors active:bg-red-300 sm:hover:bg-red-300"
+          className="group rounded p-2 transition-colors active:bg-red-500 sm:hover:bg-red-500"
         >
           <DeleteIcon className="size-3 transition-colors group-active:text-background sm:size-4 sm:group-hover:text-background" />
         </button>

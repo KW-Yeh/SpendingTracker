@@ -96,7 +96,12 @@ export const OverView = (props: Props) => {
                 data={
                   budget !== 0
                     ? [
-                        { name: '已使用', value: usage, fill: '#22C55E7F' },
+                        {
+                          name: '已使用',
+                          value: usage,
+                          fill:
+                            budgetUsage === '100' ? '#F5666680' : '#22C55E7F',
+                        },
                         {
                           name: '剩餘',
                           value: budget - usage,
@@ -153,7 +158,7 @@ export const OverView = (props: Props) => {
         <div className="flex h-full items-end">
           <Link
             href="/list"
-            className="flex items-center text-xs font-light text-blue-500"
+            className="flex items-center text-xs font-light text-blue-500 transition-colors active:text-blue-300 sm:hover:text-blue-300"
           >
             分析
             <DoubleArrowIcon className="size-3" />

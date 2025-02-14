@@ -5,14 +5,13 @@ import { ReactNode } from 'react';
 
 interface Props {
   title: string;
-  loading: boolean;
   categoryMap: Array<{ value: string; label: string }>;
   data: SpendingRecord[];
   children: (newData: SpendingRecord[]) => ReactNode;
 }
 
 export const CategoryAccordion = (props: Props) => {
-  const { title, loading, categoryMap, data, children } = props;
+  const { title, categoryMap, data, children } = props;
   return (
     <>
       <div className="flex w-full items-center gap-2 text-xs text-gray-400">
@@ -25,7 +24,7 @@ export const CategoryAccordion = (props: Props) => {
         return (
           <Accordion
             key={`${title}-${value}`}
-            defaultOpen={loading || dataOfCategory.length > 0}
+            defaultOpen={true}
             summary={(isOpen) =>
               isOpen ? (
                 <span className="flex w-full items-center justify-between">

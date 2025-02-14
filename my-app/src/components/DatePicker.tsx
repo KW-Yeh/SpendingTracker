@@ -9,6 +9,7 @@ interface Props {
   onChange: (event: ChangeEvent) => void;
   className?: string;
   labelClassName?: string;
+  format?: 'wording' | 'yyyy-mm-dd' | 'yyyy/mm/dd';
 }
 
 export const DatePicker = (props: Props) => {
@@ -27,6 +28,11 @@ export const DatePicker = (props: Props) => {
     ) {
       return `今天（週${WEEKDAY[weekday]}）`;
     } else {
+      if (props.format === 'yyyy-mm-dd') {
+        return `${year}-${month + 1}-${day}`;
+      } else if (props.format === 'yyyy/mm/dd') {
+        return `${year}/${month + 1}/${day}`;
+      }
       return `${year} 年 ${month + 1} 月 ${day} 日（週${WEEKDAY[weekday]}）`;
     }
   }, [year, month, day, weekday]);

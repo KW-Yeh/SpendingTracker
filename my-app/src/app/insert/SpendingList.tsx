@@ -7,11 +7,10 @@ interface Props {
   selectedDataId: string;
   handleEdit: (record: SpendingRecord) => void;
   refreshData: () => void;
-  reset: () => void;
 }
 
 export const SpendingList = (props: Props) => {
-  const { selectedDataId, handleEdit, refreshData, reset, data, loading } =
+  const { selectedDataId, handleEdit, refreshData, data, loading } =
     props;
   const isInitialized = useRef(false);
 
@@ -38,7 +37,6 @@ export const SpendingList = (props: Props) => {
               id={selectedDataId}
               handleEdit={handleEdit}
               refreshData={refreshData}
-              reset={reset}
             />
           ))}
         </div>

@@ -49,18 +49,29 @@ export const EditExpenseModal = (props: Props) => {
   const [date, setDate] = useState(data.date);
   const [groupId, setGroupId] = useState<string>();
   const [loading, setLoading] = useState(false);
+  const [spendingCategories, setSpendingCategories] = useState<
+    {
+      value: string;
+      label: string;
+    }[]
+  >([]);
 
-  const spendingCategories = useMemo(
-    () =>
-      spendingType === SpendingType.Income ? INCOME_TYPE_MAP : OUTCOME_TYPE_MAP,
-    [spendingType],
-  );
+  const getSpendingCategories = (type: string) => {
+    return type === SpendingType.Income ? INCOME_TYPE_MAP : OUTCOME_TYPE_MAP;
+  };
 
   const selectedCategoryLabel = useMemo(
     () =>
       spendingCategories.find((item) => item.value === selectedCategory)?.label,
     [selectedCategory, spendingCategories],
   );
+
+  const handleSetSpendingType = (type: string) => {
+    setSpendingType(type);
+    const categories = getSpendingCategories(type);
+    setSpendingCategories(categories);
+    setSelectedCategory(categories[0].value);
+  };
 
   const handleOnChangeDate = (event: ChangeEvent) => {
     const _date = new Date((event.target as HTMLInputElement).value);
@@ -138,9 +149,11 @@ export const EditExpenseModal = (props: Props) => {
 
   useEffect(() => {
     setSpendingType(data.type);
+    setSpendingCategories(getSpendingCategories(data.type));
     setNecessity(data.necessity);
     setSelectedCategory(data.category);
     setAmount(data.amount);
+    setDate(data.date);
     setMemberEmail(data['user-token']);
     setGroupId(data.groupId);
     setLoading(false);
@@ -163,30 +176,27 @@ export const EditExpenseModal = (props: Props) => {
               option1={{
                 label: '支出',
                 value: SpendingType.Outcome,
-                onSelectColor: '#d1d5db',
                 className: '!px-2 !py-1',
               }}
               option2={{
                 label: '收入',
                 value: SpendingType.Income,
-                onSelectColor: '#d1d5db',
                 className: '!px-2 !py-1',
               }}
               value={spendingType}
               className="h-10 flex-1 text-sm"
-              onChange={setSpendingType}
+              onChange={handleSetSpendingType}
             />
             <Switch
               option1={{
                 label: '必要開銷',
                 value: Necessity.Need,
-                onSelectColor: '#d1d5db',
+                onSelectColor: '#ED8936',
                 className: '!px-2 !py-1',
               }}
               option2={{
                 label: '額外開銷',
                 value: Necessity.NotNeed,
-                onSelectColor: '#d1d5db',
                 className: '!px-2 !py-1',
               }}
               value={necessity}
@@ -209,6 +219,7 @@ export const EditExpenseModal = (props: Props) => {
               date={new Date(date)}
               className="h-10 flex-1 rounded-md border border-solid border-gray-300 bg-transparent"
               labelClassName="text-base px-2 py-1"
+              format='yyyy/mm/dd'
               onChange={handleOnChangeDate}
             />
           </div>
@@ -253,13 +264,18 @@ export const EditExpenseModal = (props: Props) => {
             </fieldset>
           </div>
         </div>
-        <div className="flex flex-col gap-1 rounded-lg">
-          <input
-            type="text"
-            className={`h-10 w-full rounded border border-solid px-2 py-1 text-end focus:outline-0 ${isNoAmount ? 'border-red-500' : 'border-gray-300'}`}
-            value={'$ ' + normalizeNumber(amount)}
-            readOnly
-          />
+        <div className="flex flex-col gap-1">
+          <div
+            className={`flex w-full items-center rounded-md border border-solid bg-white px-2 ${isNoAmount ? 'border-red-500' : 'border-gray-300'}`}
+          >
+            <span className="text-sm text-gray-500">金額</span>
+            <input
+              type="text"
+              className="h-10 flex-1 bg-transparent py-1 text-end focus:outline-0"
+              value={normalizeNumber(amount)}
+              readOnly
+            />
+          </div>
           <NumberKeyboard
             ref={numberKeyboardRef}
             default={data.amount}

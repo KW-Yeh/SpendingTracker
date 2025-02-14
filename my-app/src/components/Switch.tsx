@@ -19,7 +19,7 @@ interface Props {
 type Option = {
   label: ReactNode;
   value: string;
-  onSelectColor: string;
+  onSelectColor?: string;
   className?: string;
 };
 
@@ -54,11 +54,11 @@ export const Switch = (props: Props) => {
         if (value === option1.value) {
           block.style.left = `${leftLeft}px`;
           block.style.width = `${leftWidth}px`;
-          container.style.backgroundColor = option1.onSelectColor;
+          if (option1.onSelectColor) leftButton.style.color = option1.onSelectColor;
         } else {
           block.style.left = `${rightLeft}px`;
           block.style.width = `${rightWidth}px`;
-          container.style.backgroundColor = option2.onSelectColor;
+          if (option2.onSelectColor) rightButton.style.color = option2.onSelectColor;
         }
       }
     });
@@ -69,7 +69,7 @@ export const Switch = (props: Props) => {
       ref={containerRef}
       type="button"
       onClick={handleOnClick}
-      className={`relative flex w-fit items-center gap-1 rounded-md p-1 ${className}`}
+      className={`relative flex w-fit items-center gap-1 bg-gray-300 rounded-md p-1 ${className}`}
     >
       <div
         ref={floatingBlockRef}
