@@ -1,10 +1,10 @@
 {
-  "name": "Spending Tracker",
-  "short_name": "ST",
+  "name": "Expense Tracker",
+  "short_name": "Expense Tracker",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#F7F9FB",
-  "description": "Track your spending",
+  "background_color": "#FFFFFF00",
+  "description": "Track your expenses.",
   "author": "KW Yeh",
   "icons": [
     {
