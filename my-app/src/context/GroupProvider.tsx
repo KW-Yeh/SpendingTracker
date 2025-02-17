@@ -4,7 +4,6 @@ import { getGroups } from '@/services/dbHandler';
 import {
   createContext,
   ReactNode,
-  startTransition,
   useCallback,
   useContext,
   useMemo,
@@ -27,9 +26,7 @@ export const GroupProvider = ({ children }: { children: ReactNode }) => {
 
   const handleState = (res: Group[]) => {
     setGroups(res);
-    startTransition(() => {
-      setLoading(false);
-    });
+    setLoading(false);
   };
 
   const queryGroup = useCallback((groupId: string | string[]) => {

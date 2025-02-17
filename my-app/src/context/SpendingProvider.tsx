@@ -28,8 +28,6 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
   const handleState = useCallback((res: SpendingRecord[]) => {
     startTransition(() => {
       setData(res);
-    });
-    startTransition(() => {
       setLoading(false);
     });
   }, []);

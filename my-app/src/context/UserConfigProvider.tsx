@@ -6,7 +6,6 @@ import { redirect, usePathname } from 'next/navigation';
 import {
   createContext,
   ReactNode,
-  startTransition,
   useCallback,
   useContext,
   useEffect,
@@ -32,9 +31,7 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
 
   const handleState = (value: User) => {
     setConfig(value);
-    startTransition(() => {
-      setLoading(false);
-    });
+    setLoading(false);
   };
 
   const handleNewUser = useCallback(

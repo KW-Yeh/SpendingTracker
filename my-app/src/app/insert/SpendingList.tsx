@@ -8,8 +8,7 @@ interface Props {
 }
 
 export const SpendingList = (props: Props) => {
-  const { refreshData, data, loading } =
-    props;
+  const { refreshData, data, loading } = props;
   const isInitialized = useRef(false);
 
   useEffect(() => {
