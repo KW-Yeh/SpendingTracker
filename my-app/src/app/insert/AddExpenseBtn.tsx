@@ -1,7 +1,13 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { HTMLAttributes, useEffect, useRef, useState } from 'react';
+import {
+  HTMLAttributes,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { v7 as uuid } from 'uuid';
 
 interface Props extends HTMLAttributes<HTMLButtonElement> {
@@ -12,7 +18,11 @@ export const AddExpenseBtn = (props: Props) => {
   const { className = '', borderStyle = 'bg-text', children } = props;
   const animationWrapperRef = useRef<HTMLDivElement>(null);
   const [isHover, setIsHover] = useState(false);
-  const navigator = useRouter();
+  const router = useRouter();
+
+  const handleOnClick = useCallback(() => {
+    router.push(`/edit/${uuid()}`);
+  }, [router]);
 
   useEffect(() => {
     const animationWrapper = animationWrapperRef.current;
@@ -33,7 +43,7 @@ export const AddExpenseBtn = (props: Props) => {
     <button
       type="button"
       className={`transition-spring fixed bottom-8 z-30 mx-auto flex w-40 overflow-hidden rounded-full p-px shadow-md transition-all active:scale-105 sm:hover:scale-105 ${className}`}
-      onClick={() => navigator.push(`/edit/${uuid()}`)}
+      onClick={handleOnClick}
       onMouseOver={() => setIsHover(true)}
       onMouseOut={() => setIsHover(false)}
     >

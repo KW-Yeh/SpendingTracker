@@ -5,7 +5,7 @@ import { OverView } from '@/app/insert/OverView';
 import { SpendingList } from '@/app/insert/SpendingList';
 import { DatePicker } from '@/components/DatePicker';
 import { RefreshIcon } from '@/components/icons/RefreshIcon';
-import { AddExpenseBtn } from '@/composites/AddExpenseBtn';
+import { AddExpenseBtn } from '@/app/insert/AddExpenseBtn';
 import { GroupSelector } from '@/composites/GroupSelector';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
