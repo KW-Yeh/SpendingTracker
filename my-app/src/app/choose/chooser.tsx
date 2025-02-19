@@ -193,7 +193,7 @@ export const Chooser = () => {
                   >
                     {constraint.reason}
                   </span>
-                  <div className="flex flex-1 items-center sm:justify-end gap-2">
+                  <div className="flex flex-1 items-center gap-2 sm:justify-end">
                     <span className="shrink-0 whitespace-nowrap text-sm text-gray-500">
                       大概有
                     </span>
@@ -275,7 +275,7 @@ const ChoiceModal = (props: ChoiceModalProps) => {
   return (
     <>
       <div className="flex w-full items-center justify-between gap-4">
-        <div className="flex-1">
+        <div className="max-w-60 flex-1">
           <Select
             name="choice"
             value={selectedChoice === Choice.Left ? choice1 : choice2}
