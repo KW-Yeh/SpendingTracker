@@ -44,10 +44,16 @@ export const Chooser = () => {
       const matched = prevState.find((c) => c.uid === uid);
       if (matched && matched.target === Choice.Left) {
         console.log('affect to delete ', choice1, matched.affect);
-        setPercentage((prevState) => prevState - matched.affect);
+        setPercentage((prevState) => {
+          const newState = prevState - matched.affect;
+          return newState > 100 ? 100 : newState;
+        });
       } else if (matched && matched.target === Choice.Right) {
         console.log('affect to delete ', choice2, matched.affect);
-        setPercentage((prevState) => prevState + matched.affect);
+        setPercentage((prevState) => {
+          const newState = prevState + matched.affect;
+          return newState < 0 ? 0 : newState;
+        });
       }
       return prevState.filter((c) => c.uid !== uid);
     });
@@ -69,16 +75,18 @@ export const Chooser = () => {
             const newState = [...prevState];
             if (constraint.target === Choice.Left) {
               console.log('affect to old ', choice1, constraint.affect);
-              setPercentage(
-                (prevState) =>
-                  prevState - newState[matched].affect + constraint.affect,
-              );
+              setPercentage((prevState) => {
+                const _newState =
+                  prevState - newState[matched].affect + constraint.affect;
+                return _newState > 100 ? 100 : _newState;
+              });
             } else if (constraint.target === Choice.Right) {
               console.log('affect to old ', choice2, constraint.affect);
-              setPercentage(
-                (prevState) =>
-                  prevState + newState[matched].affect - constraint.affect,
-              );
+              setPercentage((prevState) => {
+                const _newState =
+                  prevState + newState[matched].affect - constraint.affect;
+                return _newState < 0 ? 0 : _newState;
+              });
             }
             newState[matched] = constraint;
             return newState;
@@ -91,10 +99,16 @@ export const Chooser = () => {
         });
         if (constraint.target === Choice.Left) {
           console.log('affect to new ', choice1, constraint.affect);
-          setPercentage((prevState) => prevState + constraint.affect);
+          setPercentage((prevState) => {
+            const newState = prevState + constraint.affect;
+            return newState > 100 ? 100 : newState;
+          });
         } else if (constraint.target === Choice.Right) {
           console.log('affect to new ', choice2, constraint.affect);
-          setPercentage((prevState) => prevState - constraint.affect);
+          setPercentage((prevState) => {
+            const newState = prevState - constraint.affect;
+            return newState < 0 ? 0 : newState;
+          });
         }
       }
     },
