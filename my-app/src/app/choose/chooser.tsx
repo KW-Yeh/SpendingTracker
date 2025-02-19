@@ -224,7 +224,10 @@ export const Chooser = () => {
 
       <button
         type="button"
-        onClick={() => modalRef.current?.open()}
+        onClick={() => {
+          setSelectedConstraintId(undefined);
+          modalRef.current?.open();
+        }}
         className="fixed bottom-8 z-30 mx-auto flex w-40 items-center justify-center rounded-full border border-solid border-text p-4 shadow-md transition-all active:scale-105 sm:hover:scale-105"
       >
         <span className="font-bold">新增條件</span>
