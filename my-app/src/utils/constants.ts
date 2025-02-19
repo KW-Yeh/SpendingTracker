@@ -5,6 +5,7 @@ export enum Route {
   Budget = '/budget',
   Login = '/login',
   Group = '/group',
+  Choose = '/choose',
   Setting = '/setting',
 }
 
@@ -14,6 +15,7 @@ export const MENU_CONFIG: Record<string, string> = {
   [Route.Group]: '群組',
   [Route.List]: '分析',
   [Route.Budget]: '儲蓄',
+  [Route.Choose]: '選擇'
 };
 
 export const PAGE_TITLE: Record<string, string> = {
@@ -24,6 +26,7 @@ export const PAGE_TITLE: Record<string, string> = {
   [Route.Budget]: '儲蓄',
   [Route.Login]: '會員',
   [Route.Setting]: '設定',
+  [Route.Choose]: '選擇困難抉擇器',
 };
 
 export enum SpendingType {

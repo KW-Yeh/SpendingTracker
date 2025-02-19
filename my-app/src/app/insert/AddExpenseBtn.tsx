@@ -12,17 +12,29 @@ import { v7 as uuid } from 'uuid';
 
 interface Props extends HTMLAttributes<HTMLButtonElement> {
   borderStyle?: string;
+  autoClick: boolean;
 }
 
 export const AddExpenseBtn = (props: Props) => {
-  const { className = '', borderStyle = 'bg-text', children } = props;
+  const {
+    className = '',
+    borderStyle = 'bg-text',
+    autoClick,
+    children,
+  } = props;
   const animationWrapperRef = useRef<HTMLDivElement>(null);
   const [isHover, setIsHover] = useState(false);
   const router = useRouter();
 
   const handleOnClick = useCallback(() => {
-    router.push(`/edit/${uuid()}`);
+    router.push(`/edit/${uuid()}`, { scroll: false });
   }, [router]);
+
+  useEffect(() => {
+    if (autoClick) {
+      handleOnClick();
+    }
+  }, [autoClick, handleOnClick]);
 
   useEffect(() => {
     const animationWrapper = animationWrapperRef.current;

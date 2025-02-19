@@ -1,9 +1,14 @@
 import { SpendingInfoSection } from '@/app/insert/SpendingInfoSection';
 
-export default function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string>>;
+}) {
+  const queryParams = await searchParams;
   return (
     <div className="flex w-full flex-1">
-      <SpendingInfoSection />
+      <SpendingInfoSection quickInsert={queryParams.quickInsert} />
     </div>
   );
 }

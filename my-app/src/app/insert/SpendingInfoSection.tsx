@@ -11,6 +11,7 @@ import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { useDate } from '@/hooks/useDate';
+import { usePrefetchRoutes } from "@/hooks/usePrefetchRoutes";
 import {
   DateFilter,
   INCOME_TYPE_MAP,
@@ -26,7 +27,12 @@ import {
   useState,
 } from 'react';
 
-export const SpendingInfoSection = () => {
+export const SpendingInfoSection = ({
+  quickInsert,
+}: {
+  quickInsert?: string;
+}) => {
+  usePrefetchRoutes();
   const { config: userData } = useUserConfigCtx();
   const { syncData, loading, data } = useGetSpendingCtx();
   const { syncGroup } = useGroupCtx();
@@ -210,7 +216,10 @@ export const SpendingInfoSection = () => {
         </CategoryAccordion>
       </div>
 
-      <AddExpenseBtn borderStyle="conic-gradient-from-purple-to-red">
+      <AddExpenseBtn
+        borderStyle="conic-gradient-from-purple-to-red"
+        autoClick={!!quickInsert}
+      >
         <span className="text-base font-bold">記帳</span>
       </AddExpenseBtn>
     </div>

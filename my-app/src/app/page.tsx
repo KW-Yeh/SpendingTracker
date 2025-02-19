@@ -1,7 +1,7 @@
-import { redirect } from 'next/navigation';
+import { redirect, RedirectType } from 'next/navigation';
 
 export default function Home() {
-  redirect('/insert');
+  redirect('/insert?quickInsert=true', RedirectType.replace);
   // return (
   //   <div className="flex w-full flex-1 flex-col flex-wrap items-center gap-4 p-4">
   //     <PageTitle>歡迎使用記帳追蹤</PageTitle>

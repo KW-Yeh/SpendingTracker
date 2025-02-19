@@ -10,7 +10,7 @@ import { usePrepareData } from '@/hooks/usePrepareData';
 
 const EditRecordModal = ({ recordId }: { recordId: string }) => {
   const modalRef = useRef<ModalRef>(null);
-  const navigator = useRouter();
+  const router = useRouter();
   const [state, dispatch] = useSpendingReducer();
   usePrepareData();
   const { data } = useGetSpendingCtx();
@@ -49,7 +49,7 @@ const EditRecordModal = ({ recordId }: { recordId: string }) => {
       data={state}
       isNewData={!isMatched}
       reset={reset}
-      onClose={navigator.back}
+      onClose={router.back}
     />
   );
 };
