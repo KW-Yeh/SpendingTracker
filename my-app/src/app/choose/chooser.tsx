@@ -274,7 +274,10 @@ const ChoiceModal = (props: ChoiceModalProps) => {
 
   return (
     <>
-      <div className="flex w-full items-center justify-between gap-4">
+      <div className="flex w-full items-center gap-4">
+        <span className="shrink-0 whitespace-nowrap text-sm text-gray-500">
+          對於選擇
+        </span>
         <div className="max-w-60 flex-1">
           <Select
             name="choice"
@@ -286,6 +289,11 @@ const ChoiceModal = (props: ChoiceModalProps) => {
             <Select.Item value={Choice.Right}>{choice2}</Select.Item>
           </Select>
         </div>
+      </div>
+      <div className="flex w-full items-center gap-4">
+        <span className="shrink-0 whitespace-nowrap text-sm text-gray-500">
+          大概有
+        </span>
         <div className="w-20">
           <Select
             name="choice"
@@ -305,19 +313,26 @@ const ChoiceModal = (props: ChoiceModalProps) => {
               ))}
           </Select>
         </div>
+        <span className="shrink-0 whitespace-nowrap text-sm text-gray-500">
+          意願
+        </span>
       </div>
-      <fieldset className="w-full rounded-md border border-solid border-gray-300 px-2 pb-2">
-        <legend className="px-2 font-semibold">理由</legend>
-        <input
-          type="text"
-          value={reason}
-          onChange={(event) => {
-            setReason(event.target.value);
-          }}
-          className="w-full bg-transparent focus:outline-0"
-        />
-      </fieldset>
-      <div className="flex w-full flex-1 items-end justify-between py-2">
+      <div className="flex w-full items-center gap-2">
+        <span className="shrink-0 whitespace-nowrap text-sm text-gray-500">
+          因為
+        </span>
+        <fieldset className="flex h-10 flex-1 items-center rounded-md border border-solid border-gray-300 px-2 py-1">
+          <input
+            type="text"
+            value={reason}
+            onChange={(event) => {
+              setReason(event.target.value);
+            }}
+            className="w-full bg-transparent focus:outline-0"
+          />
+        </fieldset>
+      </div>
+      <div className="mt-6 flex w-full flex-1 items-end justify-between py-2">
         <button
           type="button"
           onClick={onClose}
