@@ -1,21 +1,22 @@
 'use client';
 
+import { AddExpenseBtn } from '@/app/insert/AddExpenseBtn';
 import { CategoryAccordion } from '@/app/insert/CategoryAccordion';
 import { OverView } from '@/app/insert/OverView';
 import { SpendingList } from '@/app/insert/SpendingList';
 import { DatePicker } from '@/components/DatePicker';
 import { RefreshIcon } from '@/components/icons/RefreshIcon';
-import { AddExpenseBtn } from '@/app/insert/AddExpenseBtn';
 import { GroupSelector } from '@/composites/GroupSelector';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
+import { useDate } from '@/hooks/useDate';
 import {
   DateFilter,
   INCOME_TYPE_MAP,
   OUTCOME_TYPE_MAP,
-  SpendingType,
 } from '@/utils/constants';
+import { getExpenseFromData } from '@/utils/getExpenseFromData';
 import {
   ChangeEvent,
   startTransition,
@@ -26,19 +27,22 @@ import {
 } from 'react';
 
 export const SpendingInfoSection = () => {
-  const [selectedGroup, setSelectedGroup] = useState<string>('');
-  const [selectedMemberEmail, setSelectedMemberEmail] = useState<string>();
   const { config: userData } = useUserConfigCtx();
   const { syncData, loading, data } = useGetSpendingCtx();
   const { syncGroup } = useGroupCtx();
+  const [date, setDate] = useDate(new Date());
+  const [selectedGroup, setSelectedGroup] = useState<string>('');
+  const [selectedMemberEmail, setSelectedMemberEmail] = useState<string>();
   const [filter, setFilter] = useState(DateFilter.Day);
   const [filteredData, setFilteredData] = useState<SpendingRecord[]>([]);
-  const [totalIncome, setTotalIncome] = useState(0);
-  const [totalOutcome, setTotalOutcome] = useState(0);
-  const [date, setDate] = useState<string>(new Date().toUTCString());
 
-  const year = useMemo(() => new Date(date).getFullYear(), [date]);
-  const month = useMemo(() => new Date(date).getMonth(), [date]);
+  const expenseInfo = useMemo(
+    () => getExpenseFromData(filteredData),
+    [filteredData],
+  );
+
+  const year = useMemo(() => date.getFullYear(), [date]);
+  const month = useMemo(() => date.getMonth(), [date]);
 
   const budget = useMemo(() => {
     if (!userData?.budgetList) return undefined;
@@ -53,71 +57,55 @@ export const SpendingInfoSection = () => {
   }, [filter, month, userData?.budgetList, year]);
 
   const handleOnChangeDate = (event: ChangeEvent) => {
-    const date = new Date((event.target as HTMLInputElement).value);
-    startTransition(() => {
-      setDate(date.toUTCString());
-    });
+    setDate(new Date((event.target as HTMLInputElement).value));
   };
 
   const checkDate = useCallback(
     (dateStr: string) => {
       const dataDate = new Date(dateStr);
-      const currentDate = new Date(date);
       if (filter === DateFilter.Year) {
-        return dataDate.getFullYear() === currentDate.getFullYear();
+        return dataDate.getFullYear() === date.getFullYear();
       } else if (filter === DateFilter.Month) {
         return (
-          dataDate.getFullYear() === currentDate.getFullYear() &&
-          dataDate.getMonth() === currentDate.getMonth()
+          dataDate.getFullYear() === date.getFullYear() &&
+          dataDate.getMonth() === date.getMonth()
         );
       }
       return (
-        dataDate.getFullYear() === currentDate.getFullYear() &&
-        dataDate.getMonth() === currentDate.getMonth() &&
-        dataDate.getDate() === currentDate.getDate()
+        dataDate.getFullYear() === date.getFullYear() &&
+        dataDate.getMonth() === date.getMonth() &&
+        dataDate.getDate() === date.getDate()
       );
     },
     [filter, date],
   );
 
   const refreshData = useCallback(() => {
-    syncData(selectedGroup || undefined, userData?.email, date);
+    syncData(selectedGroup || undefined, userData?.email, date.toUTCString());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedGroup, syncData, userData?.email, year]);
 
   useEffect(() => {
-    if (selectedGroup === '' && userData) {
-      syncData(undefined, userData.email, date);
+    if (selectedGroup === '' && userData?.email) {
+      syncData(undefined, userData.email, date.toUTCString());
     } else {
-      syncData(selectedGroup, undefined, date);
+      syncData(selectedGroup, undefined, date.toUTCString());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedGroup, userData, syncData, year]);
-
-  useEffect(() => {
-    let _totalIncome = 0;
-    let _totalOutcome = 0;
-    filteredData.forEach((item) => {
-      if (item.type === SpendingType.Income) {
-        _totalIncome += item.amount;
-      } else {
-        _totalOutcome += item.amount;
-      }
-    });
-    setTotalIncome(_totalIncome);
-    setTotalOutcome(_totalOutcome);
-  }, [filteredData]);
+  }, [selectedGroup, userData?.email, syncData, year]);
 
   useEffect(() => {
     if (data.length > 0) {
-      setFilteredData(
-        [...data].filter(
-          (data) =>
-            (selectedMemberEmail === '' ||
-              data['user-token'] === selectedMemberEmail) &&
-            checkDate(data.date),
-        ),
-      );
+      startTransition(() => {
+        setFilteredData(
+          [...data].filter(
+            (data) =>
+              (selectedMemberEmail === '' ||
+                data['user-token'] === selectedMemberEmail) &&
+              checkDate(data.date),
+          ),
+        );
+      });
     }
   }, [checkDate, data, selectedMemberEmail]);
 
@@ -157,7 +145,7 @@ export const SpendingInfoSection = () => {
       </div>
       <div className="flex w-full max-w-175 items-center justify-between gap-2 sm:justify-center">
         <DatePicker
-          date={new Date(date)}
+          date={date}
           labelClassName="p-4 text-sm sm:text-lg bg-background"
           onChange={handleOnChangeDate}
         />
@@ -186,12 +174,12 @@ export const SpendingInfoSection = () => {
         </div>
       </div>
       <OverView
-        totalIncome={totalIncome}
-        totalOutcome={totalOutcome}
+        totalIncome={expenseInfo.totalIncome}
+        totalOutcome={expenseInfo.totalOutcome}
         budget={budget}
-        usage={totalOutcome}
+        usage={expenseInfo.totalOutcome}
         filter={filter}
-        dateStr={date}
+        dateStr={date.toUTCString()}
       />
       <div className="flex w-full max-w-175 flex-col gap-2 pb-20">
         <CategoryAccordion
