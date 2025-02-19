@@ -193,7 +193,7 @@ export const Chooser = () => {
                   >
                     {constraint.reason}
                   </span>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-1 items-center sm:justify-end gap-2">
                     <span className="shrink-0 whitespace-nowrap text-sm text-gray-500">
                       大概有
                     </span>
