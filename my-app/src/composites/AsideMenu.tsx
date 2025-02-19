@@ -6,6 +6,7 @@ import { HomeIcon } from '@/components/icons/HomeIcon';
 import { ListIcon } from '@/components/icons/ListIcon';
 import { PeopleIcon } from '@/components/icons/PeopleIcon';
 import { SettingIcon } from '@/components/icons/SettingIcon';
+import { WhereIcon } from '@/components/icons/WhereIcon';
 import { Account } from '@/composites/Account';
 import useFocusRef from '@/hooks/useFocusRef';
 import { MENU_CONFIG } from '@/utils/constants';
@@ -98,6 +99,7 @@ const ROUTE_ICON: Record<string, ReactNode> = {
   '/list': <ListIcon className="mr-3 size-4 sm:mr-4" />,
   '/budget': <CoinIcon className="mr-3 size-4 sm:mr-4" />,
   '/group': <PeopleIcon className="mr-3 size-4 sm:mr-4" />,
+  '/choose': <WhereIcon className="mr-3 size-4 sm:mr-4" />,
 };
 
 const MenuButton = ({
