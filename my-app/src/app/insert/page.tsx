@@ -1,4 +1,11 @@
 import { SpendingInfoSection } from '@/app/insert/SpendingInfoSection';
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: '消費追蹤',
+  description: '幫助記賬跟分析花費',
+  authors: { name: 'KW' },
+};
 
 export default async function Home({
   searchParams,

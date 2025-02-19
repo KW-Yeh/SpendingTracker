@@ -1,17 +1,11 @@
 import { Header } from '@/composites/Header';
+import { GroupProvider } from '@/context/GroupProvider';
 import { SpendingProvider } from '@/context/SpendingProvider';
 import { UserConfigProvider } from '@/context/UserConfigProvider';
-import { GroupProvider } from '@/context/GroupProvider';
-import type { Metadata, Viewport } from 'next';
+import type { Viewport } from 'next';
 import './globals.css';
 import { SessionProvider } from 'next-auth/react';
 import { ReactNode } from 'react';
-
-export const metadata: Metadata = {
-  title: '消費追蹤',
-  description: '幫助記賬跟分析花費',
-  authors: { name: 'KW' },
-};
 
 export const viewport: Viewport = {
   initialScale: 1,
