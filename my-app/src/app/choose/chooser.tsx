@@ -42,10 +42,10 @@ export const Chooser = () => {
   const handleDeleteConstraint = (uid: string) => {
     setConstraints((prevState) => {
       const matched = prevState.find((c) => c.uid === uid);
-      if (matched && matched.target === choice1) {
+      if (matched && matched.target === Choice.Left) {
         console.log('affect to delete ', choice1, matched.affect);
         setPercentage((prevState) => prevState - matched.affect);
-      } else if (matched && matched.target === choice2) {
+      } else if (matched && matched.target === Choice.Right) {
         console.log('affect to delete ', choice2, matched.affect);
         setPercentage((prevState) => prevState + matched.affect);
       }
@@ -67,13 +67,13 @@ export const Chooser = () => {
         if (matched !== -1) {
           setConstraints((prevState) => {
             const newState = [...prevState];
-            if (constraint.target === choice1) {
+            if (constraint.target === Choice.Left) {
               console.log('affect to old ', choice1, constraint.affect);
               setPercentage(
                 (prevState) =>
                   prevState - newState[matched].affect + constraint.affect,
               );
-            } else if (constraint.target === choice2) {
+            } else if (constraint.target === Choice.Right) {
               console.log('affect to old ', choice2, constraint.affect);
               setPercentage(
                 (prevState) =>
@@ -89,10 +89,10 @@ export const Chooser = () => {
         setConstraints((prevState) => {
           return [...prevState, constraint];
         });
-        if (constraint.target === choice1) {
+        if (constraint.target === Choice.Left) {
           console.log('affect to new ', choice1, constraint.affect);
           setPercentage((prevState) => prevState + constraint.affect);
-        } else if (constraint.target === choice2) {
+        } else if (constraint.target === Choice.Right) {
           console.log('affect to new ', choice2, constraint.affect);
           setPercentage((prevState) => prevState - constraint.affect);
         }
@@ -112,31 +112,33 @@ export const Chooser = () => {
           <RefreshIcon className="size-4" />
         </button>
       </div>
-      <div className="flex w-full max-w-175 flex-col gap-2">
-        <div className="flex w-full items-center justify-between">
+      <div className="mt-10 flex w-full max-w-175 flex-col gap-2">
+        <div className="flex w-full items-center justify-between gap-4">
           <button
             type="button"
             name="choice1"
+            title={choice1}
             onClick={() => {
               const value = prompt('請輸入選項一');
               if (value && value !== '') {
                 setChoice1(value);
               }
             }}
-            className="w-48 text-balance rounded-md border-2 border-solid border-gray-300 px-2 py-1 text-center font-bold transition-colors active:border-gray-300 sm:hover:border-gray-500"
+            className="w-full max-w-48 overflow-hidden text-ellipsis text-balance rounded-md border-2 border-solid border-gray-300 px-2 py-1 text-center font-bold transition-colors active:border-gray-300 sm:hover:border-gray-500"
           >
             {choice1}
           </button>
           <button
             type="button"
             name="choice2"
+            title={choice2}
             onClick={() => {
               const value = prompt('請輸入選項二');
               if (value && value !== '') {
                 setChoice2(value);
               }
             }}
-            className="w-48 text-balance rounded-md border-2 border-solid border-gray-300 px-2 py-1 text-center font-bold transition-colors active:border-gray-300 sm:hover:border-gray-500"
+            className="w-full max-w-48 overflow-hidden text-ellipsis text-balance rounded-md border-2 border-solid border-gray-300 px-2 py-1 text-center font-bold transition-colors active:border-gray-300 sm:hover:border-gray-500"
           >
             {choice2}
           </button>
@@ -171,40 +173,49 @@ export const Chooser = () => {
                 key={constraint.uid}
                 className="flex w-full items-center gap-2"
               >
-                <div className="flex flex-1 items-center gap-2 rounded-md border border-solid border-gray-300 p-2 transition-colors active:border-gray-500 active:bg-gray-300 sm:hover:border-gray-500 sm:hover:bg-gray-300">
-                  <span className="shrink-0 whitespace-nowrap text-sm text-gray-500">
-                    讓我猶豫
-                  </span>
-                  <span className="border-b border-solid border-text font-semibold">
-                    {constraint.target === Choice.Left
-                      ? '左邊選項'
-                      : '右邊選項'}
-                  </span>
-                  <span className="shrink-0 whitespace-nowrap text-sm text-gray-500">
-                    的原因是
-                  </span>
-                  <span className="flex-1 border-b border-solid border-text font-semibold">
+                <div className="flex flex-1 flex-col gap-2 rounded-md border border-solid border-gray-300 p-2 transition-colors active:border-gray-500 active:bg-gray-300 sm:flex-row sm:items-center sm:hover:border-gray-500 sm:hover:bg-gray-300">
+                  <div className="flex items-center gap-2">
+                    <span className="shrink-0 whitespace-nowrap text-sm text-gray-500">
+                      讓我猶豫
+                    </span>
+                    <span className="border-b border-solid border-text font-semibold">
+                      {constraint.target === Choice.Left
+                        ? '左邊選項'
+                        : '右邊選項'}
+                    </span>
+                    <span className="shrink-0 whitespace-nowrap text-sm text-gray-500">
+                      的原因是
+                    </span>
+                  </div>
+                  <span
+                    title={constraint.reason}
+                    className="max-w-64 flex-1 overflow-hidden text-ellipsis border-b border-solid border-text font-semibold"
+                  >
                     {constraint.reason}
                   </span>
-                  <span className="shrink-0 whitespace-nowrap text-sm text-gray-500">
-                    大概有
-                  </span>
-                  <span>{constraint.affect}%</span>
+                  <div className="flex items-center gap-2">
+                    <span className="shrink-0 whitespace-nowrap text-sm text-gray-500">
+                      大概有
+                    </span>
+                    <span>{constraint.affect}%</span>
+                  </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => handleEditConstraint(constraint.uid)}
-                  className="group rounded p-2 transition-colors active:bg-primary-500 sm:hover:bg-primary-500"
-                >
-                  <EditIcon className="size-3 transition-colors group-active:text-background sm:size-4 sm:group-hover:text-background" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDeleteConstraint(constraint.uid)}
-                  className="group rounded p-2 transition-colors active:bg-red-500 sm:hover:bg-red-500"
-                >
-                  <CloseIcon className="size-3 transition-colors group-active:text-background sm:size-4 sm:group-hover:text-background" />
-                </button>
+                <div className="flex flex-col items-center gap-2 sm:flex-row">
+                  <button
+                    type="button"
+                    onClick={() => handleEditConstraint(constraint.uid)}
+                    className="group shrink-0 rounded p-2 transition-colors active:bg-primary-500 sm:hover:bg-primary-500"
+                  >
+                    <EditIcon className="size-4 transition-colors group-active:text-background sm:group-hover:text-background" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteConstraint(constraint.uid)}
+                    className="group shrink-0 rounded p-2 transition-colors active:bg-red-500 sm:hover:bg-red-500"
+                  >
+                    <CloseIcon className="size-4 transition-colors group-active:text-background sm:group-hover:text-background" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
