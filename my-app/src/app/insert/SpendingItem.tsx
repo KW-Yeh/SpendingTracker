@@ -57,7 +57,7 @@ export const SpendingItem = (props: Props) => {
       <div className="w-fit text-end">${normalizeNumber(spending.amount)}</div>
       <div className="flex w-16 items-center justify-end">
         <Link
-          href={`/edit/${spending.id}`}
+          href={`/edit?id=${spending.id}`}
           className="group rounded p-2 transition-colors active:bg-primary-500 sm:hover:bg-primary-500"
         >
           <EditIcon className="size-3 transition-colors group-active:text-background sm:size-4 sm:group-hover:text-background" />

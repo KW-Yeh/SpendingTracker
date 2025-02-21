@@ -27,7 +27,7 @@ export const AddExpenseBtn = (props: Props) => {
   const router = useRouter();
 
   const handleOnClick = useCallback(() => {
-    router.push(`/edit/${uuid()}`, { scroll: false });
+    router.push(`/edit?id=${uuid()}`, { scroll: false });
   }, [router]);
 
   useEffect(() => {

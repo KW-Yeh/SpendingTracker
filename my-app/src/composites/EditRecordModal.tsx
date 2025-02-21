@@ -37,6 +37,8 @@ const EditRecordModal = ({ recordId }: { recordId: string }) => {
           type: 'RESET',
           payload: matched,
         });
+      } else {
+        reset();
       }
       modalRef.current?.open();
     }
