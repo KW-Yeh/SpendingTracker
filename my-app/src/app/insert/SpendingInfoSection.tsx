@@ -11,7 +11,6 @@ import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { useDate } from '@/hooks/useDate';
-import { usePrefetchRoutes } from "@/hooks/usePrefetchRoutes";
 import {
   DateFilter,
   INCOME_TYPE_MAP,
@@ -32,7 +31,6 @@ export const SpendingInfoSection = ({
 }: {
   quickInsert?: string;
 }) => {
-  usePrefetchRoutes();
   const { config: userData } = useUserConfigCtx();
   const { syncData, loading, data } = useGetSpendingCtx();
   const { syncGroup } = useGroupCtx();
@@ -89,7 +87,7 @@ export const SpendingInfoSection = ({
   const refreshData = useCallback(() => {
     syncData(selectedGroup || undefined, userData?.email, date.toUTCString());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedGroup, syncData, userData?.email, year]);
+  }, [selectedGroup, syncData, userData?.email, year, month]);
 
   useEffect(() => {
     if (selectedGroup === '' && userData?.email) {
@@ -98,7 +96,7 @@ export const SpendingInfoSection = ({
       syncData(selectedGroup, undefined, date.toUTCString());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedGroup, userData?.email, syncData, year]);
+  }, [selectedGroup, userData?.email, syncData, year, month]);
 
   useEffect(() => {
     if (data.length > 0) {

@@ -11,9 +11,11 @@ export const usePrepareData = () => {
   const { syncGroup } = useGroupCtx();
 
   useEffect(() => {
-    if (config) {
+    if (config?.email) {
       syncData(undefined, config.email, new Date().toUTCString());
+    }
+    if (config?.email) {
       syncGroup(config.groups);
     }
-  }, [config, syncData, syncGroup]);
+  }, [config?.email, config?.email, syncData, syncGroup]);
 };

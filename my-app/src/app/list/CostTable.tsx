@@ -4,40 +4,49 @@ export const CostTable = ({
   title,
   total,
   list,
+  options = {
+    headerStyle: 'bg-gray-200',
+  },
 }: {
   title: string;
   total: number;
-  list: PieChartDataItem[];
+  list: { name: string; value: number }[];
+  options?: Partial<{
+    headerStyle: string;
+  }>;
 }) => {
-  const sortedList = list.sort((a, b) => b.value - a.value);
   return (
-    <div className="my-2 flex w-full flex-col gap-2 rounded-xl p-3 shadow">
-      <h3 className="text-sm font-semibold">{title}</h3>
-      <table className="w-full border-collapse border border-solid border-gray-300">
+    <div className="flex w-full flex-col gap-2 whitespace-nowrap">
+      <h3 className="font-semibold">{title}</h3>
+      <table className="w-full border-collapse text-sm">
         <thead>
-          <tr className="bg-gray-200">
-            <th className="border border-solid border-gray-300 px-2 py-px text-left">
+          <tr className={options.headerStyle}>
+            <th className="border border-solid border-gray-300 border-r-transparent px-2 py-1 text-center">
               類型
             </th>
-            <th className="border border-solid border-gray-300 px-2 py-px text-right">
+            <th className="border border-solid border-gray-300 border-r-transparent px-2 py-1 text-right">
               比例 (%)
             </th>
-            <th className="border border-solid border-gray-300 px-2 py-px text-right">
+            <th className="border border-solid border-gray-300 px-2 py-1 text-right">
               金額 (NTD)
             </th>
           </tr>
         </thead>
         <tbody>
-          {sortedList.map((item) => (
-            <tr key={`income-${item.name}`}>
-              <td className="col-span-1 border border-solid border-gray-300 px-2 py-px">
+          {list.map((item) => (
+            <tr
+              key={`income-${item.name}`}
+              className={item.value === 0 ? 'text-gray-300' : ''}
+            >
+              <td className="col-span-1 border border-solid border-gray-300 p-2 text-center">
                 {item.name}
               </td>
-              <td className="col-span-1 border border-solid border-gray-300 px-2 py-px text-end">
-                {((item.value / total) * 100).toFixed(2)}%
+              <td className="col-span-1 border border-solid border-gray-300 p-2 text-end">
+                {item.value === 0 ? 0 : ((item.value / total) * 100).toFixed(0)}
+                %
               </td>
-              <td className="col-span-2 border border-solid border-gray-300 px-2 py-px text-end">
-                ${normalizeNumber(item.value)}
+              <td className="col-span-2 border border-solid border-gray-300 p-2 text-end">
+                ＄{normalizeNumber(item.value)}
               </td>
             </tr>
           ))}

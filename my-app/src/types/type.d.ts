@@ -40,21 +40,28 @@ interface PieChartData {
     total: number;
     necessary: number;
     unnecessary: number;
+    necessaryList: { name: string; value: number; color: string }[];
+    unnecessaryList: { name: string; value: number; color: string }[];
     list: PieChartDataItem[];
   };
   outcome: {
     total: number;
     necessary: number;
     unnecessary: number;
+    necessaryList: { name: string; value: number; color: string }[];
+    unnecessaryList: { name: string; value: number; color: string }[];
     list: PieChartDataItem[];
   };
 }
 
-interface PieChartDataItem {
-  id: string;
+interface PieChartDataBase {
   name: string;
   value: number;
+  color: string;
+}
+
+interface PieChartDataItem extends PieChartDataBase {
+  id: string;
   necessary: number;
   unnecessary: number;
-  color: string;
 }

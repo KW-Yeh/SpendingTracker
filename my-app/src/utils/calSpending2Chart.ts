@@ -6,25 +6,124 @@ import {
 } from '@/utils/constants';
 
 export const calSpending2Chart = (data: SpendingRecord[]): PieChartData => {
-  const incomeResult: Record<
-    string,
-    {
-      necessary: number;
-      unnecessary: number;
-      total: number;
-    }
-  > = {};
+  const {
+    incomeResult,
+    totalIncome,
+    necessaryIncome,
+    unnecessaryIncome,
+    outcomeResult,
+    totalOutcome,
+    necessaryOutcome,
+    unnecessaryOutcome,
+  } = parseData(data);
+
+  const {
+    results: incomeList,
+    necessaryList: incomNecessaryList,
+    unnecessaryList: incomeUnnecessaryList,
+  } = getPieChartData(
+    INCOME_TYPE_MAP,
+    incomeResult,
+    '#82ca9d',
+    '#fdba74',
+    '#d1d5db',
+  );
+  const {
+    results: outcomeList,
+    necessaryList: outcomNecessaryList,
+    unnecessaryList: outcomeUnnecessaryList,
+  } = getPieChartData(
+    OUTCOME_TYPE_MAP,
+    outcomeResult,
+    '#faa5a5',
+    '#fdba74',
+    '#d1d5db',
+  );
+
+  return {
+    income: {
+      total: totalIncome,
+      necessary: necessaryIncome,
+      unnecessary: unnecessaryIncome,
+      necessaryList: incomNecessaryList,
+      unnecessaryList: incomeUnnecessaryList,
+      list: incomeList,
+    },
+    outcome: {
+      total: totalOutcome,
+      necessary: necessaryOutcome,
+      unnecessary: unnecessaryOutcome,
+      necessaryList: outcomNecessaryList,
+      unnecessaryList: outcomeUnnecessaryList,
+      list: outcomeList,
+    },
+  };
+};
+
+const getPieChartData = (
+  types: {
+    value: string;
+    label: string;
+  }[],
+  data: Map<string, ExpenseResult>,
+  resultColor: string,
+  necessaryColor: string,
+  unnecessaryColor: string,
+) => {
+  const results: Array<PieChartDataItem> = [];
+  const necessaryList: PieChartDataBase[] = [];
+  const unnecessaryList: PieChartDataBase[] = [];
+
+  console.log(data);
+  types.forEach(({ label }) => {
+    const expenseData = data.get(label) ?? getEmptyResult();
+    console.log(label);
+    results.push({
+      id: label,
+      name: label,
+      value: expenseData.total,
+      necessary: expenseData.necessary,
+      unnecessary: expenseData.unnecessary,
+      color: resultColor,
+    });
+    necessaryList.push({
+      name: label,
+      value: expenseData.necessaryList.reduce((acc, d) => acc + d, 0),
+      color: necessaryColor,
+    });
+    unnecessaryList.push({
+      name: label,
+      value: expenseData.unnecessaryList.reduce((acc, d) => acc + d, 0),
+      color: unnecessaryColor,
+    });
+  });
+  return { results, necessaryList, unnecessaryList };
+};
+
+type ExpenseResult = {
+  necessary: number;
+  unnecessary: number;
+  necessaryList: number[];
+  unnecessaryList: number[];
+  total: number;
+};
+
+const getEmptyResult = (): ExpenseResult => {
+  return {
+    necessary: 0,
+    unnecessary: 0,
+    necessaryList: [],
+    unnecessaryList: [],
+    total: 0,
+  };
+};
+
+const parseData = (data: SpendingRecord[]) => {
+  const incomeResult: Map<string, ExpenseResult> = new Map();
   let totalIncome = 0;
   let necessaryIncome = 0;
   let unnecessaryIncome = 0;
-  const outcomeResult: Record<
-    string,
-    {
-      necessary: number;
-      unnecessary: number;
-      total: number;
-    }
-  > = {};
+  const outcomeResult: Map<string, ExpenseResult> = new Map();
   let totalOutcome = 0;
   let necessaryOutcome = 0;
   let unnecessaryOutcome = 0;
@@ -33,21 +132,26 @@ export const calSpending2Chart = (data: SpendingRecord[]): PieChartData => {
       const category = INCOME_TYPE_MAP.find((d) => d.value === record.category);
       if (category) {
         totalIncome += record.amount;
-        if (!incomeResult[category.label]) {
-          incomeResult[category.label] = {
-            necessary: 0,
-            unnecessary: 0,
-            total: 0,
-          };
-        }
+        let temp = incomeResult.get(category.label) ?? getEmptyResult();
         if (record.necessity === Necessity.Need) {
           necessaryIncome += record.amount;
-          incomeResult[category.label].necessary += record.amount;
+          temp = {
+            ...temp,
+            necessary: temp.necessary + record.amount,
+            necessaryList: [...temp.necessaryList, record.amount],
+          };
         } else {
           unnecessaryIncome += record.amount;
-          incomeResult[category.label].unnecessary += record.amount;
+          temp = {
+            ...temp,
+            unnecessary: temp.unnecessary + record.amount,
+            unnecessaryList: [...temp.unnecessaryList, record.amount],
+          };
         }
-        incomeResult[category.label].total += record.amount;
+        incomeResult.set(category.label, {
+          ...temp,
+          total: temp.total + record.amount,
+        });
       }
     } else {
       const category = OUTCOME_TYPE_MAP.find(
@@ -55,72 +159,37 @@ export const calSpending2Chart = (data: SpendingRecord[]): PieChartData => {
       );
       if (category) {
         totalOutcome += record.amount;
-        if (!outcomeResult[category.label]) {
-          outcomeResult[category.label] = {
-            necessary: 0,
-            unnecessary: 0,
-            total: 0,
-          };
-        }
+        let temp = outcomeResult.get(category.label) ?? getEmptyResult();
         if (record.necessity === Necessity.Need) {
           necessaryOutcome += record.amount;
-          outcomeResult[category.label].necessary += record.amount;
+          temp = {
+            ...temp,
+            necessary: temp.necessary + record.amount,
+            necessaryList: [...temp.necessaryList, record.amount],
+          };
         } else {
           unnecessaryOutcome += record.amount;
-          outcomeResult[category.label].unnecessary += record.amount;
+          temp = {
+            ...temp,
+            unnecessary: temp.unnecessary + record.amount,
+            unnecessaryList: [...temp.unnecessaryList, record.amount],
+          };
         }
-        outcomeResult[category.label].total += record.amount;
+        outcomeResult.set(category.label, {
+          ...temp,
+          total: temp.total + record.amount,
+        });
       }
     }
   });
-  const incomeList: Array<{
-    id: string;
-    name: string;
-    value: number;
-    necessary: number;
-    unnecessary: number;
-    color: string;
-  }> = [];
-  const outcomeList: Array<{
-    id: string;
-    name: string;
-    value: number;
-    necessary: number;
-    unnecessary: number;
-    color: string;
-  }> = [];
-  Object.keys(incomeResult).forEach((category) => {
-    incomeList.push({
-      id: category,
-      name: category,
-      value: incomeResult[category].total,
-      necessary: incomeResult[category].necessary,
-      unnecessary: incomeResult[category].unnecessary,
-      color: '#82ca9d',
-    });
-  });
-  Object.keys(outcomeResult).forEach((category) => {
-    outcomeList.push({
-      id: category,
-      name: category,
-      value: outcomeResult[category].total,
-      necessary: outcomeResult[category].necessary,
-      unnecessary: outcomeResult[category].unnecessary,
-      color: '#faa5a5',
-    });
-  });
   return {
-    income: {
-      total: totalIncome,
-      necessary: necessaryIncome,
-      unnecessary: unnecessaryIncome,
-      list: incomeList,
-    },
-    outcome: {
-      total: totalOutcome,
-      necessary: necessaryOutcome,
-      unnecessary: unnecessaryOutcome,
-      list: outcomeList,
-    },
+    incomeResult,
+    totalIncome,
+    necessaryIncome,
+    unnecessaryIncome,
+    outcomeResult,
+    totalOutcome,
+    necessaryOutcome,
+    unnecessaryOutcome,
   };
 };
