@@ -1,5 +1,6 @@
 'use client';
 
+import { useMounted } from '@/hooks/useMounted';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -8,6 +9,7 @@ import {
   useEffect,
   useRef,
   useState,
+  useTransition,
 } from 'react';
 import { v7 as uuid } from 'uuid';
 
@@ -26,9 +28,10 @@ export const AddExpenseBtn = (props: Props) => {
   const animationWrapperRef = useRef<HTMLDivElement>(null);
   const [isHover, setIsHover] = useState(false);
   const router = useRouter();
+  const isMounted = useMounted();
 
   const handleOnClick = useCallback(() => {
-    router.push(`/edit?id=${uuid()}`, { scroll: false });
+    router.push('/edit', { scroll: false });
   }, [router]);
 
   useEffect(() => {
@@ -58,6 +61,7 @@ export const AddExpenseBtn = (props: Props) => {
       className={`transition-spring fixed bottom-8 z-30 mx-auto flex w-40 overflow-hidden rounded-full p-px shadow-md transition-all active:scale-105 sm:hover:scale-105 ${className}`}
       onMouseOver={() => setIsHover(true)}
       onMouseOut={() => setIsHover(false)}
+      scroll={false}
     >
       <div
         ref={animationWrapperRef}
@@ -74,7 +78,11 @@ export const AddExpenseBtn = (props: Props) => {
         ></div>
       </div>
       <div className="z-40 flex w-full items-center justify-center rounded-full bg-background p-4 font-bold">
-        {children}
+        {!isMounted ? (
+          <span className="text-base font-bold">準備中...</span>
+        ) : (
+          children
+        )}
       </div>
     </Link>
   );
