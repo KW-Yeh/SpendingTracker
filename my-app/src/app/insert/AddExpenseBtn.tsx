@@ -9,9 +9,7 @@ import {
   useEffect,
   useRef,
   useState,
-  useTransition,
 } from 'react';
-import { v7 as uuid } from 'uuid';
 
 interface Props extends HTMLAttributes<HTMLButtonElement> {
   borderStyle?: string;

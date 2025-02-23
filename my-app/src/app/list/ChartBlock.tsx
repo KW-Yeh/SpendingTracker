@@ -118,7 +118,7 @@ export const ChartBlock = () => {
         new Date(Number(_year), Number(_month)).toUTCString(),
       );
     },
-    [month, syncData, userData?.email],
+    [syncData, userData?.email],
   );
 
   const group = useMemo(

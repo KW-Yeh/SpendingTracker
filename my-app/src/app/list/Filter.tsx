@@ -29,7 +29,7 @@ export const Filter = (props: Props) => {
 
   useEffect(() => {
     refreshData(group?.id, year, month);
-  }, [group?.id, year, month]);
+  }, [group?.id, year, month, refreshData]);
 
   return (
     <div className="flex w-full items-center gap-4">

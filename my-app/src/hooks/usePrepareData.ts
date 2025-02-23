@@ -14,8 +14,8 @@ export const usePrepareData = () => {
     if (config?.email) {
       syncData(undefined, config.email, new Date().toUTCString());
     }
-    if (config?.email) {
+    if (config?.groups) {
       syncGroup(config.groups);
     }
-  }, [config?.email, config?.email, syncData, syncGroup]);
+  }, [config?.groups, config?.email, syncData, syncGroup]);
 };
