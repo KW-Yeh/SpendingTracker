@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   HTMLAttributes,
@@ -52,10 +53,9 @@ export const AddExpenseBtn = (props: Props) => {
   }, [isHover]);
 
   return (
-    <button
-      type="button"
+    <Link
+      href="/edit"
       className={`transition-spring fixed bottom-8 z-30 mx-auto flex w-40 overflow-hidden rounded-full p-px shadow-md transition-all active:scale-105 sm:hover:scale-105 ${className}`}
-      onClick={handleOnClick}
       onMouseOver={() => setIsHover(true)}
       onMouseOut={() => setIsHover(false)}
     >
@@ -76,6 +76,6 @@ export const AddExpenseBtn = (props: Props) => {
       <div className="z-40 flex w-full items-center justify-center rounded-full bg-background p-4 font-bold">
         {children}
       </div>
-    </button>
+    </Link>
   );
 };

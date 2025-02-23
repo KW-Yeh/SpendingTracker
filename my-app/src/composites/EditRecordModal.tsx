@@ -8,7 +8,7 @@ import { useSpendingReducer } from '@/hooks/useSpendingReducer';
 import { v7 as uuid } from 'uuid';
 import { usePrepareData } from '@/hooks/usePrepareData';
 
-const EditRecordModal = ({ recordId }: { recordId: string }) => {
+const EditRecordModal = ({ recordId }: { recordId?: string | null }) => {
   const modalRef = useRef<ModalRef>(null);
   const router = useRouter();
   const [state, dispatch] = useSpendingReducer();

@@ -1,5 +1,6 @@
 import { SpendingInfoSection } from '@/app/insert/SpendingInfoSection';
-import type { Metadata } from "next";
+import { PrefetchRoute } from '@/components/PrefetchRoute';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: '消費追蹤',
@@ -15,6 +16,7 @@ export default async function Home({
   const queryParams = await searchParams;
   return (
     <div className="flex w-full flex-1">
+      <PrefetchRoute />
       <SpendingInfoSection quickInsert={queryParams.quickInsert} />
     </div>
   );
