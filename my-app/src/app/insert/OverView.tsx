@@ -55,8 +55,7 @@ export const OverView = (props: Props) => {
   );
 
   const budgetUsage = useMemo(
-    () =>
-      budget !== 0 ? Math.min((usage * 100) / budget, 100).toFixed(0) : '100',
+    () => (budget !== 0 ? ((usage * 100) / budget).toFixed(0) : '100'),
     [budget, usage],
   );
 
@@ -100,7 +99,7 @@ export const OverView = (props: Props) => {
                           name: '已使用',
                           value: usage,
                           fill:
-                            budgetUsage === '100' ? '#F5666680' : '#22C55E7F',
+                            budgetUsage >= '100' ? '#F5666680' : '#22C55E7F',
                         },
                         {
                           name: '剩餘',

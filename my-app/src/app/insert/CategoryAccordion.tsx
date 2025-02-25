@@ -24,24 +24,21 @@ export const CategoryAccordion = (props: Props) => {
         return (
           <Accordion
             key={`${title}-${value}`}
-            defaultOpen={true}
-            summary={(isOpen) =>
-              isOpen ? (
-                <span className="flex w-full items-center justify-between">
-                  <span>
-                    {value} {label}
-                  </span>
+            defaultOpen={false}
+            summary={(isOpen) => (
+              <p className="flex w-full items-center justify-between">
+                <span className="flex items-center gap-1">
+                  <span>{value}</span>
+                  <span>{label}</span>
+                  <span className="text-xs">({dataOfCategory.length})</span>
+                </span>
+                {isOpen ? (
                   <MinusIcon className="size-4" />
-                </span>
-              ) : (
-                <span className="flex w-full items-center justify-between">
-                  <span>
-                    {value} {label}
-                  </span>
+                ) : (
                   <PlusIcon className="size-4" />
-                </span>
-              )
-            }
+                )}
+              </p>
+            )}
             className="rounded-md border border-solid border-gray-300"
             buttonProps={{
               className: 'px-2 py-3 w-full',

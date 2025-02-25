@@ -1,6 +1,5 @@
 'use client';
 
-import { useMounted } from '@/hooks/useMounted';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -9,6 +8,7 @@ import {
   useEffect,
   useRef,
   useState,
+  useTransition,
 } from 'react';
 
 interface Props extends HTMLAttributes<HTMLButtonElement> {
@@ -26,11 +26,13 @@ export const AddExpenseBtn = (props: Props) => {
   const animationWrapperRef = useRef<HTMLDivElement>(null);
   const [isHover, setIsHover] = useState(false);
   const router = useRouter();
-  const isMounted = useMounted();
+  const [isPending, startTransition] = useTransition();
 
   const handleOnClick = useCallback(() => {
-    router.push('/edit', { scroll: false });
-  }, [router]);
+    startTransition(() => {
+      router.push('/edit', { scroll: false });
+    });
+  }, [router, startTransition]);
 
   useEffect(() => {
     if (autoClick) {
@@ -76,7 +78,7 @@ export const AddExpenseBtn = (props: Props) => {
         ></div>
       </div>
       <div className="z-40 flex w-full items-center justify-center rounded-full bg-background p-4 font-bold">
-        {!isMounted ? (
+        {isPending ? (
           <span className="text-base font-bold">準備中...</span>
         ) : (
           children

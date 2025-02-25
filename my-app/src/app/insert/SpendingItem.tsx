@@ -20,7 +20,7 @@ export const SpendingItem = (props: Props) => {
 
   const additionalStyle = useMemo(() => {
     if (deleting) {
-      return 'border-transparent shadow-[0_0_0_2px_#fca5a5]';
+      return 'shadow-[0_0_0_2px_#fca5a5]';
     }
     return 'active:bg-gray-200 sm:hover:bg-gray-200';
   }, [deleting]);
@@ -38,11 +38,20 @@ export const SpendingItem = (props: Props) => {
 
   return (
     <div
-      className={`relative flex h-11 items-center gap-2 rounded border-l-4 border-solid px-2 transition-all odd:bg-gray-100 sm:h-14 ${spending.necessity === Necessity.NotNeed ? 'border-gray-300' : 'border-orange-300'} ${additionalStyle}`}
+      className={`relative flex h-11 items-center gap-2 px-2 transition-all sm:h-14 ${additionalStyle}`}
     >
       {deleting && (
         <span className="absolute left-1 top-0 -translate-y-1/2 rounded-full bg-red-300 px-2 text-xs font-bold">
           刪除中
+        </span>
+      )}
+      {spending.necessity === Necessity.NotNeed ? (
+        <span className="rounded-full bg-gray-300 px-2 py-px text-xs">
+          額外
+        </span>
+      ) : (
+        <span className="rounded-full bg-orange-300 px-2 py-px text-xs">
+          必要
         </span>
       )}
       <div className="w-8 text-center text-xs sm:col-span-1 sm:text-sm">
@@ -55,7 +64,7 @@ export const SpendingItem = (props: Props) => {
         {spending.description}
       </div>
       <div className="w-fit text-end">${normalizeNumber(spending.amount)}</div>
-      <div className="flex w-16 items-center justify-end">
+      <div className="flex w-[72px] items-center justify-end gap-1">
         <Link
           href={`/edit?id=${spending.id}`}
           className="group rounded p-2 transition-colors active:bg-primary-500 sm:hover:bg-primary-500"

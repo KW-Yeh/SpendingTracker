@@ -26,7 +26,7 @@ export const SpendingList = (props: Props) => {
         </div>
       )}
       {isInitialized.current && data.length > 0 && (
-        <div className="flex w-full flex-col gap-2 px-1 py-2">
+        <div className="flex w-full flex-col divide-y divide-gray-300 px-1 py-2">
           {data.map((spending, index) => (
             <SpendingItem
               key={`${spending.id}-${index.toString()}`}
