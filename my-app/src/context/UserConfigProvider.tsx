@@ -1,6 +1,6 @@
 'use client';
 
-import { getUser, putUser } from '@/services/dbHandler';
+import { getUser, putUser } from '@/services/userDataActions';
 import { useSession } from 'next-auth/react';
 import { redirect, usePathname } from 'next/navigation';
 import {
@@ -51,8 +51,8 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
   const queryUser = useCallback(
     (email: string) => {
       getUser(email)
-        .then((res) => {
-          if (!res.email) {
+        .then(({ data: res }) => {
+          if (!res?.email) {
             handleNewUser(email).then(() => {
               setTimeout(() => {
                 queryUser(email);

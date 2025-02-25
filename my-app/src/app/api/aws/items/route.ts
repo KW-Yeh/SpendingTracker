@@ -22,9 +22,10 @@ export async function GET(req: Request) {
     const queryParams = url.searchParams;
     const groupId = queryParams.get('groupId');
     const email = queryParams.get('email');
+    const time = queryParams.get('time');
     if (groupId) {
       const data = await fetch(
-        `${process.env.AWS_API_GATEWAY_URL}/items/id/${groupId}`,
+        `${process.env.AWS_API_GATEWAY_URL}/items/id/${groupId}${time ? `?time=${time}` : ''}`,
         {
           method: 'GET',
         },
@@ -35,7 +36,7 @@ export async function GET(req: Request) {
     }
     if (email) {
       const data = await fetch(
-        `${process.env.AWS_API_GATEWAY_URL}/items/user/${email}`,
+        `${process.env.AWS_API_GATEWAY_URL}/items/user/${email}${time ? `?time=${time}` : ''}`,
         {
           method: 'GET',
         },

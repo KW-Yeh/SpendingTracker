@@ -1,6 +1,6 @@
 'use client';
 
-import { getItems } from '@/services/dbHandler';
+import { getItems } from '@/services/recordActions';
 import {
   createContext,
   ReactNode,
@@ -37,7 +37,7 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       if (!email && !groupId) return;
       getItems(groupId, email, time)
         .then((res) => {
-          handleState(res);
+          handleState(res.data);
         })
         .catch(console.error);
     },

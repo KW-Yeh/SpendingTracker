@@ -1,6 +1,6 @@
 'use client';
 
-import { getGroups } from '@/services/dbHandler';
+import { getGroups } from '@/services/groupDataActions';
 import {
   createContext,
   ReactNode,
@@ -32,7 +32,7 @@ export const GroupProvider = ({ children }: { children: ReactNode }) => {
   const queryGroup = useCallback((groupId: string | string[]) => {
     setLoading(true);
     getGroups(groupId)
-      .then((res) => {
+      .then(({ data: res }) => {
         handleState(res);
       })
       .catch(console.error);

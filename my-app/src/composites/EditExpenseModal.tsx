@@ -7,7 +7,7 @@ import { Select } from '@/components/Select';
 import { Switch } from '@/components/Switch';
 import { GroupSelector } from '@/composites/GroupSelector';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
-import { putItem } from '@/services/dbHandler';
+import { putItem } from '@/services/recordActions';
 import {
   DEFAULT_DESC,
   INCOME_TYPE_MAP,

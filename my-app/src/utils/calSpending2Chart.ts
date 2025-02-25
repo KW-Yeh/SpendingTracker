@@ -19,7 +19,7 @@ export const calSpending2Chart = (data: SpendingRecord[]): PieChartData => {
 
   const {
     results: incomeList,
-    necessaryList: incomNecessaryList,
+    necessaryList: incomeNecessaryList,
     unnecessaryList: incomeUnnecessaryList,
   } = getPieChartData(
     INCOME_TYPE_MAP,
@@ -30,7 +30,7 @@ export const calSpending2Chart = (data: SpendingRecord[]): PieChartData => {
   );
   const {
     results: outcomeList,
-    necessaryList: outcomNecessaryList,
+    necessaryList: outcomeNecessaryList,
     unnecessaryList: outcomeUnnecessaryList,
   } = getPieChartData(
     OUTCOME_TYPE_MAP,
@@ -45,7 +45,7 @@ export const calSpending2Chart = (data: SpendingRecord[]): PieChartData => {
       total: totalIncome,
       necessary: necessaryIncome,
       unnecessary: unnecessaryIncome,
-      necessaryList: incomNecessaryList,
+      necessaryList: incomeNecessaryList,
       unnecessaryList: incomeUnnecessaryList,
       list: incomeList,
     },
@@ -53,7 +53,7 @@ export const calSpending2Chart = (data: SpendingRecord[]): PieChartData => {
       total: totalOutcome,
       necessary: necessaryOutcome,
       unnecessary: unnecessaryOutcome,
-      necessaryList: outcomNecessaryList,
+      necessaryList: outcomeNecessaryList,
       unnecessaryList: outcomeUnnecessaryList,
       list: outcomeList,
     },
@@ -74,10 +74,8 @@ const getPieChartData = (
   const necessaryList: PieChartDataBase[] = [];
   const unnecessaryList: PieChartDataBase[] = [];
 
-  console.log(data);
   types.forEach(({ label }) => {
     const expenseData = data.get(label) ?? getEmptyResult();
-    console.log(label);
     results.push({
       id: label,
       name: label,

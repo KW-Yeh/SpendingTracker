@@ -7,13 +7,14 @@ import { LinkIcon } from '@/components/icons/LinkIcon';
 import { PlusIcon } from '@/components/icons/PlusIcon';
 import { RefreshIcon } from '@/components/icons/RefreshIcon';
 import { Modal } from '@/components/Modal';
-import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
-import { deleteGroup, getUser, putGroup, putUser } from '@/services/dbHandler';
+import { useUserConfigCtx } from '@/context/UserConfigProvider';
+import { deleteGroup, putGroup } from '@/services/groupDataActions';
+import { getUser, putUser } from '@/services/userDataActions';
 import Image from 'next/image';
 import { useCallback, useRef, useState } from 'react';
-import { v7 as uuid } from 'uuid';
 import QRCode from 'react-qr-code';
+import { v7 as uuid } from 'uuid';
 
 export const Dashboard = () => {
   const { config: userData, syncUser } = useUserConfigCtx();
@@ -110,14 +111,16 @@ const GroupCard = ({
           return;
         setLoading(true);
         const groupUserEmails = group.users.map((user) => user.email);
-        const users = await Promise.all(groupUserEmails.map(getUser));
+        const responses = await Promise.all(groupUserEmails.map(getUser));
         await Promise.all(
-          users.map((user) =>
-            putUser({
-              ...user,
-              groups: user.groups.filter((groupId) => groupId !== group.id),
-            }),
-          ),
+          responses.map(({ data: user }) => {
+            if (user) {
+              putUser({
+                ...user,
+                groups: user.groups.filter((groupId) => groupId !== group.id),
+              });
+            }
+          }),
         );
         await deleteGroup(group.id);
         refresh();

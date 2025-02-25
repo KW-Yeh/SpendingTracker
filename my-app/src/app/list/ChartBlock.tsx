@@ -109,9 +109,6 @@ export const ChartBlock = () => {
 
   const refreshData = useCallback(
     (_groupId: string | undefined, _year: string, _month: string) => {
-      console.log(
-        `Get Data of group: ${_groupId}, user: ${userData?.email}, year: ${Number(_year)}, month: ${Number(_month) - 1}`,
-      );
       syncData(
         _groupId,
         userData?.email,

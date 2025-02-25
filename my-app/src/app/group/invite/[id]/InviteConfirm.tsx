@@ -1,9 +1,10 @@
 'use client';
 
 import { Loading } from '@/components/icons/Loading';
-import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
-import { getGroups, putGroup, putUser } from '@/services/dbHandler';
+import { useUserConfigCtx } from '@/context/UserConfigProvider';
+import { getGroups, putGroup } from '@/services/groupDataActions';
+import { putUser } from '@/services/userDataActions';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { redirect, useParams } from 'next/navigation';
@@ -69,7 +70,7 @@ export const InviteConfirm = () => {
   useEffect(() => {
     if (!loadingUserData && config?.email && id) {
       getGroups(id)
-        .then((res) => {
+        .then(({ data: res }) => {
           setMatchedGroup(res[0]);
         })
         .catch(console.error);
