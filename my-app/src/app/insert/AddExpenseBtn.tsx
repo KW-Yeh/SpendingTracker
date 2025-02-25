@@ -1,15 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import {
-  HTMLAttributes,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  useTransition,
-} from 'react';
+import { HTMLAttributes, useEffect, useRef, useState } from 'react';
 
 interface Props extends HTMLAttributes<HTMLButtonElement> {
   borderStyle?: string;
@@ -25,20 +17,13 @@ export const AddExpenseBtn = (props: Props) => {
   } = props;
   const animationWrapperRef = useRef<HTMLDivElement>(null);
   const [isHover, setIsHover] = useState(false);
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-
-  const handleOnClick = useCallback(() => {
-    startTransition(() => {
-      router.push('/edit', { scroll: false });
-    });
-  }, [router, startTransition]);
+  const LinkRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
     if (autoClick) {
-      handleOnClick();
+      LinkRef.current?.click();
     }
-  }, [autoClick, handleOnClick]);
+  }, [autoClick]);
 
   useEffect(() => {
     const animationWrapper = animationWrapperRef.current;
@@ -57,6 +42,7 @@ export const AddExpenseBtn = (props: Props) => {
 
   return (
     <Link
+      ref={LinkRef}
       href="/edit"
       className={`transition-spring fixed bottom-8 z-30 mx-auto flex w-40 overflow-hidden rounded-full p-px shadow-md transition-all active:scale-105 sm:hover:scale-105 ${className}`}
       onMouseOver={() => setIsHover(true)}
@@ -78,11 +64,7 @@ export const AddExpenseBtn = (props: Props) => {
         ></div>
       </div>
       <div className="z-40 flex w-full items-center justify-center rounded-full bg-background p-4 font-bold">
-        {isPending ? (
-          <span className="text-base font-bold">準備中...</span>
-        ) : (
-          children
-        )}
+        {children}
       </div>
     </Link>
   );
