@@ -130,11 +130,9 @@ export const OverView = (props: Props) => {
         <div className="flex flex-1 flex-col">
           <span className="flex items-center gap-1 text-xs text-gray-500 sm:text-sm">
             <span>
-              {filter === DateFilter.Day
-                ? '每日預算:'
-                : filter === DateFilter.Month
-                  ? '每月預算:'
-                  : '每年預算:'}
+              {filter === DateFilter.Day || filter === DateFilter.Month
+                ? '每月預算:'
+                : '每年預算:'}
             </span>
             <button
               type="button"
@@ -150,7 +148,7 @@ export const OverView = (props: Props) => {
           <span
             className={`text-base font-bold ${budget !== 0 && budget - usage < 0 ? 'text-red-500' : 'text-green-500'}`}
           >
-            {budget && budget - usage < 0 ? '超支' : '剩餘'}:{' '}
+            {budget && budget - usage < 0 ? '本月超支' : '本月剩餘'}:{' '}
             {budget ? `$${normalizeNumber(budget - usage)}` : '$0'}
           </span>
         </div>

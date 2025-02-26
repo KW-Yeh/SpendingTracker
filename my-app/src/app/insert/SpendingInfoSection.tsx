@@ -48,12 +48,32 @@ export const SpendingInfoSection = ({
   const year = useMemo(() => date.getFullYear(), [date]);
   const month = useMemo(() => date.getMonth(), [date]);
 
+  const usage = useMemo(() => {
+    if (filter === DateFilter.Year) {
+      return getExpenseFromData(
+        [...data].filter(
+          (data) =>
+            (selectedMemberEmail === '' ||
+              data['user-token'] === selectedMemberEmail) &&
+            new Date(data.date).getFullYear() === date.getFullYear(),
+        ),
+      );
+    } else {
+      return getExpenseFromData(
+        [...data].filter(
+          (data) =>
+            (selectedMemberEmail === '' ||
+              data['user-token'] === selectedMemberEmail) &&
+            new Date(data.date).getFullYear() === date.getFullYear() &&
+            new Date(data.date).getMonth() === date.getMonth(),
+        ),
+      );
+    }
+  }, [data, selectedMemberEmail, date]);
+
   const budget = useMemo(() => {
     if (!userData?.budgetList) return undefined;
-    if (filter === DateFilter.Day) {
-      const days = new Date(year, month + 1, 0).getDate();
-      return Math.floor(userData.budgetList[month] / days);
-    } else if (filter === DateFilter.Month) {
+    if (filter === DateFilter.Day || filter === DateFilter.Month) {
       return userData.budgetList[month];
     } else {
       return userData.budgetList.reduce((acc, cur) => acc + cur, 0);
@@ -178,7 +198,7 @@ export const SpendingInfoSection = ({
         totalIncome={expenseInfo.totalIncome}
         totalOutcome={expenseInfo.totalOutcome}
         budget={budget}
-        usage={expenseInfo.totalOutcome}
+        usage={usage.totalOutcome}
         filter={filter}
         dateStr={date.toUTCString()}
       />
