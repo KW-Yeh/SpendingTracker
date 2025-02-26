@@ -7,7 +7,6 @@ import { SpendingList } from '@/app/insert/SpendingList';
 import { DatePicker } from '@/components/DatePicker';
 import { RefreshIcon } from '@/components/icons/RefreshIcon';
 import { GroupSelector } from '@/composites/GroupSelector';
-import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { useDate } from '@/hooks/useDate';
@@ -33,7 +32,6 @@ export const SpendingInfoSection = ({
 }) => {
   const { config: userData } = useUserConfigCtx();
   const { syncData, loading, data } = useGetSpendingCtx();
-  const { syncGroup } = useGroupCtx();
   const [date, setDate] = useDate(new Date());
   const [selectedGroup, setSelectedGroup] = useState<string>('');
   const [selectedMemberEmail, setSelectedMemberEmail] = useState<string>();
@@ -60,9 +58,18 @@ export const SpendingInfoSection = ({
     }
   }, [filter, month, userData?.budgetList, year]);
 
-  const handleOnChangeDate = (event: ChangeEvent) => {
-    setDate(new Date((event.target as HTMLInputElement).value));
-  };
+  const handleOnChangeDate = useCallback(
+    (event: ChangeEvent) => {
+      const newDate = new Date((event.target as HTMLInputElement).value);
+      syncData(
+        selectedGroup || undefined,
+        userData?.email,
+        newDate.toUTCString(),
+      );
+      setDate(newDate);
+    },
+    [selectedGroup, setDate, syncData, userData?.email],
+  );
 
   const checkDate = useCallback(
     (dateStr: string) => {
@@ -84,33 +91,24 @@ export const SpendingInfoSection = ({
     [filter, date],
   );
 
-  const refreshData = useCallback(() => {
-    syncData(selectedGroup || undefined, userData?.email, date.toUTCString());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedGroup, syncData, userData?.email, year, month]);
+  const refreshData = useCallback(
+    (_groupId?: string) => {
+      syncData(_groupId || undefined, userData?.email, date.toUTCString());
+    },
+    [syncData, userData?.email, date],
+  );
 
   useEffect(() => {
-    if (selectedGroup === '' && userData?.email) {
-      syncData(undefined, userData.email, date.toUTCString());
-    } else {
-      syncData(selectedGroup, undefined, date.toUTCString());
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedGroup, userData?.email, syncData, year, month]);
-
-  useEffect(() => {
-    if (data.length > 0) {
-      startTransition(() => {
-        setFilteredData(
-          [...data].filter(
-            (data) =>
-              (selectedMemberEmail === '' ||
-                data['user-token'] === selectedMemberEmail) &&
-              checkDate(data.date),
-          ),
-        );
-      });
-    }
+    startTransition(() => {
+      setFilteredData(
+        [...data].filter(
+          (data) =>
+            (selectedMemberEmail === '' ||
+              data['user-token'] === selectedMemberEmail) &&
+            checkDate(data.date),
+        ),
+      );
+    });
   }, [checkDate, data, selectedMemberEmail]);
 
   useEffect(() => {
@@ -119,18 +117,12 @@ export const SpendingInfoSection = ({
     }
   }, [selectedGroup, userData?.email]);
 
-  useEffect(() => {
-    if (userData?.groups) {
-      syncGroup(userData.groups);
-    }
-  }, [syncGroup, userData?.groups]);
-
   return (
     <div className="relative flex w-full flex-1 flex-col items-center gap-4 p-6">
       <div className="absolute right-6 top-6">
         <button
           type="button"
-          onClick={refreshData}
+          onClick={() => refreshData()}
           disabled={loading}
           className="rounded-md bg-gray-200 p-2 transition-colors active:bg-gray-300 sm:hover:bg-gray-300"
         >
@@ -138,11 +130,14 @@ export const SpendingInfoSection = ({
         </button>
       </div>
       <div className="flex w-full max-w-175 items-center gap-2">
-        <div className="">
+        <div className="w-fit">
           <GroupSelector
             selectedGroup={selectedGroup}
             selectedMemberEmail={selectedMemberEmail}
-            onSelectGroup={setSelectedGroup}
+            onSelectGroup={(_groupId) => {
+              setSelectedGroup(_groupId);
+              refreshData(_groupId);
+            }}
             onSelectMemberEmail={setSelectedMemberEmail}
           />
         </div>

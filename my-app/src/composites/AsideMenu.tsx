@@ -8,9 +8,9 @@ import { PeopleIcon } from '@/components/icons/PeopleIcon';
 import { SettingIcon } from '@/components/icons/SettingIcon';
 import { WhereIcon } from '@/components/icons/WhereIcon';
 import { Account } from '@/composites/Account';
+import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import useFocusRef from '@/hooks/useFocusRef';
 import { MENU_CONFIG } from '@/utils/constants';
-import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -28,7 +28,7 @@ interface Props {
 
 export const AsideMenu = (props: Props) => {
   const { isOpen, onClose } = props;
-  const { data: session } = useSession();
+  const { config: user } = useUserConfigCtx();
   const bgRef = useRef<HTMLDivElement>(null);
   const asideRef = useFocusRef<HTMLElement>(() => {
     onClose();
@@ -69,7 +69,7 @@ export const AsideMenu = (props: Props) => {
         ref={asideRef}
         className="fixed -left-72 bottom-0 top-0 z-50 flex w-72 origin-right flex-col items-center justify-between bg-background py-4 shadow-xl transition-all"
       >
-        <Account session={session} close={onClose} />
+        <Account user={user} close={onClose} />
         <div className="flex w-full flex-1 flex-col items-center gap-2 px-4">
           {Object.keys(MENU_CONFIG).map((path) => (
             <MenuButton

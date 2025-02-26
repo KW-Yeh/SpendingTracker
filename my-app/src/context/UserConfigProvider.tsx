@@ -17,10 +17,12 @@ const INIT_CTX_VAL: {
   loading: boolean;
   config?: User;
   syncUser: () => void;
+  setter: (value: User) => void;
 } = {
   loading: true,
   config: undefined,
   syncUser: () => {},
+  setter: () => {},
 };
 
 export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
@@ -81,6 +83,7 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
       loading,
       config,
       syncUser,
+      setter: handleState,
     }),
     [loading, config, syncUser],
   );
@@ -92,12 +95,10 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
   }, [pathname]);
 
   useEffect(() => {
-    if (status === 'authenticated') {
-      syncUser();
-    } else if (status === 'unauthenticated') {
+    if (status === 'unauthenticated') {
       handleLogin();
     }
-  }, [syncUser, status, handleLogin]);
+  }, [status, handleLogin]);
 
   return <Ctx.Provider value={ctxVal}>{children}</Ctx.Provider>;
 };

@@ -14,10 +14,12 @@ const INIT_CTX_VAL: {
   loading: boolean;
   groups: Group[];
   syncGroup: (groupId: string | string[]) => void;
+  setter: (_groups: Group[]) => void;
 } = {
   loading: true,
   groups: [],
   syncGroup: () => {},
+  setter: () => {},
 };
 
 export const GroupProvider = ({ children }: { children: ReactNode }) => {
@@ -43,6 +45,7 @@ export const GroupProvider = ({ children }: { children: ReactNode }) => {
       loading,
       groups,
       syncGroup: queryGroup,
+      setter: handleState,
     }),
     [groups, loading, queryGroup],
   );

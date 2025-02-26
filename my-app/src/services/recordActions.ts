@@ -6,7 +6,11 @@ export const getItems = async (
   groupId?: string,
   email?: string,
   time?: string,
-) => {
+): Promise<{
+  status: boolean;
+  data: SpendingRecord[];
+  message: string;
+}> => {
   try {
     let apiUrl = URL;
     if (groupId) {

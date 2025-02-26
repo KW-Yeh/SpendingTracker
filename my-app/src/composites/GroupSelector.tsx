@@ -61,7 +61,9 @@ export const GroupSelector = (props: Props) => {
 
       {group && showMemberSelector && (
         <>
-          <span className="ml-2">成員</span>
+          <span className="ml-2 whitespace-nowrap text-sm text-gray-500">
+            成員
+          </span>
           <Select
             name="member"
             value={selectedMember?.name ?? '全部'}

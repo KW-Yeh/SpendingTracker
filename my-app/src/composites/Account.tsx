@@ -1,24 +1,23 @@
 'use client';
 
-import { Session } from 'next-auth';
 import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 interface Props {
-  session: Session | null;
+  user?: User | null;
   close: () => void;
 }
 
 export const Account = (props: Props) => {
-  const { session, close } = props;
+  const { user, close } = props;
   return (
     <div className="relative mb-4 flex w-full items-center gap-3 p-4">
       <div className="size-12 shrink-0 rounded-full bg-gray-500 p-px">
-        {session?.user && (
+        {user && (
           <Image
-            src={session.user.image ?? ''}
-            alt={session.user.email ?? ''}
+            src={user.image ?? ''}
+            alt={user.email ?? ''}
             width={48}
             height={48}
             className="rounded-full"
@@ -27,13 +26,13 @@ export const Account = (props: Props) => {
       </div>
       <div className="flex flex-col">
         <h3 className="max-w-36 overflow-hidden text-ellipsis whitespace-nowrap text-base font-bold">
-          {session?.user ? session.user.name : '尚未登入'}
+          {user ? user.name : '尚未登入'}
         </h3>
         <p className="max-w-36 overflow-hidden text-ellipsis whitespace-nowrap text-xs text-gray-500">
-          {session?.user ? session.user.email : '尚未登入'}
+          {user ? user.email : '尚未登入'}
         </p>
       </div>
-      {session?.user && (
+      {user && (
         <button
           type="button"
           onClick={async () => {
@@ -47,7 +46,7 @@ export const Account = (props: Props) => {
           <span className="text-xs">登出</span>
         </button>
       )}
-      {!session?.user && (
+      {!user && (
         <Link
           href="/login"
           onClick={() => {

@@ -135,11 +135,9 @@ export const ChartBlock = () => {
   );
 
   useEffect(() => {
-    if (filteredData.length >= 0) {
-      startTransition(() => {
-        setChartData(calSpending2Chart(filteredData));
-      });
-    }
+    startTransition(() => {
+      setChartData(calSpending2Chart(filteredData));
+    });
   }, [filteredData]);
 
   return (

@@ -1,4 +1,5 @@
 import { Header } from '@/composites/Header';
+import { PrepareData } from "@/composites/PrepareData";
 import { GroupProvider } from '@/context/GroupProvider';
 import { SpendingProvider } from '@/context/SpendingProvider';
 import { UserConfigProvider } from '@/context/UserConfigProvider';
@@ -30,6 +31,7 @@ export default function RootLayout({
                 <Header />
                 {children}
                 {modal}
+                <PrepareData />
               </SpendingProvider>
             </UserConfigProvider>
           </GroupProvider>

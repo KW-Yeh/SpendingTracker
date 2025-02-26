@@ -7,6 +7,7 @@ import { Select } from '@/components/Select';
 import { Switch } from '@/components/Switch';
 import { GroupSelector } from '@/composites/GroupSelector';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
+import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { putItem } from '@/services/recordActions';
 import {
   DEFAULT_DESC,
@@ -16,7 +17,6 @@ import {
   SpendingType,
 } from '@/utils/constants';
 import { normalizeNumber } from '@/utils/normalizeNumber';
-import { useSession } from 'next-auth/react';
 import {
   ChangeEvent,
   FormEvent,
@@ -39,7 +39,7 @@ interface Props {
 
 export const EditExpenseModal = (props: Props) => {
   const { data, isNewData, ref, reset, onClose } = props;
-  const { data: session } = useSession();
+  const { config: userData } = useUserConfigCtx();
   const { syncData } = useGetSpendingCtx();
   const numberKeyboardRef = useRef<NumberKeyboardRef>(null);
   const [spendingType, setSpendingType] = useState<string>(data.type);
@@ -98,7 +98,7 @@ export const EditExpenseModal = (props: Props) => {
   const handleOnSubmit = useCallback(
     async (event: FormEvent) => {
       event.preventDefault();
-      const userEmail = session?.user?.email;
+      const userEmail = userData?.email;
       if (!userEmail) return;
       const formElement = event.target as HTMLFormElement;
       const formData = new FormData(formElement);
@@ -130,7 +130,7 @@ export const EditExpenseModal = (props: Props) => {
       if (onClose) onClose();
     },
     [
-      session?.user?.email,
+      userData,
       amount,
       data,
       groupId,
@@ -196,13 +196,13 @@ export const EditExpenseModal = (props: Props) => {
             />
             <Switch
               option1={{
-                label: '必要開銷',
+                label: '必要支出',
                 value: Necessity.Need,
                 onSelectColor: '#ED8936',
                 className: '!px-2 !py-1',
               }}
               option2={{
-                label: '額外開銷',
+                label: '額外支出',
                 value: Necessity.NotNeed,
                 className: '!px-2 !py-1',
               }}

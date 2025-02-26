@@ -3,19 +3,26 @@
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { useEffect } from 'react';
+import { getAllData } from '@/services/getAllData';
+import { useSession } from 'next-auth/react';
+import { useEffect, useRef } from 'react';
 
 export const usePrepareData = () => {
-  const { config } = useUserConfigCtx();
-  const { syncData } = useGetSpendingCtx();
-  const { syncGroup } = useGroupCtx();
+  const { data: session } = useSession();
+  const { setter: setGroups } = useGroupCtx();
+  const { setter: setUser } = useUserConfigCtx();
+  const { setter: setRecords } = useGetSpendingCtx();
+  const isInit = useRef(false);
 
   useEffect(() => {
-    if (config?.email) {
-      syncData(undefined, config.email, new Date().toUTCString());
+    if (session?.user?.email && !isInit.current) {
+      isInit.current = true;
+      getAllData(session.user.email).then((res) => {
+        setUser(res.user);
+        setRecords(res.records);
+        setGroups(res.groups);
+      });
     }
-    if (config?.groups) {
-      syncGroup(config.groups);
-    }
-  }, [config?.groups, config?.email, syncData, syncGroup]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.user?.email]);
 };

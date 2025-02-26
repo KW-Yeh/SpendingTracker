@@ -1,12 +1,12 @@
 'use client';
 
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
-import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { EditExpenseModal } from './EditExpenseModal';
-import { useSpendingReducer } from '@/hooks/useSpendingReducer';
-import { v7 as uuid } from 'uuid';
 import { usePrepareData } from '@/hooks/usePrepareData';
+import { useSpendingReducer } from '@/hooks/useSpendingReducer';
+import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { v7 as uuid } from 'uuid';
+import { EditExpenseModal } from './EditExpenseModal';
 
 const EditRecordModal = ({ recordId }: { recordId?: string | null }) => {
   const modalRef = useRef<ModalRef>(null);
@@ -16,7 +16,7 @@ const EditRecordModal = ({ recordId }: { recordId?: string | null }) => {
   const { data } = useGetSpendingCtx();
   const [isMatched, setIsMatched] = useState(false);
 
-  const reset = () => {
+  const reset = useCallback(() => {
     dispatch({
       type: 'RESET',
       payload: {
@@ -26,7 +26,7 @@ const EditRecordModal = ({ recordId }: { recordId?: string | null }) => {
         description: '',
       },
     });
-  };
+  }, [dispatch]);
 
   useEffect(() => {
     if (data.length > 0) {
@@ -38,12 +38,19 @@ const EditRecordModal = ({ recordId }: { recordId?: string | null }) => {
           payload: matched,
         });
       } else {
-        reset();
+        dispatch({
+          type: 'RESET',
+          payload: {
+            id: uuid(),
+            date: new Date().toUTCString(),
+            amount: 0,
+            description: '',
+          },
+        });
       }
       modalRef.current?.open();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data.length, recordId, dispatch]);
+  }, [recordId, dispatch, data]);
 
   return (
     <EditExpenseModal

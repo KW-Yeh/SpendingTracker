@@ -4,7 +4,6 @@ import { getItems } from '@/services/recordActions';
 import {
   createContext,
   ReactNode,
-  startTransition,
   useCallback,
   useContext,
   useMemo,
@@ -15,10 +14,12 @@ const INIT_CTX_VAL: {
   loading: boolean;
   data: SpendingRecord[];
   syncData: (groupId?: string, email?: string, time?: string) => void;
+  setter: (res: SpendingRecord[]) => void;
 } = {
   loading: true,
   data: [],
   syncData: () => {},
+  setter: () => {},
 };
 
 export const SpendingProvider = ({ children }: { children: ReactNode }) => {
@@ -26,10 +27,8 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
   const [data, setData] = useState<SpendingRecord[]>([]);
 
   const handleState = useCallback((res: SpendingRecord[]) => {
-    startTransition(() => {
-      setData(res);
-      setLoading(false);
-    });
+    setData(res);
+    setLoading(false);
   }, []);
 
   const queryItem = useCallback(
@@ -57,8 +56,9 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       loading,
       data,
       syncData,
+      setter: handleState,
     }),
-    [loading, data, syncData],
+    [loading, data, syncData, handleState],
   );
 
   return <Ctx.Provider value={ctxVal}>{children}</Ctx.Provider>;
