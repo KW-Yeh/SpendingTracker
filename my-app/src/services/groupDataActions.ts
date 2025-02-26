@@ -1,5 +1,3 @@
-const URL = `${process.env.AWS_API_GATEWAY_URL}/groups`;
-
 export const putGroup = async (data: Group) => {
   try {
     await fetch('/api/aws/groups', {
