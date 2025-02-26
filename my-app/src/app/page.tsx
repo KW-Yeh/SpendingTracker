@@ -1,5 +1,5 @@
 import { redirect, RedirectType } from 'next/navigation';
 
 export default function Home() {
-  redirect('/edit', RedirectType.replace);
+  redirect('/insert', RedirectType.replace);
 }

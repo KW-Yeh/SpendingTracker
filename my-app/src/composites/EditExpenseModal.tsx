@@ -20,7 +20,6 @@ import { normalizeNumber } from '@/utils/normalizeNumber';
 import {
   ChangeEvent,
   FormEvent,
-  RefObject,
   useCallback,
   useEffect,
   useMemo,
@@ -32,13 +31,11 @@ import { v7 as uuid } from 'uuid';
 interface Props {
   data: SpendingRecord;
   isNewData: boolean;
-  ref: RefObject<ModalRef | null>;
-  reset?: () => void;
   onClose?: () => void;
 }
 
 export const EditExpenseModal = (props: Props) => {
-  const { data, isNewData, ref, reset, onClose } = props;
+  const { data, isNewData, onClose } = props;
   const { config: userData } = useUserConfigCtx();
   const { syncData } = useGetSpendingCtx();
   const numberKeyboardRef = useRef<NumberKeyboardRef>(null);
@@ -56,7 +53,7 @@ export const EditExpenseModal = (props: Props) => {
       value: string;
       label: string;
     }[]
-  >([]);
+  >(data.type === SpendingType.Income ? INCOME_TYPE_MAP : OUTCOME_TYPE_MAP);
 
   const getSpendingCategories = (type: string) => {
     return type === SpendingType.Income ? INCOME_TYPE_MAP : OUTCOME_TYPE_MAP;
@@ -80,20 +77,9 @@ export const EditExpenseModal = (props: Props) => {
     setDate(_date.toUTCString());
   };
 
-  const resetStates = useCallback(() => {
-    setSpendingType(SpendingType.Outcome);
-    setNecessity(Necessity.Need);
-    setSelectedCategory('');
-    setAmount(0);
-    setGroupId(undefined);
-  }, []);
-
   const cancel = useCallback(() => {
-    if (reset) reset();
-    resetStates();
-    ref.current?.close();
     if (onClose) onClose();
-  }, [ref, reset, resetStates, onClose]);
+  }, [onClose]);
 
   const handleOnSubmit = useCallback(
     async (event: FormEvent) => {
@@ -124,9 +110,6 @@ export const EditExpenseModal = (props: Props) => {
       await putItem(newSpending);
       syncData(groupId, userEmail, date);
       setLoading(false);
-      if (reset) reset();
-      resetStates();
-      ref.current?.close();
       if (onClose) onClose();
     },
     [
@@ -139,10 +122,7 @@ export const EditExpenseModal = (props: Props) => {
       necessity,
       selectedCategory,
       syncData,
-      reset,
-      resetStates,
       onClose,
-      ref,
     ],
   );
 
@@ -152,21 +132,9 @@ export const EditExpenseModal = (props: Props) => {
     }
   }, [amount]);
 
-  useEffect(() => {
-    setSpendingType(data.type);
-    setSpendingCategories(getSpendingCategories(data.type));
-    setNecessity(data.necessity);
-    setSelectedCategory(data.category);
-    setAmount(data.amount);
-    setDate(data.date);
-    setMemberEmail(data['user-token']);
-    setGroupId(data.groupId);
-    setLoading(false);
-  }, [data]);
-
   return (
     <Modal
-      ref={ref}
+      defaultOpen={true}
       onClose={cancel}
       className="flex w-full max-w-96 flex-col"
       title={isNewData ? '新增帳目' : '編輯帳目'}

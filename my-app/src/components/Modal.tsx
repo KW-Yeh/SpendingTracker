@@ -8,10 +8,11 @@ interface Props {
   className?: string;
   title: ReactNode;
   onClose?: () => void;
+  defaultOpen?: boolean;
 }
 
 export const Modal = forwardRef<ModalRef, Props>((props, ref) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(props.defaultOpen ?? false);
   const contentRef = useFocusRef<HTMLDivElement>(() => {
     props.onClose?.();
     setOpen(false);

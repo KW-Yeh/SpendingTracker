@@ -1,7 +1,7 @@
 {
   "name": "Expense Tracker",
   "short_name": "Expense Tracker",
-  "start_url": "/",
+  "start_url": "/edit",
   "display": "standalone",
   "background_color": "#FFFFFF00",
   "description": "Track your expenses.",
