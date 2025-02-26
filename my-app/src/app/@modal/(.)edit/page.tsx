@@ -1,4 +1,4 @@
-import EditRecordModal from '@/composites/EditRecordModal';
+import EditRecordContainer from '@/composites/EditRecordContainer';
 
 export default async function Page({
   searchParams,
@@ -6,5 +6,5 @@ export default async function Page({
   searchParams: Promise<Record<string, string>>;
 }) {
   const { id } = await searchParams;
-  return <EditRecordModal recordId={id} />;
+  return <EditRecordContainer recordId={id} />;
 }

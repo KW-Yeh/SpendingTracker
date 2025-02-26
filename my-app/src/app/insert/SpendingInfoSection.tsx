@@ -1,6 +1,5 @@
 'use client';
 
-import { AddExpenseBtn } from '@/app/insert/AddExpenseBtn';
 import { CategoryAccordion } from '@/app/insert/CategoryAccordion';
 import { OverView } from '@/app/insert/OverView';
 import { SpendingList } from '@/app/insert/SpendingList';
@@ -16,6 +15,7 @@ import {
   OUTCOME_TYPE_MAP,
 } from '@/utils/constants';
 import { getExpenseFromData } from '@/utils/getExpenseFromData';
+import dynamic from 'next/dynamic';
 import {
   ChangeEvent,
   startTransition,
@@ -24,6 +24,8 @@ import {
   useMemo,
   useState,
 } from 'react';
+
+const AddExpenseBtn = dynamic(() => import('@/app/insert/AddExpenseBtn'));
 
 export const SpendingInfoSection = ({
   quickInsert,

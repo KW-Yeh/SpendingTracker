@@ -8,7 +8,7 @@ interface Props extends HTMLAttributes<HTMLButtonElement> {
   autoClick: boolean;
 }
 
-export const AddExpenseBtn = (props: Props) => {
+const AddExpenseBtn = (props: Props) => {
   const {
     className = '',
     borderStyle = 'bg-text',
@@ -44,6 +44,7 @@ export const AddExpenseBtn = (props: Props) => {
     <Link
       ref={LinkRef}
       href="/edit"
+      onClick={() => console.log('Route to edit page')}
       className={`transition-spring fixed bottom-8 z-30 mx-auto flex w-40 overflow-hidden rounded-full p-px shadow-md transition-all active:scale-105 sm:hover:scale-105 ${className}`}
       onMouseOver={() => setIsHover(true)}
       onMouseOut={() => setIsHover(false)}
@@ -69,3 +70,5 @@ export const AddExpenseBtn = (props: Props) => {
     </Link>
   );
 };
+
+export default AddExpenseBtn;

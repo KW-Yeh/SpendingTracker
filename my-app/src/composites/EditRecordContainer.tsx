@@ -8,7 +8,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { v7 as uuid } from 'uuid';
 import { EditExpenseModal } from './EditExpenseModal';
 
-const EditRecordModal = ({ recordId }: { recordId?: string | null }) => {
+const EditRecordContainer = ({ recordId }: { recordId?: string | null }) => {
   const modalRef = useRef<ModalRef>(null);
   const router = useRouter();
   const [state, dispatch] = useSpendingReducer();
@@ -58,9 +58,9 @@ const EditRecordModal = ({ recordId }: { recordId?: string | null }) => {
       data={state}
       isNewData={!isMatched}
       reset={reset}
-      onClose={router.back}
+      onClose={() => router.push('/insert')}
     />
   );
 };
 
-export default EditRecordModal;
+export default EditRecordContainer;
