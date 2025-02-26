@@ -83,12 +83,19 @@ export const SpendingInfoSection = ({
   const handleOnChangeDate = useCallback(
     (event: ChangeEvent) => {
       const newDate = new Date((event.target as HTMLInputElement).value);
-      syncData(
-        selectedGroup || undefined,
-        userData?.email,
-        newDate.toUTCString(),
-      );
-      setDate(newDate);
+      setDate((prevDate) => {
+        if (
+          prevDate.getFullYear() !== newDate.getFullYear() ||
+          prevDate.getMonth() !== newDate.getMonth()
+        ) {
+          syncData(
+            selectedGroup || undefined,
+            userData?.email,
+            newDate.toUTCString(),
+          );
+        }
+        return newDate;
+      });
     },
     [selectedGroup, setDate, syncData, userData?.email],
   );

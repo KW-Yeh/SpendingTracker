@@ -1,10 +1,8 @@
-'use server';
-
 const URL = `${process.env.AWS_API_GATEWAY_URL}/groups`;
 
 export const putGroup = async (data: Group) => {
   try {
-    await fetch(URL, {
+    await fetch('/api/aws/groups', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -20,7 +18,7 @@ export const putGroup = async (data: Group) => {
 
 export const deleteGroup = async (id: string) => {
   try {
-    await fetch(`${URL}/${id}`, {
+    await fetch(`/api/aws/groups?id=${id}`, {
       method: 'DELETE',
     });
     return { status: true, message: 'success' };
@@ -39,13 +37,17 @@ export const getGroups = async (
 }> => {
   try {
     if (!Array.isArray(groupId)) {
-      const data = await fetch(`${URL}/${groupId}`).then((res) => res.json());
+      const data = await fetch(`/api/aws/groups?id=${groupId}`).then((res) =>
+        res.json(),
+      );
       return { status: true, data, message: 'success' };
     } else {
-      const data = await fetch(URL).then((res) => res.json());
+      const data = await fetch(
+        `/api/aws/groups?ids=${JSON.stringify(groupId)}`,
+      ).then((res) => res.json());
       return {
         status: true,
-        data: data.filter((group: Group) => groupId.includes(group.id)),
+        data,
         message: 'success',
       };
     }

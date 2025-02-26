@@ -1,7 +1,3 @@
-'use server';
-
-const URL = `${process.env.AWS_API_GATEWAY_URL}/user`;
-
 export const getUser = async (
   id: string,
 ): Promise<{
@@ -11,7 +7,9 @@ export const getUser = async (
 }> => {
   try {
     if (!id) return { status: false, data: null, message: '缺少 ID 資訊' };
-    const data: User = await fetch(`${URL}/${id}`).then((res) => res.json());
+    const data: User = await fetch(`/api/aws/user?id=${id}`).then((res) =>
+      res.json(),
+    );
     return { status: true, data, message: 'success' };
   } catch (error) {
     console.error(error);
@@ -21,7 +19,7 @@ export const getUser = async (
 
 export const putUser = async (data: User) => {
   try {
-    await fetch(`${URL}`, {
+    await fetch('/api/aws/user', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
