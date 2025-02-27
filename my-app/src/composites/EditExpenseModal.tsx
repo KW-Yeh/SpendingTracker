@@ -108,7 +108,7 @@ export const EditExpenseModal = (props: Props) => {
       };
 
       await putItem(newSpending);
-      syncData(groupId, userEmail, date);
+      syncData(groupId, userEmail);
       setLoading(false);
       if (onClose) onClose();
     },
