@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 export async function PUT(req: Request) {
   try {
     const body = await req.json();
-    return await putItem(body);
+    return Response.json(await putItem(body));
   } catch (error) {
     console.error(error);
     return Response.json({ status: false, message: 'Internal Server Error' });
@@ -32,7 +32,7 @@ export async function DELETE(req: Request) {
     const queryParams = url.searchParams;
     const id = queryParams.get('id');
     if (!id) return Response.json({ status: false, message: 'Missing ID' });
-    return await deleteItem(id);
+    return Response.json(await deleteItem(id));
   } catch (error) {
     console.error(error);
     return Response.json({ status: false, message: 'Internal Server Error' });
