@@ -1,6 +1,6 @@
 'use client';
 
-import { getGroups } from '@/services/groupDataActions';
+import { getGroups } from '@/services/groupServices';
 import {
   createContext,
   ReactNode,

@@ -1,6 +1,6 @@
 'use client';
 
-import { getUser, putUser } from '@/services/userDataActions';
+import { getUser, putUser } from '@/services/userServices';
 import { useSession } from 'next-auth/react';
 import { redirect, usePathname } from 'next/navigation';
 import {

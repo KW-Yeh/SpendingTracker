@@ -3,8 +3,8 @@
 import { Loading } from '@/components/icons/Loading';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { getGroups, putGroup } from '@/services/groupDataActions';
-import { putUser } from '@/services/userDataActions';
+import { getGroups, putGroup } from '@/services/groupServices';
+import { putUser } from '@/services/userServices';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { redirect, useParams } from 'next/navigation';

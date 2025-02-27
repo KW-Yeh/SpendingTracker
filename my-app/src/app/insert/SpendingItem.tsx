@@ -2,7 +2,7 @@
 
 import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { EditIcon } from '@/components/icons/EditIcon';
-import { deleteItem } from '@/services/recordActions';
+import { deleteItem } from '@/services/getRecords';
 import { Necessity } from '@/utils/constants';
 import { formatDate } from '@/utils/formatDate';
 import { normalizeNumber } from '@/utils/normalizeNumber';

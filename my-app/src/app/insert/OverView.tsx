@@ -6,7 +6,7 @@ import { Loading } from '@/components/icons/Loading';
 import { Modal } from '@/components/Modal';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { useMounted } from '@/hooks/useMounted';
-import { putUser } from '@/services/userDataActions';
+import { putUser } from '@/services/userServices';
 import { DateFilter } from '@/utils/constants';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import Link from 'next/link';
