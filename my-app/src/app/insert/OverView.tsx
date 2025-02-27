@@ -5,10 +5,10 @@ import { EditIcon } from '@/components/icons/EditIcon';
 import { Loading } from '@/components/icons/Loading';
 import { Modal } from '@/components/Modal';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { useMounted } from '@/hooks/useMounted';
 import { putUser } from '@/services/userServices';
 import { DateFilter } from '@/utils/constants';
 import { normalizeNumber } from '@/utils/normalizeNumber';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import {
   ChangeEvent,
@@ -18,7 +18,15 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Label, Pie, PieChart } from 'recharts';
+
+const UsagePieChart = dynamic(() => import('./UsagePieChart'), {
+  ssr: false,
+  loading: () => (
+    <div className="aspect-square size-full rounded-full bg-gray-200 p-[10px]">
+      <div className="size-full rounded-full bg-background"></div>
+    </div>
+  ),
+});
 
 interface Props {
   totalIncome: number;
@@ -40,7 +48,6 @@ export const OverView = (props: Props) => {
   } = props;
   const { syncUser, config: user } = useUserConfigCtx();
   const modalRef = useRef<ModalRef>(null);
-  const isMounted = useMounted();
   const [budgetList, setBudgetList] = useState<number[]>(Array(12).fill(10000));
   const [isUseAvg, setIsUseAvg] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -52,11 +59,6 @@ export const OverView = (props: Props) => {
   const avgBudget = useMemo(
     () => Math.floor(budgetList.reduce((acc, cur) => acc + cur, 0) / 12),
     [budgetList],
-  );
-
-  const budgetUsage = useMemo(
-    () => (budget !== 0 ? ((usage * 100) / budget).toFixed(0) : '100'),
-    [budget, usage],
   );
 
   const handleSetAvgBudget = (event: ChangeEvent) => {
@@ -86,46 +88,9 @@ export const OverView = (props: Props) => {
 
   return (
     <div className="flex w-full flex-col gap-2 sm:max-w-96">
-      <div className="relative flex h-24 w-full items-center gap-4 rounded-md border border-solid border-gray-300 p-2">
+      <div className="relative flex h-28 w-full items-center gap-4 rounded-md border border-solid border-gray-300 p-2 pl-4">
         <div className="w-20">
-          {isMounted ? (
-            <PieChart width={80} height={80}>
-              <Pie
-                dataKey="value"
-                data={
-                  budget !== 0
-                    ? [
-                        {
-                          name: '已使用',
-                          value: usage,
-                          fill:
-                            budgetUsage >= '100' ? '#F5666680' : '#22C55E7F',
-                        },
-                        {
-                          name: '剩餘',
-                          value: budget - usage,
-                          fill: '#D1D5DB80',
-                        },
-                      ]
-                    : [{ name: '已使用', value: usage, fill: '#22C55E7F' }]
-                }
-                innerRadius={30}
-                outerRadius={40}
-                strokeOpacity={0}
-              >
-                <Label
-                  value={`${budgetUsage}%`}
-                  offset={0}
-                  position="center"
-                  className="text-sm font-bold"
-                />
-              </Pie>
-            </PieChart>
-          ) : (
-            <div className="flex w-20 items-center justify-center">
-              <Loading className="size-10 animate-spin py-1 text-gray-500" />
-            </div>
-          )}
+          <UsagePieChart width={80} height={80} budget={budget} usage={usage} />
         </div>
         <div className="flex flex-1 flex-col">
           <span className="flex items-center gap-1 text-xs text-gray-500 sm:text-sm">
