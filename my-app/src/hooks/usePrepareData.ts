@@ -3,7 +3,6 @@
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { getItems } from '@/services/getRecords';
 import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 
@@ -11,7 +10,7 @@ export const usePrepareData = () => {
   const { data: session } = useSession();
   const { syncGroup } = useGroupCtx();
   const { config: userData, syncUser } = useUserConfigCtx();
-  const { setter: setRecords } = useGetSpendingCtx();
+  const { syncData } = useGetSpendingCtx();
 
   useEffect(() => {
     if (userData?.groups) {
@@ -21,10 +20,8 @@ export const usePrepareData = () => {
 
   useEffect(() => {
     if (session?.user?.email) {
-      getItems(undefined, session.user.email).then(({ data }) => {
-        setRecords(data);
-      });
+      syncData(undefined, session.user.email);
       syncUser();
     }
-  }, [session?.user?.email, setRecords, syncUser]);
+  }, [session?.user?.email, syncData, syncUser]);
 };

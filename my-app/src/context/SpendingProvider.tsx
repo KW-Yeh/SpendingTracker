@@ -1,5 +1,6 @@
 'use client';
 
+import { getItems } from '@/services/getRecords';
 import {
   createContext,
   ReactNode,
@@ -33,15 +34,9 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
   const queryItem = useCallback(
     (email?: string, groupId?: string, time?: string) => {
       if (!email && !groupId) return;
-      const queryString = new URLSearchParams({});
-      if (email) queryString.set('email', email);
-      if (groupId) queryString.set('groupId', groupId);
-      if (time) queryString.set('time', time);
-
-      fetch(`/api/aws/items?${queryString.toString()}`)
-        .then((res) => res.json())
+      getItems(groupId, email, time)
         .then((res) => {
-          handleState(res);
+          handleState(res.data);
         })
         .catch(console.error);
     },

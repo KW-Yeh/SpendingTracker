@@ -45,7 +45,6 @@ export const SpendingInfoSection = ({
     [filteredData],
   );
 
-  const year = useMemo(() => date.getFullYear(), [date]);
   const month = useMemo(() => date.getMonth(), [date]);
 
   const usage = useMemo(() => {
@@ -69,7 +68,7 @@ export const SpendingInfoSection = ({
         ),
       );
     }
-  }, [data, selectedMemberEmail, date]);
+  }, [filter, data, selectedMemberEmail, date]);
 
   const budget = useMemo(() => {
     if (!userData?.budgetList) return undefined;
@@ -78,7 +77,7 @@ export const SpendingInfoSection = ({
     } else {
       return userData.budgetList.reduce((acc, cur) => acc + cur, 0);
     }
-  }, [filter, month, userData?.budgetList, year]);
+  }, [filter, month, userData?.budgetList]);
 
   const handleOnChangeDate = useCallback(
     (event: ChangeEvent) => {
