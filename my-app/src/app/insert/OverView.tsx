@@ -94,11 +94,7 @@ export const OverView = (props: Props) => {
         </div>
         <div className="flex flex-1 flex-col">
           <span className="flex items-center gap-1 text-xs text-gray-500 sm:text-sm">
-            <span>
-              {filter === DateFilter.Day || filter === DateFilter.Month
-                ? '每月預算:'
-                : '每年預算:'}
-            </span>
+            <span>每月預算:</span>
             <button
               type="button"
               onClick={() => modalRef.current?.open()}

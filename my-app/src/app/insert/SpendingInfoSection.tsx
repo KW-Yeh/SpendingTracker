@@ -59,11 +59,7 @@ export const SpendingInfoSection = ({
 
   const budget = useMemo(() => {
     if (!userData?.budgetList) return undefined;
-    if (filter === DateFilter.Day || filter === DateFilter.Month) {
-      return userData.budgetList[month];
-    } else {
-      return userData.budgetList.reduce((acc, cur) => acc + cur, 0);
-    }
+    return userData.budgetList[month];
   }, [filter, month, userData?.budgetList]);
 
   const handleOnChangeDate = useCallback(
@@ -260,18 +256,14 @@ function checkDate(dateStr: string, _date: Date, _filter: DateFilter) {
   );
 }
 
-const getDateByOffsetMonth = (date: Date, offset: number) => {
+function getDateByOffsetMonth(date: Date, offset: number) {
   const newDate = new Date(date);
   newDate.setMonth(newDate.getMonth() + offset);
   return newDate;
-};
+}
 
-const getDateByOffsetDay = (date: Date, offset: number) => {
+function getDateByOffsetDay(date: Date, offset: number) {
   const newDate = new Date(date);
   newDate.setDate(newDate.getDate() + offset);
   return newDate;
-};
-
-function formatDate(date: Date) {
-  return `${date.getMonth() + 1}/${date.getDate()}`;
 }
