@@ -135,7 +135,7 @@ export const OverView = (props: Props) => {
               : year}
         </span>
       </div>
-      <div className="flex w-full items-center gap-5">
+      <div className="flex w-full items-center gap-2">
         <div className="flex flex-1 flex-col rounded-md bg-red-500/50 px-4 py-2 font-semibold">
           <span>支出</span>
           <span>${normalizeNumber(totalOutcome)}</span>

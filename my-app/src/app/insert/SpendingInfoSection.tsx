@@ -41,35 +41,20 @@ export const SpendingInfoSection = ({
   const [selectedMemberEmail, setSelectedMemberEmail] = useState<string>();
   const [filter, setFilter] = useState(DateFilter.Day);
   const [filteredData, setFilteredData] = useState<SpendingRecord[]>([]);
-
-  const expenseInfo = useMemo(
-    () => getExpenseFromData(filteredData),
-    [filteredData],
-  );
+  const [totalIncome, setTotalIncome] = useState(100);
+  const [totalOutcome, setTotalOutcome] = useState(50);
 
   const month = useMemo(() => date.getMonth(), [date]);
 
   const usage = useMemo(() => {
-    if (filter === DateFilter.Year) {
-      return getExpenseFromData(
-        [...data].filter(
-          (data) =>
-            (selectedMemberEmail === '' ||
-              data['user-token'] === selectedMemberEmail) &&
-            new Date(data.date).getFullYear() === date.getFullYear(),
-        ),
-      );
-    } else {
-      return getExpenseFromData(
-        [...data].filter(
-          (data) =>
-            (selectedMemberEmail === '' ||
-              data['user-token'] === selectedMemberEmail) &&
-            new Date(data.date).getFullYear() === date.getFullYear() &&
-            new Date(data.date).getMonth() === date.getMonth(),
-        ),
-      );
-    }
+    return getExpenseFromData(
+      [...data].filter(
+        (data) =>
+          checkUser(data, selectedMemberEmail) &&
+          new Date(data.date).getFullYear() === date.getFullYear() &&
+          new Date(data.date).getMonth() === date.getMonth(),
+      ),
+    ).totalOutcome;
   }, [filter, data, selectedMemberEmail, date]);
 
   const budget = useMemo(() => {
@@ -101,26 +86,6 @@ export const SpendingInfoSection = ({
     [selectedGroup, setDate, syncData, userData?.email],
   );
 
-  const checkDate = useCallback(
-    (dateStr: string) => {
-      const dataDate = new Date(dateStr);
-      if (filter === DateFilter.Year) {
-        return dataDate.getFullYear() === date.getFullYear();
-      } else if (filter === DateFilter.Month) {
-        return (
-          dataDate.getFullYear() === date.getFullYear() &&
-          dataDate.getMonth() === date.getMonth()
-        );
-      }
-      return (
-        dataDate.getFullYear() === date.getFullYear() &&
-        dataDate.getMonth() === date.getMonth() &&
-        dataDate.getDate() === date.getDate()
-      );
-    },
-    [filter, date],
-  );
-
   const refreshData = useCallback(
     (_groupId?: string) => {
       syncData(_groupId || undefined, userData?.email, date.toUTCString());
@@ -130,16 +95,18 @@ export const SpendingInfoSection = ({
 
   useEffect(() => {
     startTransition(() => {
-      setFilteredData(
-        [...data].filter(
-          (data) =>
-            (selectedMemberEmail === '' ||
-              data['user-token'] === selectedMemberEmail) &&
-            checkDate(data.date),
-        ),
+      const _filteredData = [...data].filter(
+        (data) =>
+          checkUser(data, selectedMemberEmail) &&
+          checkDate(data.date, date, filter),
       );
+      const { totalIncome: _totalIncome, totalOutcome: _totalOutcome } =
+        getExpenseFromData(_filteredData);
+      setTotalIncome(_totalIncome);
+      setTotalOutcome(_totalOutcome);
+      setFilteredData(_filteredData);
     });
-  }, [checkDate, data, selectedMemberEmail]);
+  }, [checkDate, checkUser, data, date, selectedMemberEmail, filter]);
 
   useEffect(() => {
     if (!selectedGroup && userData?.email) {
@@ -172,44 +139,69 @@ export const SpendingInfoSection = ({
           />
         </div>
       </div>
-      <div className="flex w-full max-w-175 items-center justify-between gap-2 sm:justify-center">
+      <div className="flex w-full justify-center">
         <DatePicker
           date={date}
-          labelClassName="p-4 text-sm sm:text-lg bg-background"
+          labelClassName="p-4 text-base sm:text-lg bg-background"
           onChange={handleOnChangeDate}
         />
-        <div className="flex items-center divide-x divide-gray-300 rounded border border-solid border-gray-300 text-sm">
-          <button
-            type="button"
-            onClick={() => setFilter(DateFilter.Day)}
-            className={`rounded-l-[3px] px-4 py-1 transition-colors ${filter === DateFilter.Day ? 'bg-gray-300' : 'bg-background'}`}
-          >
-            日
-          </button>
-          <button
-            type="button"
-            onClick={() => setFilter(DateFilter.Month)}
-            className={`px-4 py-1 transition-colors ${filter === DateFilter.Month ? 'bg-gray-300' : 'bg-background'}`}
-          >
-            月
-          </button>
-          <button
-            type="button"
-            onClick={() => setFilter(DateFilter.Year)}
-            className={`rounded-r-[3px] px-4 py-1 transition-colors ${filter === DateFilter.Year ? 'bg-gray-300' : 'bg-background'}`}
-          >
-            年
-          </button>
-        </div>
       </div>
-      <OverView
-        totalIncome={expenseInfo.totalIncome}
-        totalOutcome={expenseInfo.totalOutcome}
-        budget={budget}
-        usage={usage.totalOutcome}
-        filter={filter}
-        dateStr={date.toUTCString()}
-      />
+      <div className="flex w-full flex-col gap-1 sm:max-w-96">
+        <div className="flex w-full items-center justify-between">
+          <div className="flex items-center divide-x divide-gray-300 text-xs sm:text-sm">
+            <button
+              type="button"
+              onClick={() => {
+                setDate(
+                  filter === DateFilter.Day
+                    ? getDateByOffsetDay(date, -1)
+                    : getDateByOffsetMonth(date, -1),
+                );
+              }}
+              className="px-2 py-1 text-center text-primary-700 transition-colors active:text-primary-300 sm:hover:text-primary-300"
+            >
+              {filter === DateFilter.Day ? '昨天' : '上個月'}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setDate(
+                  filter === DateFilter.Day
+                    ? getDateByOffsetDay(date, 1)
+                    : getDateByOffsetMonth(date, 1),
+                );
+              }}
+              className="px-2 py-1 text-center text-primary-700 transition-colors active:text-primary-300 sm:hover:text-primary-300"
+            >
+              {filter === DateFilter.Day ? '明天' : '下個月'}
+            </button>
+          </div>
+          <div className="flex items-center divide-x divide-gray-300 rounded border border-solid border-gray-300 text-sm">
+            <button
+              type="button"
+              onClick={() => setFilter(DateFilter.Day)}
+              className={`rounded-l-[3px] px-4 py-1 transition-colors ${filter === DateFilter.Day ? 'bg-gray-300' : 'bg-background'}`}
+            >
+              日
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilter(DateFilter.Month)}
+              className={`rounded-r-[3px] px-4 py-1 transition-colors ${filter === DateFilter.Month ? 'bg-gray-300' : 'bg-background'}`}
+            >
+              月
+            </button>
+          </div>
+        </div>
+        <OverView
+          totalIncome={totalIncome}
+          totalOutcome={totalOutcome}
+          budget={budget}
+          usage={usage}
+          filter={filter}
+          dateStr={date.toUTCString()}
+        />
+      </div>
       <div className="flex w-full max-w-175 flex-col gap-2 pb-20">
         <CategoryAccordion
           title="支出"
@@ -248,3 +240,38 @@ export const SpendingInfoSection = ({
     </div>
   );
 };
+
+function checkUser(_data: SpendingRecord, email?: string) {
+  return email === '' || _data['user-token'] === email;
+}
+
+function checkDate(dateStr: string, _date: Date, _filter: DateFilter) {
+  const dataDate = new Date(dateStr);
+  if (_filter === DateFilter.Month) {
+    return (
+      dataDate.getFullYear() === _date.getFullYear() &&
+      dataDate.getMonth() === _date.getMonth()
+    );
+  }
+  return (
+    dataDate.getFullYear() === _date.getFullYear() &&
+    dataDate.getMonth() === _date.getMonth() &&
+    dataDate.getDate() === _date.getDate()
+  );
+}
+
+const getDateByOffsetMonth = (date: Date, offset: number) => {
+  const newDate = new Date(date);
+  newDate.setMonth(newDate.getMonth() + offset);
+  return newDate;
+};
+
+const getDateByOffsetDay = (date: Date, offset: number) => {
+  const newDate = new Date(date);
+  newDate.setDate(newDate.getDate() + offset);
+  return newDate;
+};
+
+function formatDate(date: Date) {
+  return `${date.getMonth() + 1}/${date.getDate()}`;
+}
