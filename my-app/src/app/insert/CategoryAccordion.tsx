@@ -24,7 +24,7 @@ export const CategoryAccordion = (props: Props) => {
         return (
           <Accordion
             key={`${title}-${value}`}
-            defaultOpen={false}
+            defaultOpen={true}
             summary={(isOpen) => (
               <p className="flex w-full items-center justify-between">
                 <span className="flex items-center gap-1">

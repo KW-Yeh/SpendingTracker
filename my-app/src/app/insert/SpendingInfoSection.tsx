@@ -9,6 +9,7 @@ import { GroupSelector } from '@/composites/GroupSelector';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { useDate } from '@/hooks/useDate';
+import { useScrollToTop } from '@/hooks/useScrollToTop';
 import {
   DateFilter,
   INCOME_TYPE_MAP,
@@ -32,6 +33,7 @@ export const SpendingInfoSection = ({
 }: {
   quickInsert?: string;
 }) => {
+  useScrollToTop();
   const { config: userData } = useUserConfigCtx();
   const { syncData, loading, data } = useGetSpendingCtx();
   const [date, setDate] = useDate(new Date());
