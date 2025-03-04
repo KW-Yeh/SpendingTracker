@@ -180,14 +180,14 @@ export const EditExpenseModal = (props: Props) => {
             />
           </div>
           <div className="flex items-center justify-between gap-4">
-            <div className="flex flex-1 items-center gap-2 rounded-md border border-solid border-gray-300">
+            <div className="flex-1">
               <GroupSelector
                 selectedGroup={groupId}
                 selectedMemberEmail={memberEmail}
                 onSelectGroup={setGroupId}
                 onSelectMemberEmail={setMemberEmail}
                 showMemberSelector={false}
-                selectorStyle="border-0 w-full h-10"
+                selectorStyle="w-full h-10 rounded-md"
               />
             </div>
             <DatePicker
@@ -204,7 +204,7 @@ export const EditExpenseModal = (props: Props) => {
                 name="category"
                 value={`${selectedCategory} ${selectedCategoryLabel}`}
                 onChange={setSelectedCategory}
-                className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1 transition-colors active:border-text sm:hover:border-text"
+                className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1 transition-colors active:border-gray-500 sm:hover:border-gray-500"
               >
                 {spendingCategories.map((category) => (
                   <Select.Item key={category.value} value={category.value}>
@@ -261,7 +261,7 @@ export const EditExpenseModal = (props: Props) => {
           <button
             disabled={loading}
             type="submit"
-            className="flex w-36 items-center justify-center rounded-lg border border-solid border-text bg-text p-2 text-background transition-all active:bg-gray-600 sm:hover:bg-gray-600"
+            className="submit-button flex w-36 items-center justify-center"
           >
             {loading && (
               <Loading className="size-6 animate-spin py-1 text-white" />

@@ -55,12 +55,12 @@ export const SpendingInfoSection = ({
           new Date(data.date).getMonth() === date.getMonth(),
       ),
     ).totalOutcome;
-  }, [filter, data, selectedMemberEmail, date]);
+  }, [data, selectedMemberEmail, date]);
 
   const budget = useMemo(() => {
     if (!userData?.budgetList) return undefined;
     return userData.budgetList[month];
-  }, [filter, month, userData?.budgetList]);
+  }, [month, userData?.budgetList]);
 
   const handleOnChangeDate = useCallback(
     (event: ChangeEvent) => {
@@ -102,7 +102,7 @@ export const SpendingInfoSection = ({
       setTotalOutcome(_totalOutcome);
       setFilteredData(_filteredData);
     });
-  }, [checkDate, checkUser, data, date, selectedMemberEmail, filter]);
+  }, [data, date, selectedMemberEmail, filter]);
 
   useEffect(() => {
     if (!selectedGroup && userData?.email) {
@@ -154,7 +154,7 @@ export const SpendingInfoSection = ({
                     : getDateByOffsetMonth(date, -1),
                 );
               }}
-              className="px-2 py-1 text-center text-primary-700 transition-colors active:text-primary-300 sm:hover:text-primary-300"
+              className="px-2 py-1 text-center text-blue-500 transition-colors active:text-blue-300 sm:hover:text-blue-300"
             >
               {filter === DateFilter.Day ? '昨天' : '上個月'}
             </button>
@@ -167,7 +167,7 @@ export const SpendingInfoSection = ({
                     : getDateByOffsetMonth(date, 1),
                 );
               }}
-              className="px-2 py-1 text-center text-primary-700 transition-colors active:text-primary-300 sm:hover:text-primary-300"
+              className="px-2 py-1 text-center text-blue-500 transition-colors active:text-blue-300 sm:hover:text-blue-300"
             >
               {filter === DateFilter.Day ? '明天' : '下個月'}
             </button>

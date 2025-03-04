@@ -38,7 +38,7 @@ export const Filter = (props: Props) => {
           name="group"
           value={group?.name ?? '個人'}
           onChange={setGroupId}
-          className="w-full rounded-full border border-solid border-gray-300 px-4 py-1 transition-colors active:border-text sm:hover:border-text"
+          className="w-full rounded-full border border-solid border-gray-300 px-4 py-1 transition-colors active:border-gray-500 sm:hover:border-gray-500"
         >
           <Select.Item value="">個人</Select.Item>
           {!loadingGroups &&

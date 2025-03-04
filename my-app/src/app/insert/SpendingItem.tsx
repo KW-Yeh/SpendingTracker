@@ -22,7 +22,7 @@ export const SpendingItem = (props: Props) => {
     if (deleting) {
       return 'shadow-[0_0_0_2px_#fca5a5]';
     }
-    return 'active:bg-gray-200 sm:hover:bg-gray-200';
+    return 'active:bg-primary-200 sm:hover:bg-primary-200';
   }, [deleting]);
 
   const handleOnDelete = useCallback(() => {

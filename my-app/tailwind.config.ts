@@ -5,13 +5,19 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        text: "var(--text)",
-        "primary-100": "var(--primary-100)",
-        "primary-300": "var(--primary-300)",
-        "primary-500": "var(--primary-500)",
-        "primary-700": "var(--primary-700)",
-        "primary-900": "var(--primary-900)",
+        background: "#FCFCFE",
+        text: "#1C202A",
+        primary: {
+          100: '#FCFCFE',
+          200: '#F2F1FF',
+          300: '#DFD9FF',
+          400: '#BFB5FD',
+          500: '#7B56E1',
+          600: '#6D4EC6',
+          700: '#694AC2',
+          800: '#332263',
+          900: '#1d1337',
+        }
       },
       spacing: {
         175: '43.75rem', // 700px

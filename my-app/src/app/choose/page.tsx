@@ -1,4 +1,4 @@
-import { Chooser } from '@/app/choose/chooser';
+import { Chooser } from '@/app/choose/Chooser';
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
