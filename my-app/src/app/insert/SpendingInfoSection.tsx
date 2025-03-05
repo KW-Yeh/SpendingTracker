@@ -89,6 +89,36 @@ export const SpendingInfoSection = ({
     [syncData, userData?.email, date],
   );
 
+  const handlePrevDate = useCallback(() => {
+    const newDate =
+      filter === DateFilter.Day
+        ? getDateByOffsetDay(date, -1)
+        : getDateByOffsetMonth(date, -1);
+    if (newDate.getMonth() !== date.getMonth()) {
+      syncData(
+        selectedGroup || undefined,
+        userData?.email,
+        newDate.toUTCString(),
+      );
+    }
+    setDate(newDate);
+  }, [date, selectedGroup, userData?.email, syncData, filter, setDate]);
+
+  const handleNextDate = useCallback(() => {
+    const newDate =
+      filter === DateFilter.Day
+        ? getDateByOffsetDay(date, 1)
+        : getDateByOffsetMonth(date, 1);
+    if (newDate.getMonth() !== date.getMonth()) {
+      syncData(
+        selectedGroup || undefined,
+        userData?.email,
+        newDate.toUTCString(),
+      );
+    }
+    setDate(newDate);
+  }, [date, selectedGroup, userData?.email, syncData, filter, setDate]);
+
   useEffect(() => {
     startTransition(() => {
       const _filteredData = [...data].filter(
@@ -147,26 +177,14 @@ export const SpendingInfoSection = ({
           <div className="flex items-center divide-x divide-gray-300 text-xs sm:text-sm">
             <button
               type="button"
-              onClick={() => {
-                setDate(
-                  filter === DateFilter.Day
-                    ? getDateByOffsetDay(date, -1)
-                    : getDateByOffsetMonth(date, -1),
-                );
-              }}
+              onClick={handlePrevDate}
               className="px-2 py-1 text-center text-blue-500 transition-colors active:text-blue-300 sm:hover:text-blue-300"
             >
               {filter === DateFilter.Day ? '昨天' : '上個月'}
             </button>
             <button
               type="button"
-              onClick={() => {
-                setDate(
-                  filter === DateFilter.Day
-                    ? getDateByOffsetDay(date, 1)
-                    : getDateByOffsetMonth(date, 1),
-                );
-              }}
+              onClick={handleNextDate}
               className="px-2 py-1 text-center text-blue-500 transition-colors active:text-blue-300 sm:hover:text-blue-300"
             >
               {filter === DateFilter.Day ? '明天' : '下個月'}
