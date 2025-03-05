@@ -79,7 +79,7 @@ export const Switch = (props: Props) => {
     >
       <div
         ref={floatingBlockRef}
-        className="transition-spring absolute bottom-1 top-1 z-10 rounded-md bg-background transition-all"
+        className="transition-spring absolute bottom-1 top-1 z-10 rounded bg-background transition-all"
       ></div>
       <span
         ref={option1Ref}
