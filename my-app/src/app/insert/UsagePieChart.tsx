@@ -32,7 +32,7 @@ const UsagePieChart = (props: Props) => {
           {
             name: '已使用',
             value: usage,
-            fill: percentage >= '100' ? '#F5666680' : '#22C55E7F',
+            fill: '#7B56E17F',
           },
           {
             name: '剩餘',
