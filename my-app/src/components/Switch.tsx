@@ -57,14 +57,14 @@ export const Switch = (props: Props) => {
           if (option1.onSelectColor)
             leftButton.style.color = option1.onSelectColor;
           else leftButton.style.color = '#333333';
-          rightButton.style.color = '#A0AEC0';
+          rightButton.style.color = '#BBA8F0FF';
         } else {
           block.style.left = `${rightLeft}px`;
           block.style.width = `${rightWidth}px`;
           if (option2.onSelectColor)
             rightButton.style.color = option2.onSelectColor;
           else rightButton.style.color = '#333333';
-          leftButton.style.color = '#A0AEC0';
+          leftButton.style.color = '#BBA8F0FF';
         }
       }
     });
@@ -75,7 +75,7 @@ export const Switch = (props: Props) => {
       ref={containerRef}
       type="button"
       onClick={handleOnClick}
-      className={`relative flex w-fit items-center gap-1 rounded-md bg-gray-300 p-1 ${className}`}
+      className={`relative flex w-fit items-center gap-1 rounded-md bg-primary-100 p-1 ${className}`}
     >
       <div
         ref={floatingBlockRef}

@@ -82,10 +82,10 @@ input[type='number'] {
     @apply bg-primary-500 text-background font-bold py-2 px-4 rounded-lg transition-colors;
 
     &:hover {
-        @apply bg-primary-700;
+        @apply bg-primary-600;
     }
 
     &:active {
-        @apply bg-primary-800;
+        @apply bg-primary-600;
     }
 }

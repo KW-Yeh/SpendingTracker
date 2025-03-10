@@ -89,36 +89,6 @@ export const SpendingInfoSection = ({
     [syncData, userData?.email, date],
   );
 
-  const handlePrevDate = useCallback(() => {
-    const newDate =
-      filter === DateFilter.Day
-        ? getDateByOffsetDay(date, -1)
-        : getDateByOffsetMonth(date, -1);
-    if (newDate.getMonth() !== date.getMonth()) {
-      syncData(
-        selectedGroup || undefined,
-        userData?.email,
-        newDate.toUTCString(),
-      );
-    }
-    setDate(newDate);
-  }, [date, selectedGroup, userData?.email, syncData, filter, setDate]);
-
-  const handleNextDate = useCallback(() => {
-    const newDate =
-      filter === DateFilter.Day
-        ? getDateByOffsetDay(date, 1)
-        : getDateByOffsetMonth(date, 1);
-    if (newDate.getMonth() !== date.getMonth()) {
-      syncData(
-        selectedGroup || undefined,
-        userData?.email,
-        newDate.toUTCString(),
-      );
-    }
-    setDate(newDate);
-  }, [date, selectedGroup, userData?.email, syncData, filter, setDate]);
-
   useEffect(() => {
     startTransition(() => {
       const _filteredData = [...data].filter(
@@ -173,35 +143,19 @@ export const SpendingInfoSection = ({
         />
       </div>
       <div className="flex w-full flex-col gap-1 sm:max-w-96">
-        <div className="flex w-full items-center justify-between">
-          <div className="flex items-center divide-x divide-gray-300 text-xs sm:text-sm">
-            <button
-              type="button"
-              onClick={handlePrevDate}
-              className="px-2 py-1 text-center text-blue-500 transition-colors active:text-blue-300 sm:hover:text-blue-300"
-            >
-              {filter === DateFilter.Day ? '昨天' : '上個月'}
-            </button>
-            <button
-              type="button"
-              onClick={handleNextDate}
-              className="px-2 py-1 text-center text-blue-500 transition-colors active:text-blue-300 sm:hover:text-blue-300"
-            >
-              {filter === DateFilter.Day ? '明天' : '下個月'}
-            </button>
-          </div>
+        <div className="flex w-full items-center justify-end">
           <div className="flex items-center divide-x divide-gray-300 rounded border border-solid border-gray-300 text-sm">
             <button
               type="button"
               onClick={() => setFilter(DateFilter.Day)}
-              className={`rounded-l-[3px] px-4 py-1 transition-colors ${filter === DateFilter.Day ? 'bg-gray-300' : 'bg-background'}`}
+              className={`rounded-l-[3px] px-4 py-1 transition-colors ${filter === DateFilter.Day ? 'bg-background-gray' : 'bg-background'}`}
             >
               日
             </button>
             <button
               type="button"
               onClick={() => setFilter(DateFilter.Month)}
-              className={`rounded-r-[3px] px-4 py-1 transition-colors ${filter === DateFilter.Month ? 'bg-gray-300' : 'bg-background'}`}
+              className={`rounded-r-[3px] px-4 py-1 transition-colors ${filter === DateFilter.Month ? 'bg-background-gray' : 'bg-background'}`}
             >
               月
             </button>
@@ -272,16 +226,4 @@ function checkDate(dateStr: string, _date: Date, _filter: DateFilter) {
     dataDate.getMonth() === _date.getMonth() &&
     dataDate.getDate() === _date.getDate()
   );
-}
-
-function getDateByOffsetMonth(date: Date, offset: number) {
-  const newDate = new Date(date);
-  newDate.setMonth(newDate.getMonth() + offset);
-  return newDate;
-}
-
-function getDateByOffsetDay(date: Date, offset: number) {
-  const newDate = new Date(date);
-  newDate.setDate(newDate.getDate() + offset);
-  return newDate;
 }

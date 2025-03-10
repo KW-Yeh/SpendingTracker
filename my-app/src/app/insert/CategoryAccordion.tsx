@@ -28,9 +28,8 @@ export const CategoryAccordion = (props: Props) => {
             summary={(isOpen) => (
               <p className="flex w-full items-center justify-between">
                 <span className="flex items-center gap-1">
-                  <span>{value}</span>
-                  <span>{label}</span>
-                  <span className="text-xs">({dataOfCategory.length})</span>
+                  <span className='text-base font-bold'>{label}</span>
+                  <span className="text-xs text-text-gray">({dataOfCategory.length})</span>
                 </span>
                 {isOpen ? (
                   <MinusIcon className="size-4" />

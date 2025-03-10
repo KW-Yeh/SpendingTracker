@@ -22,7 +22,7 @@ export const SpendingItem = (props: Props) => {
     if (deleting) {
       return 'shadow-[0_0_0_2px_#fca5a5]';
     }
-    return 'active:bg-primary-200 sm:hover:bg-primary-200';
+    return 'active:bg-background-gray sm:hover:bg-background-gray';
   }, [deleting]);
 
   const handleOnDelete = useCallback(() => {
@@ -38,7 +38,7 @@ export const SpendingItem = (props: Props) => {
 
   return (
     <div
-      className={`relative flex h-11 items-center gap-2 px-2 transition-all sm:h-14 ${additionalStyle}`}
+      className={`relative flex h-12 items-center gap-2 px-2 transition-all ${additionalStyle}`}
     >
       {deleting && (
         <span className="absolute left-1 top-0 -translate-y-1/2 rounded-full bg-red-300 px-2 text-xs font-bold">
@@ -46,20 +46,20 @@ export const SpendingItem = (props: Props) => {
         </span>
       )}
       {spending.necessity === Necessity.NotNeed ? (
-        <span className="rounded-full bg-gray-300 px-2 py-px text-xs">
+        <span className="rounded-full border border-solid border-text px-2 py-px text-xs">
           額外
         </span>
       ) : (
-        <span className="rounded-full bg-orange-300 px-2 py-px text-xs">
+        <span className="rounded-full border border-solid border-orange-500 px-2 py-px text-xs">
           必要
         </span>
       )}
-      <div className="w-8 text-center text-xs sm:col-span-1 sm:text-sm">
+      <div className="w-9 text-center text-xs sm:col-span-1">
         {formatDate(spending.date)}
       </div>
       <div
         title={spending.description}
-        className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap sm:col-span-5"
+        className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-base sm:col-span-5"
       >
         {spending.description}
       </div>
@@ -67,14 +67,14 @@ export const SpendingItem = (props: Props) => {
       <div className="flex w-[72px] items-center justify-end gap-1">
         <Link
           href={`/edit?id=${spending.id}`}
-          className="group rounded p-2 transition-colors active:bg-primary-500 sm:hover:bg-primary-500"
+          className="group rounded p-2 transition-colors active:bg-primary-400 sm:hover:bg-primary-400"
         >
           <EditIcon className="size-3 transition-colors group-active:text-background sm:size-4 sm:group-hover:text-background" />
         </Link>
         <button
           type="button"
           onClick={handleOnDelete}
-          className="group rounded p-2 transition-colors active:bg-red-500 sm:hover:bg-red-500"
+          className="group rounded p-2 transition-colors active:bg-red-400 sm:hover:bg-red-400"
         >
           <DeleteIcon className="size-3 transition-colors group-active:text-background sm:size-4 sm:group-hover:text-background" />
         </button>
