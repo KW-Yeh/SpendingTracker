@@ -4,8 +4,6 @@ import { startTransition, useEffect, useState } from 'react';
 import { Label, Pie, PieChart } from 'recharts';
 
 interface Props {
-  width: number;
-  height: number;
   budget: number;
   usage: number;
 }
@@ -25,7 +23,7 @@ const UsagePieChart = (props: Props) => {
   }, [props.budget, props.usage]);
 
   return (
-    <PieChart width={props.width} height={props.height}>
+    <PieChart width={100} height={100}>
       <Pie
         dataKey="value"
         data={[
@@ -40,15 +38,15 @@ const UsagePieChart = (props: Props) => {
             fill: '#D1D5DB80',
           },
         ]}
-        innerRadius={30}
-        outerRadius={40}
+        innerRadius={37}
+        outerRadius={45}
         strokeOpacity={0}
       >
         <Label
           value={`${percentage}%`}
           offset={0}
           position="center"
-          className="text-sm font-bold"
+          className="text-base font-bold"
         />
       </Pie>
     </PieChart>

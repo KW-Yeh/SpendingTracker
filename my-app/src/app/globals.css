@@ -1,15 +1,49 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+    --color-background: hsl(0, 0%, 100%);
+    --color-text: hsl(0, 0%, 10%);
+    --color-primary-100: hsl(256, 60%, 90%);
+    --color-primary-200: hsl(256, 60%, 80%);
+    --color-primary-300: hsl(256, 60%, 70%);
+    --color-primary-400: hsl(256, 60%, 60%);
+    --color-primary-500: hsl(256, 60%, 50%);
+    --color-primary-600: hsl(256, 60%, 40%);
+    --color-primary-700: hsl(256, 60%, 30%);
+    --color-primary-800: hsl(256, 60%, 20%);
+    --color-primary-900: hsl(256, 60%, 10%);
+
+    --color-gray-100: hsl(0, 0%, 95%);
+    --color-gray-200: hsl(0, 0%, 80%);
+    --color-gray-300: hsl(0, 0%, 70%);
+    --color-gray-400: hsl(0, 0%, 60%);
+    --color-gray-500: hsl(0, 0%, 50%);
+    --color-gray-600: hsl(0, 0%, 40%);
+    --color-gray-700: hsl(0, 0%, 30%);
+    --color-gray-800: hsl(0, 0%, 20%);
+    --color-gray-900: hsl(0, 0%, 10%);
+
+    --color-scrollbar-thumb: hsl(0, 0%, 83%);
+    --color-scrollbar-thumb-hover: hsl(0, 0%, 73%);
+
+    --shadow-primary: 0px 0px 0px 1px var(--color-primary-500),
+    0px 0px 16px -6px var(--color-primary-500);
+    --shadow-primary-hover: 0px 0px 0px 1px var(--color-blue-500),
+    0px 0px 16px -6px var(--color-blue-500);
+}
 
 body {
-    color: #1C202A;
-    background: #FCFCFE;
+    color: var(--color-text);
+    background: var(--color-background);
     font-family: Arial, Helvetica, sans-serif;
     width: 100%;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+}
+
+button {
+    cursor: pointer;
 }
 
 /* Chrome, Safari, Edge, Opera */
@@ -29,16 +63,16 @@ input[type='number'] {
 }
 
 .scrollbar::-webkit-scrollbar-track {
-    background-color: #FCFCFE;
+    background-color: var(--color-background);
 }
 
 .scrollbar::-webkit-scrollbar-track-piece:end {
-    background: #FCFCFE;
+    background: var(--color-background);
     margin-bottom: 16px;
 }
 
 .scrollbar::-webkit-scrollbar-track-piece:start {
-    background: #FCFCFE;
+    background: var(--color-background);
     margin-top: 16px;
 }
 
@@ -53,11 +87,11 @@ input[type='number'] {
 
 .scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: #d3d3d3 #FCFCFE;
+    scrollbar-color: var(--color-scrollbar-thumb) var(--color-background);
 }
 
 .scrollbar:hover {
-    scrollbar-color: #c0c0c0 #FCFCFE;
+    scrollbar-color: var(--color-scrollbar-thumb-hover) var(--color-background);
 }
 
 .clipped-text {
@@ -67,10 +101,6 @@ input[type='number'] {
 
 .gradient-r-from-purple-to-blue {
     @apply bg-gradient-to-r from-primary-500 to-blue-500;
-}
-
-.conic-gradient-from-purple-to-red {
-    background: conic-gradient(from 0deg at 50% 50%, #fa4990, #670df3, #fa4990);
 }
 
 .transition-spring {

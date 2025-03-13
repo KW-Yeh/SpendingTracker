@@ -22,7 +22,7 @@ export const SpendingItem = (props: Props) => {
     if (deleting) {
       return 'shadow-[0_0_0_2px_#fca5a5]';
     }
-    return 'active:bg-background-gray sm:hover:bg-background-gray';
+    return 'active:bg-gray-100 sm:hover:bg-gray-100';
   }, [deleting]);
 
   const handleOnDelete = useCallback(() => {
@@ -41,12 +41,12 @@ export const SpendingItem = (props: Props) => {
       className={`relative flex h-12 items-center gap-2 px-2 transition-all ${additionalStyle}`}
     >
       {deleting && (
-        <span className="absolute left-1 top-0 -translate-y-1/2 rounded-full bg-red-300 px-2 text-xs font-bold">
+        <span className="absolute top-0 left-1 -translate-y-1/2 rounded-full bg-red-300 px-2 text-xs font-bold">
           刪除中
         </span>
       )}
       {spending.necessity === Necessity.NotNeed ? (
-        <span className="rounded-full border border-solid border-text px-2 py-px text-xs">
+        <span className="border-text rounded-full border border-solid px-2 py-px text-xs">
           額外
         </span>
       ) : (
@@ -59,24 +59,26 @@ export const SpendingItem = (props: Props) => {
       </div>
       <div
         title={spending.description}
-        className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-base sm:col-span-5"
+        className="flex-1 overflow-hidden text-base text-ellipsis whitespace-nowrap sm:col-span-5"
       >
         {spending.description}
       </div>
-      <div className="w-fit text-end">${normalizeNumber(spending.amount)}</div>
+      <div className="w-fit text-end font-bold">
+        ${normalizeNumber(spending.amount)}
+      </div>
       <div className="flex w-[72px] items-center justify-end gap-1">
         <Link
           href={`/edit?id=${spending.id}`}
-          className="group rounded p-2 transition-colors active:bg-primary-400 sm:hover:bg-primary-400"
+          className="group active:bg-primary-200 sm:hover:bg-primary-200 rounded p-2 transition-colors"
         >
-          <EditIcon className="size-3 transition-colors group-active:text-background sm:size-4 sm:group-hover:text-background" />
+          <EditIcon className="group-active:text-primary-700 sm:group-hover:text-primary-700 size-3 transition-colors sm:size-4" />
         </Link>
         <button
           type="button"
           onClick={handleOnDelete}
-          className="group rounded p-2 transition-colors active:bg-red-400 sm:hover:bg-red-400"
+          className="group rounded p-2 transition-colors active:bg-red-300 sm:hover:bg-red-300"
         >
-          <DeleteIcon className="size-3 transition-colors group-active:text-background sm:size-4 sm:group-hover:text-background" />
+          <DeleteIcon className="group-active:text-red-700 sm:group-hover:text-red-700 size-3 transition-colors sm:size-4" />
         </button>
       </div>
     </div>

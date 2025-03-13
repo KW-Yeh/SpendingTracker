@@ -4,7 +4,6 @@ import { CategoryAccordion } from '@/app/insert/CategoryAccordion';
 import { OverView } from '@/app/insert/OverView';
 import { SpendingList } from '@/app/insert/SpendingList';
 import { DatePicker } from '@/components/DatePicker';
-import { RefreshIcon } from '@/components/icons/RefreshIcon';
 import { GroupSelector } from '@/composites/GroupSelector';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
@@ -112,17 +111,7 @@ export const SpendingInfoSection = ({
 
   return (
     <div className="relative flex w-full flex-1 flex-col items-center gap-4 p-6">
-      <div className="absolute right-6 top-6">
-        <button
-          type="button"
-          onClick={() => refreshData()}
-          disabled={loading}
-          className="rounded-md bg-gray-200 p-2 transition-colors active:bg-gray-300 sm:hover:bg-gray-300"
-        >
-          <RefreshIcon className={`size-4 ${loading ? 'animate-spin' : ''}`} />
-        </button>
-      </div>
-      <div className="flex w-full max-w-175 items-center gap-2">
+      <div className="mb-5 flex w-full max-w-175">
         <div className="w-fit">
           <GroupSelector
             selectedGroup={selectedGroup}
@@ -135,32 +124,30 @@ export const SpendingInfoSection = ({
           />
         </div>
       </div>
-      <div className="flex w-full justify-center">
+      <div className="flex w-full max-w-175 items-center justify-between">
         <DatePicker
           date={date}
-          labelClassName="p-4 text-base sm:text-lg bg-background"
+          labelClassName="p-4 text-base sm:text-lg bg-background font-semibold"
           onChange={handleOnChangeDate}
         />
-      </div>
-      <div className="flex w-full flex-col gap-1 sm:max-w-96">
-        <div className="flex w-full items-center justify-end">
-          <div className="flex items-center divide-x divide-gray-300 rounded border border-solid border-gray-300 text-sm">
-            <button
-              type="button"
-              onClick={() => setFilter(DateFilter.Day)}
-              className={`rounded-l-[3px] px-4 py-1 transition-colors ${filter === DateFilter.Day ? 'bg-background-gray' : 'bg-background'}`}
-            >
-              日
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilter(DateFilter.Month)}
-              className={`rounded-r-[3px] px-4 py-1 transition-colors ${filter === DateFilter.Month ? 'bg-background-gray' : 'bg-background'}`}
-            >
-              月
-            </button>
-          </div>
+        <div className="flex items-center divide-x divide-gray-300 rounded border border-solid border-gray-300 text-sm">
+          <button
+            type="button"
+            onClick={() => setFilter(DateFilter.Day)}
+            className={`rounded-l-[3px] px-4 py-1 transition-colors ${filter === DateFilter.Day ? 'bg-gray-100' : 'bg-background'}`}
+          >
+            日
+          </button>
+          <button
+            type="button"
+            onClick={() => setFilter(DateFilter.Month)}
+            className={`rounded-r-[3px] px-4 py-1 transition-colors ${filter === DateFilter.Month ? 'bg-gray-100' : 'bg-background'}`}
+          >
+            月
+          </button>
         </div>
+      </div>
+      <div className="flex w-full max-w-175 flex-col gap-1">
         <OverView
           totalIncome={totalIncome}
           totalOutcome={totalOutcome}
@@ -171,6 +158,9 @@ export const SpendingInfoSection = ({
         />
       </div>
       <div className="flex w-full max-w-175 flex-col gap-2 pb-20">
+        <h3 className="my-4 w-full text-center text-lg font-bold sm:text-xl">
+          收支類別清單
+        </h3>
         <CategoryAccordion
           title="支出"
           data={filteredData}
@@ -199,10 +189,7 @@ export const SpendingInfoSection = ({
         </CategoryAccordion>
       </div>
 
-      <AddExpenseBtn
-        borderStyle="conic-gradient-from-purple-to-red"
-        autoClick={!!quickInsert}
-      >
+      <AddExpenseBtn autoClick={!!quickInsert}>
         <span className="text-base font-bold">記帳</span>
       </AddExpenseBtn>
     </div>

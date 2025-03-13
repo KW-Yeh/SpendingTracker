@@ -22,8 +22,8 @@ import {
 const UsagePieChart = dynamic(() => import('./UsagePieChart'), {
   ssr: false,
   loading: () => (
-    <div className="aspect-square size-full rounded-full bg-gray-200 p-[10px]">
-      <div className="size-full rounded-full bg-background"></div>
+    <div className="ml-1 aspect-square size-23 rounded-full bg-gray-200 p-2">
+      <div className="bg-background size-full rounded-full"></div>
     </div>
   ),
 });
@@ -87,14 +87,14 @@ export const OverView = (props: Props) => {
   }, [user]);
 
   return (
-    <div className="flex w-full flex-col gap-2 sm:max-w-96">
-      <div className="relative flex h-28 w-full items-center gap-4 rounded-md border border-solid border-gray-300 p-2 pl-4">
-        <div className="w-20">
-          <UsagePieChart width={80} height={80} budget={budget} usage={usage} />
+    <div className="flex w-full max-w-175 flex-col gap-2 sm:flex-row sm:justify-between">
+      <div className="relative flex h-30 w-full items-center gap-4 rounded-md border border-solid border-gray-300 p-2 pl-4 sm:h-full sm:w-120">
+        <div className="w-25">
+          <UsagePieChart budget={budget} usage={usage} />
         </div>
         <div className="flex flex-1 flex-col">
           <span className="flex items-center gap-1 text-xs text-gray-500 sm:text-sm">
-            <span>每月預算:</span>
+            <span>預算</span>
             <button
               type="button"
               onClick={() => modalRef.current?.open()}
@@ -103,14 +103,20 @@ export const OverView = (props: Props) => {
               <span>
                 {budget !== 0 ? `$${normalizeNumber(budget)}` : '立即設定'}
               </span>
-              <EditIcon className="size-3" />
+              <EditIcon className="ml-1 size-3" />
             </button>
           </span>
+          <span className="flex items-center gap-1 text-xs text-gray-500 sm:text-sm">
+            <span>支出</span>
+            <span>{usage ? `$${normalizeNumber(usage)}` : '$0'}</span>
+          </span>
           <span
-            className={`text-base font-bold ${budget !== 0 && budget - usage < 0 ? 'text-red-500' : 'text-green-500'}`}
+            className={`flex items-center gap-1 text-xs sm:text-sm ${budget !== 0 && budget - usage < 0 ? 'text-red-500' : 'text-green-500'}`}
           >
-            {budget && budget - usage < 0 ? '本月超支' : '本月剩餘'}:{' '}
-            {budget ? `$${normalizeNumber(budget - usage)}` : '$0'}
+            <span>{budget && budget - usage < 0 ? '超支' : '剩餘'}</span>
+            <span className="text-xl font-semibold">
+              {budget ? `$${normalizeNumber(budget - usage)}` : '$0'}
+            </span>
           </span>
         </div>
         <div className="flex h-full items-end">
@@ -123,7 +129,7 @@ export const OverView = (props: Props) => {
           </Link>
         </div>
 
-        <span className="absolute right-2 top-2 text-xs text-gray-500">
+        <span className="absolute top-2 right-2 text-xs text-gray-500">
           {filter === DateFilter.Day
             ? `${year}-${month + 1}-${date}`
             : filter === DateFilter.Month
@@ -131,14 +137,18 @@ export const OverView = (props: Props) => {
               : year}
         </span>
       </div>
-      <div className="flex w-full items-center gap-2">
-        <div className="flex flex-1 flex-col rounded-md bg-red-500/50 px-4 py-2 font-semibold">
-          <span>支出</span>
-          <span>${normalizeNumber(totalOutcome)}</span>
+      <div className="flex w-full items-center gap-2 sm:w-50 sm:flex-col">
+        <div className="flex flex-1 flex-col rounded-md bg-red-300 px-4 py-2 sm:w-full">
+          <span className="font-semibold text-red-700">支出</span>
+          <span className="w-full text-end text-xl font-semibold">
+            ${normalizeNumber(totalOutcome)}
+          </span>
         </div>
-        <div className="flex flex-1 flex-col rounded-md bg-green-500/50 px-4 py-2 font-semibold">
-          <span>收入</span>
-          <span>${normalizeNumber(totalIncome)}</span>
+        <div className="flex flex-1 flex-col rounded-md bg-green-300 px-4 py-2 sm:w-full">
+          <span className="font-semibold text-green-700">收入</span>
+          <span className="w-full text-end text-xl font-semibold">
+            ${normalizeNumber(totalIncome)}
+          </span>
         </div>
       </div>
 
@@ -162,7 +172,7 @@ export const OverView = (props: Props) => {
           />
         </div>
         <div
-          className={`scrollbar flex max-h-96 w-full flex-col gap-2 overflow-y-auto overflow-x-hidden ${isUseAvg ? 'grayscale' : 'grayscale-0'}`}
+          className={`scrollbar flex max-h-96 w-full flex-col gap-2 overflow-x-hidden overflow-y-auto ${isUseAvg ? 'grayscale' : 'grayscale-0'}`}
         >
           {budgetList.map((budget, index) => (
             <div key={index.toString()} className="flex w-full flex-col">
@@ -205,7 +215,7 @@ export const OverView = (props: Props) => {
             disabled={loading}
             type="button"
             onClick={() => modalRef.current?.close()}
-            className="flex w-24 items-center justify-center rounded-lg border border-solid border-red-300 bg-background p-2 text-red-300 transition-colors active:border-red-500 active:text-red-500 sm:hover:border-red-500 sm:hover:text-red-500"
+            className="bg-background flex w-24 items-center justify-center rounded-lg border border-solid border-red-300 p-2 text-red-300 transition-colors active:border-red-500 active:text-red-500 sm:hover:border-red-500 sm:hover:text-red-500"
           >
             <span>取消</span>
           </button>
@@ -213,7 +223,7 @@ export const OverView = (props: Props) => {
             disabled={loading}
             type="button"
             onClick={handleSetBudget}
-            className="flex w-36 items-center justify-center rounded-lg border border-solid border-text bg-text p-2 text-background transition-all active:bg-gray-600 sm:hover:bg-gray-600"
+            className="border-text bg-text text-background flex w-36 items-center justify-center rounded-lg border border-solid p-2 transition-all active:bg-gray-600 sm:hover:bg-gray-600"
           >
             {loading && (
               <Loading className="size-6 animate-spin py-1 text-white" />
