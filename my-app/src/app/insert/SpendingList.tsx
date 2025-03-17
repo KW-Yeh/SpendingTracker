@@ -1,5 +1,5 @@
 import { SpendingItem } from '@/app/insert/SpendingItem';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 
 interface Props {
   data: SpendingRecord[];
@@ -9,24 +9,23 @@ interface Props {
 
 export const SpendingList = (props: Props) => {
   const { refreshData, data, loading } = props;
-  const isInitialized = useRef(false);
+  const [isInit, setIsInit] = useState(false);
 
   useEffect(() => {
-    if (!loading && !isInitialized.current) {
-      isInitialized.current = true;
-    }
+    setIsInit(!loading);
   }, [loading]);
 
   return (
-    <div className="flex w-full flex-col gap-2 text-xs sm:text-sm">
-      {!isInitialized.current && (
+    <div className="flex w-full flex-col text-xs sm:text-sm">
+      {!isInit && (
         <div className="flex w-full flex-col gap-2 px-1 py-2">
-          <div className="h-11 w-full animate-pulse rounded bg-gray-100 sm:h-14"></div>
-          <div className="h-11 w-full animate-pulse rounded bg-gray-100 sm:h-14"></div>
+          <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100"></div>
+          <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100"></div>
+          <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100"></div>
         </div>
       )}
-      {isInitialized.current && data.length > 0 && (
-        <div className="flex w-full flex-col divide-y divide-gray-300 px-1 py-2">
+      {isInit && (
+        <div className="flex w-full flex-col">
           {data.map((spending, index) => (
             <SpendingItem
               key={`${spending.id}-${index.toString()}`}

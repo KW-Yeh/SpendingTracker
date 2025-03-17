@@ -1,6 +1,5 @@
 'use client';
 
-import { CategoryAccordion } from '@/app/insert/CategoryAccordion';
 import { OverView } from '@/app/insert/OverView';
 import { SpendingList } from '@/app/insert/SpendingList';
 import { DatePicker } from '@/components/DatePicker';
@@ -9,11 +8,7 @@ import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { useDate } from '@/hooks/useDate';
 import { useScrollToTop } from '@/hooks/useScrollToTop';
-import {
-  DateFilter,
-  INCOME_TYPE_MAP,
-  OUTCOME_TYPE_MAP,
-} from '@/utils/constants';
+import { DateFilter } from '@/utils/constants';
 import { getExpenseFromData } from '@/utils/getExpenseFromData';
 import dynamic from 'next/dynamic';
 import {
@@ -110,8 +105,8 @@ export const SpendingInfoSection = ({
   }, [selectedGroup, userData?.email]);
 
   return (
-    <div className="relative flex w-full flex-1 flex-col items-center gap-4 p-6">
-      <div className="mb-5 flex w-full max-w-175">
+    <div className="relative mx-auto flex w-full max-w-175 flex-1 flex-col items-center p-6">
+      <div className="mb-5 flex w-full">
         <div className="w-fit">
           <GroupSelector
             selectedGroup={selectedGroup}
@@ -124,7 +119,7 @@ export const SpendingInfoSection = ({
           />
         </div>
       </div>
-      <div className="flex w-full max-w-175 items-center justify-between">
+      <div className="flex w-full items-center justify-between">
         <DatePicker
           date={date}
           labelClassName="p-4 text-base sm:text-lg bg-background font-semibold"
@@ -147,46 +142,23 @@ export const SpendingInfoSection = ({
           </button>
         </div>
       </div>
-      <div className="flex w-full max-w-175 flex-col gap-1">
-        <OverView
-          totalIncome={totalIncome}
-          totalOutcome={totalOutcome}
-          budget={budget}
-          usage={usage}
-          filter={filter}
-          dateStr={date.toUTCString()}
+
+      <OverView
+        totalIncome={totalIncome}
+        totalOutcome={totalOutcome}
+        budget={budget}
+        usage={usage}
+        filter={filter}
+        dateStr={date.toUTCString()}
+      />
+
+      <div className="my-5 flex w-full flex-col rounded-3xl border border-solid border-gray-300 p-4">
+        <h3 className="text-lg leading-10 font-bold">活動</h3>
+        <SpendingList
+          data={filteredData}
+          loading={loading || filteredData.length === 0}
+          refreshData={refreshData}
         />
-      </div>
-      <div className="flex w-full max-w-175 flex-col gap-2 pb-20">
-        <h3 className="my-4 w-full text-center text-lg font-bold sm:text-xl">
-          收支類別清單
-        </h3>
-        <CategoryAccordion
-          title="支出"
-          data={filteredData}
-          categoryMap={OUTCOME_TYPE_MAP}
-        >
-          {(categoryData) => (
-            <SpendingList
-              data={categoryData}
-              loading={loading}
-              refreshData={refreshData}
-            />
-          )}
-        </CategoryAccordion>
-        <CategoryAccordion
-          title="收入"
-          data={filteredData}
-          categoryMap={INCOME_TYPE_MAP}
-        >
-          {(categoryData) => (
-            <SpendingList
-              data={categoryData}
-              loading={loading}
-              refreshData={refreshData}
-            />
-          )}
-        </CategoryAccordion>
       </div>
 
       <AddExpenseBtn autoClick={!!quickInsert}>

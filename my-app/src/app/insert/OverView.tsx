@@ -22,7 +22,7 @@ import {
 const UsagePieChart = dynamic(() => import('./UsagePieChart'), {
   ssr: false,
   loading: () => (
-    <div className="ml-1 aspect-square size-23 rounded-full bg-gray-200 p-2">
+    <div className="ml-1 aspect-square size-23 animate-pulse rounded-full bg-gray-200 p-2">
       <div className="bg-background size-full rounded-full"></div>
     </div>
   ),
@@ -87,8 +87,8 @@ export const OverView = (props: Props) => {
   }, [user]);
 
   return (
-    <div className="flex w-full max-w-175 flex-col gap-2 sm:flex-row sm:justify-between">
-      <div className="relative flex h-30 w-full items-center gap-4 rounded-md border border-solid border-gray-300 p-2 pl-4 sm:h-full sm:w-120">
+    <div className="flex w-full flex-col gap-2 sm:flex-row sm:justify-between">
+      <div className="relative flex h-38 items-center gap-4 rounded-3xl border border-solid border-gray-300 p-2 pl-4 max-sm:rounded-b-xl sm:w-105">
         <div className="w-25">
           <UsagePieChart budget={budget} usage={usage} />
         </div>
@@ -114,12 +114,12 @@ export const OverView = (props: Props) => {
             className={`flex items-center gap-1 text-xs sm:text-sm ${budget !== 0 && budget - usage < 0 ? 'text-red-500' : 'text-green-500'}`}
           >
             <span>{budget && budget - usage < 0 ? '超支' : '剩餘'}</span>
-            <span className="text-xl font-semibold">
+            <span className="text-xl font-bold">
               {budget ? `$${normalizeNumber(budget - usage)}` : '$0'}
             </span>
           </span>
         </div>
-        <div className="flex h-full items-end">
+        <div className="flex h-full items-end p-2">
           <Link
             href="/list"
             className="flex items-center text-xs font-light text-blue-500 transition-colors active:text-blue-300 sm:hover:text-blue-300"
@@ -129,7 +129,7 @@ export const OverView = (props: Props) => {
           </Link>
         </div>
 
-        <span className="absolute top-2 right-2 text-xs text-gray-500">
+        <span className="absolute top-4 right-4 text-xs text-gray-500">
           {filter === DateFilter.Day
             ? `${year}-${month + 1}-${date}`
             : filter === DateFilter.Month
@@ -137,16 +137,16 @@ export const OverView = (props: Props) => {
               : year}
         </span>
       </div>
-      <div className="flex w-full items-center gap-2 sm:w-50 sm:flex-col">
-        <div className="flex flex-1 flex-col rounded-md bg-red-300 px-4 py-2 sm:w-full">
-          <span className="font-semibold text-red-700">支出</span>
-          <span className="w-full text-end text-xl font-semibold">
+      <div className="flex items-center gap-2 max-sm:w-full sm:w-50 sm:flex-col">
+        <div className="flex h-full min-h-18 flex-1 items-center justify-between rounded-3xl bg-red-300 px-4 py-2 max-sm:rounded-t-xl sm:w-full sm:rounded-b-xl">
+          <span className="text-sm font-semibold text-red-700">支出</span>
+          <span className="text-end text-xl font-bold">
             ${normalizeNumber(totalOutcome)}
           </span>
         </div>
-        <div className="flex flex-1 flex-col rounded-md bg-green-300 px-4 py-2 sm:w-full">
-          <span className="font-semibold text-green-700">收入</span>
-          <span className="w-full text-end text-xl font-semibold">
+        <div className="flex h-full min-h-18 flex-1 items-center justify-between rounded-t-xl rounded-b-3xl bg-green-300 px-4 py-2 sm:w-full">
+          <span className="text-sm font-semibold text-green-700">收入</span>
+          <span className="text-end text-xl font-bold">
             ${normalizeNumber(totalIncome)}
           </span>
         </div>

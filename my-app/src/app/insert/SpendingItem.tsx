@@ -3,7 +3,7 @@
 import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { EditIcon } from '@/components/icons/EditIcon';
 import { deleteItem } from '@/services/getRecords';
-import { Necessity } from '@/utils/constants';
+import { Necessity, SpendingType } from "@/utils/constants";
 import { formatDate } from '@/utils/formatDate';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import Link from 'next/link';
@@ -38,7 +38,7 @@ export const SpendingItem = (props: Props) => {
 
   return (
     <div
-      className={`relative flex h-12 items-center gap-2 px-2 transition-all ${additionalStyle}`}
+      className={`relative my-1 flex h-12 items-center gap-2 rounded-lg px-2 transition-all ${additionalStyle}`}
     >
       {deleting && (
         <span className="absolute top-0 left-1 -translate-y-1/2 rounded-full bg-red-300 px-2 text-xs font-bold">
@@ -46,25 +46,21 @@ export const SpendingItem = (props: Props) => {
         </span>
       )}
       {spending.necessity === Necessity.NotNeed ? (
-        <span className="border-text rounded-full border border-solid px-2 py-px text-xs">
-          額外
-        </span>
+        <span className="h-1/2 w-1 rounded-full bg-gray-400"></span>
       ) : (
-        <span className="rounded-full border border-solid border-orange-500 px-2 py-px text-xs">
-          必要
-        </span>
+        <span className="h-1/2 w-1 rounded-full bg-orange-400"></span>
       )}
       <div className="w-9 text-center text-xs sm:col-span-1">
         {formatDate(spending.date)}
       </div>
       <div
         title={spending.description}
-        className="flex-1 overflow-hidden text-base text-ellipsis whitespace-nowrap sm:col-span-5"
+        className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap sm:col-span-5"
       >
         {spending.description}
       </div>
-      <div className="w-fit text-end font-bold">
-        ${normalizeNumber(spending.amount)}
+      <div className={`w-fit text-end font-bold ${spending.type === SpendingType.Outcome ? 'text-red-500' : 'text-green-500'}`}>
+        {spending.type === SpendingType.Outcome ? '-' : '+'}{normalizeNumber(spending.amount)}
       </div>
       <div className="flex w-[72px] items-center justify-end gap-1">
         <Link
@@ -78,7 +74,7 @@ export const SpendingItem = (props: Props) => {
           onClick={handleOnDelete}
           className="group rounded p-2 transition-colors active:bg-red-300 sm:hover:bg-red-300"
         >
-          <DeleteIcon className="group-active:text-red-700 sm:group-hover:text-red-700 size-3 transition-colors sm:size-4" />
+          <DeleteIcon className="size-3 transition-colors group-active:text-red-700 sm:size-4 sm:group-hover:text-red-700" />
         </button>
       </div>
     </div>

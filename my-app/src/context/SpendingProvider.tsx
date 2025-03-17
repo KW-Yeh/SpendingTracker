@@ -31,18 +31,13 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
   const { db: IDB, getData: getDataFromIDB, setData: setData2IDB } = useIDB();
   const controllerRef = useRef<AbortController>(new AbortController());
 
-  const handleState = useCallback((res: SpendingRecord[]) => {
-    setData(res);
-    setLoading(false);
-  }, []);
-
   const queryItem = useCallback(
     (email?: string, groupId?: string, time?: string) => {
       if (!email && !groupId) return;
       getItems(groupId, email, time)
         .then((res) => {
           controllerRef.current.abort();
-          handleState(res.data);
+          setData(res.data);
           if (IDB) {
             setData2IDB(IDB, res.data, time)
               .then(() => {
@@ -55,12 +50,11 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
         })
         .catch(console.error);
     },
-    [IDB, handleState, setData2IDB],
+    [IDB, setData2IDB],
   );
 
   const syncData = useCallback(
     (groupId?: string, email?: string, time?: string) => {
-      setLoading(true);
       queryItem(email, groupId, time);
     },
     [queryItem],
@@ -71,10 +65,14 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       loading,
       data,
       syncData,
-      setter: handleState,
+      setter: setData,
     }),
-    [loading, data, syncData, handleState],
+    [loading, data, syncData],
   );
+
+  useEffect(() => {
+    if (data.length > 0) setLoading(false);
+  }, [data.length]);
 
   useEffect(() => {
     const controller = (controllerRef.current = new AbortController());
@@ -83,7 +81,7 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       getDataFromIDB(IDB, controller.signal)
         .then((res) => {
           if (res && res.length === 1) {
-            handleState(JSON.parse(res[0].data));
+            setData(JSON.parse(res[0].data));
           }
         })
         .catch((err) => {
@@ -91,7 +89,7 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
         });
     }
     return () => controller.abort();
-  }, [IDB, getDataFromIDB, handleState]);
+  }, [IDB, getDataFromIDB]);
 
   return <Ctx.Provider value={ctxVal}>{children}</Ctx.Provider>;
 };
