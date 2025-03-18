@@ -21,8 +21,8 @@ import { useScrollToTop } from '@/hooks/useScrollToTop';
 const ExpensePieChart = dynamic(() => import('./ExpensePieChart'), {
   ssr: false,
   loading: () => (
-    <div className="mx-auto mt-[60px] aspect-square size-[180px] rounded-full bg-gray-200 p-[5px]">
-      <div className="size-full rounded-full bg-background p-[5px]">
+    <div className="mx-auto mt-15 aspect-square size-45 rounded-full bg-gray-200 p-1.5">
+      <div className="size-full rounded-full bg-background p-1.5">
         <div className="size-full rounded-full bg-gray-200 p-5">
           <div className="size-full rounded-full bg-background"></div>
         </div>
@@ -34,8 +34,8 @@ const ExpensePieChart = dynamic(() => import('./ExpensePieChart'), {
 const NecessityPieChart = dynamic(() => import('./NecessityPieChart'), {
   ssr: false,
   loading: () => (
-    <div className="mx-auto mt-[60px] aspect-square size-[180px] rounded-full bg-gray-200 p-[5px]">
-      <div className="size-full rounded-full bg-background p-[5px]">
+    <div className="mx-auto mt-15 aspect-square size-45 rounded-full bg-gray-200 p-1.5">
+      <div className="size-full rounded-full bg-background p-1.5">
         <div className="size-full rounded-full bg-gray-200 p-5">
           <div className="size-full rounded-full bg-background"></div>
         </div>
@@ -123,7 +123,7 @@ export const ChartBlock = () => {
 
       <ChartContainer title="收支類別比例">
         <div className="flex w-full flex-wrap justify-center gap-4">
-          <div className="size-[300px] sm:sticky sm:top-20">
+          <div className="size-75 sm:sticky sm:top-20">
             <ExpensePieChart
               totalIncome={chartData.income.total}
               totalOutcome={chartData.outcome.total}
@@ -143,7 +143,7 @@ export const ChartBlock = () => {
 
       <ChartContainer title="支出類別比例（必要 vs 額外）">
         <div className="flex w-full flex-wrap justify-center gap-4">
-          <div className="size-[300px] sm:sticky sm:top-20">
+          <div className="size-75 sm:sticky sm:top-20">
             <NecessityPieChart
               totalNecessity={chartData.outcome.necessary}
               totalUnnecessity={chartData.outcome.unnecessary}

@@ -8,8 +8,8 @@ export const ChartContainer = ({
   children: ReactNode;
 }) => {
   return (
-    <div className="relative flex w-full flex-col items-center rounded-2xl p-6 shadow-[0px_0px_4px_1px_rgba(0,_0,_0,_0.1)]">
-      <h2 className="mb-4 w-full select-none text-start text-lg font-bold sm:text-xl sm:hover:cursor-pointer">
+    <div className="bg-background relative flex w-full flex-col items-center rounded-3xl border border-solid border-gray-300 p-6 shadow">
+      <h2 className="mb-4 w-full text-start text-lg font-bold select-none sm:text-xl sm:hover:cursor-pointer">
         {title}
       </h2>
       {children}

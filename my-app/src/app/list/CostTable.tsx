@@ -46,7 +46,7 @@ export const CostTable = ({
                 %
               </td>
               <td className="col-span-2 border border-solid border-gray-300 p-2 text-end">
-                ＄{normalizeNumber(item.value)}
+                ${normalizeNumber(item.value)}
               </td>
             </tr>
           ))}

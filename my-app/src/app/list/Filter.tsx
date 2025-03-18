@@ -38,7 +38,7 @@ export const Filter = (props: Props) => {
           name="group"
           value={group?.name ?? '個人'}
           onChange={setGroupId}
-          className="w-full rounded-full border border-solid border-gray-300 px-4 py-1 transition-colors active:border-gray-500 sm:hover:border-gray-500"
+          className="bg-background w-full rounded-full border border-solid border-gray-300 px-4 py-1 transition-colors active:border-gray-500 sm:hover:border-gray-500"
         >
           <Select.Item value="">個人</Select.Item>
           {!loadingGroups &&
@@ -49,7 +49,7 @@ export const Filter = (props: Props) => {
             ))}
         </Select>
       </div>
-      <div className="flex flex-1 items-center justify-center gap-2 rounded-full border border-solid border-gray-300 px-4 py-1">
+      <div className="bg-background flex flex-1 items-center justify-center gap-2 rounded-full border border-solid border-gray-300 px-4 py-1">
         <div className="w-12">
           <Select name="year" value={year} onChange={setYear}>
             {Array(11)

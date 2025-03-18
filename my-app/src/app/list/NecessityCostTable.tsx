@@ -76,7 +76,7 @@ const NecessityCostTable = (props: Props) => {
   return (
     <>
       <CostTable
-        title={`必要支出各項資訊 ＄${normalizeNumber(props.totalNecessary)}（${necessaryPercentage.toFixed(0)}%）`}
+        title={`必要支出各項資訊 $${normalizeNumber(props.totalNecessary)}（${necessaryPercentage.toFixed(0)}%）`}
         total={total}
         list={necessaryList}
         options={{
@@ -84,7 +84,7 @@ const NecessityCostTable = (props: Props) => {
         }}
       />
       <CostTable
-        title={`額外支出各項資訊 ＄${normalizeNumber(props.totalUnnecessary)}（${unnecessaryPercentage.toFixed(0)}%）`}
+        title={`額外支出各項資訊 $${normalizeNumber(props.totalUnnecessary)}（${unnecessaryPercentage.toFixed(0)}%）`}
         total={total}
         list={unecessaryList}
         options={{

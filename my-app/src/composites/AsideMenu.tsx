@@ -7,10 +7,11 @@ import { ListIcon } from '@/components/icons/ListIcon';
 import { PeopleIcon } from '@/components/icons/PeopleIcon';
 import { SettingIcon } from '@/components/icons/SettingIcon';
 import { WhereIcon } from '@/components/icons/WhereIcon';
-import { Account } from '@/composites/Account';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import useFocusRef from '@/hooks/useFocusRef';
 import { MENU_CONFIG } from '@/utils/constants';
+import { signOut } from 'next-auth/react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -63,13 +64,50 @@ export const AsideMenu = (props: Props) => {
     <>
       <div
         ref={bgRef}
-        className="fixed bottom-0 left-0 right-full top-0 z-50 bg-black/50"
+        className="fixed top-0 right-full bottom-0 left-0 z-50 bg-black/50"
       ></div>
       <aside
         ref={asideRef}
-        className="fixed -left-72 bottom-0 top-0 z-50 flex w-72 origin-right flex-col items-center justify-between bg-background py-4 shadow-xl transition-all"
+        className="bg-background fixed top-0 bottom-0 -left-72 z-50 flex w-72 origin-right flex-col items-center justify-between shadow-xl transition-all"
       >
-        <Account user={user} close={onClose} />
+        <div className="bg-primary-500 relative mb-8 h-14 w-full sm:h-18">
+          <div className="bg-primary-500 absolute top-full left-0 -mt-6 h-8 w-26 rounded-r-lg"></div>
+          <div className="bg-primary-500 absolute top-full right-0 -mt-6 h-8 w-26 rounded-l-lg"></div>
+          <div className="bg-background absolute top-full left-1/2 flex size-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full p-1">
+            <Image
+              src={user?.image ?? '/Spending-origin.png'}
+              alt="logo"
+              width={1000}
+              height={1000}
+              className="border-primary-500 rounded-full border-2 border-solid p-1"
+            />
+          </div>
+          {user && (
+            <button
+              type="button"
+              onClick={async () => {
+                if (confirm('確定要登出嗎？')) {
+                  await signOut();
+                  onClose();
+                }
+              }}
+              className="bg-background text-text absolute top-2 right-2 flex shrink-0 items-center justify-center rounded-md p-2 text-xs font-semibold transition-all active:text-red-500 sm:hover:text-red-500"
+            >
+              <span className="text-xs">登出</span>
+            </button>
+          )}
+        </div>
+        <div className="mt-4 flex flex-col items-center">
+          <h3 className="max-w-36 overflow-hidden text-base font-bold text-ellipsis whitespace-nowrap">
+            {user ? user.name : '尚未登入'}
+          </h3>
+          <p className="max-w-36 overflow-hidden text-xs text-ellipsis whitespace-nowrap text-gray-500">
+            {user ? user.email : '尚未登入'}
+          </p>
+        </div>
+        <div className="flex h-px w-full items-center px-4 py-5">
+          <span className="h-px w-full bg-gray-200"></span>
+        </div>
         <div className="flex w-full flex-1 flex-col items-center gap-2 px-4">
           {Object.keys(MENU_CONFIG).map((path) => (
             <MenuButton
@@ -129,7 +167,7 @@ const MenuButton = ({
   return (
     <button
       onClick={onClick}
-      className="flex w-full items-center rounded-md px-5 py-3 text-left text-sm font-semibold transition-all active:bg-primary-100 sm:text-base sm:hover:bg-primary-100"
+      className="active:bg-primary-100 sm:hover:bg-primary-100 flex w-full items-center rounded-md px-5 py-3 text-left text-sm font-semibold transition-all sm:text-base"
     >
       {icon}
       {label}

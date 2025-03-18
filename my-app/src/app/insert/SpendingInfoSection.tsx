@@ -8,7 +8,7 @@ import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { useDate } from '@/hooks/useDate';
 import { useScrollToTop } from '@/hooks/useScrollToTop';
-import { DateFilter } from '@/utils/constants';
+import { DateFilter, Necessity } from '@/utils/constants';
 import { getExpenseFromData } from '@/utils/getExpenseFromData';
 import dynamic from 'next/dynamic';
 import {
@@ -35,7 +35,8 @@ export const SpendingInfoSection = ({
   const [filter, setFilter] = useState(DateFilter.Day);
   const [filteredData, setFilteredData] = useState<SpendingRecord[]>([]);
   const [totalIncome, setTotalIncome] = useState(100);
-  const [totalOutcome, setTotalOutcome] = useState(50);
+  const [totalOutcome, setTotalOutcome] = useState(0);
+  const [necessaryOutcome, setNecessaryOutcome] = useState(0);
 
   const handleOnChangeDate = useCallback(
     (event: ChangeEvent) => {
@@ -66,18 +67,24 @@ export const SpendingInfoSection = ({
 
   useEffect(() => {
     startTransition(() => {
-      const _filteredData_1 = [...data].filter((_data) =>
+      const dataFilterByUser = [...data].filter((_data) =>
         checkUser(_data, selectedMemberEmail),
       );
       const { totalIncome: _totalIncome, totalOutcome: _totalOutcome } =
-        getExpenseFromData(_filteredData_1);
+        getExpenseFromData(dataFilterByUser);
       setTotalIncome(_totalIncome);
       setTotalOutcome(_totalOutcome);
+      const dataFilterByNecessary = dataFilterByUser.filter((_data) => {
+        return _data.necessity === Necessity.Need;
+      });
+      setNecessaryOutcome(
+        getExpenseFromData(dataFilterByNecessary).totalOutcome,
+      );
 
-      const _filteredData_2 = _filteredData_1.filter((_data) =>
+      const dataFilterByDate = dataFilterByUser.filter((_data) =>
         checkDate(_data.date, date, filter),
       );
-      setFilteredData(_filteredData_2);
+      setFilteredData(dataFilterByDate);
     });
   }, [data, date, selectedMemberEmail, filter]);
 
@@ -89,7 +96,7 @@ export const SpendingInfoSection = ({
 
   return (
     <div className="relative mx-auto flex w-full max-w-175 flex-1 flex-col items-center p-6">
-      <div className="mb-5 flex w-full">
+      <div className="mb-5 flex w-full justify-end">
         <div className="w-fit">
           <GroupSelector
             selectedGroup={selectedGroup}
@@ -102,10 +109,10 @@ export const SpendingInfoSection = ({
           />
         </div>
       </div>
-      <div className="mb-4 flex w-full items-center justify-between">
+      <div className="mb-4 flex w-full items-center justify-center">
         <DatePicker
           date={date}
-          labelClassName="p-4 text-base sm:text-lg bg-background font-semibold"
+          labelClassName="p-4 text-lg sm:text-xl bg-background font-semibold"
           onChange={handleOnChangeDate}
         />
       </div>
@@ -113,28 +120,27 @@ export const SpendingInfoSection = ({
       <OverView
         totalIncome={totalIncome}
         totalOutcome={totalOutcome}
-        budget={totalIncome}
-        usage={totalOutcome}
+        necessaryOutcome={necessaryOutcome}
         dateStr={date.toUTCString()}
       />
 
       <span className="my-5 w-full"></span>
 
-      <div className="flex w-full flex-col rounded-3xl border border-solid border-gray-300 p-4">
-        <div className="mb-5 flex items-center gap-4">
+      <div className="bg-background flex w-full flex-col rounded-3xl border border-solid border-gray-300 p-6 shadow">
+        <div className="mb-6 flex items-center gap-4">
           <h3 className="text-lg font-bold">活動</h3>
-          <div className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-2 text-xs">
             <button
               type="button"
               onClick={() => setFilter(DateFilter.Day)}
-              className={`rounded-full border border-solid border-gray-300 px-4 py-1 transition-colors ${filter === DateFilter.Day ? 'bg-gray-100' : 'bg-background'}`}
+              className={`rounded-md border border-solid border-gray-300 px-4 py-1 transition-colors ${filter === DateFilter.Day ? 'bg-gray-300' : 'bg-background active:bg-gray-100 sm:hover:bg-gray-100'}`}
             >
               日
             </button>
             <button
               type="button"
               onClick={() => setFilter(DateFilter.Month)}
-              className={`rounded-full border border-solid border-gray-300 px-4 py-1 transition-colors ${filter === DateFilter.Month ? 'bg-gray-100' : 'bg-background'}`}
+              className={`rounded-md border border-solid border-gray-300 px-4 py-1 transition-colors ${filter === DateFilter.Month ? 'bg-gray-300' : 'bg-background active:bg-gray-100 sm:hover:bg-gray-100'}`}
             >
               月
             </button>

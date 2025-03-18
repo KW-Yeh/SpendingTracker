@@ -51,7 +51,7 @@ const ExpensePieChart = (props: Props) => {
           />
         ))}
         <Label
-          value={`盈餘 ＄${normalizeNumber(props.totalIncome - props.totalOutcome)}`}
+          value={`盈餘 $${normalizeNumber(props.totalIncome - props.totalOutcome)}`}
           offset={0}
           position="center"
           className="text-sm font-bold"

@@ -40,7 +40,7 @@ const ExpenseCostTable = (props: Props) => {
 
   const incomePercentage = useMemo(
     () => (props.totalIncome * 100) / (total || 100),
-    [props.totalOutcome, total],
+    [props.totalIncome, total],
   );
 
   useEffect(() => {
@@ -68,7 +68,7 @@ const ExpenseCostTable = (props: Props) => {
   return (
     <>
       <CostTable
-        title={`支出各項資訊 ＄${normalizeNumber(props.totalOutcome)}（${outcomePercentage.toFixed(0)}%）`}
+        title={`支出各項資訊 $${normalizeNumber(props.totalOutcome)}（${outcomePercentage.toFixed(0)}%）`}
         total={total}
         list={outcomeList}
         options={{
@@ -76,7 +76,7 @@ const ExpenseCostTable = (props: Props) => {
         }}
       />
       <CostTable
-        title={`收入各項資訊 ＄${normalizeNumber(props.totalIncome)}（${incomePercentage.toFixed(0)}%）`}
+        title={`收入各項資訊 $${normalizeNumber(props.totalIncome)}（${incomePercentage.toFixed(0)}%）`}
         total={total}
         list={incomeList}
         options={{
