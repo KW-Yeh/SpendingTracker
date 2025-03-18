@@ -48,7 +48,7 @@ export const GroupSelector = (props: Props) => {
         name="group"
         value={group?.name ?? '個人'}
         onChange={handleOnSelectGroup}
-        className={`rounded-full border border-solid border-gray-300 px-3 py-1 transition-colors active:border-gray-500 sm:hover:border-gray-500 ${selectorStyle}`}
+        className={`bg-background rounded-full border border-solid border-gray-300 px-3 py-1 transition-colors active:border-gray-500 sm:hover:border-gray-500 ${selectorStyle}`}
       >
         <Select.Item value="">個人</Select.Item>
         {!loading &&
@@ -61,14 +61,14 @@ export const GroupSelector = (props: Props) => {
 
       {group && showMemberSelector && (
         <>
-          <span className="ml-2 whitespace-nowrap text-sm text-gray-500">
+          <span className="ml-2 text-sm whitespace-nowrap text-gray-500">
             成員
           </span>
           <Select
             name="member"
             value={selectedMember?.name ?? '全部'}
             onChange={onSelectMemberEmail}
-            className={`rounded-full border border-solid border-gray-300 px-3 py-1 transition-colors active:border-border-gray-500 sm:hover:border-border-gray-500 ${selectorStyle}`}
+            className={`active:border-border-gray-500 sm:hover:border-border-gray-500 rounded-full border border-solid border-gray-300 px-3 py-1 transition-colors ${selectorStyle}`}
           >
             <Select.Item value="">全部</Select.Item>
             {group.users.map((user) => (
