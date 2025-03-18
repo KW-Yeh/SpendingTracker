@@ -153,10 +153,10 @@ export const SpendingInfoSection = ({
       />
 
       <div className="my-5 flex w-full flex-col rounded-3xl border border-solid border-gray-300 p-4">
-        <h3 className="text-lg leading-10 font-bold">活動</h3>
+        <h3 className="text-lg leading-10 font-bold mb-4">活動</h3>
         <SpendingList
           data={filteredData}
-          loading={loading || filteredData.length === 0}
+          loading={loading}
           refreshData={refreshData}
         />
       </div>

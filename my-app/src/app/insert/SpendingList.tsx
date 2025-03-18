@@ -1,4 +1,7 @@
+'use client';
+
 import { SpendingItem } from '@/app/insert/SpendingItem';
+import { SearchIcon } from '@/components/icons/SearchIcon';
 import { useEffect, useState } from 'react';
 
 interface Props {
@@ -18,14 +21,14 @@ export const SpendingList = (props: Props) => {
   return (
     <div className="flex w-full flex-col text-xs sm:text-sm">
       {!isInit && (
-        <div className="flex w-full flex-col gap-2 px-1 py-2">
-          <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100"></div>
-          <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100"></div>
-          <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100"></div>
+        <div className="flex w-full flex-col gap-1">
+          <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100 sm:h-14"></div>
+          <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100 sm:h-14"></div>
+          <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100 sm:h-14"></div>
         </div>
       )}
       {isInit && (
-        <div className="flex w-full flex-col">
+        <div className="flex w-full flex-col gap-1">
           {data.map((spending, index) => (
             <SpendingItem
               key={`${spending.id}-${index.toString()}`}
@@ -33,6 +36,12 @@ export const SpendingList = (props: Props) => {
               refreshData={refreshData}
             />
           ))}
+        </div>
+      )}
+      {isInit && data.length === 0 && (
+        <div className="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-gray-100 px-2 sm:h-14">
+          <SearchIcon className="size-5" />
+          <span>找不到資料</span>
         </div>
       )}
     </div>

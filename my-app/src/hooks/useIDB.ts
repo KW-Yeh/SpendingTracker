@@ -37,7 +37,7 @@ export const useIDB = () => {
 
   const setData = useCallback(
     (
-      db: IDBDatabase,
+      db: IDBDatabase | null,
       record: SpendingRecord[],
       time: string = new Date().toUTCString(),
     ): Promise<void> => {
@@ -68,7 +68,7 @@ export const useIDB = () => {
   );
 
   const getData = useCallback(
-    (db: IDBDatabase, signal: AbortSignal): Promise<DATA_IDB[] | undefined> => {
+    (db: IDBDatabase | null, signal: AbortSignal): Promise<DATA_IDB[] | undefined> => {
       if (!db) return Promise.reject('Database not initialized');
 
       return new Promise((resolve, reject) => {

@@ -138,13 +138,13 @@ export const OverView = (props: Props) => {
         </span>
       </div>
       <div className="flex items-center gap-2 max-sm:w-full sm:w-50 sm:flex-col">
-        <div className="flex h-full min-h-18 flex-1 items-center justify-between rounded-3xl bg-red-300 px-4 py-2 max-sm:rounded-t-xl sm:w-full sm:rounded-b-xl">
+        <div className="flex h-full min-h-18 flex-1 items-center justify-between rounded-3xl bg-red-300 px-4 py-2 max-sm:rounded-t-lg sm:w-full sm:rounded-b-lg">
           <span className="text-sm font-semibold text-red-700">支出</span>
           <span className="text-end text-xl font-bold">
             ${normalizeNumber(totalOutcome)}
           </span>
         </div>
-        <div className="flex h-full min-h-18 flex-1 items-center justify-between rounded-t-xl rounded-b-3xl bg-green-300 px-4 py-2 sm:w-full">
+        <div className="flex h-full min-h-18 flex-1 items-center justify-between rounded-t-lg rounded-b-3xl bg-green-300 px-4 py-2 sm:w-full">
           <span className="text-sm font-semibold text-green-700">收入</span>
           <span className="text-end text-xl font-bold">
             ${normalizeNumber(totalIncome)}
