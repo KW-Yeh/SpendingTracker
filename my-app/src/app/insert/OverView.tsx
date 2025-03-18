@@ -56,15 +56,13 @@ export const OverView = (props: Props) => {
             </span>
           </span>
         </div>
-        <div className="flex h-full items-end p-2">
-          <Link
-            href="/list"
-            className="text-primary-500 active:text-primary-300 sm:hover:text-primary-300 flex items-center text-xs font-bold transition-colors"
-          >
-            前往分析
-            <DoubleArrowIcon className="size-3" />
-          </Link>
-        </div>
+        <Link
+          href="/list"
+          className="text-primary-500 active:text-primary-300 sm:hover:text-primary-300 absolute right-4 bottom-4 flex items-center text-xs font-bold transition-colors"
+        >
+          前往分析
+          <DoubleArrowIcon className="size-3" />
+        </Link>
 
         <span className="absolute top-4 right-4 text-xs">
           {`${year}-${month + 1}`}
