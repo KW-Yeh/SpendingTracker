@@ -30,12 +30,12 @@ const UsagePieChart = (props: Props) => {
           {
             name: '已使用',
             value: usage,
-            fill: '#7B56E17F',
+            fill: 'hsl(256, 60%, 70%)',
           },
           {
             name: '剩餘',
             value: budget - usage,
-            fill: '#D1D5DB80',
+            fill: 'hsl(256, 60%, 90%)',
           },
         ]}
         innerRadius={37}
@@ -46,6 +46,7 @@ const UsagePieChart = (props: Props) => {
           value={`${percentage}%`}
           offset={0}
           position="center"
+          fill="hsl(256, 60%, 60%)"
           className="text-base font-bold"
         />
       </Pie>

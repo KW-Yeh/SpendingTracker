@@ -40,8 +40,8 @@ export const SpendingList = (props: Props) => {
       )}
       {isInit && data.length === 0 && (
         <div className="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-gray-100 px-2 sm:h-14">
-          <SearchIcon className="size-5" />
-          <span>找不到資料</span>
+          <SearchIcon className="size-5 text-gray-700" />
+          <span className="text-gray-700">找不到資料</span>
         </div>
       )}
     </div>

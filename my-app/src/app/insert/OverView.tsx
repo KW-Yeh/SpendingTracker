@@ -6,7 +6,6 @@ import { Loading } from '@/components/icons/Loading';
 import { Modal } from '@/components/Modal';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { putUser } from '@/services/userServices';
-import { DateFilter } from '@/utils/constants';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
@@ -33,19 +32,11 @@ interface Props {
   totalOutcome: number;
   budget?: number;
   usage?: number;
-  filter: DateFilter;
   dateStr: string;
 }
 
 export const OverView = (props: Props) => {
-  const {
-    totalIncome,
-    totalOutcome,
-    budget = 0,
-    usage = 0,
-    filter,
-    dateStr,
-  } = props;
+  const { totalIncome, totalOutcome, budget = 0, usage = 0, dateStr } = props;
   const { syncUser, config: user } = useUserConfigCtx();
   const modalRef = useRef<ModalRef>(null);
   const [budgetList, setBudgetList] = useState<number[]>(Array(12).fill(10000));
@@ -54,7 +45,6 @@ export const OverView = (props: Props) => {
 
   const year = useMemo(() => new Date(dateStr).getFullYear(), [dateStr]);
   const month = useMemo(() => new Date(dateStr).getMonth(), [dateStr]);
-  const date = useMemo(() => new Date(dateStr).getDate(), [dateStr]);
 
   const avgBudget = useMemo(
     () => Math.floor(budgetList.reduce((acc, cur) => acc + cur, 0) / 12),
@@ -88,12 +78,12 @@ export const OverView = (props: Props) => {
 
   return (
     <div className="flex w-full flex-col gap-2 sm:flex-row sm:justify-between">
-      <div className="relative flex h-38 items-center gap-4 rounded-3xl border border-solid border-gray-300 p-2 pl-4 max-sm:rounded-b-xl sm:w-105">
+      <div className="relative flex h-38 items-center gap-4 rounded-3xl border border-solid border-gray-300 p-2 pl-4 text-gray-300 max-sm:rounded-b-lg sm:w-115 sm:rounded-r-lg">
         <div className="w-25">
           <UsagePieChart budget={budget} usage={usage} />
         </div>
         <div className="flex flex-1 flex-col">
-          <span className="flex items-center gap-1 text-xs text-gray-500 sm:text-sm">
+          <span className="flex items-center gap-1 text-xs sm:text-sm">
             <span>預算</span>
             <button
               type="button"
@@ -106,12 +96,12 @@ export const OverView = (props: Props) => {
               <EditIcon className="ml-1 size-3" />
             </button>
           </span>
-          <span className="flex items-center gap-1 text-xs text-gray-500 sm:text-sm">
+          <span className="flex items-center gap-1 text-xs sm:text-sm">
             <span>支出</span>
             <span>{usage ? `$${normalizeNumber(usage)}` : '$0'}</span>
           </span>
           <span
-            className={`flex items-center gap-1 text-xs sm:text-sm ${budget !== 0 && budget - usage < 0 ? 'text-red-500' : 'text-green-500'}`}
+            className={`flex items-center gap-1 text-xs sm:text-sm ${budget !== 0 && budget - usage < 0 ? 'text-red-400' : 'text-green-300'}`}
           >
             <span>{budget && budget - usage < 0 ? '超支' : '剩餘'}</span>
             <span className="text-xl font-bold">
@@ -122,29 +112,25 @@ export const OverView = (props: Props) => {
         <div className="flex h-full items-end p-2">
           <Link
             href="/list"
-            className="flex items-center text-xs font-light text-blue-500 transition-colors active:text-blue-300 sm:hover:text-blue-300"
+            className="text-primary-500 active:text-primary-300 sm:hover:text-primary-300 flex items-center text-xs font-bold transition-colors"
           >
-            分析
+            前往分析
             <DoubleArrowIcon className="size-3" />
           </Link>
         </div>
 
-        <span className="absolute top-4 right-4 text-xs text-gray-500">
-          {filter === DateFilter.Day
-            ? `${year}-${month + 1}-${date}`
-            : filter === DateFilter.Month
-              ? `${year}-${month + 1}`
-              : year}
+        <span className="absolute top-4 right-4 text-xs">
+          {`${year}-${month + 1}`}
         </span>
       </div>
       <div className="flex items-center gap-2 max-sm:w-full sm:w-50 sm:flex-col">
-        <div className="flex h-full min-h-18 flex-1 items-center justify-between rounded-3xl bg-red-300 px-4 py-2 max-sm:rounded-t-lg sm:w-full sm:rounded-b-lg">
+        <div className="flex h-full min-h-18 flex-1 items-center justify-between rounded-3xl bg-red-300 px-4 py-2 max-sm:rounded-t-lg max-sm:rounded-r-lg sm:w-full sm:rounded-l-lg sm:rounded-b-lg">
           <span className="text-sm font-semibold text-red-700">支出</span>
           <span className="text-end text-xl font-bold">
             ${normalizeNumber(totalOutcome)}
           </span>
         </div>
-        <div className="flex h-full min-h-18 flex-1 items-center justify-between rounded-t-lg rounded-b-3xl bg-green-300 px-4 py-2 sm:w-full">
+        <div className="flex h-full min-h-18 flex-1 items-center justify-between rounded-t-lg rounded-b-3xl bg-green-300 px-4 py-2 max-sm:rounded-l-lg sm:w-full sm:rounded-l-lg">
           <span className="text-sm font-semibold text-green-700">收入</span>
           <span className="text-end text-xl font-bold">
             ${normalizeNumber(totalIncome)}

@@ -85,16 +85,18 @@ export const SpendingInfoSection = ({
 
   useEffect(() => {
     startTransition(() => {
-      const _filteredData = [...data].filter(
-        (data) =>
-          checkUser(data, selectedMemberEmail) &&
-          checkDate(data.date, date, filter),
+      const _filteredData_1 = [...data].filter((_data) =>
+        checkUser(_data, selectedMemberEmail),
       );
       const { totalIncome: _totalIncome, totalOutcome: _totalOutcome } =
-        getExpenseFromData(_filteredData);
+        getExpenseFromData(_filteredData_1);
       setTotalIncome(_totalIncome);
       setTotalOutcome(_totalOutcome);
-      setFilteredData(_filteredData);
+
+      const _filteredData_2 = _filteredData_1.filter((_data) =>
+        checkDate(_data.date, date, filter),
+      );
+      setFilteredData(_filteredData_2);
     });
   }, [data, date, selectedMemberEmail, filter]);
 
@@ -119,28 +121,12 @@ export const SpendingInfoSection = ({
           />
         </div>
       </div>
-      <div className="flex w-full items-center justify-between">
+      <div className="mb-4 flex w-full items-center justify-between">
         <DatePicker
           date={date}
           labelClassName="p-4 text-base sm:text-lg bg-background font-semibold"
           onChange={handleOnChangeDate}
         />
-        <div className="flex items-center divide-x divide-gray-300 rounded border border-solid border-gray-300 text-sm">
-          <button
-            type="button"
-            onClick={() => setFilter(DateFilter.Day)}
-            className={`rounded-l-[3px] px-4 py-1 transition-colors ${filter === DateFilter.Day ? 'bg-gray-100' : 'bg-background'}`}
-          >
-            日
-          </button>
-          <button
-            type="button"
-            onClick={() => setFilter(DateFilter.Month)}
-            className={`rounded-r-[3px] px-4 py-1 transition-colors ${filter === DateFilter.Month ? 'bg-gray-100' : 'bg-background'}`}
-          >
-            月
-          </button>
-        </div>
       </div>
 
       <OverView
@@ -148,12 +134,31 @@ export const SpendingInfoSection = ({
         totalOutcome={totalOutcome}
         budget={budget}
         usage={usage}
-        filter={filter}
         dateStr={date.toUTCString()}
       />
 
-      <div className="my-5 flex w-full flex-col rounded-3xl border border-solid border-gray-300 p-4">
-        <h3 className="text-lg leading-10 font-bold mb-4">活動</h3>
+      <span className="my-5 w-full"></span>
+
+      <div className="flex w-full flex-col rounded-3xl border border-solid border-gray-300 p-4">
+        <div className="mb-5 flex items-center gap-4">
+          <h3 className="text-lg font-bold">活動</h3>
+          <div className="flex items-center text-sm gap-2">
+            <button
+              type="button"
+              onClick={() => setFilter(DateFilter.Day)}
+              className={`rounded-full border border-solid border-gray-300 px-4 py-1 transition-colors ${filter === DateFilter.Day ? 'bg-gray-100' : 'bg-background'}`}
+            >
+              日
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilter(DateFilter.Month)}
+              className={`rounded-full border border-solid border-gray-300 px-4 py-1 transition-colors ${filter === DateFilter.Month ? 'bg-gray-100' : 'bg-background'}`}
+            >
+              月
+            </button>
+          </div>
+        </div>
         <SpendingList
           data={filteredData}
           loading={loading}
