@@ -38,7 +38,7 @@ export const SpendingItem = (props: Props) => {
 
   return (
     <div
-      className={`relative flex h-12 items-center gap-2 rounded-lg px-2 transition-all sm:h-14 ${additionalStyle}`}
+      className={`relative flex h-12 items-center gap-2 rounded-lg transition-all sm:h-14 ${additionalStyle}`}
     >
       {deleting && (
         <span className="absolute top-0 left-1 -translate-y-1/2 rounded-full bg-red-300 px-2 text-xs font-bold">

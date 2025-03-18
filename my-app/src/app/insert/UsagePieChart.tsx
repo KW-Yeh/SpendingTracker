@@ -38,8 +38,8 @@ const UsagePieChart = (props: Props) => {
             fill: 'hsl(256, 60%, 90%)',
           },
         ]}
-        innerRadius={37}
-        outerRadius={45}
+        innerRadius={42}
+        outerRadius={50}
         strokeOpacity={0}
       >
         <Label

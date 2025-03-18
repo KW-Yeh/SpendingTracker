@@ -1,7 +1,6 @@
 'use client';
 
 import { DoubleArrowIcon } from '@/components/icons/DoubleArrowIcon';
-import { EditIcon } from '@/components/icons/EditIcon';
 import { Loading } from '@/components/icons/Loading';
 import { Modal } from '@/components/Modal';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
@@ -21,7 +20,7 @@ import {
 const UsagePieChart = dynamic(() => import('./UsagePieChart'), {
   ssr: false,
   loading: () => (
-    <div className="ml-1 aspect-square size-23 animate-pulse rounded-full bg-gray-200 p-2">
+    <div className="aspect-square size-25 animate-pulse rounded-full bg-gray-200 p-2">
       <div className="bg-background size-full rounded-full"></div>
     </div>
   ),
@@ -84,24 +83,15 @@ export const OverView = (props: Props) => {
         </div>
         <div className="flex flex-1 flex-col">
           <span className="flex items-center gap-1 text-xs sm:text-sm">
-            <span>預算</span>
-            <button
-              type="button"
-              onClick={() => modalRef.current?.open()}
-              className="flex items-center gap-1"
-            >
-              <span>
-                {budget !== 0 ? `$${normalizeNumber(budget)}` : '立即設定'}
-              </span>
-              <EditIcon className="ml-1 size-3" />
-            </button>
+            <span>收入</span>
+            <span>{budget ? `$${normalizeNumber(budget)}` : '$0'}</span>
           </span>
           <span className="flex items-center gap-1 text-xs sm:text-sm">
             <span>支出</span>
             <span>{usage ? `$${normalizeNumber(usage)}` : '$0'}</span>
           </span>
           <span
-            className={`flex items-center gap-1 text-xs sm:text-sm ${budget !== 0 && budget - usage < 0 ? 'text-red-400' : 'text-green-300'}`}
+            className={`flex items-center gap-1 text-xs sm:text-sm ${budget !== 0 && budget - usage < 0 ? 'text-red-400' : 'text-green-400'}`}
           >
             <span>{budget && budget - usage < 0 ? '超支' : '剩餘'}</span>
             <span className="text-xl font-bold">

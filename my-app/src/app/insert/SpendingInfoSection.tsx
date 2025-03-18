@@ -16,7 +16,6 @@ import {
   startTransition,
   useCallback,
   useEffect,
-  useMemo,
   useState,
 } from 'react';
 
@@ -37,24 +36,6 @@ export const SpendingInfoSection = ({
   const [filteredData, setFilteredData] = useState<SpendingRecord[]>([]);
   const [totalIncome, setTotalIncome] = useState(100);
   const [totalOutcome, setTotalOutcome] = useState(50);
-
-  const month = useMemo(() => date.getMonth(), [date]);
-
-  const usage = useMemo(() => {
-    return getExpenseFromData(
-      [...data].filter(
-        (data) =>
-          checkUser(data, selectedMemberEmail) &&
-          new Date(data.date).getFullYear() === date.getFullYear() &&
-          new Date(data.date).getMonth() === date.getMonth(),
-      ),
-    ).totalOutcome;
-  }, [data, selectedMemberEmail, date]);
-
-  const budget = useMemo(() => {
-    if (!userData?.budgetList) return undefined;
-    return userData.budgetList[month];
-  }, [month, userData?.budgetList]);
 
   const handleOnChangeDate = useCallback(
     (event: ChangeEvent) => {
@@ -132,8 +113,8 @@ export const SpendingInfoSection = ({
       <OverView
         totalIncome={totalIncome}
         totalOutcome={totalOutcome}
-        budget={budget}
-        usage={usage}
+        budget={totalIncome}
+        usage={totalOutcome}
         dateStr={date.toUTCString()}
       />
 
@@ -142,7 +123,7 @@ export const SpendingInfoSection = ({
       <div className="flex w-full flex-col rounded-3xl border border-solid border-gray-300 p-4">
         <div className="mb-5 flex items-center gap-4">
           <h3 className="text-lg font-bold">活動</h3>
-          <div className="flex items-center text-sm gap-2">
+          <div className="flex items-center gap-2 text-sm">
             <button
               type="button"
               onClick={() => setFilter(DateFilter.Day)}
