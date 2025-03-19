@@ -5,6 +5,7 @@ import { getItems } from '@/services/getRecords';
 import {
   createContext,
   ReactNode,
+  startTransition,
   useCallback,
   useContext,
   useEffect,
@@ -31,7 +32,9 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
 
   const handleSetState = useCallback((_data: SpendingRecord[]) => {
     setData(_data);
-    setLoading(false);
+    startTransition(() => {
+      setLoading(false);
+    });
   }, []);
 
   const queryItem = useCallback(
