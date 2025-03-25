@@ -80,7 +80,10 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       getDataFromIDB(IDB, controller.signal)
         .then((res) => {
           if (res && res.length === 1) {
-            handleSetState(JSON.parse(res[0].data));
+            const _data = JSON.parse(res[0].data) as SpendingRecord[];
+            if (_data.length !== 0) {
+              handleSetState(_data);
+            }
           }
         })
         .catch((err) => {
