@@ -28,7 +28,7 @@ export const SpendingInfoSection = ({
 }) => {
   useScrollToTop();
   const { config: userData } = useUserConfigCtx();
-  const { syncData, data } = useGetSpendingCtx();
+  const { syncData, data, loading } = useGetSpendingCtx();
   const [isProcessing, setIsProcessing] = useState(true);
   const [date, setDate] = useDate(new Date());
   const [selectedGroup, setSelectedGroup] = useState<string>('');
@@ -68,6 +68,7 @@ export const SpendingInfoSection = ({
 
   useEffect(() => {
     startTransition(() => {
+      if (loading || !selectedMemberEmail) return;
       setIsProcessing(true);
       const dataFilterByUser = [...data].filter((_data) =>
         checkUser(_data, selectedMemberEmail),
@@ -87,9 +88,11 @@ export const SpendingInfoSection = ({
         checkDate(_data.date, date, filter),
       );
       setFilteredData(dataFilterByDate);
-      setIsProcessing(false);
+      startTransition(() => {
+        setIsProcessing(false);
+      });
     });
-  }, [data, date, selectedMemberEmail, filter]);
+  }, [data, date, selectedMemberEmail, filter, loading]);
 
   useEffect(() => {
     if (!selectedGroup && userData?.email) {

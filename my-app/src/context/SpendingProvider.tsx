@@ -5,14 +5,13 @@ import { getItems } from '@/services/getRecords';
 import {
   createContext,
   ReactNode,
-  startTransition,
   useCallback,
-  useContext, useDeferredValue,
+  useContext,
   useEffect,
   useMemo,
+  useReducer,
   useRef,
-  useState,
-} from "react";
+} from 'react';
 
 const INIT_CTX_VAL: {
   loading: boolean;
@@ -24,18 +23,20 @@ const INIT_CTX_VAL: {
   syncData: () => {},
 };
 
+const reducer = (
+  _: { data: SpendingRecord[]; loading: boolean },
+  action: SpendingRecord[],
+) => {
+  return { data: action, loading: false };
+};
+
 export const SpendingProvider = ({ children }: { children: ReactNode }) => {
-  const [loading, setLoading] = useState(true);
-  const lazyUpdateLoading = useDeferredValue(loading);
-  const [data, setData] = useState<SpendingRecord[]>([]);
+  const [state, dispatch] = useReducer(reducer, { data: [], loading: true });
   const { db: IDB, getData: getDataFromIDB, setData: setData2IDB } = useIDB();
   const controllerRef = useRef<AbortController>(new AbortController());
 
   const handleSetState = useCallback((_data: SpendingRecord[]) => {
-    setData(_data);
-    startTransition(() => {
-      setLoading(false);
-    });
+    dispatch(_data);
   }, []);
 
   const queryItem = useCallback(
@@ -68,11 +69,10 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
 
   const ctxVal = useMemo(
     () => ({
-      loading: lazyUpdateLoading,
-      data,
+      ...state,
       syncData,
     }),
-    [lazyUpdateLoading, data, syncData],
+    [state, syncData],
   );
 
   useEffect(() => {
@@ -81,8 +81,8 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       getDataFromIDB(IDB, controller.signal)
         .then((res) => {
           if (res && res.length === 1) {
-            console.log('Get Data from IDB');
             const _data = JSON.parse(res[0].data) as SpendingRecord[];
+            console.log('Get Data from IDB', _data);
             if (_data.length !== 0) {
               handleSetState(_data);
             }
