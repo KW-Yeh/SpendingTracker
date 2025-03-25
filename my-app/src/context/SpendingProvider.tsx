@@ -7,12 +7,12 @@ import {
   ReactNode,
   startTransition,
   useCallback,
-  useContext,
+  useContext, useDeferredValue,
   useEffect,
   useMemo,
   useRef,
   useState,
-} from 'react';
+} from "react";
 
 const INIT_CTX_VAL: {
   loading: boolean;
@@ -26,6 +26,7 @@ const INIT_CTX_VAL: {
 
 export const SpendingProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
+  const lazyUpdateLoading = useDeferredValue(loading);
   const [data, setData] = useState<SpendingRecord[]>([]);
   const { db: IDB, getData: getDataFromIDB, setData: setData2IDB } = useIDB();
   const controllerRef = useRef<AbortController>(new AbortController());
@@ -43,6 +44,7 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       getItems(groupId, email, time)
         .then((res) => {
           controllerRef.current.abort();
+          console.log('Get Data from API');
           handleSetState(res.data);
           setData2IDB(IDB, res.data, time)
             .then(() => {
@@ -66,20 +68,20 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
 
   const ctxVal = useMemo(
     () => ({
-      loading,
+      loading: lazyUpdateLoading,
       data,
       syncData,
     }),
-    [loading, data, syncData],
+    [lazyUpdateLoading, data, syncData],
   );
 
   useEffect(() => {
     const controller = (controllerRef.current = new AbortController());
     if (IDB) {
-      console.log('Get Data from IDB');
       getDataFromIDB(IDB, controller.signal)
         .then((res) => {
           if (res && res.length === 1) {
+            console.log('Get Data from IDB');
             const _data = JSON.parse(res[0].data) as SpendingRecord[];
             if (_data.length !== 0) {
               handleSetState(_data);

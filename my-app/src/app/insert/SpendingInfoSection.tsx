@@ -28,7 +28,8 @@ export const SpendingInfoSection = ({
 }) => {
   useScrollToTop();
   const { config: userData } = useUserConfigCtx();
-  const { syncData, loading, data } = useGetSpendingCtx();
+  const { syncData, data } = useGetSpendingCtx();
+  const [isProcessing, setIsProcessing] = useState(true);
   const [date, setDate] = useDate(new Date());
   const [selectedGroup, setSelectedGroup] = useState<string>('');
   const [selectedMemberEmail, setSelectedMemberEmail] = useState<string>();
@@ -67,6 +68,7 @@ export const SpendingInfoSection = ({
 
   useEffect(() => {
     startTransition(() => {
+      setIsProcessing(true);
       const dataFilterByUser = [...data].filter((_data) =>
         checkUser(_data, selectedMemberEmail),
       );
@@ -85,6 +87,7 @@ export const SpendingInfoSection = ({
         checkDate(_data.date, date, filter),
       );
       setFilteredData(dataFilterByDate);
+      setIsProcessing(false);
     });
   }, [data, date, selectedMemberEmail, filter]);
 
@@ -148,7 +151,7 @@ export const SpendingInfoSection = ({
         </div>
         <SpendingList
           data={filteredData}
-          loading={loading}
+          loading={isProcessing}
           refreshData={refreshData}
         />
       </div>

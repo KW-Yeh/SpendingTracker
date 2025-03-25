@@ -49,26 +49,39 @@ export const useIDB = () => {
         const year = new Date(time).getFullYear();
         const month = new Date(time).getMonth();
 
+        const newData: {
+          id?: number;
+          year: number;
+          month: number;
+          data: string;
+        } = {
+          year,
+          month,
+          data: JSON.stringify(record),
+        };
+
         const index = store.index('year_month');
         const checkRequest = index.get([year, month]);
         checkRequest.onsuccess = () => {
-          if (!checkRequest.result) {
-            const request = store.add({
-              year,
-              month,
-              data: JSON.stringify(record),
-            });
-            request.onsuccess = () => resolve();
-            request.onerror = () => reject(request.error);
+          const existingRecord = checkRequest.result;
+          if (existingRecord) {
+            newData.id = existingRecord.id;
           }
+          const request = store.put(newData);
+          request.onsuccess = () => resolve();
+          request.onerror = () => reject(request.error);
         };
+        checkRequest.onerror = () => reject(checkRequest.error);
       });
     },
     [],
   );
 
   const getData = useCallback(
-    (db: IDBDatabase | null, signal: AbortSignal): Promise<DATA_IDB[] | undefined> => {
+    (
+      db: IDBDatabase | null,
+      signal: AbortSignal,
+    ): Promise<DATA_IDB[] | undefined> => {
       if (!db) return Promise.reject('Database not initialized');
 
       return new Promise((resolve, reject) => {
