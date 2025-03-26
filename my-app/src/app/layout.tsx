@@ -1,5 +1,6 @@
+import Footer from '@/composites/Footer';
 import { Header } from '@/composites/Header';
-import { PrepareData } from "@/composites/PrepareData";
+import { PrepareData } from '@/composites/PrepareData';
 import { GroupProvider } from '@/context/GroupProvider';
 import { SpendingProvider } from '@/context/SpendingProvider';
 import { UserConfigProvider } from '@/context/UserConfigProvider';
@@ -36,6 +37,7 @@ export default function RootLayout({
             </UserConfigProvider>
           </GroupProvider>
         </SessionProvider>
+        <Footer />
       </body>
     </html>
   );

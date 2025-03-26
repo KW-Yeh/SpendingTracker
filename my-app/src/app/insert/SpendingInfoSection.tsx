@@ -3,6 +3,7 @@
 import { OverView } from '@/app/insert/OverView';
 import { SpendingList } from '@/app/insert/SpendingList';
 import { DatePicker } from '@/components/DatePicker';
+import { SearchIcon } from '@/components/icons/SearchIcon';
 import { GroupSelector } from '@/composites/GroupSelector';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
@@ -16,6 +17,8 @@ import {
   startTransition,
   useCallback,
   useEffect,
+  useMemo,
+  useRef,
   useState,
 } from 'react';
 
@@ -38,6 +41,16 @@ export const SpendingInfoSection = ({
   const [totalIncome, setTotalIncome] = useState(100);
   const [totalOutcome, setTotalOutcome] = useState(0);
   const [necessaryOutcome, setNecessaryOutcome] = useState(0);
+  const [filterStr, setFilterStr] = useState('');
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  const filteredBySearch = useMemo(
+    () =>
+      filteredData.filter(
+        (d) => filterStr === '' || d.description.includes(filterStr),
+      ),
+    [filteredData, filterStr],
+  );
 
   const handleOnChangeDate = useCallback(
     (event: ChangeEvent) => {
@@ -69,7 +82,6 @@ export const SpendingInfoSection = ({
   useEffect(() => {
     startTransition(() => {
       if (loading || !selectedMemberEmail) return;
-      setIsProcessing(true);
       const dataFilterByUser = [...data].filter((_data) =>
         checkUser(_data, selectedMemberEmail),
       );
@@ -99,6 +111,15 @@ export const SpendingInfoSection = ({
       setSelectedMemberEmail(userData.email);
     }
   }, [selectedGroup, userData?.email]);
+
+  useEffect(() => {
+    const elem = searchRef.current;
+    const handleOnChangeSearch = () => {
+      setFilterStr(elem?.value || '');
+    };
+    elem?.addEventListener('change', handleOnChangeSearch);
+    return () => elem?.removeEventListener('change', handleOnChangeSearch);
+  }, []);
 
   return (
     <div className="relative mx-auto flex w-full max-w-175 flex-1 flex-col items-center p-6">
@@ -151,9 +172,17 @@ export const SpendingInfoSection = ({
               月
             </button>
           </div>
+          <div className="group ml-auto flex items-center gap-2 rounded-lg border border-solid border-gray-300 px-2">
+            <SearchIcon className="group-hover:text-primary-500 text-gray-500 transition-colors" />
+            <input
+              ref={searchRef}
+              type="text"
+              className="w-20 bg-transparent py-1 text-sm font-semibold focus:outline-0"
+            />
+          </div>
         </div>
         <SpendingList
-          data={filteredData}
+          data={filteredBySearch}
           loading={isProcessing}
           refreshData={refreshData}
         />

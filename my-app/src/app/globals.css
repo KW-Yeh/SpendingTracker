@@ -41,7 +41,7 @@ body {
     display: flex;
     flex-direction: column;
     background-image: radial-gradient(circle at 1px 1px, var(--color-primary-200) 1px, transparent 0);
-    background-size: 50px 50px;
+    background-size: 30px 30px;
 }
 
 button {
