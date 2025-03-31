@@ -158,7 +158,7 @@ export const ChartBlock = () => {
               totalNecessary={chartData.outcome.necessary}
               totalUnnecessary={chartData.outcome.unnecessary}
               necessaryList={chartData.outcome.necessaryList}
-              unecessaryList={chartData.outcome.unnecessaryList}
+              unnecessaryList={chartData.outcome.unnecessaryList}
             />
           </div>
         </div>

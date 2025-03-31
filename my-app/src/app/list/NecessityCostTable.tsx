@@ -1,9 +1,9 @@
 'use client';
 
+import { OUTCOME_TYPE_MAP } from '@/utils/constants';
 import { normalizeNumber } from '@/utils/normalizeNumber';
-import { CostTable } from './CostTable';
 import { useEffect, useMemo, useState } from 'react';
-import { INCOME_TYPE_MAP, OUTCOME_TYPE_MAP } from '@/utils/constants';
+import { CostTable } from './CostTable';
 
 interface Props {
   totalNecessary: number;
@@ -13,7 +13,7 @@ interface Props {
     value: number;
     color: string;
   }[];
-  unecessaryList: {
+  unnecessaryList: {
     name: string;
     value: number;
     color: string;
@@ -25,17 +25,11 @@ const defaultNecessaryList = OUTCOME_TYPE_MAP.map(({ label: category }) => ({
   value: 0,
 }));
 
-const defaultUnnecessaryList = INCOME_TYPE_MAP.map(({ label: category }) => ({
-  name: category,
-  value: 0,
-}));
-
 const NecessityCostTable = (props: Props) => {
   const [necessaryList, setNecessaryList] =
     useState<Array<{ name: string; value: number }>>(defaultNecessaryList);
-  const [unecessaryList, setUnnecessaryList] = useState<
-    Array<{ name: string; value: number }>
-  >(defaultUnnecessaryList);
+  const [unnecessaryList, setUnnecessaryList] =
+    useState<Array<{ name: string; value: number }>>(defaultNecessaryList);
 
   const total = useMemo(
     () => props.totalNecessary + props.totalUnnecessary,
@@ -53,15 +47,15 @@ const NecessityCostTable = (props: Props) => {
   );
 
   useEffect(() => {
-    if (props.unecessaryList.length > 0) {
+    if (props.unnecessaryList.length > 0) {
       setUnnecessaryList((prevState) =>
         prevState.map((_d, index) => ({
           ..._d,
-          value: props.unecessaryList[index].value,
+          value: props.unnecessaryList[index].value,
         })),
       );
     }
-  }, [props.unecessaryList]);
+  }, [props.unnecessaryList]);
 
   useEffect(() => {
     if (props.necessaryList.length > 0) {
@@ -86,7 +80,7 @@ const NecessityCostTable = (props: Props) => {
       <CostTable
         title={`額外支出各項資訊 $${normalizeNumber(props.totalUnnecessary)}（${unnecessaryPercentage.toFixed(0)}%）`}
         total={total}
-        list={unecessaryList}
+        list={unnecessaryList}
         options={{
           headerStyle: 'bg-gray-500/30',
         }}
