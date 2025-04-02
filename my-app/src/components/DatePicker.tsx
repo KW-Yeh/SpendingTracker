@@ -20,21 +20,12 @@ export const DatePicker = (props: Props) => {
   const weekday = props.date.getDay();
 
   const wording = useMemo(() => {
-    const today = new Date();
-    if (
-      today.getFullYear() === year &&
-      today.getMonth() === month &&
-      today.getDate() === day
-    ) {
-      return `今天（週${WEEKDAY[weekday]}）`;
-    } else {
-      if (props.format === 'yyyy-mm-dd') {
-        return `${year}-${month + 1}-${day}`;
-      } else if (props.format === 'yyyy/mm/dd') {
-        return `${year}/${month + 1}/${day}`;
-      }
-      return `${year} 年 ${month + 1} 月 ${day} 日（週${WEEKDAY[weekday]}）`;
+    if (props.format === 'yyyy-mm-dd') {
+      return `${year}-${month + 1}-${day}`;
+    } else if (props.format === 'yyyy/mm/dd') {
+      return `${year}/${month + 1}/${day}`;
     }
+    return `${year} 年 ${month + 1} 月 ${day} 日（週${WEEKDAY[weekday]}）`;
   }, [year, month, day, weekday, props.format]);
 
   const showPicker = () => {
@@ -52,7 +43,7 @@ export const DatePicker = (props: Props) => {
       <input
         ref={inputRef}
         type="date"
-        className="absolute bottom-0 left-0 right-0 top-0 opacity-0"
+        className="absolute top-0 right-0 bottom-0 left-0 opacity-0"
         onChange={props.onChange}
       />
       <button
