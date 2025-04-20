@@ -74,7 +74,7 @@ export const EditExpenseModal = (props: Props) => {
 
   const handleOnChangeDate = (event: ChangeEvent) => {
     const _date = new Date((event.target as HTMLInputElement).value);
-    setDate(_date.toUTCString());
+    setDate(_date.toISOString());
   };
 
   const cancel = useCallback(() => {
@@ -108,7 +108,21 @@ export const EditExpenseModal = (props: Props) => {
       };
 
       await putItem(newSpending);
-      syncData(groupId, userEmail);
+      const startDate = new Date();
+      const endDate = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        new Date(startDate.getFullYear(), startDate.getMonth(), 0).getDate()-1,
+        23,
+        59,
+        59,
+      );
+      syncData(
+        groupId,
+        userEmail,
+        startDate.toISOString(),
+        endDate.toISOString(),
+      );
       setLoading(false);
       if (onClose) onClose();
     },
@@ -254,7 +268,7 @@ export const EditExpenseModal = (props: Props) => {
             disabled={loading}
             type="button"
             onClick={cancel}
-            className="flex w-24 items-center justify-center rounded-lg border border-solid border-red-300 bg-background p-2 text-red-300 transition-colors active:border-red-500 active:text-red-500 sm:hover:border-red-500 sm:hover:text-red-500"
+            className="bg-background flex w-24 items-center justify-center rounded-lg border border-solid border-red-300 p-2 text-red-300 transition-colors active:border-red-500 active:text-red-500 sm:hover:border-red-500 sm:hover:text-red-500"
           >
             <span>取消</span>
           </button>

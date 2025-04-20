@@ -22,9 +22,9 @@ const ExpensePieChart = dynamic(() => import('./ExpensePieChart'), {
   ssr: false,
   loading: () => (
     <div className="mx-auto mt-15 aspect-square size-45 rounded-full bg-gray-200 p-1.5">
-      <div className="size-full rounded-full bg-background p-1.5">
+      <div className="bg-background size-full rounded-full p-1.5">
         <div className="size-full rounded-full bg-gray-200 p-5">
-          <div className="size-full rounded-full bg-background"></div>
+          <div className="bg-background size-full rounded-full"></div>
         </div>
       </div>
     </div>
@@ -35,9 +35,9 @@ const NecessityPieChart = dynamic(() => import('./NecessityPieChart'), {
   ssr: false,
   loading: () => (
     <div className="mx-auto mt-15 aspect-square size-45 rounded-full bg-gray-200 p-1.5">
-      <div className="size-full rounded-full bg-background p-1.5">
+      <div className="bg-background size-full rounded-full p-1.5">
         <div className="size-full rounded-full bg-gray-200 p-5">
-          <div className="size-full rounded-full bg-background"></div>
+          <div className="bg-background size-full rounded-full"></div>
         </div>
       </div>
     </div>
@@ -74,10 +74,20 @@ export const ChartBlock = () => {
 
   const refreshData = useCallback(
     (_groupId: string | undefined, _year: string, _month: string) => {
+      const startDate = new Date(Number(_year), Number(_month));
+      const endDate = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        new Date(startDate.getFullYear(), startDate.getMonth(), 0).getDate()-1,
+        23,
+        59,
+        59,
+      );
       syncData(
         _groupId,
         userData?.email,
-        new Date(Number(_year), Number(_month)).toUTCString(),
+        new Date(Number(_year), Number(_month)).toISOString(),
+        endDate.toISOString(),
       );
     },
     [syncData, userData?.email],

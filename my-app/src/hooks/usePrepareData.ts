@@ -20,7 +20,21 @@ export const usePrepareData = () => {
 
   useEffect(() => {
     if (session?.user?.email) {
-      syncData(undefined, session.user.email);
+      const startDate = new Date();
+      const endDate = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        new Date(startDate.getFullYear(), startDate.getMonth(), 0).getDate()-1,
+        23,
+        59,
+        59,
+      );
+      syncData(
+        undefined,
+        session.user.email,
+        startDate.toISOString(),
+        endDate.toISOString(),
+      );
       syncUser();
     }
   }, [session?.user?.email, syncData, syncUser]);

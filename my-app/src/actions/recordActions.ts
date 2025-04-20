@@ -5,7 +5,8 @@ const URL = `${process.env.AWS_API_GATEWAY_URL}/items`;
 export const getItems = async (
   groupId?: string,
   email?: string,
-  time?: string,
+  startDate?: string,
+  endDate?: string,
 ): Promise<{
   status: boolean;
   data: SpendingRecord[];
@@ -14,12 +15,13 @@ export const getItems = async (
   try {
     let apiUrl = URL;
     if (groupId) {
-      apiUrl = `${URL}/id/${groupId}${time ? `?time=${time}` : ''}`;
+      apiUrl = `${URL}/id/${groupId}${startDate ? `?startDate=${startDate}` : ''}${endDate ? `&endDate=${endDate}` : ''}`;
     } else if (email) {
-      apiUrl = `${URL}/user/${email}${time ? `?time=${time}` : ''}`;
+      apiUrl = `${URL}/user/${email}${startDate ? `?startDate=${startDate}` : ''}${endDate ? `&endDate=${endDate}` : ''}`;
     } else {
       return { status: false, data: [], message: '缺少群組 ID 或信箱資訊' };
     }
+    console.log(`Get Data from ${(startDate)} to ${endDate}`);
     const data = await fetch(apiUrl).then((res) => res.json());
     return { status: true, data, message: 'success' };
   } catch (error) {

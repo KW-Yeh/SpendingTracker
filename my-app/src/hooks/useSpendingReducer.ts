@@ -41,7 +41,7 @@ const INITIAL_STATE: SpendingRecord = {
   id: '',
   amount: 0,
   category: '🍔',
-  date: new Date().toUTCString(),
+  date: new Date().toISOString(),
   description: '',
   necessity: Necessity.Need,
   'user-token': '',

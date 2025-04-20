@@ -60,10 +60,19 @@ export const SpendingInfoSection = ({
           prevDate.getFullYear() !== newDate.getFullYear() ||
           prevDate.getMonth() !== newDate.getMonth()
         ) {
+          const endDate = new Date(
+            newDate.getFullYear(),
+            newDate.getMonth(),
+            new Date(newDate.getFullYear(), newDate.getMonth(), 0).getDate()-1,
+            23,
+            59,
+            59,
+          );
           syncData(
             selectedGroup || undefined,
             userData?.email,
-            newDate.toUTCString(),
+            newDate.toISOString(),
+            endDate.toISOString(),
           );
         }
         return newDate;
@@ -74,7 +83,20 @@ export const SpendingInfoSection = ({
 
   const refreshData = useCallback(
     (_groupId?: string) => {
-      syncData(_groupId || undefined, userData?.email, date.toUTCString());
+      const endDate = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        new Date(date.getFullYear(), date.getMonth(), 0).getDate()-1,
+        23,
+        59,
+        59,
+      );
+      syncData(
+        _groupId || undefined,
+        userData?.email,
+        date.toISOString(),
+        endDate.toISOString(),
+      );
     },
     [syncData, userData?.email, date],
   );
@@ -148,7 +170,7 @@ export const SpendingInfoSection = ({
         totalIncome={totalIncome}
         totalOutcome={totalOutcome}
         necessaryOutcome={necessaryOutcome}
-        dateStr={date.toUTCString()}
+        dateStr={date.toISOString()}
       />
 
       <span className="my-5 w-full"></span>

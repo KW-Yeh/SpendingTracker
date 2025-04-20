@@ -17,8 +17,9 @@ export async function GET(req: Request) {
     const queryParams = url.searchParams;
     const groupId = queryParams.get('groupId') ?? undefined;
     const email = queryParams.get('email') ?? undefined;
-    const time = queryParams.get('time') ?? undefined;
-    const { data } = await getItems(groupId, email, time);
+    const startDate = queryParams.get('startDate') ?? undefined;
+    const endDate = queryParams.get('endDate') ?? undefined;
+    const { data } = await getItems(groupId, email, startDate, endDate);
     return NextResponse.json(data);
   } catch (error) {
     console.error(error);

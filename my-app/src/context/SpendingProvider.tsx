@@ -16,7 +16,12 @@ import {
 const INIT_CTX_VAL: {
   loading: boolean;
   data: SpendingRecord[];
-  syncData: (groupId?: string, email?: string, time?: string) => void;
+  syncData: (
+    groupId?: string,
+    email?: string,
+    startDate?: string,
+    endDate?: string,
+  ) => void;
 } = {
   loading: true,
   data: [],
@@ -40,14 +45,19 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const queryItem = useCallback(
-    (email?: string, groupId?: string, time?: string) => {
+    (
+      email?: string,
+      groupId?: string,
+      startDate?: string,
+      endDate?: string,
+    ) => {
       if (!email && !groupId) return;
-      getItems(groupId, email, time)
+      getItems(groupId, email, startDate, endDate)
         .then((res) => {
           controllerRef.current.abort();
           console.log('Get Data from API');
           handleSetState(res.data);
-          setData2IDB(IDB, res.data, time)
+          setData2IDB(IDB, res.data, startDate)
             .then(() => {
               console.log('Update IDB success.');
             })
@@ -61,8 +71,13 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const syncData = useCallback(
-    (groupId?: string, email?: string, time?: string) => {
-      queryItem(email, groupId, time);
+    (
+      groupId?: string,
+      email?: string,
+      startDate?: string,
+      endDate?: string,
+    ) => {
+      queryItem(email, groupId, startDate, endDate);
     },
     [queryItem],
   );

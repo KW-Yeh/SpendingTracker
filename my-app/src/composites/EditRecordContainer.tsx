@@ -31,7 +31,7 @@ const EditRecordContainer = ({ recordId }: { recordId?: string | null }) => {
         type: SpendingType.Outcome,
         amount: 0,
         description: '',
-        date: new Date().toUTCString(),
+        date: new Date().toISOString(),
       };
       if (!recordId) {
         setMatchedData(_data);

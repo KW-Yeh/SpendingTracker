@@ -39,7 +39,7 @@ export const useIDB = () => {
     (
       db: IDBDatabase | null,
       record: SpendingRecord[],
-      time: string = new Date().toUTCString(),
+      time: string = new Date().toISOString(),
     ): Promise<void> => {
       if (!db) return Promise.reject('Database not initialized');
 
