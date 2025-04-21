@@ -12,6 +12,7 @@ import {
 
 interface Props {
   value?: string;
+  label?: ReactNode;
   name: string;
   onChange: (value: string) => void;
   children?: ReactNode;
@@ -33,6 +34,7 @@ export const Select = (props: Props) => {
     menuStyle = '',
     onChange,
     value,
+    label,
     name,
   } = props;
   const [openOptions, setOpenOptions] = useState(false);
@@ -79,7 +81,7 @@ export const Select = (props: Props) => {
           onClick={() => setOpenOptions((prevState) => !prevState)}
         >
           <span className="overflow-hidden text-ellipsis whitespace-nowrap">
-            {value}
+            {label ?? value}
           </span>
           <CaretDown className={`size-2 shrink-0 ${caretStyle}`} />
         </button>

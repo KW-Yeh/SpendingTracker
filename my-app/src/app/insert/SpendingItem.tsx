@@ -6,23 +6,11 @@ import { EditIcon } from '@/components/icons/EditIcon';
 import { deleteItem } from '@/services/getRecords';
 import { Necessity, SpendingType } from '@/utils/constants';
 import { formatDate } from '@/utils/formatDate';
+import { getCategoryIcon } from '@/utils/getCategoryIcon';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { startTransition, useCallback, useMemo, useState } from 'react';
-import {
-  MdOutlineBalance,
-  MdOutlineCatchingPokemon,
-  MdOutlineCategory,
-  MdOutlineChecklistRtl,
-  MdOutlineCheckroom,
-  MdOutlineDirectionsCar,
-  MdOutlineFastfood,
-  MdOutlineHealing,
-  MdOutlineHome,
-  MdOutlineMonetizationOn,
-  MdOutlineRedeem,
-  MdOutlineSchool,
-} from 'react-icons/md';
 
 interface Props {
   spending: SpendingRecord;
@@ -32,6 +20,7 @@ interface Props {
 export const SpendingItem = (props: Props) => {
   const { spending, refreshData } = props;
   const [deleting, setDeleting] = useState(false);
+  const router = useRouter();
 
   const additionalStyle = useMemo(() => {
     if (deleting) {
@@ -55,9 +44,11 @@ export const SpendingItem = (props: Props) => {
     (action: string) => {
       if (action === 'delete') {
         handleOnDelete();
+      } else if (action === 'edit') {
+        router.push(`/edit?id=${spending.id}`);
       }
     },
-    [handleOnDelete],
+    [handleOnDelete, router, spending.id],
   );
 
   return (
@@ -144,34 +135,3 @@ export const SpendingItem = (props: Props) => {
     </div>
   );
 };
-
-function getCategoryIcon(category: string) {
-  switch (category) {
-    case '🍔':
-      return <MdOutlineFastfood />;
-    case '👗':
-      return <MdOutlineCheckroom />;
-    case '🏠':
-      return <MdOutlineHome />;
-    case '🚗':
-      return <MdOutlineDirectionsCar />;
-    case '📚':
-      return <MdOutlineSchool />;
-    case '🎲':
-      return <MdOutlineCatchingPokemon />;
-    case '🧻':
-      return <MdOutlineChecklistRtl />;
-    case '💊':
-      return <MdOutlineHealing />;
-    case '📉':
-      return <MdOutlineBalance />;
-    case '📈':
-      return <MdOutlineBalance />;
-    case '💰':
-      return <MdOutlineMonetizationOn />;
-    case '🎁':
-      return <MdOutlineRedeem />;
-    case '✨':
-      return <MdOutlineCategory />;
-  }
-}

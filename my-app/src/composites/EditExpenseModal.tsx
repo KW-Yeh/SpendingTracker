@@ -16,6 +16,7 @@ import {
   OUTCOME_TYPE_MAP,
   SpendingType,
 } from '@/utils/constants';
+import { getCategoryIcon } from '@/utils/getCategoryIcon';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import {
@@ -209,13 +210,22 @@ export const EditExpenseModal = (props: Props) => {
             <fieldset className="flex-1">
               <Select
                 name="category"
-                value={`${selectedCategory} ${selectedCategoryLabel}`}
+                value={selectedCategory}
+                label={
+                  <span className="flex items-center gap-2">
+                    {getCategoryIcon(selectedCategory)}
+                    <span>{selectedCategoryLabel}</span>
+                  </span>
+                }
                 onChange={setSelectedCategory}
                 className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1 transition-colors active:border-gray-500 sm:hover:border-gray-500"
               >
                 {spendingCategories.map((category) => (
                   <Select.Item key={category.value} value={category.value}>
-                    {`${category.value} ${category.label}`}
+                    <span className="flex items-center gap-2">
+                      {getCategoryIcon(category.value)}
+                      <span>{category.label}</span>
+                    </span>
                   </Select.Item>
                 ))}
               </Select>
