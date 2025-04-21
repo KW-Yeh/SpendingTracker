@@ -3,6 +3,7 @@
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
+import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
 import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 
@@ -20,15 +21,7 @@ export const usePrepareData = () => {
 
   useEffect(() => {
     if (session?.user?.email) {
-      const startDate = new Date();
-      const endDate = new Date(
-        startDate.getFullYear(),
-        startDate.getMonth(),
-        new Date(startDate.getFullYear(), startDate.getMonth(), 0).getDate()-1,
-        23,
-        59,
-        59,
-      );
+      const { startDate, endDate } = getStartEndOfMonth(new Date());
       syncData(
         undefined,
         session.user.email,

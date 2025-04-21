@@ -16,6 +16,7 @@ import {
   OUTCOME_TYPE_MAP,
   SpendingType,
 } from '@/utils/constants';
+import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import {
   ChangeEvent,
@@ -108,15 +109,7 @@ export const EditExpenseModal = (props: Props) => {
       };
 
       await putItem(newSpending);
-      const startDate = new Date();
-      const endDate = new Date(
-        startDate.getFullYear(),
-        startDate.getMonth(),
-        new Date(startDate.getFullYear(), startDate.getMonth(), 0).getDate()-1,
-        23,
-        59,
-        59,
-      );
+      const { startDate, endDate } = getStartEndOfMonth(date);
       syncData(
         groupId,
         userEmail,

@@ -11,6 +11,7 @@ import { useDate } from '@/hooks/useDate';
 import { useScrollToTop } from '@/hooks/useScrollToTop';
 import { DateFilter, Necessity } from '@/utils/constants';
 import { getExpenseFromData } from '@/utils/getExpenseFromData';
+import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
 import dynamic from 'next/dynamic';
 import {
   ChangeEvent,
@@ -60,18 +61,11 @@ export const SpendingInfoSection = ({
           prevDate.getFullYear() !== newDate.getFullYear() ||
           prevDate.getMonth() !== newDate.getMonth()
         ) {
-          const endDate = new Date(
-            newDate.getFullYear(),
-            newDate.getMonth(),
-            new Date(newDate.getFullYear(), newDate.getMonth(), 0).getDate()-1,
-            23,
-            59,
-            59,
-          );
+          const { startDate, endDate } = getStartEndOfMonth(newDate);
           syncData(
             selectedGroup || undefined,
             userData?.email,
-            newDate.toISOString(),
+            startDate.toISOString(),
             endDate.toISOString(),
           );
         }
@@ -83,18 +77,11 @@ export const SpendingInfoSection = ({
 
   const refreshData = useCallback(
     (_groupId?: string) => {
-      const endDate = new Date(
-        date.getFullYear(),
-        date.getMonth(),
-        new Date(date.getFullYear(), date.getMonth(), 0).getDate()-1,
-        23,
-        59,
-        59,
-      );
+      const { startDate, endDate } = getStartEndOfMonth(date);
       syncData(
         _groupId || undefined,
         userData?.email,
-        date.toISOString(),
+        startDate.toISOString(),
         endDate.toISOString(),
       );
     },
