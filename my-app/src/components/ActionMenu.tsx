@@ -9,7 +9,7 @@ interface Props {
     value: string;
     label: ReactNode;
   }[];
-  onClick: (value: string) => void;
+  onClick?: (value: string) => void;
 }
 
 export const ActionMenu = (props: Props) => {
@@ -32,16 +32,16 @@ export const ActionMenu = (props: Props) => {
         <ActionMenuIcon className="size-4" />
       </button>
       <div
-        className={`absolute right-3 top-full z-30 flex w-fit flex-col rounded-lg bg-background p-2 shadow transition-all ${open ? 'opacity-100' : 'hidden opacity-0'}`}
+        className={`bg-background absolute top-full right-3 z-30 flex w-fit flex-col rounded-lg p-2 shadow transition-all ${open ? 'opacity-100' : 'hidden opacity-0'}`}
       >
         {options.map((option) => (
           <button
             key={option.value}
             type="button"
             onClick={() => {
-              onClick(option.value);
+              if (onClick) onClick(option.value);
             }}
-            className="flex items-center gap-2 whitespace-nowrap rounded px-4 py-2 transition-colors active:bg-gray-300 sm:hover:bg-gray-300"
+            className="group flex items-center gap-2 rounded px-4 py-2 whitespace-nowrap transition-colors active:bg-gray-300 sm:hover:bg-gray-300"
           >
             {option.label}
           </button>

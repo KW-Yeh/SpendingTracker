@@ -8,6 +8,12 @@ interface SpendingRecord {
   amount: number;
   category: string;
   description: string;
+  tags?: Tag[];
+}
+
+interface Tag {
+  name: string;
+  color: string;
 }
 
 interface Group {
