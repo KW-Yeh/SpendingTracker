@@ -13,7 +13,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useState
+  useState,
 } from 'react';
 import ExpenseCostTable from './ExpenseCostTable';
 import NecessityCostTable from './NecessityCostTable';
@@ -29,7 +29,7 @@ const ExpensePieChart = dynamic(() => import('./ExpensePieChart'), {
         </div>
       </div>
     </div>
-  )
+  ),
 });
 
 const NecessityPieChart = dynamic(() => import('./NecessityPieChart'), {
@@ -42,7 +42,7 @@ const NecessityPieChart = dynamic(() => import('./NecessityPieChart'), {
         </div>
       </div>
     </div>
-  )
+  ),
 });
 
 export const ChartBlock = () => {
@@ -57,7 +57,7 @@ export const ChartBlock = () => {
       necessary: 50,
       unnecessary: 50,
       necessaryList: [],
-      unnecessaryList: []
+      unnecessaryList: [],
     },
     outcome: {
       list: [],
@@ -65,8 +65,8 @@ export const ChartBlock = () => {
       necessary: 25,
       unnecessary: 25,
       necessaryList: [],
-      unnecessaryList: []
-    }
+      unnecessaryList: [],
+    },
   });
   const today = new Date();
   const [year, setYear] = useState(`${today.getFullYear()}`);
@@ -75,20 +75,22 @@ export const ChartBlock = () => {
 
   const refreshData = useCallback(
     (_groupId: string | undefined, _year: string, _month: string) => {
-      const { startDate, endDate } = getStartEndOfMonth(new Date(Number(_year), Number(_month)));
+      const { startDate, endDate } = getStartEndOfMonth(
+        new Date(Number(_year), Number(_month) - 1),
+      );
       syncData(
         _groupId,
         userData?.email,
         startDate.toISOString(),
-        endDate.toISOString()
+        endDate.toISOString(),
       );
     },
-    [syncData, userData?.email]
+    [syncData, userData?.email],
   );
 
   const group = useMemo(
     () => groups.find((group) => group.id === groupId),
-    [groups, groupId]
+    [groups, groupId],
   );
 
   useEffect(() => {
@@ -97,7 +99,7 @@ export const ChartBlock = () => {
         (record) =>
           `${new Date(record.date).getFullYear()}` === year &&
           `${new Date(record.date).getMonth() + 1}` === month &&
-          record.groupId === (groupId || undefined)
+          record.groupId === (groupId || undefined),
       );
       setChartData(calSpending2Chart(filteredData));
     });
@@ -112,14 +114,14 @@ export const ChartBlock = () => {
             setGroupId,
             loadingGroups,
             groups,
-            group
+            group,
           }}
           dateOptions={{
             today,
             year,
             setYear,
             month,
-            setMonth
+            setMonth,
           }}
         />
       </div>
@@ -152,7 +154,7 @@ export const ChartBlock = () => {
               totalUnnecessity={chartData.outcome.unnecessary}
               list={[
                 ...chartData.outcome.necessaryList,
-                ...chartData.outcome.unnecessaryList
+                ...chartData.outcome.unnecessaryList,
               ]}
             />
           </div>
