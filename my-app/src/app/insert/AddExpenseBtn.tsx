@@ -21,8 +21,7 @@ const AddExpenseBtn = (props: Props) => {
     <Link
       ref={LinkRef}
       href="/edit"
-      onClick={() => console.log('Route to edit page')}
-      className={`shadow-primary text-primary-700 bg-background active:shadow-primary-hover sm:hover:shadow-primary-hover fixed bottom-12 z-30 mx-auto flex overflow-hidden rounded-full px-14 py-4 text-center transition-all active:text-blue-700 sm:hover:text-blue-700 ${className}`}
+      className={`shadow-primary text-primary-700 bg-background active:shadow-primary-hover sm:hover:shadow-primary-hover mx-auto flex rounded-full px-14 py-4 text-center transition-all active:text-blue-700 sm:hover:text-blue-700 ${className}`}
       scroll={false}
     >
       {children}

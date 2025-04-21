@@ -70,11 +70,11 @@ export const SpendingItem = (props: Props) => {
         </span>
       )}
       {spending.necessity === Necessity.NotNeed ? (
-        <div className="flex aspect-square h-1/2 items-center justify-center rounded-lg bg-gray-400 p-1 text-white">
+        <div className="flex size-6 shrink-0 items-center justify-center rounded-md bg-gray-400 p-1 text-white">
           {getCategoryIcon(spending.category)}
         </div>
       ) : (
-        <div className="flex aspect-square h-1/2 items-center justify-center rounded-lg bg-orange-400 p-1 text-white">
+        <div className="flex size-6 shrink-0 items-center justify-center rounded-md bg-orange-400 p-1 text-white">
           {getCategoryIcon(spending.category)}
         </div>
       )}

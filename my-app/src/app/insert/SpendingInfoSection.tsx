@@ -9,7 +9,7 @@ import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { useDate } from '@/hooks/useDate';
 import { useScrollToTop } from '@/hooks/useScrollToTop';
-import { DateFilter, Necessity } from '@/utils/constants';
+import { DateFilter } from '@/utils/constants';
 import { getExpenseFromData } from '@/utils/getExpenseFromData';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
 import dynamic from 'next/dynamic';
@@ -39,9 +39,9 @@ export const SpendingInfoSection = ({
   const [selectedMemberEmail, setSelectedMemberEmail] = useState<string>();
   const [filter, setFilter] = useState(DateFilter.Day);
   const [filteredData, setFilteredData] = useState<SpendingRecord[]>([]);
+  const [monthlyData, setMonthlyData] = useState<SpendingRecord[]>([]);
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalOutcome, setTotalOutcome] = useState(0);
-  const [necessaryOutcome, setNecessaryOutcome] = useState(0);
   const [filterStr, setFilterStr] = useState('');
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -94,16 +94,11 @@ export const SpendingInfoSection = ({
       const dataFilterByUser = [...data].filter((_data) =>
         checkUser(_data, selectedMemberEmail),
       );
+      setMonthlyData(dataFilterByUser);
       const { totalIncome: _totalIncome, totalOutcome: _totalOutcome } =
         getExpenseFromData(dataFilterByUser);
       setTotalIncome(_totalIncome);
       setTotalOutcome(_totalOutcome);
-      const dataFilterByNecessary = dataFilterByUser.filter((_data) => {
-        return _data.necessity === Necessity.Need;
-      });
-      setNecessaryOutcome(
-        getExpenseFromData(dataFilterByNecessary).totalOutcome,
-      );
 
       const dataFilterByDate = dataFilterByUser.filter((_data) =>
         checkDate(_data.date, date, filter),
@@ -131,8 +126,8 @@ export const SpendingInfoSection = ({
   }, []);
 
   return (
-    <div className="relative mx-auto flex w-full max-w-175 flex-1 flex-col items-center p-6">
-      <div className="mb-5 flex w-full justify-end">
+    <div className="relative mx-auto flex w-full max-w-175 flex-1 flex-col items-center gap-6 p-6">
+      <div className="flex w-full justify-end">
         <div className="w-fit">
           <GroupSelector
             selectedGroup={selectedGroup}
@@ -145,7 +140,7 @@ export const SpendingInfoSection = ({
           />
         </div>
       </div>
-      <div className="mb-4 flex w-full items-center justify-center">
+      <div className="flex w-full items-center justify-center">
         <DatePicker
           date={date}
           labelClassName="p-4 text-lg sm:text-xl bg-background font-semibold"
@@ -156,11 +151,13 @@ export const SpendingInfoSection = ({
       <OverView
         totalIncome={totalIncome}
         totalOutcome={totalOutcome}
-        necessaryOutcome={necessaryOutcome}
         dateStr={date.toISOString()}
+        costList={monthlyData}
       />
 
-      <span className="my-5 w-full"></span>
+      <AddExpenseBtn autoClick={!!quickInsert}>
+        <span className="text-base font-bold">馬上記帳</span>
+      </AddExpenseBtn>
 
       <div className="bg-background flex w-full flex-col rounded-3xl border border-solid border-gray-300 p-6 shadow">
         <div className="mb-6 flex items-center gap-4">
@@ -196,10 +193,6 @@ export const SpendingInfoSection = ({
           refreshData={refreshData}
         />
       </div>
-
-      <AddExpenseBtn autoClick={!!quickInsert}>
-        <span className="text-base font-bold">記帳</span>
-      </AddExpenseBtn>
     </div>
   );
 };
