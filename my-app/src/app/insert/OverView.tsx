@@ -28,7 +28,7 @@ export const OverView = (props: Props) => {
   });
 
   return (
-    <div className="bg-background relative flex w-full flex-col items-start rounded-3xl border border-solid border-gray-300 p-4 text-gray-300 shadow">
+    <div className="bg-background relative flex w-full flex-col items-start rounded-3xl border border-solid border-gray-300 p-6 text-gray-300 shadow">
       <div className="flex w-full flex-col">
         <span
           className={`flex items-center gap-1 text-xs sm:text-sm ${totalIncome !== 0 && totalIncome - totalOutcome < 0 ? 'text-red-400' : 'text-green-400'}`}
