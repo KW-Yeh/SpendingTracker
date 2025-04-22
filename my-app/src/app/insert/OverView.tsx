@@ -51,11 +51,14 @@ export const OverView = (props: Props) => {
         </span>
       </div>
 
-      <div className="flex h-40 w-full items-end justify-between gap-0.5 px-6 pb-10 sm:h-66">
+      <div className="flex h-50 w-full items-end gap-0.5 pb-10">
         {dailyCost.map((cost, i) => (
           <div
             key={`${year}-${month}-${i.toString()}`}
-            className="group relative flex h-full w-fit flex-col items-center justify-end hover:bg-gray-100 active:bg-gray-100"
+            className="group relative flex h-full w-fit flex-col items-center justify-end pt-2 hover:bg-gray-100 active:bg-gray-100"
+            style={{
+              width: `${100 / days}%`,
+            }}
           >
             <span
               className="w-1 rounded-t-full border-b border-solid border-red-300 bg-red-300"
@@ -66,7 +69,7 @@ export const OverView = (props: Props) => {
             <span className="absolute top-full mt-1 text-xs">
               {i % 10 === 0 ? i + 1 : ''}
             </span>
-            <p className="bg-background absolute bottom-full z-10 mb-1 hidden rounded-md px-2 py-1 text-center text-xs whitespace-nowrap shadow group-hover:block group-active:block">
+            <p className="bg-background text-text absolute bottom-full z-10 mb-1 hidden rounded-md border border-solid border-gray-300 px-2 py-1 text-center text-xs whitespace-nowrap shadow group-hover:block group-active:block">
               {`${month}/${i + 1} $${normalizeNumber(cost)}`}
             </p>
           </div>
