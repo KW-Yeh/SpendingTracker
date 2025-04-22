@@ -148,16 +148,16 @@ export const SpendingInfoSection = ({
         />
       </div>
 
+      <AddExpenseBtn autoClick={!!quickInsert}>
+        <span className="text-base font-bold">馬上記帳</span>
+      </AddExpenseBtn>
+
       <OverView
         totalIncome={totalIncome}
         totalOutcome={totalOutcome}
         dateStr={date.toISOString()}
         costList={monthlyData}
       />
-
-      <AddExpenseBtn autoClick={!!quickInsert}>
-        <span className="text-base font-bold">馬上記帳</span>
-      </AddExpenseBtn>
 
       <div className="bg-background flex w-full flex-col rounded-3xl border border-solid border-gray-300 p-6 shadow">
         <div className="mb-6 flex items-center gap-4">

@@ -275,14 +275,18 @@ export const EditExpenseModal = (props: Props) => {
               </datalist>
             </fieldset>
           </div>
-          <div className="flex w-full items-center">
-            <button
-              type="button"
-              className="border-text bg-text text-background w-full rounded-lg border border-solid p-2 font-semibold transition-colors active:bg-gray-800 sm:hover:bg-gray-800"
-              onClick={handleSetCommonDesc}
-            >
-              {!isNewDesc ? '- 刪除常用描述' : '+ 新增常用描述'}
-            </button>
+          <div
+            className={`grid w-full transition-all duration-300 ${description !== '' ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
+          >
+            <div className="overflow-hidden">
+              <button
+                type="button"
+                className="border-text bg-text text-background w-full rounded-lg border border-solid p-2 font-semibold transition-colors active:bg-gray-800 sm:hover:bg-gray-800"
+                onClick={handleSetCommonDesc}
+              >
+                {!isNewDesc ? '- 刪除常用描述' : '+ 新增常用描述'}
+              </button>
+            </div>
           </div>
         </div>
         <div className="flex flex-col gap-1">
