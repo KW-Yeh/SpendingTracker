@@ -20,6 +20,7 @@ type Option = {
   label: ReactNode;
   value: string;
   onSelectColor?: string;
+  defaultColor?: string;
   className?: string;
 };
 
@@ -57,39 +58,46 @@ export const Switch = (props: Props) => {
           if (option1.onSelectColor)
             leftButton.style.color = option1.onSelectColor;
           else leftButton.style.color = '#333333';
-          rightButton.style.color = '#BBA8F0FF';
+          rightButton.style.color = option1.defaultColor ?? 'hsl(0, 0%, 70%)';
         } else {
           block.style.left = `${rightLeft}px`;
           block.style.width = `${rightWidth}px`;
           if (option2.onSelectColor)
             rightButton.style.color = option2.onSelectColor;
           else rightButton.style.color = '#333333';
-          leftButton.style.color = '#BBA8F0FF';
+          leftButton.style.color = option2.defaultColor ?? 'hsl(0, 0%, 70%)';
         }
       }
     });
-  }, [option1.onSelectColor, option1.value, option2.onSelectColor, value]);
+  }, [
+    option1.defaultColor,
+    option1.onSelectColor,
+    option1.value,
+    option2.defaultColor,
+    option2.onSelectColor,
+    value,
+  ]);
 
   return (
     <button
       ref={containerRef}
       type="button"
       onClick={handleOnClick}
-      className={`relative flex w-fit items-center gap-1 rounded-md bg-primary-100 p-1 ${className}`}
+      className={`relative flex w-fit items-center gap-1 rounded-md p-1 ${className}`}
     >
       <div
         ref={floatingBlockRef}
-        className="transition-spring absolute bottom-1 top-1 z-10 rounded bg-background transition-all"
+        className="transition-spring bg-background absolute top-1 bottom-1 z-10 rounded transition-all"
       ></div>
       <span
         ref={option1Ref}
-        className={`z-20 flex-1 bg-transparent px-6 py-2 text-center font-semibold text-text transition-colors ${option1.className}`}
+        className={`text-text z-20 flex-1 bg-transparent px-6 py-2 text-center font-normal transition-colors ${option1.className}`}
       >
         {option1.label}
       </span>
       <span
         ref={option2Ref}
-        className={`z-20 flex-1 bg-transparent px-6 py-2 text-center font-semibold text-text transition-colors ${option2.className}`}
+        className={`text-text z-20 flex-1 bg-transparent px-6 py-2 text-center font-normal transition-colors ${option2.className}`}
       >
         {option2.label}
       </span>

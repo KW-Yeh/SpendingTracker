@@ -44,6 +44,10 @@ export const EditExpenseModal = (props: Props) => {
   const [spendingType, setSpendingType] = useState<string>(data.type);
   const [necessity, setNecessity] = useState<string>(data.necessity);
   const [selectedCategory, setSelectedCategory] = useState(data.category);
+  const [description, setDescription] = useState(data.description);
+  const [commonDescMap, setCommonDescMap] = useState<Record<string, string[]>>(
+    data.desc ?? DEFAULT_DESC,
+  );
   const [amount, setAmount] = useState(data.amount);
   const [isNoAmount, setIsNoAmount] = useState(false);
   const [memberEmail, setMemberEmail] = useState<string>();
@@ -67,6 +71,11 @@ export const EditExpenseModal = (props: Props) => {
     [selectedCategory, spendingCategories],
   );
 
+  const isNewDesc = useMemo(
+    () => !commonDescMap[selectedCategory].includes(description),
+    [commonDescMap, description, selectedCategory],
+  );
+
   const handleSetSpendingType = (type: string) => {
     setSpendingType(type);
     const categories = getSpendingCategories(type);
@@ -79,6 +88,20 @@ export const EditExpenseModal = (props: Props) => {
     setDate(_date.toISOString());
   };
 
+  const handleSetCommonDesc = useCallback(() => {
+    setCommonDescMap((prevState) => {
+      const newState = { ...prevState };
+      if (!isNewDesc) {
+        newState[selectedCategory] = newState[selectedCategory].filter(
+          (desc) => desc !== description,
+        );
+      } else {
+        newState[selectedCategory].push(description);
+      }
+      return newState;
+    });
+  }, [description, isNewDesc, selectedCategory]);
+
   const cancel = useCallback(() => {
     if (onClose) onClose();
   }, [onClose]);
@@ -88,9 +111,6 @@ export const EditExpenseModal = (props: Props) => {
       event.preventDefault();
       const userEmail = userData?.email;
       if (!userEmail) return;
-      const formElement = event.target as HTMLFormElement;
-      const formData = new FormData(formElement);
-      const description = formData.get('description') as string;
       if (amount === 0) {
         setIsNoAmount(true);
         return;
@@ -121,7 +141,7 @@ export const EditExpenseModal = (props: Props) => {
       if (onClose) onClose();
     },
     [
-      userData,
+      userData?.email,
       amount,
       data,
       groupId,
@@ -129,6 +149,7 @@ export const EditExpenseModal = (props: Props) => {
       date,
       necessity,
       selectedCategory,
+      description,
       syncData,
       onClose,
     ],
@@ -158,16 +179,18 @@ export const EditExpenseModal = (props: Props) => {
                 label: '支出',
                 value: SpendingType.Outcome,
                 onSelectColor: '#F56666',
+                defaultColor: 'hsl(0, 0%, 50%)',
                 className: '!px-2 !py-1',
               }}
               option2={{
                 label: '收入',
                 value: SpendingType.Income,
                 onSelectColor: '#48BB78',
+                defaultColor: 'hsl(0, 0%, 50%)',
                 className: '!px-2 !py-1',
               }}
               value={spendingType}
-              className="h-10 flex-1 text-sm"
+              className="h-10 flex-1 border border-solid border-gray-300 bg-gray-300 text-sm"
               onChange={handleSetSpendingType}
             />
             <Switch
@@ -175,15 +198,17 @@ export const EditExpenseModal = (props: Props) => {
                 label: '必要支出',
                 value: Necessity.Need,
                 onSelectColor: '#ED8936',
+                defaultColor: 'hsl(0, 0%, 50%)',
                 className: '!px-2 !py-1',
               }}
               option2={{
                 label: '額外支出',
                 value: Necessity.NotNeed,
+                defaultColor: 'hsl(0, 0%, 50%)',
                 className: '!px-2 !py-1',
               }}
               value={necessity}
-              className="h-10 flex-1 text-sm"
+              className="h-10 flex-1 border border-solid border-gray-300 bg-gray-300 text-sm"
               onChange={setNecessity}
             />
           </div>
@@ -238,14 +263,26 @@ export const EditExpenseModal = (props: Props) => {
                 className="h-10 w-full rounded-md border border-solid border-gray-300 px-2 py-1 focus:outline-0"
                 autoComplete="off"
                 placeholder="描述"
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                }}
                 defaultValue={data.description}
               />
               <datalist id="common-description">
-                {DEFAULT_DESC[selectedCategory]?.map((commonDesc) => (
+                {commonDescMap[selectedCategory]?.map((commonDesc) => (
                   <option key={commonDesc} value={commonDesc}></option>
                 ))}
               </datalist>
             </fieldset>
+          </div>
+          <div className="flex w-full items-center">
+            <button
+              type="button"
+              className="border-text bg-text text-background w-full rounded-lg border border-solid p-2 font-semibold transition-colors active:bg-gray-800 sm:hover:bg-gray-800"
+              onClick={handleSetCommonDesc}
+            >
+              {!isNewDesc ? '- 刪除常用描述' : '+ 新增常用描述'}
+            </button>
           </div>
         </div>
         <div className="flex flex-col gap-1">

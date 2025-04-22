@@ -53,22 +53,16 @@ export const SpendingItem = (props: Props) => {
 
   return (
     <div
-      className={`relative flex items-center gap-2 rounded-lg px-2 text-sm transition-all sm:h-14 sm:text-base ${additionalStyle}`}
+      className={`relative flex items-center gap-2 rounded-lg p-2 text-sm transition-all sm:text-base ${additionalStyle}`}
     >
       {deleting && (
         <span className="absolute top-0 left-1 -translate-y-1/2 rounded-full bg-red-300 px-2 text-xs font-bold">
           刪除中
         </span>
       )}
-      {spending.necessity === Necessity.NotNeed ? (
-        <div className="flex size-6 shrink-0 items-center justify-center rounded-md bg-gray-400 p-1 text-white">
-          {getCategoryIcon(spending.category)}
-        </div>
-      ) : (
-        <div className="flex size-6 shrink-0 items-center justify-center rounded-md bg-orange-400 p-1 text-white">
-          {getCategoryIcon(spending.category)}
-        </div>
-      )}
+      <div className="bg-primary-400 flex size-6 shrink-0 items-center justify-center rounded-md text-white sm:size-8">
+        {getCategoryIcon(spending.category)}
+      </div>
       <div className="flex flex-1 items-center gap-2">
         <div className="flex flex-col text-start">
           <span className="text-sm">{formatDate(spending.date)}</span>
@@ -76,7 +70,7 @@ export const SpendingItem = (props: Props) => {
             {new Date(spending.date).getFullYear()}
           </span>
         </div>
-        <div className="flex flex-1 flex-col gap-1">
+        <div className="flex flex-1 flex-col">
           <div
             title={spending.description}
             className="w-full overflow-hidden text-ellipsis whitespace-nowrap sm:col-span-5"
@@ -84,19 +78,15 @@ export const SpendingItem = (props: Props) => {
             {spending.description}
           </div>
           <div className="flex w-full flex-wrap gap-1">
-            {spending.tags &&
-              spending.tags.map((tag, index) => (
-                <span
-                  key={`tag-${tag.name}-${index.toString()}`}
-                  className="w-9 rounded-full border border-solid border-gray-300 text-center text-xs"
-                  style={{
-                    color: tag.color,
-                    borderColor: tag.color,
-                  }}
-                >
-                  {tag.name}
-                </span>
-              ))}
+            {spending.necessity === Necessity.NotNeed ? (
+              <span className="rounded-full bg-gray-400 px-2 text-center text-xs">
+                額外
+              </span>
+            ) : (
+              <span className="rounded-full bg-orange-400 px-2 text-center text-xs">
+                必要
+              </span>
+            )}
           </div>
         </div>
       </div>

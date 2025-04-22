@@ -66,10 +66,10 @@ export const OverView = (props: Props) => {
                 height: `${(cost * 100) / largestCost}%`,
               }}
             ></span>
-            <span className="absolute top-full mt-1 text-xs">
+            <span className="absolute top-full mt-1 text-xs select-none">
               {i % 10 === 0 ? i + 1 : ''}
             </span>
-            <p className="bg-background text-text absolute bottom-full z-10 mb-1 hidden rounded-md border border-solid border-gray-300 px-2 py-1 text-center text-xs whitespace-nowrap shadow group-hover:block group-active:block">
+            <p className="bg-background text-text absolute bottom-full z-10 mb-1 hidden rounded-md border border-solid border-gray-300 px-2 py-1 text-center text-xs whitespace-nowrap shadow select-none group-hover:block group-active:block">
               {`${month}/${i + 1} $${normalizeNumber(cost)}`}
             </p>
           </div>
