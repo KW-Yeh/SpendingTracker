@@ -55,13 +55,19 @@ export const OverView = (props: Props) => {
         {dailyCost.map((cost, i) => (
           <div
             key={`${year}-${month}-${i.toString()}`}
-            className="group relative flex h-full w-fit flex-col items-center justify-end pt-2 hover:bg-gray-100 active:bg-gray-100"
+            className="group relative flex h-full w-fit flex-col items-center justify-end"
             style={{
               width: `${100 / days}%`,
             }}
           >
             <span
-              className="w-1 rounded-t-full border-b border-solid border-red-300 bg-red-300"
+              className="absolute h-6 w-px bg-gray-300 opacity-0 transition-opacity select-none group-hover:opacity-100 group-active:opacity-100"
+              style={{
+                bottom: `${(cost * 100) / largestCost}%`,
+              }}
+            ></span>
+            <span
+              className="w-1.25 rounded-t-full border-b border-solid border-red-300 bg-red-300 outline-red-100 group-hover:bg-red-500 group-hover:shadow-[0_-2px_6px_0_#fb2c36] group-hover:outline-1 group-active:bg-red-500 group-active:outline-1"
               style={{
                 height: `${(cost * 100) / largestCost}%`,
               }}
@@ -69,7 +75,12 @@ export const OverView = (props: Props) => {
             <span className="absolute top-full mt-1 text-xs select-none">
               {i % 10 === 0 ? i + 1 : ''}
             </span>
-            <p className="bg-background text-text absolute bottom-full z-10 mb-1 hidden rounded-md border border-solid border-gray-300 px-2 py-1 text-center text-xs whitespace-nowrap shadow select-none group-hover:block group-active:block">
+            <p
+              className="bg-background text-text absolute z-10 mb-6 rounded-md border border-solid border-gray-300 px-2 py-1 text-center text-xs whitespace-nowrap opacity-0 shadow transition-opacity select-none group-hover:opacity-100 group-active:opacity-100"
+              style={{
+                bottom: `${(cost * 100) / largestCost}%`,
+              }}
+            >
               {`${month}/${i + 1} $${normalizeNumber(cost)}`}
             </p>
           </div>
