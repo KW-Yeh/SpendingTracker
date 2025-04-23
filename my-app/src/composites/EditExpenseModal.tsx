@@ -243,7 +243,7 @@ export const EditExpenseModal = (props: Props) => {
                   </span>
                 }
                 onChange={setSelectedCategory}
-                className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1 transition-colors active:border-gray-500 sm:hover:border-gray-500"
+                className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1 transition-colors active:border-gray-500 hover:border-gray-500"
               >
                 {spendingCategories.map((category) => (
                   <Select.Item key={category.value} value={category.value}>
@@ -281,7 +281,7 @@ export const EditExpenseModal = (props: Props) => {
             <div className="overflow-hidden">
               <button
                 type="button"
-                className="border-text bg-text text-background w-full rounded-lg border border-solid p-2 font-semibold transition-colors active:bg-gray-800 sm:hover:bg-gray-800"
+                className="border-text bg-text text-background w-full rounded-lg border border-solid p-2 font-semibold transition-colors active:bg-gray-800 hover:bg-gray-800"
                 onClick={handleSetCommonDesc}
               >
                 {!isNewDesc ? '- 刪除常用描述' : '+ 新增常用描述'}
@@ -312,7 +312,7 @@ export const EditExpenseModal = (props: Props) => {
             disabled={loading}
             type="button"
             onClick={cancel}
-            className="bg-background flex w-24 items-center justify-center rounded-lg border border-solid border-red-300 p-2 text-red-300 transition-colors active:border-red-500 active:text-red-500 sm:hover:border-red-500 sm:hover:text-red-500"
+            className="bg-background flex w-24 items-center justify-center rounded-lg border border-solid border-red-300 p-2 text-red-300 transition-colors active:border-red-500 active:text-red-500 hover:border-red-500 hover:text-red-500"
           >
             <span>取消</span>
           </button>

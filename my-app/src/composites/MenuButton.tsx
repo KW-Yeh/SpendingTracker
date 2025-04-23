@@ -9,7 +9,7 @@ export const MenuButton = (props: Props) => {
   return (
     <button
       onClick={openAside}
-      className="size-8 rounded-full p-1 transition-colors sm:hover:bg-primary-100 active:bg-primary-100"
+      className="size-8 rounded-full p-1 transition-colors hover:bg-primary-100 active:bg-primary-100"
     >
       <MenuIcon className="size-full" />
     </button>

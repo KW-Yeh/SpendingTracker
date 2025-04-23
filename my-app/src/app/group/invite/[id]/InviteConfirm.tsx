@@ -112,14 +112,14 @@ export const InviteConfirm = () => {
         <button
           type="button"
           onClick={() => redirect('/group')}
-          className="rounded border border-solid border-red-500 px-6 py-1 text-red-500 transition-colors active:bg-red-500 active:text-background sm:hover:bg-red-500 sm:hover:text-background"
+          className="rounded border border-solid border-red-500 px-6 py-1 text-red-500 transition-colors active:bg-red-500 active:text-background hover:bg-red-500 hover:text-background"
         >
           取消
         </button>
         <button
           type="button"
           onClick={handleJoinGroup}
-          className="rounded border border-solid border-green-500 bg-green-500 px-6 py-1 text-background transition-colors active:border-green-400 active:bg-green-400 sm:hover:border-green-400 sm:hover:bg-green-400"
+          className="rounded border border-solid border-green-500 bg-green-500 px-6 py-1 text-background transition-colors active:border-green-400 active:bg-green-400 hover:border-green-400 hover:bg-green-400"
         >
           加入
         </button>

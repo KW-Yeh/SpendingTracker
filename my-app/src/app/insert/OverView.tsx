@@ -89,7 +89,7 @@ export const OverView = (props: Props) => {
 
       <Link
         href="/list"
-        className="text-primary-500 active:text-primary-300 sm:hover:text-primary-300 absolute right-4 bottom-4 flex items-center text-xs font-bold transition-colors"
+        className="text-primary-500 active:text-primary-300 hover:text-primary-300 absolute right-4 bottom-4 flex items-center text-xs font-bold transition-colors"
       >
         前往分析
         <DoubleArrowIcon className="size-3" />

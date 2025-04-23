@@ -26,7 +26,7 @@ export const SpendingItem = (props: Props) => {
     if (deleting) {
       return 'shadow-[0_0_0_2px_#fca5a5]';
     }
-    return 'active:bg-gray-100 sm:hover:bg-gray-100';
+    return 'active:bg-gray-100 hover:bg-gray-100';
   }, [deleting]);
 
   const handleOnDelete = useCallback(() => {

@@ -166,14 +166,14 @@ export const SpendingInfoSection = ({
             <button
               type="button"
               onClick={() => setFilter(DateFilter.Day)}
-              className={`rounded-md border border-solid border-gray-300 px-4 py-1 transition-colors ${filter === DateFilter.Day ? 'bg-gray-300' : 'bg-background active:bg-gray-100 sm:hover:bg-gray-100'}`}
+              className={`rounded-md border border-solid border-gray-300 px-4 py-1 transition-colors ${filter === DateFilter.Day ? 'bg-gray-300' : 'bg-background active:bg-gray-100 hover:bg-gray-100'}`}
             >
               日
             </button>
             <button
               type="button"
               onClick={() => setFilter(DateFilter.Month)}
-              className={`rounded-md border border-solid border-gray-300 px-4 py-1 transition-colors ${filter === DateFilter.Month ? 'bg-gray-300' : 'bg-background active:bg-gray-100 sm:hover:bg-gray-100'}`}
+              className={`rounded-md border border-solid border-gray-300 px-4 py-1 transition-colors ${filter === DateFilter.Month ? 'bg-gray-300' : 'bg-background active:bg-gray-100 hover:bg-gray-100'}`}
             >
               月
             </button>

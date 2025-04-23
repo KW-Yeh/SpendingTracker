@@ -91,7 +91,7 @@ export const AsideMenu = (props: Props) => {
                   onClose();
                 }
               }}
-              className="bg-background text-text absolute top-2 right-2 flex shrink-0 items-center justify-center rounded-md p-2 text-xs font-semibold transition-all active:text-red-500 sm:hover:text-red-500"
+              className="bg-background text-text absolute top-2 right-2 flex shrink-0 items-center justify-center rounded-md p-2 text-xs font-semibold transition-all active:text-red-500 hover:text-red-500"
             >
               <span className="text-xs">登出</span>
             </button>
@@ -157,7 +157,7 @@ const MenuButton = ({
       <Link
         href={href}
         onClick={onClick}
-        className={`flex w-full items-center rounded-md px-5 py-3 text-left text-sm font-semibold transition-all sm:text-base ${pathName === href ? 'bg-primary-100' : 'active:bg-primary-100 sm:hover:bg-primary-100'}`}
+        className={`flex w-full items-center rounded-md px-5 py-3 text-left text-sm font-semibold transition-all sm:text-base ${pathName === href ? 'bg-primary-100' : 'active:bg-primary-100 hover:bg-primary-100'}`}
       >
         {icon ?? ROUTE_ICON[href]}
         {label}
@@ -167,7 +167,7 @@ const MenuButton = ({
   return (
     <button
       onClick={onClick}
-      className="active:bg-primary-100 sm:hover:bg-primary-100 flex w-full items-center rounded-md px-5 py-3 text-left text-sm font-semibold transition-all sm:text-base"
+      className="active:bg-primary-100 hover:bg-primary-100 flex w-full items-center rounded-md px-5 py-3 text-left text-sm font-semibold transition-all sm:text-base"
     >
       {icon}
       {label}

@@ -53,7 +53,7 @@ const SocialButton = (props: SocialButtonProps) => {
       {...legacy}
     >
       <span className="aspect-square p-4">{icon}</span>
-      <p className="w-0 overflow-hidden whitespace-nowrap text-center text-sm transition-all duration-300 group-active:w-44 sm:text-base sm:group-hover:w-44">
+      <p className="w-0 overflow-hidden whitespace-nowrap text-center text-sm transition-all duration-300 group-active:w-44 sm:text-base group-hover:w-44">
         Login with <strong className="font-bold">{type}</strong>
       </p>
     </button>

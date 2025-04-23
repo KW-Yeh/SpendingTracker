@@ -56,7 +56,7 @@ export const Dashboard = () => {
         <button
           type="button"
           onClick={handleCreateGroup}
-          className="flex items-center rounded-md bg-primary-300 px-4 py-2 transition-colors active:brightness-105 sm:hover:brightness-105"
+          className="flex items-center rounded-md bg-primary-300 px-4 py-2 transition-colors active:brightness-105 hover:brightness-105"
         >
           <PlusIcon className="mr-2 size-4" />
           <span className="font-semibold">建立群組</span>
@@ -65,7 +65,7 @@ export const Dashboard = () => {
           type="button"
           onClick={refresh}
           disabled={loading}
-          className="rounded-md bg-gray-300 p-2 transition-colors active:bg-gray-400 sm:hover:bg-gray-400"
+          className="rounded-md bg-gray-300 p-2 transition-colors active:bg-gray-400 hover:bg-gray-400"
         >
           <RefreshIcon className={`size-4 ${loading ? 'animate-spin' : ''}`} />
         </button>
@@ -207,7 +207,7 @@ const GroupCard = ({
           <div className="flex w-full items-center justify-end">
             <button
               type="button"
-              className="w-36 rounded-md bg-text p-2 font-bold text-background transition-colors active:bg-gray-600 sm:hover:bg-gray-600"
+              className="w-36 rounded-md bg-text p-2 font-bold text-background transition-colors active:bg-gray-600 hover:bg-gray-600"
               onClick={handleCopyInviteLink}
             >
               複製
