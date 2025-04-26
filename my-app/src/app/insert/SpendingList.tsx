@@ -2,15 +2,23 @@
 
 import { SpendingItem } from '@/app/insert/SpendingItem';
 import { SearchIcon } from '@/components/icons/SearchIcon';
+import { useMemo } from 'react';
 
 interface Props {
   data: SpendingRecord[];
+  filterStr: string;
   loading: boolean;
   refreshData: () => void;
 }
 
 export const SpendingList = (props: Props) => {
-  const { refreshData, data, loading } = props;
+  const { refreshData, data, filterStr, loading } = props;
+
+  const filteredBySearch = useMemo(
+    () =>
+      data.filter((d) => filterStr === '' || d.description.includes(filterStr)),
+    [data, filterStr],
+  );
 
   if (loading) {
     return (
@@ -20,7 +28,7 @@ export const SpendingList = (props: Props) => {
         <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100 sm:h-14"></div>
       </div>
     );
-  } else if (data.length === 0) {
+  } else if (filteredBySearch.length === 0) {
     return (
       <div className="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-gray-100 px-2 text-xs sm:h-14 sm:text-sm">
         <SearchIcon className="size-5 text-gray-700" />
@@ -31,7 +39,7 @@ export const SpendingList = (props: Props) => {
 
   return (
     <div className="flex w-full flex-col gap-2 text-xs sm:text-sm">
-      {data.map((spending, index) => (
+      {filteredBySearch.map((spending, index) => (
         <SpendingItem
           key={`${spending.id}-${index.toString()}`}
           spending={spending}

@@ -4,13 +4,11 @@ import { OverView } from '@/app/insert/OverView';
 import { SpendingList } from '@/app/insert/SpendingList';
 import { DatePicker } from '@/components/DatePicker';
 import { SearchIcon } from '@/components/icons/SearchIcon';
-import { GroupSelector } from '@/composites/GroupSelector';
+import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { useDate } from '@/hooks/useDate';
 import { useScrollToTop } from '@/hooks/useScrollToTop';
-import { DateFilter } from '@/utils/constants';
-import { getExpenseFromData } from '@/utils/getExpenseFromData';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
 import dynamic from 'next/dynamic';
 import {
@@ -18,7 +16,6 @@ import {
   startTransition,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -33,25 +30,12 @@ export const SpendingInfoSection = ({
   useScrollToTop();
   const { config: userData } = useUserConfigCtx();
   const { syncData, data, loading } = useGetSpendingCtx();
+  const { currentGroup } = useGroupCtx();
   const [isProcessing, setIsProcessing] = useState(true);
   const [date, setDate] = useDate(new Date());
-  const [selectedGroup, setSelectedGroup] = useState<string>('');
-  const [selectedMemberEmail, setSelectedMemberEmail] = useState<string>();
-  const [filter, setFilter] = useState(DateFilter.Day);
-  const [filteredData, setFilteredData] = useState<SpendingRecord[]>([]);
   const [monthlyData, setMonthlyData] = useState<SpendingRecord[]>([]);
-  const [totalIncome, setTotalIncome] = useState(0);
-  const [totalOutcome, setTotalOutcome] = useState(0);
   const [filterStr, setFilterStr] = useState('');
   const searchRef = useRef<HTMLInputElement>(null);
-
-  const filteredBySearch = useMemo(
-    () =>
-      filteredData.filter(
-        (d) => filterStr === '' || d.description.includes(filterStr),
-      ),
-    [filteredData, filterStr],
-  );
 
   const handleOnChangeDate = useCallback(
     (event: ChangeEvent) => {
@@ -63,7 +47,7 @@ export const SpendingInfoSection = ({
         ) {
           const { startDate, endDate } = getStartEndOfMonth(newDate);
           syncData(
-            selectedGroup || undefined,
+            currentGroup?.id,
             userData?.email,
             startDate.toISOString(),
             endDate.toISOString(),
@@ -72,7 +56,7 @@ export const SpendingInfoSection = ({
         return newDate;
       });
     },
-    [selectedGroup, setDate, syncData, userData?.email],
+    [currentGroup?.id, setDate, syncData, userData?.email],
   );
 
   const refreshData = useCallback(
@@ -90,31 +74,16 @@ export const SpendingInfoSection = ({
 
   useEffect(() => {
     startTransition(() => {
-      if (loading || !selectedMemberEmail) return;
+      if (loading || !userData?.email) return;
       const dataFilterByUser = [...data].filter((_data) =>
-        checkUser(_data, selectedMemberEmail),
+        checkUser(_data, userData.email),
       );
       setMonthlyData(dataFilterByUser);
-      const { totalIncome: _totalIncome, totalOutcome: _totalOutcome } =
-        getExpenseFromData(dataFilterByUser);
-      setTotalIncome(_totalIncome);
-      setTotalOutcome(_totalOutcome);
-
-      const dataFilterByDate = dataFilterByUser.filter((_data) =>
-        checkDate(_data.date, date, filter),
-      );
-      setFilteredData(dataFilterByDate);
       startTransition(() => {
         setIsProcessing(false);
       });
     });
-  }, [data, date, selectedMemberEmail, filter, loading]);
-
-  useEffect(() => {
-    if (!selectedGroup && userData?.email) {
-      setSelectedMemberEmail(userData.email);
-    }
-  }, [selectedGroup, userData?.email]);
+  }, [data, date, userData?.email, loading]);
 
   useEffect(() => {
     const elem = searchRef.current;
@@ -127,19 +96,6 @@ export const SpendingInfoSection = ({
 
   return (
     <div className="relative mx-auto flex w-full max-w-175 flex-1 flex-col items-center gap-6 p-6">
-      <div className="flex w-full justify-end">
-        <div className="w-fit">
-          <GroupSelector
-            selectedGroup={selectedGroup}
-            selectedMemberEmail={selectedMemberEmail}
-            onSelectGroup={(_groupId) => {
-              setSelectedGroup(_groupId);
-              refreshData(_groupId);
-            }}
-            onSelectMemberEmail={setSelectedMemberEmail}
-          />
-        </div>
-      </div>
       <div className="flex w-full items-center justify-center">
         <DatePicker
           date={date}
@@ -152,32 +108,11 @@ export const SpendingInfoSection = ({
         <span className="text-base font-bold">馬上記帳</span>
       </AddExpenseBtn>
 
-      <OverView
-        totalIncome={totalIncome}
-        totalOutcome={totalOutcome}
-        dateStr={date.toISOString()}
-        costList={monthlyData}
-      />
+      <OverView dateStr={date.toISOString()} costList={monthlyData} />
 
       <div className="bg-background flex w-full flex-col rounded-3xl border border-solid border-gray-300 p-6 shadow">
         <div className="mb-6 flex items-center gap-4">
-          <h3 className="text-lg font-bold">活動</h3>
-          <div className="flex items-center gap-2 text-xs">
-            <button
-              type="button"
-              onClick={() => setFilter(DateFilter.Day)}
-              className={`rounded-md border border-solid border-gray-300 px-4 py-1 transition-colors ${filter === DateFilter.Day ? 'bg-gray-300' : 'bg-background active:bg-gray-100 hover:bg-gray-100'}`}
-            >
-              日
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilter(DateFilter.Month)}
-              className={`rounded-md border border-solid border-gray-300 px-4 py-1 transition-colors ${filter === DateFilter.Month ? 'bg-gray-300' : 'bg-background active:bg-gray-100 hover:bg-gray-100'}`}
-            >
-              月
-            </button>
-          </div>
+          <h3 className="text-lg font-bold">帳目</h3>
           <div className="group ml-auto flex items-center gap-2 rounded-lg border border-solid border-gray-300 px-2">
             <SearchIcon className="group-hover:text-primary-500 text-gray-500 transition-colors" />
             <input
@@ -188,7 +123,8 @@ export const SpendingInfoSection = ({
           </div>
         </div>
         <SpendingList
-          data={filteredBySearch}
+          data={monthlyData}
+          filterStr={filterStr}
           loading={isProcessing}
           refreshData={refreshData}
         />
@@ -199,19 +135,4 @@ export const SpendingInfoSection = ({
 
 function checkUser(_data: SpendingRecord, email?: string) {
   return email === '' || _data['user-token'] === email;
-}
-
-function checkDate(dateStr: string, _date: Date, _filter: DateFilter) {
-  const dataDate = new Date(dateStr);
-  if (_filter === DateFilter.Month) {
-    return (
-      dataDate.getFullYear() === _date.getFullYear() &&
-      dataDate.getMonth() === _date.getMonth()
-    );
-  }
-  return (
-    dataDate.getFullYear() === _date.getFullYear() &&
-    dataDate.getMonth() === _date.getMonth() &&
-    dataDate.getDate() === _date.getDate()
-  );
 }

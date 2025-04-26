@@ -1,17 +1,17 @@
 import { DoubleArrowIcon } from '@/components/icons/DoubleArrowIcon';
 import { SpendingType } from '@/utils/constants';
+import { getExpenseFromData } from '@/utils/getExpenseFromData';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import Link from 'next/link';
 
 interface Props {
-  totalIncome: number;
-  totalOutcome: number;
   dateStr: string;
   costList: SpendingRecord[];
 }
 
 export const OverView = (props: Props) => {
-  const { totalIncome, totalOutcome, costList, dateStr } = props;
+  const { costList, dateStr } = props;
+  const { totalIncome, totalOutcome } = getExpenseFromData(costList);
   const year = new Date(dateStr).getFullYear();
   const month = new Date(dateStr).getMonth();
   const days = new Date(year, month, 0).getDate();
