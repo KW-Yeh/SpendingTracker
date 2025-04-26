@@ -104,9 +104,7 @@ export const SpendingInfoSection = ({
         />
       </div>
 
-      <AddExpenseBtn autoClick={!!quickInsert}>
-        <span className="text-base font-bold">馬上記帳</span>
-      </AddExpenseBtn>
+      <AddExpenseBtn autoClick={!!quickInsert}>立即新增帳目</AddExpenseBtn>
 
       <OverView dateStr={date.toISOString()} costList={monthlyData} />
 

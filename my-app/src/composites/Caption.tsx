@@ -1,5 +1,5 @@
 import { RouteTitle } from '@/components/RouteTitle';
-import { GroupSelector2 } from '@/composites/GroupSelector2';
+import { GroupSelector } from '@/composites/GroupSelector';
 import { MenuButton } from '@/composites/MenuButton';
 
 export const Caption = ({ openAside }: { openAside: () => void }) => {
@@ -11,7 +11,7 @@ export const Caption = ({ openAside }: { openAside: () => void }) => {
           <RouteTitle />
         </div>
         <div className="absolute right-0 w-fit">
-          <GroupSelector2 />
+          <GroupSelector />
         </div>
       </div>
     </div>

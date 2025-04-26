@@ -6,6 +6,7 @@ import { NumberKeyboard, NumberKeyboardRef } from '@/components/NumberKeyboard';
 import { Select } from '@/components/Select';
 import { Switch } from '@/components/Switch';
 import { GroupSelector } from '@/composites/GroupSelector';
+import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { putItem } from '@/services/getRecords';
@@ -40,6 +41,7 @@ export const EditExpenseModal = (props: Props) => {
   const { data, isNewData, onClose } = props;
   const { config: userData } = useUserConfigCtx();
   const { syncData } = useGetSpendingCtx();
+  const { currentGroup } = useGroupCtx();
   const numberKeyboardRef = useRef<NumberKeyboardRef>(null);
   const [spendingType, setSpendingType] = useState<string>(data.type);
   const [necessity, setNecessity] = useState<string>(data.necessity);
@@ -50,9 +52,7 @@ export const EditExpenseModal = (props: Props) => {
   );
   const [amount, setAmount] = useState(data.amount);
   const [isNoAmount, setIsNoAmount] = useState(false);
-  const [memberEmail, setMemberEmail] = useState<string>();
   const [date, setDate] = useState(data.date);
-  const [groupId, setGroupId] = useState<string>();
   const [loading, setLoading] = useState(false);
   const [spendingCategories, setSpendingCategories] = useState<
     {
@@ -120,7 +120,7 @@ export const EditExpenseModal = (props: Props) => {
         ...data,
         id: data.id || uuid(),
         'user-token': userEmail,
-        groupId: groupId || undefined,
+        groupId: currentGroup?.id,
         type: spendingType,
         date,
         necessity,
@@ -132,7 +132,7 @@ export const EditExpenseModal = (props: Props) => {
       await putItem(newSpending);
       const { startDate, endDate } = getStartEndOfMonth(date);
       syncData(
-        groupId,
+        currentGroup?.id,
         userEmail,
         startDate.toISOString(),
         endDate.toISOString(),
@@ -144,7 +144,7 @@ export const EditExpenseModal = (props: Props) => {
       userData?.email,
       amount,
       data,
-      groupId,
+      currentGroup?.id,
       spendingType,
       date,
       necessity,
@@ -214,14 +214,7 @@ export const EditExpenseModal = (props: Props) => {
           </div>
           <div className="flex items-center justify-between gap-4">
             <div className="flex-1">
-              <GroupSelector
-                selectedGroup={groupId}
-                selectedMemberEmail={memberEmail}
-                onSelectGroup={setGroupId}
-                onSelectMemberEmail={setMemberEmail}
-                showMemberSelector={false}
-                selectorStyle="w-full h-10 rounded-md"
-              />
+              <GroupSelector className="h-10 w-full rounded-md" />
             </div>
             <DatePicker
               date={new Date(date)}
@@ -243,7 +236,7 @@ export const EditExpenseModal = (props: Props) => {
                   </span>
                 }
                 onChange={setSelectedCategory}
-                className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1 transition-colors active:border-gray-500 hover:border-gray-500"
+                className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1 transition-colors hover:border-gray-500 active:border-gray-500"
               >
                 {spendingCategories.map((category) => (
                   <Select.Item key={category.value} value={category.value}>
@@ -281,7 +274,7 @@ export const EditExpenseModal = (props: Props) => {
             <div className="overflow-hidden">
               <button
                 type="button"
-                className="border-text bg-text text-background w-full rounded-lg border border-solid p-2 font-semibold transition-colors active:bg-gray-800 hover:bg-gray-800"
+                className="border-text bg-text text-background w-full rounded-lg border border-solid p-2 font-semibold transition-colors hover:bg-gray-800 active:bg-gray-800"
                 onClick={handleSetCommonDesc}
               >
                 {!isNewDesc ? '- 刪除常用描述' : '+ 新增常用描述'}
@@ -312,7 +305,7 @@ export const EditExpenseModal = (props: Props) => {
             disabled={loading}
             type="button"
             onClick={cancel}
-            className="bg-background flex w-24 items-center justify-center rounded-lg border border-solid border-red-300 p-2 text-red-300 transition-colors active:border-red-500 active:text-red-500 hover:border-red-500 hover:text-red-500"
+            className="bg-background flex w-24 items-center justify-center rounded-lg border border-solid border-red-300 p-2 text-red-300 transition-colors hover:border-red-500 hover:text-red-500 active:border-red-500 active:text-red-500"
           >
             <span>取消</span>
           </button>

@@ -8,7 +8,7 @@ interface Props extends HTMLAttributes<HTMLButtonElement> {
 }
 
 const AddExpenseBtn = (props: Props) => {
-  const { className = '', autoClick, children } = props;
+  const { autoClick, children } = props;
   const LinkRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
@@ -21,7 +21,7 @@ const AddExpenseBtn = (props: Props) => {
     <Link
       ref={LinkRef}
       href="/edit"
-      className={`shadow-primary text-primary-700 bg-background active:shadow-primary-hover hover:shadow-primary-hover mx-auto flex rounded-lg px-14 py-4 text-center transition-all active:text-blue-700 hover:text-blue-700 ${className}`}
+      className="gradient-r-from-purple-to-blue mx-auto flex rounded-lg px-14 py-4 text-center"
       scroll={false}
     >
       {children}

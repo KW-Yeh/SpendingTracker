@@ -3,6 +3,7 @@ import { SpendingType } from '@/utils/constants';
 import { getExpenseFromData } from '@/utils/getExpenseFromData';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import Link from 'next/link';
+import { MdOutlineWallet } from 'react-icons/md';
 
 interface Props {
   dateStr: string;
@@ -33,6 +34,7 @@ export const OverView = (props: Props) => {
         <span
           className={`flex items-center gap-1 text-xs sm:text-sm ${totalIncome !== 0 && totalIncome - totalOutcome < 0 ? 'text-red-400' : 'text-green-400'}`}
         >
+          <MdOutlineWallet className='size-6 text-gray-500'/>
           <span className="text-3xl leading-9 font-semibold">
             {totalIncome
               ? `$${normalizeNumber(totalIncome - totalOutcome)}`
@@ -94,10 +96,6 @@ export const OverView = (props: Props) => {
         前往分析
         <DoubleArrowIcon className="size-3" />
       </Link>
-
-      <span className="absolute top-4 right-4 text-xs">
-        {`${year}-${month + 1}`}
-      </span>
     </div>
   );
 };

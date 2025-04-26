@@ -1,84 +1,31 @@
-'use client';
-
 import { Select } from '@/components/Select';
 import { useGroupCtx } from '@/context/GroupProvider';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 
-interface Props {
-  selectedGroup?: string;
-  selectedMemberEmail?: string;
-  onSelectGroup: (groupId: string) => void;
-  onSelectMemberEmail: (email?: string) => void;
-  showMemberSelector?: boolean;
-  selectorStyle?: string;
-}
-
-export const GroupSelector = (props: Props) => {
-  const {
-    selectedGroup,
-    selectedMemberEmail,
-    onSelectGroup,
-    onSelectMemberEmail,
-    showMemberSelector = true,
-    selectorStyle,
-  } = props;
-  const { groups, loading } = useGroupCtx();
-
-  const group = useMemo(
-    () => groups.find((group) => group.id === selectedGroup),
-    [groups, selectedGroup],
-  );
-
-  const selectedMember = useMemo(
-    () => group?.users.find((user) => user.email === selectedMemberEmail),
-    [group?.users, selectedMemberEmail],
-  );
+export const GroupSelector = ({ className = '' }: { className?: string }) => {
+  const { loading, groups, currentGroup, setCurrentGroup } = useGroupCtx();
 
   const handleOnSelectGroup = useCallback(
     (groupId: string) => {
-      if (loading) return;
-      onSelectGroup(groupId);
+      setCurrentGroup(groups.find((group) => group.id === groupId));
     },
-    [loading, onSelectGroup],
+    [groups, setCurrentGroup],
   );
 
   return (
-    <div className="flex w-full items-center gap-1 text-sm sm:text-base">
-      <Select
-        name="group"
-        value={group?.name ?? '個人'}
-        onChange={handleOnSelectGroup}
-        className={`bg-background rounded-full border border-solid border-gray-300 px-3 py-1 transition-colors active:border-gray-500 hover:border-gray-500 ${selectorStyle}`}
-      >
-        <Select.Item value="">個人</Select.Item>
-        {!loading &&
-          groups.map((group) => (
-            <Select.Item key={group.id} value={group.id}>
-              {group.name}
-            </Select.Item>
-          ))}
-      </Select>
-
-      {group && showMemberSelector && (
-        <>
-          <span className="ml-2 text-sm whitespace-nowrap text-gray-500">
-            成員
-          </span>
-          <Select
-            name="member"
-            value={selectedMember?.name ?? '全部'}
-            onChange={onSelectMemberEmail}
-            className={`active:border-border-gray-500 hover:border-border-gray-500 rounded-full border border-solid border-gray-300 px-3 py-1 transition-colors ${selectorStyle}`}
-          >
-            <Select.Item value="">全部</Select.Item>
-            {group.users.map((user) => (
-              <Select.Item key={user.email} value={user.email}>
-                {user.name}
-              </Select.Item>
-            ))}
-          </Select>
-        </>
-      )}
-    </div>
+    <Select
+      name="group"
+      value={currentGroup?.name ?? '個人'}
+      onChange={handleOnSelectGroup}
+      className={`bg-background rounded-full border border-solid border-gray-300 px-3 py-1 transition-colors active:border-gray-500 sm:hover:border-gray-500 ${className}`}
+    >
+      <Select.Item value="">個人</Select.Item>
+      {!loading &&
+        groups.map((group) => (
+          <Select.Item key={group.id} value={group.id}>
+            {group.name}
+          </Select.Item>
+        ))}
+    </Select>
   );
 };
