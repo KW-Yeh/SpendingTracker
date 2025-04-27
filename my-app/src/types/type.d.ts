@@ -8,7 +8,6 @@ interface SpendingRecord {
   amount: number;
   category: string;
   description: string;
-  desc?: Record<string, string[]>;
 }
 
 interface Group {
@@ -29,6 +28,7 @@ interface User {
   image: string;
   groups: string[];
   budgetList?: number[];
+  desc?: Record<string, string[]>;
 }
 
 interface ModalRef {

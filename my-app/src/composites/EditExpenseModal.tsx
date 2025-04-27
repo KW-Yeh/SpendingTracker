@@ -40,7 +40,7 @@ interface Props {
 
 export const EditExpenseModal = (props: Props) => {
   const { data, isNewData, onClose } = props;
-  const { config: userData } = useUserConfigCtx();
+  const { config: userData, setter: updateUser } = useUserConfigCtx();
   const { syncData } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
   const numberKeyboardRef = useRef<NumberKeyboardRef>(null);
@@ -49,7 +49,7 @@ export const EditExpenseModal = (props: Props) => {
   const [selectedCategory, setSelectedCategory] = useState(data.category);
   const [description, setDescription] = useState(data.description);
   const [commonDescMap, setCommonDescMap] = useState<Record<string, string[]>>(
-    data.desc ?? DEFAULT_DESC,
+    userData?.desc ?? DEFAULT_DESC,
   );
   const [amount, setAmount] = useState(data.amount);
   const [isNoAmount, setIsNoAmount] = useState(false);
@@ -134,11 +134,20 @@ export const EditExpenseModal = (props: Props) => {
         startDate.toISOString(),
         endDate.toISOString(),
       );
+      if (
+        userData &&
+        JSON.stringify(userData.desc ?? {}) !== JSON.stringify(commonDescMap)
+      ) {
+        updateUser({
+          ...userData,
+          desc: commonDescMap,
+        });
+      }
       setLoading(false);
       if (onClose) onClose();
     },
     [
-      userData?.email,
+      userData,
       amount,
       data,
       currentGroup?.id,
@@ -149,6 +158,8 @@ export const EditExpenseModal = (props: Props) => {
       description,
       syncData,
       onClose,
+      updateUser,
+      commonDescMap,
     ],
   );
 

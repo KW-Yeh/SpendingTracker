@@ -1,7 +1,7 @@
 'use client';
 
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
-import { DEFAULT_DESC, Necessity, SpendingType } from '@/utils/constants';
+import { Necessity, SpendingType } from '@/utils/constants';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { v7 as uuid } from 'uuid';
@@ -32,7 +32,6 @@ const EditRecordContainer = ({ recordId }: { recordId?: string | null }) => {
         amount: 0,
         description: '',
         date: new Date().toISOString(),
-        desc: DEFAULT_DESC,
       };
       if (!recordId) {
         setMatchedData(_data);
