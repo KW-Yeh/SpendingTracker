@@ -18,6 +18,7 @@ import {
   SpendingType,
 } from '@/utils/constants';
 import { getCategoryIcon } from '@/utils/getCategoryIcon';
+import { getSpendingCategoryMap } from '@/utils/getSpendingCategoryMap';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import {
@@ -61,10 +62,6 @@ export const EditExpenseModal = (props: Props) => {
     }[]
   >(data.type === SpendingType.Income ? INCOME_TYPE_MAP : OUTCOME_TYPE_MAP);
 
-  const getSpendingCategories = (type: string) => {
-    return type === SpendingType.Income ? INCOME_TYPE_MAP : OUTCOME_TYPE_MAP;
-  };
-
   const selectedCategoryLabel = useMemo(
     () =>
       spendingCategories.find((item) => item.value === selectedCategory)?.label,
@@ -78,7 +75,7 @@ export const EditExpenseModal = (props: Props) => {
 
   const handleSetSpendingType = (type: string) => {
     setSpendingType(type);
-    const categories = getSpendingCategories(type);
+    const categories = getSpendingCategoryMap(type);
     setSpendingCategories(categories);
     setSelectedCategory(categories[0].value);
   };

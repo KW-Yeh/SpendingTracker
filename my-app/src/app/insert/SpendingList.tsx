@@ -2,6 +2,7 @@
 
 import { SpendingItem } from '@/app/insert/SpendingItem';
 import { SearchIcon } from '@/components/icons/SearchIcon';
+import { formatDate } from '@/utils/formatDate';
 import { useMemo } from 'react';
 
 interface Props {
@@ -19,6 +20,16 @@ export const SpendingList = (props: Props) => {
       data.filter((d) => filterStr === '' || d.description.includes(filterStr)),
     [data, filterStr],
   );
+
+  const sortedByDay = useMemo(() => {
+    const result: Record<string, SpendingRecord[]> = {};
+    filteredBySearch.forEach((d: SpendingRecord) => {
+      const date = formatDate(d.date);
+      if (!result[date]) result[date] = [];
+      result[date].push(d);
+    });
+    return result;
+  }, [filteredBySearch]);
 
   if (loading) {
     return (
@@ -39,12 +50,19 @@ export const SpendingList = (props: Props) => {
 
   return (
     <div className="flex w-full flex-col gap-2 text-xs sm:text-sm">
-      {filteredBySearch.map((spending, index) => (
-        <SpendingItem
-          key={`${spending.id}-${index.toString()}`}
-          spending={spending}
-          refreshData={refreshData}
-        />
+      {Object.keys(sortedByDay).map((dateStr) => (
+        <div key={dateStr}>
+          <span className="text-gray-500">{dateStr}</span>
+          <div className="flex flex-col">
+            {sortedByDay[dateStr].map((spending, index) => (
+              <SpendingItem
+                key={`${spending.id}-${index.toString()}`}
+                spending={spending}
+                refreshData={refreshData}
+              />
+            ))}
+          </div>
+        </div>
       ))}
     </div>
   );

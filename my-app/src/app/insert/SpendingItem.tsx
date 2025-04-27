@@ -4,9 +4,9 @@ import { ActionMenu } from '@/components/ActionMenu';
 import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { EditIcon } from '@/components/icons/EditIcon';
 import { deleteItem } from '@/services/getRecords';
-import { Necessity, SpendingType } from '@/utils/constants';
-import { formatDate } from '@/utils/formatDate';
+import { SpendingType } from '@/utils/constants';
 import { getCategoryIcon } from '@/utils/getCategoryIcon';
+import { getSpendingCategoryMap } from '@/utils/getSpendingCategoryMap';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -21,6 +21,16 @@ export const SpendingItem = (props: Props) => {
   const { spending, refreshData } = props;
   const [deleting, setDeleting] = useState(false);
   const router = useRouter();
+
+  const categories = useMemo(
+    () => getSpendingCategoryMap(spending.type),
+    [spending.type],
+  );
+
+  const category = useMemo(
+    () => categories.find((cat) => cat.value === spending.category),
+    [categories, spending.category],
+  );
 
   const additionalStyle = useMemo(() => {
     if (deleting) {
@@ -60,41 +70,21 @@ export const SpendingItem = (props: Props) => {
           刪除中
         </span>
       )}
-      <div className="bg-primary-400 flex size-6 shrink-0 items-center justify-center rounded-md text-white sm:size-8">
-        {getCategoryIcon(spending.category)}
-      </div>
-      <div className="flex flex-1 items-center gap-2">
-        <div className="flex flex-col text-start">
-          <span className="text-sm">{formatDate(spending.date)}</span>
-          <span className="text-xs text-gray-300">
-            {new Date(spending.date).getFullYear()}
-          </span>
-        </div>
-        <div className="flex flex-1 flex-col">
-          <div
-            title={spending.description}
-            className="w-full overflow-hidden text-ellipsis whitespace-nowrap sm:col-span-5"
-          >
-            {spending.description}
-          </div>
-          <div className="flex w-full flex-wrap gap-1">
-            {spending.necessity === Necessity.NotNeed ? (
-              <span className="rounded-full bg-gray-400 px-2 text-center text-xs">
-                額外
-              </span>
-            ) : (
-              <span className="rounded-full bg-orange-400 px-2 text-center text-xs">
-                必要
-              </span>
-            )}
-          </div>
-        </div>
+      {category && (
+        <span className="bg-primary-300 text-background flex size-6 items-center justify-center rounded-md">
+          {getCategoryIcon(category.value)}
+        </span>
+      )}
+      <div
+        title={spending.description}
+        className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap sm:col-span-5"
+      >
+        {spending.description}
       </div>
       <div
         className={`w-fit text-end font-bold ${spending.type === SpendingType.Outcome ? 'text-red-500' : 'text-green-500'}`}
       >
-        {spending.type === SpendingType.Outcome ? '-' : '+'}
-        {normalizeNumber(spending.amount)}
+        ${normalizeNumber(spending.amount)}
       </div>
       <ActionMenu
         onClick={handleAction}

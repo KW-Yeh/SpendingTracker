@@ -8,13 +8,7 @@ import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { calSpending2Chart } from '@/utils/calSpending2Chart';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
 import dynamic from 'next/dynamic';
-import {
-  startTransition,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { startTransition, useCallback, useEffect, useState } from 'react';
 import ExpenseCostTable from './ExpenseCostTable';
 import NecessityCostTable from './NecessityCostTable';
 import { useScrollToTop } from '@/hooks/useScrollToTop';
@@ -49,7 +43,7 @@ export const ChartBlock = () => {
   useScrollToTop();
   const { config: userData } = useUserConfigCtx();
   const { data, syncData } = useGetSpendingCtx();
-  const { groups, loading: loadingGroups } = useGroupCtx();
+  const { currentGroup } = useGroupCtx();
   const [chartData, setChartData] = useState<PieChartData>({
     income: {
       list: [],
@@ -71,7 +65,6 @@ export const ChartBlock = () => {
   const today = new Date();
   const [year, setYear] = useState(`${today.getFullYear()}`);
   const [month, setMonth] = useState(`${today.getMonth() + 1}`);
-  const [groupId, setGroupId] = useState<string>('');
 
   const refreshData = useCallback(
     (_groupId: string | undefined, _year: string, _month: string) => {
@@ -88,34 +81,24 @@ export const ChartBlock = () => {
     [syncData, userData?.email],
   );
 
-  const group = useMemo(
-    () => groups.find((group) => group.id === groupId),
-    [groups, groupId],
-  );
-
   useEffect(() => {
     startTransition(() => {
       const filteredData = data.filter(
         (record) =>
           `${new Date(record.date).getFullYear()}` === year &&
           `${new Date(record.date).getMonth() + 1}` === month &&
-          record.groupId === (groupId || undefined),
+          record.groupId === currentGroup?.id,
       );
       setChartData(calSpending2Chart(filteredData));
     });
-  }, [data, year, month, groupId]);
+  }, [data, year, month, currentGroup?.id]);
 
   return (
     <div className="flex w-full max-w-175 flex-col items-center gap-6">
       <div className="flex items-center gap-4 text-base sm:text-lg">
         <Filter
           refreshData={refreshData}
-          groupOptions={{
-            setGroupId,
-            loadingGroups,
-            groups,
-            group,
-          }}
+          group={currentGroup}
           dateOptions={{
             today,
             year,
