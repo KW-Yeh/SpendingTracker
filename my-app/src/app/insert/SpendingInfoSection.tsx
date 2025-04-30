@@ -4,18 +4,18 @@ import { OverView } from '@/app/insert/OverView';
 import { SpendingList } from '@/app/insert/SpendingList';
 import { DatePicker } from '@/components/DatePicker';
 import { SearchIcon } from '@/components/icons/SearchIcon';
+import { useDateCtx } from '@/context/DateProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { useDate } from '@/hooks/useDate';
 import { useScrollToTop } from '@/hooks/useScrollToTop';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
 import dynamic from 'next/dynamic';
 import {
-  ChangeEvent,
   startTransition,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -32,32 +32,13 @@ export const SpendingInfoSection = ({
   const { syncData, data, loading } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
   const [isProcessing, setIsProcessing] = useState(true);
-  const [date, setDate] = useDate(new Date());
+  const { date } = useDateCtx();
   const [monthlyData, setMonthlyData] = useState<SpendingRecord[]>([]);
   const [filterStr, setFilterStr] = useState('');
   const searchRef = useRef<HTMLInputElement>(null);
 
-  const handleOnChangeDate = useCallback(
-    (event: ChangeEvent) => {
-      const newDate = new Date((event.target as HTMLInputElement).value);
-      setDate((prevDate) => {
-        if (
-          prevDate.getFullYear() !== newDate.getFullYear() ||
-          prevDate.getMonth() !== newDate.getMonth()
-        ) {
-          const { startDate, endDate } = getStartEndOfMonth(newDate);
-          syncData(
-            currentGroup?.id,
-            userData?.email,
-            startDate.toISOString(),
-            endDate.toISOString(),
-          );
-        }
-        return newDate;
-      });
-    },
-    [currentGroup?.id, setDate, syncData, userData?.email],
-  );
+  const year = useMemo(() => date.getFullYear(), [date]);
+  const month = useMemo(() => date.getMonth(), [date]);
 
   const refreshData = useCallback(
     (_groupId?: string) => {
@@ -94,19 +75,25 @@ export const SpendingInfoSection = ({
     return () => elem?.removeEventListener('change', handleOnChangeSearch);
   }, []);
 
+  useEffect(() => {
+    const { startDate, endDate } = getStartEndOfMonth(new Date(year, month));
+    syncData(
+      currentGroup?.id,
+      userData?.email,
+      startDate.toISOString(),
+      endDate.toISOString(),
+    );
+  }, [currentGroup?.id, month, year, syncData, userData?.email]);
+
   return (
     <div className="relative mx-auto flex w-full max-w-175 flex-1 flex-col items-center gap-6 p-6">
       <div className="flex w-full items-center justify-center">
-        <DatePicker
-          date={date}
-          labelClassName="p-4 text-lg sm:text-xl bg-background font-semibold"
-          onChange={handleOnChangeDate}
-        />
+        <DatePicker labelClassName="p-4 text-lg sm:text-xl bg-background font-semibold" />
       </div>
 
       <AddExpenseBtn autoClick={!!quickInsert}>立即新增帳目</AddExpenseBtn>
 
-      <OverView dateStr={date.toISOString()} costList={monthlyData} />
+      <OverView dateStr={date.toISOString()} costList={data} />
 
       <div className="bg-background flex w-full flex-col rounded-3xl border border-solid border-gray-300 p-6 shadow">
         <div className="mb-6 flex items-center gap-4">

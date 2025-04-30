@@ -29,6 +29,8 @@ export const OverView = (props: Props) => {
     }
   });
 
+  console.log(dailyCost);
+
   return (
     <div className="bg-background relative flex w-full flex-col items-start rounded-3xl border border-solid border-gray-300 p-6 text-gray-300 shadow">
       <div className="flex w-full flex-col">
@@ -66,13 +68,13 @@ export const OverView = (props: Props) => {
             <span
               className="absolute h-6 w-px bg-gray-300 opacity-0 transition-opacity select-none group-hover:opacity-100 group-active:opacity-100"
               style={{
-                bottom: `${(cost * 100) / largestCost}%`,
+                bottom: cost ? `${(cost * 100) / largestCost}%` : '0%',
               }}
             ></span>
             <span
               className="w-1.25 rounded-t-full border-b border-solid border-red-300 bg-red-300 outline-red-100 group-hover:bg-red-500 group-hover:shadow-[0_-2px_6px_0_#fb2c36] group-hover:outline-1 group-active:bg-red-500 group-active:outline-1"
               style={{
-                height: `${(cost * 100) / largestCost}%`,
+                height: cost ? `${(cost * 100) / largestCost}%` : '0%',
               }}
             ></span>
             <span className="absolute top-full mt-1 text-xs select-none">
@@ -81,7 +83,7 @@ export const OverView = (props: Props) => {
             <p
               className="bg-background text-text absolute z-10 mb-6 rounded-md border border-solid border-gray-300 px-2 py-1 text-center text-xs whitespace-nowrap opacity-0 shadow transition-opacity select-none group-hover:opacity-100 group-active:opacity-100"
               style={{
-                bottom: `${(cost * 100) / largestCost}%`,
+                bottom: cost ? `${(cost * 100) / largestCost}%` : '0%',
               }}
             >
               {`${month}/${i + 1} $${normalizeNumber(cost)}`}

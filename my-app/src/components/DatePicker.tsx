@@ -1,12 +1,11 @@
 'use client';
 
 import { CalendarIcon } from '@/components/icons/CalendarIcon';
+import { useDateCtx } from '@/context/DateProvider';
 import { WEEKDAY } from '@/utils/constants';
 import { ChangeEvent, useMemo, useRef } from 'react';
 
 interface Props {
-  date: Date;
-  onChange: (event: ChangeEvent) => void;
   className?: string;
   labelClassName?: string;
   format?: 'wording' | 'yyyy-mm-dd' | 'yyyy/mm/dd';
@@ -14,10 +13,12 @@ interface Props {
 
 export const DatePicker = (props: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const year = props.date.getFullYear();
-  const month = props.date.getMonth();
-  const day = props.date.getDate();
-  const weekday = props.date.getDay();
+  const { date, setDate } = useDateCtx();
+
+  const year = useMemo(() => date.getFullYear(), [date]);
+  const month = useMemo(() => date.getMonth(), [date]);
+  const day = useMemo(() => date.getDate(), [date]);
+  const weekday = useMemo(() => date.getDay(), [date]);
 
   const wording = useMemo(() => {
     if (props.format === 'yyyy-mm-dd') {
@@ -27,6 +28,11 @@ export const DatePicker = (props: Props) => {
     }
     return `${year} 年 ${month + 1} 月 ${day} 日（週${WEEKDAY[weekday]}）`;
   }, [year, month, day, weekday, props.format]);
+
+  const handleOnChangeDate = (event: ChangeEvent) => {
+    const newDate = new Date((event.target as HTMLInputElement).value);
+    setDate(newDate);
+  };
 
   const showPicker = () => {
     if (!inputRef.current) return;
@@ -44,7 +50,7 @@ export const DatePicker = (props: Props) => {
         ref={inputRef}
         type="date"
         className="absolute top-0 right-0 bottom-0 left-0 opacity-0"
-        onChange={props.onChange}
+        onChange={handleOnChangeDate}
       />
       <button
         type="button"

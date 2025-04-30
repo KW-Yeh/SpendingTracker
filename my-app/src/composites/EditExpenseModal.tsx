@@ -5,7 +5,7 @@ import { Modal } from '@/components/Modal';
 import { NumberKeyboard, NumberKeyboardRef } from '@/components/NumberKeyboard';
 import { Select } from '@/components/Select';
 import { Switch } from '@/components/Switch';
-import { GroupSelector } from '@/composites/GroupSelector';
+import { useDateCtx } from '@/context/DateProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
@@ -22,7 +22,6 @@ import { getSpendingCategoryMap } from '@/utils/getSpendingCategoryMap';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import {
-  ChangeEvent,
   FormEvent,
   useCallback,
   useEffect,
@@ -43,6 +42,7 @@ export const EditExpenseModal = (props: Props) => {
   const { config: userData, setter: updateUser } = useUserConfigCtx();
   const { syncData } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
+  const { date } = useDateCtx();
   const numberKeyboardRef = useRef<NumberKeyboardRef>(null);
   const [spendingType, setSpendingType] = useState<string>(data.type);
   const [necessity, setNecessity] = useState<string>(data.necessity);
@@ -53,7 +53,6 @@ export const EditExpenseModal = (props: Props) => {
   );
   const [amount, setAmount] = useState(data.amount);
   const [isNoAmount, setIsNoAmount] = useState(false);
-  const [date, setDate] = useState(data.date);
   const [loading, setLoading] = useState(false);
   const [spendingCategories, setSpendingCategories] = useState<
     {
@@ -78,11 +77,6 @@ export const EditExpenseModal = (props: Props) => {
     const categories = getSpendingCategoryMap(type);
     setSpendingCategories(categories);
     setSelectedCategory(categories[0].value);
-  };
-
-  const handleOnChangeDate = (event: ChangeEvent) => {
-    const _date = new Date((event.target as HTMLInputElement).value);
-    setDate(_date.toISOString());
   };
 
   const handleSetCommonDesc = useCallback(() => {
@@ -119,7 +113,7 @@ export const EditExpenseModal = (props: Props) => {
         'user-token': userEmail,
         groupId: currentGroup?.id,
         type: spendingType,
-        date,
+        date: date.toISOString(),
         necessity,
         category: selectedCategory,
         description,
@@ -203,14 +197,20 @@ export const EditExpenseModal = (props: Props) => {
             />
             <Switch
               option1={{
-                label: '必要支出',
+                label:
+                  spendingType === SpendingType.Outcome
+                    ? '必要支出'
+                    : '必要收入',
                 value: Necessity.Need,
                 onSelectColor: '#ED8936',
                 defaultColor: 'hsl(0, 0%, 50%)',
                 className: '!px-2 !py-1',
               }}
               option2={{
-                label: '額外支出',
+                label:
+                  spendingType === SpendingType.Outcome
+                    ? '額外支出'
+                    : '額外收入',
                 value: Necessity.NotNeed,
                 defaultColor: 'hsl(0, 0%, 50%)',
                 className: '!px-2 !py-1',
@@ -221,18 +221,6 @@ export const EditExpenseModal = (props: Props) => {
             />
           </div>
           <div className="flex items-center justify-between gap-4">
-            <div className="flex-1">
-              <GroupSelector className="h-10 w-full rounded-md" />
-            </div>
-            <DatePicker
-              date={new Date(date)}
-              className="h-10 flex-1 rounded-md border border-solid border-gray-300 bg-transparent"
-              labelClassName="text-base px-2 py-1"
-              format="yyyy/mm/dd"
-              onChange={handleOnChangeDate}
-            />
-          </div>
-          <div className="flex w-full items-center gap-4">
             <fieldset className="flex-1">
               <Select
                 name="category"
@@ -256,6 +244,13 @@ export const EditExpenseModal = (props: Props) => {
                 ))}
               </Select>
             </fieldset>
+            <DatePicker
+              className="h-10 flex-1 rounded-md border border-solid border-gray-300 bg-transparent"
+              labelClassName="text-base px-2 py-1"
+              format="yyyy/mm/dd"
+            />
+          </div>
+          <div className="flex w-full items-center gap-4">
             <fieldset className="flex-1">
               <input
                 list="common-description"

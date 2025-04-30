@@ -7,15 +7,10 @@ export const getStartEndOfMonth = (theDay: string | Date) => {
     0,
     0,
   );
-  const days = new Date(
-    new Date(theDay).getFullYear(),
-    new Date(theDay).getMonth(),
-    0,
-  ).getDate();
   const endDate = new Date(
     new Date(theDay).getFullYear(),
-    new Date(theDay).getMonth(),
-    days,
+    new Date(theDay).getMonth() + 1,
+    0,
     23,
     59,
     59,

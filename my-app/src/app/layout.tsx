@@ -1,6 +1,7 @@
 import Footer from '@/composites/Footer';
 import { Header } from '@/composites/Header';
 import { PrepareData } from '@/composites/PrepareData';
+import { DateProvider } from '@/context/DateProvider';
 import { GroupProvider } from '@/context/GroupProvider';
 import { SpendingProvider } from '@/context/SpendingProvider';
 import { UserConfigProvider } from '@/context/UserConfigProvider';
@@ -26,16 +27,18 @@ export default function RootLayout({
     <html lang="zh-Hant">
       <body>
         <SessionProvider>
-          <GroupProvider>
-            <UserConfigProvider>
-              <SpendingProvider>
-                <Header />
-                {children}
-                {modal}
-                <PrepareData />
-              </SpendingProvider>
-            </UserConfigProvider>
-          </GroupProvider>
+          <DateProvider>
+            <GroupProvider>
+              <UserConfigProvider>
+                <SpendingProvider>
+                  <Header />
+                  {children}
+                  {modal}
+                  <PrepareData />
+                </SpendingProvider>
+              </UserConfigProvider>
+            </GroupProvider>
+          </DateProvider>
         </SessionProvider>
         <Footer />
       </body>
