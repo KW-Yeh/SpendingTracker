@@ -4,8 +4,20 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: '消費追蹤',
-  description: '幫助記賬跟分析花費',
+  description: '幫助記賬',
   authors: { name: 'KW' },
+  openGraph: {
+    title: '消費追蹤',
+    description: '幫助記賬',
+    url: 'https://gs-db.vercel.app/insert',
+    images: [
+      {
+        url: '/Spending-512.png',
+        width: 512,
+        height: 512,
+      },
+    ],
+  },
 };
 
 export default async function Home({
