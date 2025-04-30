@@ -13,9 +13,10 @@ interface Props {
 export const OverView = (props: Props) => {
   const { costList, dateStr } = props;
   const { totalIncome, totalOutcome } = getExpenseFromData(costList);
-  const year = new Date(dateStr).getFullYear();
-  const month = new Date(dateStr).getMonth();
-  const days = new Date(year, month, 0).getDate();
+  const day = new Date(dateStr);
+  const year = day.getFullYear();
+  const month = day.getMonth();
+  const days = new Date(year, month + 1, 0).getDate();
   const dailyCost: number[] = new Array(days).fill(0);
   let largestCost = 0;
 
@@ -34,7 +35,7 @@ export const OverView = (props: Props) => {
         <span
           className={`flex items-center gap-1 text-xs sm:text-sm ${totalIncome !== 0 && totalIncome - totalOutcome < 0 ? 'text-red-400' : 'text-green-400'}`}
         >
-          <MdOutlineWallet className='size-6 text-gray-500'/>
+          <MdOutlineWallet className="size-6 text-gray-500" />
           <span className="text-3xl leading-9 font-semibold">
             {totalIncome
               ? `$${normalizeNumber(totalIncome - totalOutcome)}`
