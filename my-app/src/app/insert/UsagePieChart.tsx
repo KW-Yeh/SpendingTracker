@@ -1,57 +1,65 @@
 'use client';
 
 import { startTransition, useEffect, useState } from 'react';
-import { Label, Pie, PieChart } from 'recharts';
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 
 interface Props {
-  budget: number;
-  usage: number;
+  data: number[];
+  init: number[];
 }
 
+type DataType = {
+  date: string;
+  cumulative: number;
+};
+
 const UsagePieChart = (props: Props) => {
-  const [budget, setBudget] = useState(100);
-  const [usage, setUsage] = useState(0);
-  const [percentage, setPercentage] = useState('0');
+  const [dataList, setDataList] = useState<DataType[]>(formatData(props.init));
 
   useEffect(() => {
     startTransition(() => {
-      const newBudget = props.budget !== 0 ? props.budget : props.usage;
-      setBudget(newBudget);
-      setUsage(props.usage);
-      setPercentage(((props.usage * 100) / newBudget).toFixed(0));
+      setDataList(formatData(props.data));
     });
-  }, [props.budget, props.usage]);
+  }, [props.data]);
 
   return (
-    <PieChart width={100} height={100}>
-      <Pie
-        dataKey="value"
-        data={[
-          {
-            name: '已使用',
-            value: usage,
-            fill: 'hsl(256, 60%, 70%)',
-          },
-          {
-            name: '剩餘',
-            value: budget - usage,
-            fill: 'hsl(256, 60%, 90%)',
-          },
-        ]}
-        innerRadius={42}
-        outerRadius={50}
-        strokeOpacity={0}
-      >
-        <Label
-          value={`${percentage}%`}
-          offset={0}
-          position="center"
-          fill="hsl(256, 60%, 60%)"
-          className="text-base font-bold"
+    <ResponsiveContainer width="100%" height={250}>
+      <LineChart data={dataList} margin={{ right: 30 }}>
+        <CartesianGrid strokeDasharray="4" />
+        <XAxis dataKey="date" />
+        <YAxis />
+        <Tooltip />
+        <Line
+          type="monotone"
+          dataKey="cumulative"
+          stroke="hsl(256, 60%, 50%)"
+          strokeWidth={2}
+          dot={{ r: 3 }}
         />
-      </Pie>
-    </PieChart>
+      </LineChart>
+    </ResponsiveContainer>
   );
 };
 
 export default UsagePieChart;
+
+function formatData(list: number[]) {
+  const result: DataType[] = [];
+  let cumulative = 0;
+  list.forEach((item, index) => {
+    cumulative += item;
+    result.push({
+      date: `${index + 1}日`,
+      cumulative,
+    });
+  });
+  return result;
+}

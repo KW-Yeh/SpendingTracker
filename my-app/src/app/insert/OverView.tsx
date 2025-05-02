@@ -2,6 +2,7 @@ import { DoubleArrowIcon } from '@/components/icons/DoubleArrowIcon';
 import { SpendingType } from '@/utils/constants';
 import { getExpenseFromData } from '@/utils/getExpenseFromData';
 import { normalizeNumber } from '@/utils/normalizeNumber';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { MdOutlineWallet } from 'react-icons/md';
 
@@ -9,6 +10,10 @@ interface Props {
   dateStr: string;
   costList: SpendingRecord[];
 }
+
+const UsagePieChart = dynamic(() => import('./UsagePieChart'), {
+  ssr: false,
+});
 
 export const OverView = (props: Props) => {
   const { costList, dateStr } = props;
@@ -25,11 +30,9 @@ export const OverView = (props: Props) => {
       const date = new Date(item.date);
       const dayIndex = date.getDate() - 1;
       dailyCost[dayIndex] += item.amount;
-      largestCost = Math.max(largestCost, Math.abs(item.amount));
+      largestCost = Math.max(largestCost, Math.abs(dailyCost[dayIndex]));
     }
   });
-
-  console.log(dailyCost);
 
   return (
     <div className="bg-background relative flex w-full flex-col items-start rounded-3xl border border-solid border-gray-300 p-6 text-gray-300 shadow">
@@ -56,40 +59,8 @@ export const OverView = (props: Props) => {
         </span>
       </div>
 
-      <div className="flex h-50 w-full items-end gap-0.5 pb-10">
-        {dailyCost.map((cost, i) => (
-          <div
-            key={`${year}-${month}-${i.toString()}`}
-            className="group relative flex h-full w-fit flex-col items-center justify-end"
-            style={{
-              width: `${100 / days}%`,
-            }}
-          >
-            <span
-              className="absolute h-6 w-px bg-gray-300 opacity-0 transition-opacity select-none group-hover:opacity-100 group-active:opacity-100"
-              style={{
-                bottom: cost ? `${(cost * 100) / largestCost}%` : '0%',
-              }}
-            ></span>
-            <span
-              className="w-1.25 rounded-t-full border-b border-solid border-red-300 bg-red-300 outline-red-100 group-hover:bg-red-500 group-hover:shadow-[0_-2px_6px_0_#fb2c36] group-hover:outline-1 group-active:bg-red-500 group-active:outline-1"
-              style={{
-                height: cost ? `${(cost * 100) / largestCost}%` : '0%',
-              }}
-            ></span>
-            <span className="absolute top-full mt-1 text-xs select-none">
-              {i % 10 === 0 ? i + 1 : ''}
-            </span>
-            <p
-              className="bg-background text-text absolute z-10 mb-6 rounded-md border border-solid border-gray-300 px-2 py-1 text-center text-xs whitespace-nowrap opacity-0 shadow transition-opacity select-none group-hover:opacity-100 group-active:opacity-100"
-              style={{
-                bottom: cost ? `${(cost * 100) / largestCost}%` : '0%',
-              }}
-            >
-              {`${month}/${i + 1} $${normalizeNumber(cost)}`}
-            </p>
-          </div>
-        ))}
+      <div className="flex w-full items-end py-10 text-sm max-sm:hidden">
+        <UsagePieChart data={dailyCost} init={new Array(days).fill(0)} />
       </div>
 
       <Link
