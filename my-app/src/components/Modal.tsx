@@ -35,10 +35,10 @@ export const Modal = forwardRef<ModalRef, Props>((props, ref) => {
   if (!open) return null;
 
   return (
-    <div className="fixed top-0 right-0 bottom-0 left-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div className="fixed top-0 right-0 bottom-0 left-0 z-50 flex justify-center bg-black/60 backdrop-blur-sm">
       <div
         ref={contentRef}
-        className={`bg-background relative rounded-xl p-6 ${props.className}`}
+        className={`bg-background animate-modal relative p-6 ${props.className}`}
       >
         <button
           type="button"

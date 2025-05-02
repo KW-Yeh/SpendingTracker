@@ -167,7 +167,7 @@ export const EditExpenseModal = (props: Props) => {
     <Modal
       defaultOpen={true}
       onClose={cancel}
-      className="flex w-full max-w-96 flex-col"
+      className="flex w-full flex-col self-end rounded-t-xl sm:max-w-96 sm:self-center sm:rounded-xl"
       title={isNewData ? '新增帳目' : '編輯帳目'}
     >
       <form

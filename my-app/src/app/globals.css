@@ -126,3 +126,16 @@ input[type='number'] {
         @apply bg-primary-600;
     }
 }
+
+.animate-modal {
+    animation: slide-in 0.5s forwards ease-in-out;
+}
+
+@keyframes slide-in {
+    0% {
+        transform: translateY(150%);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
