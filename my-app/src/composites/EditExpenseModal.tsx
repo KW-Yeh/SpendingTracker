@@ -181,14 +181,12 @@ export const EditExpenseModal = (props: Props) => {
                 label: '支出',
                 value: SpendingType.Outcome,
                 onSelectColor: '#F56666',
-                defaultColor: 'hsl(0, 0%, 50%)',
                 className: '!px-2 !py-1',
               }}
               option2={{
                 label: '收入',
                 value: SpendingType.Income,
                 onSelectColor: '#48BB78',
-                defaultColor: 'hsl(0, 0%, 50%)',
                 className: '!px-2 !py-1',
               }}
               value={spendingType}
@@ -203,7 +201,6 @@ export const EditExpenseModal = (props: Props) => {
                     : '必要收入',
                 value: Necessity.Need,
                 onSelectColor: '#ED8936',
-                defaultColor: 'hsl(0, 0%, 50%)',
                 className: '!px-2 !py-1',
               }}
               option2={{
@@ -212,7 +209,6 @@ export const EditExpenseModal = (props: Props) => {
                     ? '額外支出'
                     : '額外收入',
                 value: Necessity.NotNeed,
-                defaultColor: 'hsl(0, 0%, 50%)',
                 className: '!px-2 !py-1',
               }}
               value={necessity}

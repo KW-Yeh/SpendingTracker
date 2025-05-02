@@ -58,14 +58,14 @@ export const Switch = (props: Props) => {
           if (option1.onSelectColor)
             leftButton.style.color = option1.onSelectColor;
           else leftButton.style.color = '#333333';
-          rightButton.style.color = option1.defaultColor ?? 'hsl(0, 0%, 70%)';
+          rightButton.style.color = option1.defaultColor ?? 'hsl(0, 0%, 50%)';
         } else {
           block.style.left = `${rightLeft}px`;
           block.style.width = `${rightWidth}px`;
           if (option2.onSelectColor)
             rightButton.style.color = option2.onSelectColor;
           else rightButton.style.color = '#333333';
-          leftButton.style.color = option2.defaultColor ?? 'hsl(0, 0%, 70%)';
+          leftButton.style.color = option2.defaultColor ?? 'hsl(0, 0%, 50%)';
         }
       }
     });
