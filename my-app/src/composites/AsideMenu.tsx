@@ -40,7 +40,7 @@ export const AsideMenu = (props: Props) => {
     startTransition(() => {
       if (!bgRef.current || !asideRef.current) return;
       bgRef.current.style.right = '100%';
-      asideRef.current.style.left = '-288px';
+      asideRef.current.style.left = '-300px';
     });
   }, [asideRef]);
 
@@ -68,12 +68,11 @@ export const AsideMenu = (props: Props) => {
       ></div>
       <aside
         ref={asideRef}
-        className="bg-background fixed top-0 bottom-0 -left-72 z-50 flex w-72 origin-right flex-col items-center justify-between shadow-xl transition-all"
+        className="bg-background fixed top-0 bottom-0 -left-72 z-50 flex w-72 origin-right flex-col items-center justify-between shadow-[1px_0_16px_0px_black] transition-all"
       >
-        <div className="bg-primary-500 relative mb-8 h-14 w-full sm:h-18">
-          <div className="bg-primary-500 absolute top-full left-0 -mt-6 h-8 w-26 rounded-r-lg"></div>
-          <div className="bg-primary-500 absolute top-full right-0 -mt-6 h-8 w-26 rounded-l-lg"></div>
-          <div className="bg-background absolute top-full left-1/2 flex size-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full p-1">
+        <div className="gradient-r-from-purple-to-blue clip-profile-bg absolute h-30 w-full"></div>
+        <div className="relative flex w-full flex-col items-center pt-17">
+          <div className="bg-background flex size-20 items-center justify-center rounded-full p-1">
             <Image
               src={user?.image ?? '/Spending-origin.png'}
               alt="logo"
@@ -91,7 +90,7 @@ export const AsideMenu = (props: Props) => {
                   onClose();
                 }
               }}
-              className="bg-background text-text absolute top-2 right-2 flex shrink-0 items-center justify-center rounded-md p-2 text-xs font-semibold transition-all active:text-red-500 hover:text-red-500"
+              className="bg-background text-text absolute top-2 right-2 flex shrink-0 items-center justify-center rounded-md p-2 text-xs font-semibold transition-all hover:text-red-500 active:text-red-500"
             >
               <span className="text-xs">登出</span>
             </button>
@@ -127,6 +126,14 @@ export const AsideMenu = (props: Props) => {
           />
         </div>
       </aside>
+
+      <svg width="0" height="0" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <clipPath id="clip-profile-bg" clipPathUnits="userSpaceOnUse">
+            <path d="M 0,0 L 288,0 L 288,120 L 194,120 A 10,10 0,0,1 184,110 A 40,40 0,0,0 104,110 A 10,10 0,0,1 94,120 L 0,120 L 0,0 Z" />
+          </clipPath>
+        </defs>
+      </svg>
     </>
   );
 };
