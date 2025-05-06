@@ -83,11 +83,11 @@ export const Switch = (props: Props) => {
       ref={containerRef}
       type="button"
       onClick={handleOnClick}
-      className={`relative flex w-fit items-center gap-1 rounded-md p-1 ${className}`}
+      className={`relative flex w-fit items-center p-0.5 rounded-md ${className}`}
     >
       <div
         ref={floatingBlockRef}
-        className="transition-spring bg-background absolute top-1 bottom-1 z-10 rounded transition-all"
+        className="transition-spring bg-background absolute top-0.5 bottom-0.5 z-10 rounded transition-all"
       ></div>
       <span
         ref={option1Ref}

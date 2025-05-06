@@ -13,8 +13,25 @@ export const Caption = ({ openAside }: { openAside: () => void }) => {
             width="32"
             height="32"
             viewBox="0 0 32 32"
-            className="gradient-r-from-purple-to-blue rounded-lg"
           >
+            <linearGradient id="bg">
+              <stop
+                style={{
+                  stopColor: '#5c33cc',
+                }}
+                offset="0%"
+              />
+              <stop
+                style={{
+                  stopColor: '#fda5d5',
+                }}
+                offset="100%"
+              />
+            </linearGradient>
+            <path
+              fill="url(#bg)"
+              d="M 0,8 A 8,8 0,0,1 8,0 L 24,0 A 8,8 0,0,1 32,8 L 32,24 A 8,8 0,0,1 24,32 L 8,32 A 8,8 0,0,1 0, 24 L 0,8 z"
+            />
             <path
               fill="white"
               d="M 12,8 L 16,8 A 24 8 0 0 0 12,16 A 30 8 0 0 1 10,24 A 8,8 0,0,1 4,24 A 24 8 0 0 0 10,16 A 30 8 0 0 1 12,8 z"
