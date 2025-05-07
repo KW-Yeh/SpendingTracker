@@ -28,7 +28,15 @@ interface User {
   image: string;
   groups: string[];
   budgetList?: number[];
+  allocation: Allocation[];
   desc?: Record<string, string[]>;
+}
+
+interface Allocation {
+  id: number;
+  name: string;
+  budget: number;
+  percentage: number;
 }
 
 interface ModalRef {
