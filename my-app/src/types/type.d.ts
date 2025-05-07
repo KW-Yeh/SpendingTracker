@@ -28,7 +28,7 @@ interface User {
   image: string;
   groups: string[];
   budgetList?: number[];
-  allocation: Allocation[];
+  allocation?: Allocation[];
   desc?: Record<string, string[]>;
 }
 
