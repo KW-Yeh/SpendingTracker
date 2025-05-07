@@ -13,7 +13,7 @@ export const TabSwitch = (props: Props) => {
   const { config } = props;
   const [selectedIndex, setSelectedIndex] = useState(0);
   return (
-    <div className="bg-background flex w-full max-w-175 flex-col items-center gap-6 rounded-lg p-6 shadow">
+    <div className="bg-background flex w-full flex-col items-center gap-6 rounded-lg p-6 shadow sm:p-8">
       <div className="flex items-center">
         {config.map((config, index) => (
           <button

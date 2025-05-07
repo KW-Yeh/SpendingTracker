@@ -66,40 +66,48 @@ const AllocationItem = ({
   handleRemove: (id: number) => void;
 }) => {
   return (
-    <div className="bg-primary-100 flex w-full items-center justify-between gap-2 rounded-lg p-4">
-      <fieldset>
-        <legend className="text-sm">類別名稱</legend>
-        <input
-          type="text"
-          name={`allocation-name-${data.id}`}
-          className="bg-background focus:border-primary-500 max-w-40 rounded-lg border border-solid border-gray-300 px-1 py-2 transition-colors focus:outline-0"
-          defaultValue={data.name}
-          placeholder="例如：飲食"
-        />
-      </fieldset>
-      <fieldset>
-        <legend className="text-sm">金額(NT$)</legend>
-        <input
-          type="number"
-          name={`allocation-budget-${data.id}`}
-          className="bg-background focus:border-primary-500 max-w-40 rounded-lg border border-solid border-gray-300 px-1 py-2 transition-colors focus:outline-0"
-          defaultValue={data.budget}
-          placeholder="金額"
-        />
-      </fieldset>
-      <fieldset>
-        <legend className="text-sm">百分比</legend>
-        <div className="flex items-center gap-1">
+    <div className="bg-primary-100 relative flex w-full items-center gap-4 rounded-lg p-4 pl-10">
+      <div className="bg-background absolute top-1 left-1 flex size-6 items-center justify-center rounded-full">
+        <span className="text-sm">{data.id}</span>
+      </div>
+
+      <div className="flex flex-1 flex-wrap items-center justify-between gap-2">
+        <fieldset className="min-w-40 max-sm:w-full sm:flex-1">
+          <legend className="text-sm">類別名稱</legend>
           <input
-            type="number"
-            name={`allocation-percentage-${data.id}`}
-            className="bg-background focus:border-primary-500 max-w-40 rounded-lg border border-solid border-gray-300 px-1 py-2 transition-colors focus:outline-0"
-            defaultValue={data.percentage}
-            placeholder="%"
+            type="text"
+            name={`allocation-name-${data.id}`}
+            className="bg-background focus:border-primary-500 w-full rounded-lg border border-solid border-gray-300 px-1 py-2 transition-colors focus:outline-0"
+            defaultValue={data.name}
+            placeholder="例如：飲食"
           />
-          <span>%</span>
+        </fieldset>
+        <div className="flex items-center gap-2">
+          <fieldset className="w-25">
+            <legend className="text-sm">金額(NT$)</legend>
+            <input
+              type="number"
+              name={`allocation-budget-${data.id}`}
+              className="bg-background focus:border-primary-500 w-full rounded-lg border border-solid border-gray-300 px-1 py-2 transition-colors focus:outline-0"
+              defaultValue={data.budget}
+              placeholder="金額"
+            />
+          </fieldset>
+          <fieldset className="w-25">
+            <legend className="text-sm">百分比</legend>
+            <div className="flex items-center gap-1">
+              <input
+                type="number"
+                name={`allocation-percentage-${data.id}`}
+                className="bg-background focus:border-primary-500 w-full rounded-lg border border-solid border-gray-300 px-1 py-2 transition-colors focus:outline-0"
+                defaultValue={data.percentage}
+                placeholder="%"
+              />
+              <span>%</span>
+            </div>
+          </fieldset>
         </div>
-      </fieldset>
+      </div>
 
       <button
         type="button"
