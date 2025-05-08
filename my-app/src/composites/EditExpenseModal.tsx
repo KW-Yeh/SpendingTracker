@@ -48,9 +48,6 @@ export const EditExpenseModal = (props: Props) => {
   const [necessity, setNecessity] = useState<string>(data.necessity);
   const [selectedCategory, setSelectedCategory] = useState(data.category);
   const [description, setDescription] = useState(data.description);
-  const [commonDescMap, setCommonDescMap] = useState<Record<string, string[]>>(
-    userData?.desc ?? DEFAULT_DESC,
-  );
   const [amount, setAmount] = useState(data.amount);
   const [isNoAmount, setIsNoAmount] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -68,8 +65,9 @@ export const EditExpenseModal = (props: Props) => {
   );
 
   const isNewDesc = useMemo(
-    () => !commonDescMap[selectedCategory].includes(description),
-    [commonDescMap, description, selectedCategory],
+    () =>
+      !(userData?.desc ?? DEFAULT_DESC)[selectedCategory].includes(description),
+    [description, selectedCategory, userData?.desc],
   );
 
   const handleSetSpendingType = (type: string) => {
@@ -79,19 +77,31 @@ export const EditExpenseModal = (props: Props) => {
     setSelectedCategory(categories[0].value);
   };
 
-  const handleSetCommonDesc = useCallback(() => {
-    setCommonDescMap((prevState) => {
-      const newState = { ...prevState };
-      if (!isNewDesc) {
-        newState[selectedCategory] = newState[selectedCategory].filter(
-          (desc) => desc !== description,
-        );
+  const handleSetCommonDesc = useCallback(
+    (isNew: boolean) => {
+      if (!userData) return;
+      const commonDescMap = { ...userData.desc };
+      if (isNew) {
+        const newCategories = commonDescMap[selectedCategory];
+        if (!newCategories.includes(description)) {
+          newCategories.push(description);
+        }
+        commonDescMap[selectedCategory] = newCategories;
       } else {
-        newState[selectedCategory].push(description);
+        const newCategories = commonDescMap[selectedCategory];
+        const index = newCategories.findIndex((item) => item === description);
+        if (index !== -1) {
+          newCategories.splice(index, 1);
+        }
+        commonDescMap[selectedCategory] = newCategories;
       }
-      return newState;
-    });
-  }, [description, isNewDesc, selectedCategory]);
+      updateUser({
+        ...userData,
+        desc: commonDescMap,
+      });
+    },
+    [description, selectedCategory, updateUser, userData],
+  );
 
   const cancel = useCallback(() => {
     if (onClose) onClose();
@@ -128,32 +138,21 @@ export const EditExpenseModal = (props: Props) => {
         startDate.toISOString(),
         endDate.toISOString(),
       );
-      if (
-        userData &&
-        JSON.stringify(userData.desc ?? {}) !== JSON.stringify(commonDescMap)
-      ) {
-        updateUser({
-          ...userData,
-          desc: commonDescMap,
-        });
-      }
       setLoading(false);
       if (onClose) onClose();
     },
     [
-      userData,
       amount,
-      data,
       currentGroup?.id,
-      spendingType,
+      data,
       date,
-      necessity,
-      selectedCategory,
       description,
-      syncData,
+      necessity,
       onClose,
-      updateUser,
-      commonDescMap,
+      selectedCategory,
+      spendingType,
+      syncData,
+      userData?.email,
     ],
   );
 
@@ -261,9 +260,11 @@ export const EditExpenseModal = (props: Props) => {
                 defaultValue={data.description}
               />
               <datalist id="common-description">
-                {commonDescMap[selectedCategory]?.map((commonDesc) => (
-                  <option key={commonDesc} value={commonDesc}></option>
-                ))}
+                {(userData?.desc ?? DEFAULT_DESC)[selectedCategory]?.map(
+                  (commonDesc) => (
+                    <option key={commonDesc} value={commonDesc}></option>
+                  ),
+                )}
               </datalist>
             </fieldset>
           </div>
@@ -274,7 +275,7 @@ export const EditExpenseModal = (props: Props) => {
               <button
                 type="button"
                 className="border-text bg-text text-background w-full rounded-lg border border-solid p-2 font-semibold transition-colors hover:bg-gray-800 active:bg-gray-800"
-                onClick={handleSetCommonDesc}
+                onClick={() => handleSetCommonDesc(isNewDesc)}
               >
                 {!isNewDesc ? '- 刪除常用描述' : '+ 新增常用描述'}
               </button>

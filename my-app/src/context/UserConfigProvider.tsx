@@ -36,6 +36,10 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   };
 
+  const handleUpdateUser = async (value: User) => {
+    await putUser(value);
+  };
+
   const handleNewUser = useCallback(
     async (email: string) => {
       if (session?.user) {
@@ -83,7 +87,7 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
       loading,
       config,
       syncUser,
-      setter: handleState,
+      setter: handleUpdateUser,
     }),
     [loading, config, syncUser],
   );
