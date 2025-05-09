@@ -88,7 +88,7 @@ export const SpendingInfoSection = ({
   return (
     <div className="relative mx-auto flex w-full max-w-175 flex-1 flex-col items-center gap-6 p-6">
       <div className="flex w-full items-center justify-center">
-        <DatePicker labelClassName="p-4 text-lg sm:text-xl bg-background font-semibold" />
+        <DatePicker labelClassName="p-4 text-lg sm:text-xl font-semibold" />
       </div>
 
       <AddExpenseBtn autoClick={!!quickInsert}>立即新增帳目</AddExpenseBtn>

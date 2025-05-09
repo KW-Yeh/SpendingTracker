@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <div className="flex w-full flex-1 flex-col items-center px-2 sm:px-8">
-      <h2 className="bg-background my-10 text-lg font-semibold sm:text-xl">
+      <h2 className="bg-background my-10 text-xl font-semibold sm:text-2xl">
         編列預算工具
       </h2>
       <TabSwitch
