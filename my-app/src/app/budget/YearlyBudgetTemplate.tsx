@@ -3,14 +3,32 @@
 import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { PlusIcon } from '@/components/icons/PlusIcon';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { ChangeEvent, FormEvent, useCallback, useState } from 'react';
+import {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 export const YearlyBudgetTemplate = () => {
   const { config: userData, setter: updateUser, syncUser } = useUserConfigCtx();
   const [totalBudget, setTotalBudget] = useState<number>(0);
-  const [allocation, setAllocation] = useState<Allocation[]>(
-    userData?.allocation ?? [],
-  );
+  const [allocation, setAllocation] = useState<Allocation[]>([]);
+
+  useEffect(() => {
+    if (userData) {
+      if (userData.allocation) {
+        setAllocation(userData.allocation);
+        setTotalBudget(
+          userData.allocation
+            .map((item) => item.budget)
+            .reduce((a, b) => a + b),
+        );
+      }
+    }
+  }, [userData]);
 
   const handleOnChangeTotalBudget = (event: ChangeEvent<HTMLInputElement>) => {
     const value = Number(event.target.value);
@@ -82,7 +100,7 @@ export const YearlyBudgetTemplate = () => {
           <input
             type="number"
             className="bg-background focus:border-primary-500 w-full max-w-50 rounded-lg border-2 border-solid border-gray-300 px-2 py-1 transition-colors focus:outline-0 sm:max-w-70"
-            value={totalBudget}
+            defaultValue={totalBudget}
             onChange={handleOnChangeTotalBudget}
           />
         </div>
@@ -127,15 +145,16 @@ const AllocationItem = ({
   totalBudget: number;
   handleRemove: (id: number) => void;
 }) => {
-  const [budget, setBudget] = useState(data.budget);
-  const [percentage, setPercentage] = useState(data.percentage);
+  const budgetRef = useRef<HTMLInputElement>(null);
+  const percentageRef = useRef<HTMLInputElement>(null);
 
   const handleOnChangeBudget = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
+      if (!budgetRef.current || !percentageRef.current) return;
       const value = Number(event.target.value);
-      setBudget(value);
+      budgetRef.current.value = value.toString();
       if (totalBudget > 0) {
-        setPercentage(Math.floor(value / totalBudget) * 100);
+        percentageRef.current.value = ((value / totalBudget) * 100).toFixed(0);
       }
     },
     [totalBudget],
@@ -143,10 +162,11 @@ const AllocationItem = ({
 
   const handleOnChangePercentage = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
+      if (!budgetRef.current || !percentageRef.current) return;
       const value = Number(event.target.value);
-      setPercentage(value);
+      percentageRef.current.value = value.toString();
       if (totalBudget > 0) {
-        setBudget(Math.floor((value / 100) * totalBudget));
+        budgetRef.current.value = ((value / 100) * totalBudget).toFixed(0);
       }
     },
     [totalBudget],
@@ -174,9 +194,10 @@ const AllocationItem = ({
             <legend className="text-sm">金額(NT$)</legend>
             <input
               type="number"
+              ref={budgetRef}
               name={`allocation-budget-${data.id}`}
               className="bg-background focus:border-primary-500 w-full rounded-lg border border-solid border-gray-300 px-1 py-2 transition-colors focus:outline-0"
-              defaultValue={budget}
+              defaultValue={data.budget}
               onChange={handleOnChangeBudget}
               placeholder="金額"
             />
@@ -186,9 +207,10 @@ const AllocationItem = ({
             <div className="flex items-center gap-1">
               <input
                 type="number"
+                ref={percentageRef}
                 name={`allocation-percentage-${data.id}`}
                 className="bg-background focus:border-primary-500 w-full rounded-lg border border-solid border-gray-300 px-1 py-2 transition-colors focus:outline-0"
-                defaultValue={percentage}
+                defaultValue={data.percentage}
                 onChange={handleOnChangePercentage}
                 placeholder="%"
               />
