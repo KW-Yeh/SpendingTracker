@@ -78,7 +78,7 @@ export const YearlyBudgetTemplate = () => {
     <div className="flex w-full flex-col">
       <div className="flex w-full items-center justify-between gap-6">
         <div className="flex flex-1 items-center">
-          <span>總預算：</span>
+          <span className="whitespace-nowrap">總預算：</span>
           <input
             type="number"
             className="bg-background focus:border-primary-500 max-w-70 flex-1 rounded-lg border-2 border-solid border-gray-300 px-2 py-1 text-lg font-semibold transition-colors focus:outline-0"
