@@ -8,6 +8,7 @@ interface Props {
   options: {
     value: string;
     label: ReactNode;
+    className?: string;
   }[];
   onClick?: (value: string) => void;
 }
@@ -27,7 +28,7 @@ export const ActionMenu = (props: Props) => {
         onClick={() => {
           setOpen((prevState) => !prevState);
         }}
-        className={`rounded-full p-2 transition-colors ${open ? 'bg-gray-300' : 'active:bg-gray-300 hover:bg-gray-300'}`}
+        className={`rounded-full p-2 transition-colors ${open ? 'bg-gray-300' : 'hover:bg-gray-300 active:bg-gray-300'}`}
       >
         <ActionMenuIcon className="size-4" />
       </button>
@@ -41,7 +42,7 @@ export const ActionMenu = (props: Props) => {
             onClick={() => {
               if (onClick) onClick(option.value);
             }}
-            className="group flex items-center gap-2 rounded px-4 py-2 whitespace-nowrap transition-colors active:bg-gray-300 hover:bg-gray-300"
+            className={`group flex items-center gap-2 rounded px-4 py-2 whitespace-nowrap transition-colors hover:bg-gray-300 active:bg-gray-300 ${option.className ?? ''}`}
           >
             {option.label}
           </button>

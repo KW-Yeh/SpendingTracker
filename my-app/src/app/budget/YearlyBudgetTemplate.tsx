@@ -1,8 +1,11 @@
 'use client';
 
+import { ActionMenu } from '@/components/ActionMenu';
 import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { PlusIcon } from '@/components/icons/PlusIcon';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
+import { OUTCOME_TYPE_MAP } from '@/utils/constants';
+import { normalizeNumber } from '@/utils/normalizeNumber';
 import {
   ChangeEvent,
   FormEvent,
@@ -87,14 +90,17 @@ export const YearlyBudgetTemplate = () => {
 
   return (
     <div className="flex w-full flex-col pt-10">
-      <div className="flex w-full items-center text-lg font-semibold">
-        <span className="whitespace-nowrap">總預算：$</span>
+      <div className="relative flex w-full items-center pb-6 font-semibold">
+        <span className="text-lg whitespace-nowrap">總預算：</span>
         <input
-          type="number"
-          className="flex-1 cursor-default px-2 py-1 focus:outline-0"
-          value={totalBudget}
+          type="text"
+          className="flex-1 cursor-default px-2 py-1 text-2xl text-green-600 focus:outline-0"
+          value={'$' + normalizeNumber(totalBudget)}
           readOnly={true}
         />
+        <span className="absolute bottom-0 left-0 text-sm">
+          (約 ${normalizeNumber(Number((totalBudget / 12).toFixed(0)))} / 月)
+        </span>
       </div>
       <form
         onSubmit={handleSaveChanges}
@@ -153,29 +159,56 @@ const AllocationItem = ({
     [data, handleUpdate],
   );
 
+  const handleOnChangeName = useCallback(
+    (_name: string) => {
+      const newData = { ...data };
+      newData.name = _name;
+      handleUpdate(newData);
+    },
+    [data, handleUpdate],
+  );
+
+  const handleAction = useCallback(
+    (action: string) => {
+      if (action === 'delete') {
+        handleRemove(data.id);
+      }
+    },
+    [data.id, handleRemove],
+  );
+
   return (
-    <div className="bg-primary-100 relative flex w-full items-center gap-4 rounded-lg p-4 pl-10">
-      <div className="bg-background absolute top-1 left-1 flex size-6 items-center justify-center rounded-full">
-        <span className="text-sm">{data.id}</span>
+    <div className="bg-primary-100 relative flex w-full items-center rounded-lg p-4 pl-12">
+      <div className="absolute top-1 left-1 flex size-8 items-center justify-center">
+        <span className="text-primary-200 text-sm">{data.id}</span>
       </div>
 
-      <div className="flex flex-1 flex-wrap items-center justify-between gap-2">
+      <div className="flex flex-1 flex-wrap items-center justify-between gap-6">
         <fieldset className="min-w-40 max-sm:w-full sm:flex-1">
           <legend className="text-sm">類別名稱</legend>
           <input
-            type="text"
-            name={`allocation-name-${data.id}`}
-            className="bg-background focus:border-primary-500 w-full rounded-lg border border-solid border-gray-300 p-2 transition-colors focus:outline-0"
-            defaultValue={data.name}
+            list="names"
+            className="bg-background focus:border-primary-500 w-full rounded-lg border border-solid border-gray-300 p-2 transition-colors"
+            autoComplete="off"
             placeholder="例如：飲食"
+            onChange={(e) => {
+              handleOnChangeName(e.target.value);
+            }}
+            defaultValue={data.name}
           />
+          <datalist id="names">
+            {OUTCOME_TYPE_MAP.map((item) => (
+              <option key={item.value} value={item.label}>
+                {item.label}
+              </option>
+            ))}
+          </datalist>
         </fieldset>
         <div className="flex items-center gap-2">
           <fieldset className="w-25">
             <legend className="text-sm">金額(NT$)</legend>
             <input
               type="number"
-              name={`allocation-budget-${data.id}`}
               className="bg-background focus:border-primary-500 w-full rounded-lg border border-solid border-gray-300 p-2 transition-colors focus:outline-0"
               defaultValue={data.budget}
               onChange={handleOnChangeBudget}
@@ -186,7 +219,6 @@ const AllocationItem = ({
             <legend className="text-sm">百分比</legend>
             <input
               type="text"
-              name={`allocation-percentage-${data.id}`}
               className="w-full cursor-default bg-transparent p-2 focus:outline-0"
               value={data.percentage.toFixed(0) + '%'}
               readOnly={true}
@@ -196,13 +228,22 @@ const AllocationItem = ({
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={() => handleRemove(data.id)}
-        className="hover:text-background shrink-0 rounded-lg p-2 text-red-500 transition-colors hover:bg-red-500"
-      >
-        <DeleteIcon />
-      </button>
+      <ActionMenu
+        options={[
+          {
+            value: 'delete',
+            label: (
+              <div className="flex items-center gap-2">
+                <DeleteIcon />
+                <span>刪除</span>
+              </div>
+            ),
+            className:
+              'hover:text-background p-2 text-red-500 transition-colors hover:bg-red-500',
+          },
+        ]}
+        onClick={handleAction}
+      />
     </div>
   );
 };
