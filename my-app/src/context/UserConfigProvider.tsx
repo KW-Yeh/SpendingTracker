@@ -17,12 +17,12 @@ const INIT_CTX_VAL: {
   loading: boolean;
   config?: User;
   syncUser: () => void;
-  setter: (value: User) => void;
+  setter: (value: User) => Promise<void>;
 } = {
   loading: true,
   config: undefined,
   syncUser: () => {},
-  setter: () => {},
+  setter: async () => {},
 };
 
 export const UserConfigProvider = ({ children }: { children: ReactNode }) => {

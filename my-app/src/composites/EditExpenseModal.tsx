@@ -98,7 +98,7 @@ export const EditExpenseModal = (props: Props) => {
       updateUser({
         ...userData,
         desc: commonDescMap,
-      });
+      }).finally();
     },
     [description, selectedCategory, updateUser, userData],
   );

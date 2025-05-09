@@ -8,12 +8,16 @@ import {
   FormEvent,
   useCallback,
   useEffect,
-  useRef,
   useState,
 } from 'react';
 
 export const YearlyBudgetTemplate = () => {
-  const { config: userData, setter: updateUser, syncUser } = useUserConfigCtx();
+  const {
+    loading,
+    config: userData,
+    setter: updateUser,
+    syncUser,
+  } = useUserConfigCtx();
   const [totalBudget, setTotalBudget] = useState<number>(0);
   const [allocation, setAllocation] = useState<Allocation[]>([]);
 
@@ -21,48 +25,37 @@ export const YearlyBudgetTemplate = () => {
     if (userData) {
       if (userData.allocation) {
         setAllocation(userData.allocation);
-        setTotalBudget(
-          userData.allocation
-            .map((item) => item.budget)
-            .reduce((a, b) => a + b),
-        );
       }
     }
   }, [userData]);
 
-  const handleOnChangeTotalBudget = (event: ChangeEvent<HTMLInputElement>) => {
-    const value = Number(event.target.value);
-    setTotalBudget(value);
+  useEffect(() => {
+    setTotalBudget(
+      allocation.map((item) => item.budget).reduce((a, b) => a + b, 0),
+    );
+  }, [allocation]);
+
+  const handleUpdate = (item: Allocation) => {
+    setAllocation((prevState) => {
+      const newState = [...prevState];
+      const index = newState.findIndex((d) => d.id === item.id);
+      if (index !== -1) {
+        newState[index] = item;
+      }
+      return updatePercentage(newState);
+    });
   };
 
   const handleSaveChanges = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       if (!userData) return;
-      const formData = new FormData(event.target as HTMLFormElement);
-      const newAllocation: Allocation[] = allocation
-        .map((item) => {
-          const name = formData.get(`allocation-name-${item.id}`) as string;
-          const budget =
-            Number(formData.get(`allocation-budget-${item.id}`)) ?? 0;
-          const percentage = Number(
-            formData.get(`allocation-percentage-${item.id}`) ?? 0,
-          );
-          return {
-            id: item.id,
-            name: name,
-            budget: budget,
-            percentage: percentage,
-          };
-        })
-        .filter(
-          (item) => item.name !== '' && item.budget > 0 && item.percentage > 0,
-        );
       updateUser({
         ...userData,
-        allocation: newAllocation,
+        allocation: allocation,
+      }).then(() => {
+        syncUser();
       });
-      syncUser();
     },
     [allocation, syncUser, updateUser, userData],
   );
@@ -88,46 +81,52 @@ export const YearlyBudgetTemplate = () => {
       if (index !== -1) {
         newState.splice(index, 1);
       }
-      return newState;
+      return updatePercentage(newState);
     });
   };
 
   return (
     <div className="flex w-full flex-col pt-10">
-      <div className="flex w-full items-center justify-between gap-6">
-        <div className="flex flex-1 items-center text-lg font-semibold">
-          <span className="whitespace-nowrap">總預算：</span>
-          <input
-            type="number"
-            className="bg-background focus:border-primary-500 w-full max-w-50 rounded-lg border-2 border-solid border-gray-300 px-2 py-1 transition-colors focus:outline-0 sm:max-w-70"
-            defaultValue={totalBudget}
-            onChange={handleOnChangeTotalBudget}
-          />
-        </div>
-        <button
-          type="button"
-          onClick={handleAddAllocation}
-          className="bg-primary-500 hover:bg-primary-600 text-background flex shrink-0 items-center gap-1 rounded-lg px-3 py-2 text-sm transition-colors"
-        >
-          <PlusIcon />
-          <span className="whitespace-nowrap">新增項目</span>
-        </button>
+      <div className="flex w-full items-center text-lg font-semibold">
+        <span className="whitespace-nowrap">總預算：$</span>
+        <input
+          type="number"
+          className="flex-1 cursor-default px-2 py-1 focus:outline-0"
+          value={totalBudget}
+          readOnly={true}
+        />
       </div>
       <form
         onSubmit={handleSaveChanges}
         className="flex w-full flex-col gap-4 pt-6"
       >
-        {allocation.map((item) => (
-          <AllocationItem
-            key={item.id}
-            data={item}
-            totalBudget={totalBudget}
-            handleRemove={handleRemoveAllocation}
-          />
-        ))}
+        {loading && allocation.length === 0 && (
+          <>
+            <div className="h-24 w-full animate-pulse rounded-lg bg-gray-100"></div>
+            <div className="h-24 w-full animate-pulse rounded-lg bg-gray-100"></div>
+            <div className="h-24 w-full animate-pulse rounded-lg bg-gray-100"></div>
+          </>
+        )}
+        {!loading &&
+          allocation.map((item) => (
+            <AllocationItem
+              key={item.id}
+              data={item}
+              handleUpdate={handleUpdate}
+              handleRemove={handleRemoveAllocation}
+            />
+          ))}
+        <button
+          type="button"
+          onClick={handleAddAllocation}
+          className="relative flex w-full items-center justify-center gap-4 rounded-lg border-2 border-dashed border-gray-300 p-4 text-gray-300 transition-colors hover:border-gray-500 hover:bg-gray-100 hover:text-gray-500"
+        >
+          <PlusIcon />
+          <span className="whitespace-nowrap">新增項目</span>
+        </button>
         <button
           type="submit"
-          className="bg-primary-500 hover:bg-primary-600 text-background w-30 self-center rounded-lg px-4 py-2 text-center transition-colors"
+          className="bg-primary-500 hover:bg-primary-600 text-background mt-6 w-30 self-center rounded-lg px-4 py-2 text-center transition-colors"
         >
           儲存變更
         </button>
@@ -138,38 +137,20 @@ export const YearlyBudgetTemplate = () => {
 
 const AllocationItem = ({
   data,
-  totalBudget,
+  handleUpdate,
   handleRemove,
 }: {
   data: Allocation;
-  totalBudget: number;
+  handleUpdate: (data: Allocation) => void;
   handleRemove: (id: number) => void;
 }) => {
-  const budgetRef = useRef<HTMLInputElement>(null);
-  const percentageRef = useRef<HTMLInputElement>(null);
-
   const handleOnChangeBudget = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      if (!budgetRef.current || !percentageRef.current) return;
-      const value = Number(event.target.value);
-      budgetRef.current.value = value.toString();
-      if (totalBudget > 0) {
-        percentageRef.current.value = ((value / totalBudget) * 100).toFixed(0);
-      }
+      const newData = { ...data };
+      newData.budget = Number(event.target.value);
+      handleUpdate(newData);
     },
-    [totalBudget],
-  );
-
-  const handleOnChangePercentage = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      if (!budgetRef.current || !percentageRef.current) return;
-      const value = Number(event.target.value);
-      percentageRef.current.value = value.toString();
-      if (totalBudget > 0) {
-        budgetRef.current.value = ((value / 100) * totalBudget).toFixed(0);
-      }
-    },
-    [totalBudget],
+    [data, handleUpdate],
   );
 
   return (
@@ -184,7 +165,7 @@ const AllocationItem = ({
           <input
             type="text"
             name={`allocation-name-${data.id}`}
-            className="bg-background focus:border-primary-500 w-full rounded-lg border border-solid border-gray-300 px-1 py-2 transition-colors focus:outline-0"
+            className="bg-background focus:border-primary-500 w-full rounded-lg border border-solid border-gray-300 p-2 transition-colors focus:outline-0"
             defaultValue={data.name}
             placeholder="例如：飲食"
           />
@@ -194,9 +175,8 @@ const AllocationItem = ({
             <legend className="text-sm">金額(NT$)</legend>
             <input
               type="number"
-              ref={budgetRef}
               name={`allocation-budget-${data.id}`}
-              className="bg-background focus:border-primary-500 w-full rounded-lg border border-solid border-gray-300 px-1 py-2 transition-colors focus:outline-0"
+              className="bg-background focus:border-primary-500 w-full rounded-lg border border-solid border-gray-300 p-2 transition-colors focus:outline-0"
               defaultValue={data.budget}
               onChange={handleOnChangeBudget}
               placeholder="金額"
@@ -204,18 +184,14 @@ const AllocationItem = ({
           </fieldset>
           <fieldset className="w-25">
             <legend className="text-sm">百分比</legend>
-            <div className="flex items-center gap-1">
-              <input
-                type="number"
-                ref={percentageRef}
-                name={`allocation-percentage-${data.id}`}
-                className="bg-background focus:border-primary-500 w-full rounded-lg border border-solid border-gray-300 px-1 py-2 transition-colors focus:outline-0"
-                defaultValue={data.percentage}
-                onChange={handleOnChangePercentage}
-                placeholder="%"
-              />
-              <span>%</span>
-            </div>
+            <input
+              type="text"
+              name={`allocation-percentage-${data.id}`}
+              className="w-full cursor-default bg-transparent p-2 focus:outline-0"
+              value={data.percentage.toFixed(0) + '%'}
+              readOnly={true}
+              placeholder="%"
+            />
           </fieldset>
         </div>
       </div>
@@ -230,3 +206,11 @@ const AllocationItem = ({
     </div>
   );
 };
+
+function updatePercentage(list: Allocation[]) {
+  const total = list.map((item) => item.budget).reduce((a, b) => a + b, 0);
+  return list.map((item) => ({
+    ...item,
+    percentage: total > 0 ? (item.budget * 100) / total : 0,
+  }));
+}
