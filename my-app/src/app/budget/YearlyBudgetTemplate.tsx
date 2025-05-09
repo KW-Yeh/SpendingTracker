@@ -77,11 +77,11 @@ export const YearlyBudgetTemplate = () => {
   return (
     <div className="flex w-full flex-col">
       <div className="flex w-full items-center justify-between gap-6">
-        <div className="flex flex-1 items-center">
+        <div className="flex flex-1 items-center text-lg font-semibold">
           <span className="whitespace-nowrap">總預算：</span>
           <input
             type="number"
-            className="bg-background focus:border-primary-500 max-w-70 flex-1 rounded-lg border-2 border-solid border-gray-300 px-2 py-1 text-lg font-semibold transition-colors focus:outline-0"
+            className="bg-background focus:border-primary-500 max-w-70 flex-1 rounded-lg border-2 border-solid border-gray-300 px-2 py-1 transition-colors focus:outline-0"
             value={totalBudget}
             onChange={handleOnChangeTotalBudget}
           />
@@ -89,10 +89,10 @@ export const YearlyBudgetTemplate = () => {
         <button
           type="button"
           onClick={handleAddAllocation}
-          className="bg-primary-500 hover:bg-primary-600 text-background flex items-center gap-1 rounded-lg px-3 py-2 text-sm transition-colors"
+          className="bg-primary-500 hover:bg-primary-600 text-background flex shrink-0 items-center gap-1 rounded-lg px-3 py-2 text-sm transition-colors"
         >
           <PlusIcon />
-          <span>新增項目</span>
+          <span className="whitespace-nowrap">新增項目</span>
         </button>
       </div>
       <form
