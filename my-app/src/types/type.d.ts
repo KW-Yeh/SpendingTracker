@@ -29,7 +29,14 @@ interface User {
   groups: string[];
   budgetList?: number[];
   allocation?: Allocation[];
+  monthlyPlan?: MonthlyPlan[];
   desc?: Record<string, string[]>;
+}
+
+interface MonthlyPlan {
+  month: number;
+  budget: number;
+  percentage: number;
 }
 
 interface Allocation {
