@@ -6,6 +6,7 @@ import { PlusIcon } from '@/components/icons/PlusIcon';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { OUTCOME_TYPE_MAP } from '@/utils/constants';
 import { normalizeNumber } from '@/utils/normalizeNumber';
+import dynamic from 'next/dynamic';
 import {
   ChangeEvent,
   FormEvent,
@@ -13,6 +14,10 @@ import {
   useEffect,
   useState,
 } from 'react';
+
+const BudgetChartForCategory = dynamic(() => import('@/app/budget/BudgetChartForCategory'), {
+  ssr: false,
+});
 
 export const YearlyBudgetTemplate = () => {
   const {
@@ -102,6 +107,7 @@ export const YearlyBudgetTemplate = () => {
           (約 ${normalizeNumber(Number((totalBudget / 12).toFixed(0)))} / 月)
         </span>
       </div>
+      <BudgetChartForCategory data={allocation} />
       <form
         onSubmit={handleSaveChanges}
         className="flex w-full flex-col gap-4 pt-6"
@@ -178,9 +184,9 @@ const AllocationItem = ({
   );
 
   return (
-    <div className="bg-primary-100 relative flex w-full items-center rounded-lg p-4 pl-12">
+    <div className="relative flex w-full items-center rounded-lg border border-solid border-gray-100 bg-gray-100 p-4 pl-12 transition-colors hover:border-gray-200">
       <div className="absolute top-1 left-1 flex size-8 items-center justify-center">
-        <span className="text-primary-200 text-sm">{data.id}</span>
+        <span className="text-sm text-gray-300">{data.id}</span>
       </div>
 
       <div className="flex flex-1 flex-wrap items-center justify-between gap-6">
