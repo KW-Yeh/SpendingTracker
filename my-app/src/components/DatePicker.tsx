@@ -9,16 +9,26 @@ interface Props {
   className?: string;
   labelClassName?: string;
   format?: 'wording' | 'yyyy-mm-dd' | 'yyyy/mm/dd';
+  init?: Date;
 }
 
 export const DatePicker = (props: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { date, setDate } = useDateCtx();
 
-  const year = useMemo(() => date.getFullYear(), [date]);
-  const month = useMemo(() => date.getMonth(), [date]);
-  const day = useMemo(() => date.getDate(), [date]);
-  const weekday = useMemo(() => date.getDay(), [date]);
+  const year = useMemo(
+    () => (props.init ?? date).getFullYear(),
+    [date, props.init],
+  );
+  const month = useMemo(
+    () => (props.init ?? date).getMonth(),
+    [date, props.init],
+  );
+  const day = useMemo(() => (props.init ?? date).getDate(), [date, props.init]);
+  const weekday = useMemo(
+    () => (props.init ?? date).getDay(),
+    [date, props.init],
+  );
 
   const wording = useMemo(() => {
     if (props.format === 'yyyy-mm-dd') {

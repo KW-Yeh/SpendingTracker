@@ -243,6 +243,7 @@ export const EditExpenseModal = (props: Props) => {
               className="h-10 flex-1 rounded-md border border-solid border-gray-300 bg-transparent"
               labelClassName="text-base px-2 py-1"
               format="yyyy/mm/dd"
+              init={new Date(data.date)}
             />
           </div>
           <div className="flex w-full items-center gap-4">
