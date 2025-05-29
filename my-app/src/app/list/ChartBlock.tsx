@@ -1,17 +1,18 @@
 'use client';
 
 import { ChartContainer } from '@/app/list/ChartContainer';
-import { Filter } from '@/app/list/Filter';
+import { YearMonthFilter } from '@/app/list/YearMonthFilter';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
+import { useScrollToTop } from '@/hooks/useScrollToTop';
+import { useYearMonth } from '@/hooks/useYearMonth';
 import { calSpending2Chart } from '@/utils/calSpending2Chart';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
 import dynamic from 'next/dynamic';
 import { startTransition, useCallback, useEffect, useState } from 'react';
 import ExpenseCostTable from './ExpenseCostTable';
 import NecessityCostTable from './NecessityCostTable';
-import { useScrollToTop } from '@/hooks/useScrollToTop';
 
 const ExpensePieChart = dynamic(() => import('./ExpensePieChart'), {
   ssr: false,
@@ -63,8 +64,7 @@ export const ChartBlock = () => {
     },
   });
   const today = new Date();
-  const [year, setYear] = useState(`${today.getFullYear()}`);
-  const [month, setMonth] = useState(`${today.getMonth() + 1}`);
+  const dateHook = useYearMonth(today);
 
   const refreshData = useCallback(
     (_groupId: string | undefined, _year: string, _month: string) => {
@@ -85,27 +85,21 @@ export const ChartBlock = () => {
     startTransition(() => {
       const filteredData = data.filter(
         (record) =>
-          `${new Date(record.date).getFullYear()}` === year &&
-          `${new Date(record.date).getMonth() + 1}` === month &&
+          `${new Date(record.date).getFullYear()}` === dateHook.year &&
+          `${new Date(record.date).getMonth() + 1}` === dateHook.month &&
           record.groupId === currentGroup?.id,
       );
       setChartData(calSpending2Chart(filteredData));
     });
-  }, [data, year, month, currentGroup?.id]);
+  }, [data, dateHook.year, dateHook.month, currentGroup?.id]);
 
   return (
     <div className="flex w-full max-w-175 flex-col items-center gap-6">
       <div className="flex items-center gap-4 text-base sm:text-lg">
-        <Filter
+        <YearMonthFilter
           refreshData={refreshData}
           group={currentGroup}
-          dateOptions={{
-            today,
-            year,
-            setYear,
-            month,
-            setMonth,
-          }}
+          dateOptions={dateHook}
         />
       </div>
 

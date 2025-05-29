@@ -263,11 +263,11 @@ export const EditExpenseModal = (props: Props) => {
                 defaultValue={data.description}
               />
               <datalist id="common-description">
-                {(userData?.desc ?? DEFAULT_DESC)[selectedCategory]?.map(
-                  (commonDesc) => (
-                    <option key={commonDesc} value={commonDesc}></option>
-                  ),
-                )}
+                {{ ...DEFAULT_DESC, ...(userData?.desc ?? {}) }[
+                  selectedCategory
+                ]?.map((commonDesc) => (
+                  <option key={commonDesc} value={commonDesc}></option>
+                ))}
               </datalist>
             </fieldset>
           </div>

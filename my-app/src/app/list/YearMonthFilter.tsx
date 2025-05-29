@@ -17,7 +17,7 @@ interface Props {
   };
 }
 
-export const Filter = (props: Props) => {
+export const YearMonthFilter = (props: Props) => {
   const { refreshData, group, dateOptions } = props;
   const { today, setYear, year, setMonth, month } = dateOptions;
 

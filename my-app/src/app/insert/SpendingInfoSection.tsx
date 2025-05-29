@@ -2,20 +2,19 @@
 
 import { OverView } from '@/app/insert/OverView';
 import { SpendingList } from '@/app/insert/SpendingList';
-import { DatePicker } from '@/components/DatePicker';
+import { YearMonthFilter } from '@/app/list/YearMonthFilter';
 import { SearchIcon } from '@/components/icons/SearchIcon';
-import { useDateCtx } from '@/context/DateProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { useScrollToTop } from '@/hooks/useScrollToTop';
+import { useYearMonth } from '@/hooks/useYearMonth';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
 import dynamic from 'next/dynamic';
 import {
   startTransition,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -33,17 +32,16 @@ export const SpendingInfoSection = ({
   const { syncData, data, loading } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
   const [isProcessing, setIsProcessing] = useState(true);
-  const { date } = useDateCtx();
   const [monthlyData, setMonthlyData] = useState<SpendingRecord[]>([]);
   const [filterStr, setFilterStr] = useState('');
   const searchRef = useRef<HTMLInputElement>(null);
-
-  const year = useMemo(() => date.getFullYear(), [date]);
-  const month = useMemo(() => date.getMonth(), [date]);
+  const dateHook = useYearMonth(new Date());
 
   const refreshData = useCallback(
     (_groupId?: string) => {
-      const { startDate, endDate } = getStartEndOfMonth(date);
+      const { startDate, endDate } = getStartEndOfMonth(
+        new Date(Number(dateHook.year), Number(dateHook.month) - 1),
+      );
       syncData(
         _groupId || undefined,
         userData?.email,
@@ -51,7 +49,22 @@ export const SpendingInfoSection = ({
         endDate.toISOString(),
       );
     },
-    [syncData, userData?.email, date],
+    [syncData, userData?.email, dateHook.year, dateHook.month],
+  );
+
+  const getNewData = useCallback(
+    (_groupId: string | undefined, year: string, month: string) => {
+      const { startDate, endDate } = getStartEndOfMonth(
+        new Date(Number(year), Number(month) - 1),
+      );
+      syncData(
+        _groupId || undefined,
+        userData?.email,
+        startDate.toISOString(),
+        endDate.toISOString(),
+      );
+    },
+    [syncData, userData?.email],
   );
 
   const handleSelectDataPoint = (state: CategoricalChartState) => {
@@ -76,7 +89,7 @@ export const SpendingInfoSection = ({
         setIsProcessing(false);
       });
     });
-  }, [data, date, userData?.email, loading]);
+  }, [data, userData?.email, loading]);
 
   useEffect(() => {
     const elem = searchRef.current;
@@ -88,25 +101,37 @@ export const SpendingInfoSection = ({
   }, []);
 
   useEffect(() => {
-    const { startDate, endDate } = getStartEndOfMonth(new Date(year, month));
+    const { startDate, endDate } = getStartEndOfMonth(
+      new Date(Number(dateHook.year), Number(dateHook.month) - 1),
+    );
     syncData(
       currentGroup?.id,
       userData?.email,
       startDate.toISOString(),
       endDate.toISOString(),
     );
-  }, [currentGroup?.id, month, year, syncData, userData?.email]);
+  }, [
+    currentGroup?.id,
+    dateHook.month,
+    dateHook.year,
+    syncData,
+    userData?.email,
+  ]);
 
   return (
     <div className="relative mx-auto flex w-full max-w-175 flex-1 flex-col items-center gap-6 p-6">
-      <div className="flex w-full items-center justify-center">
-        <DatePicker labelClassName="p-4 text-lg sm:text-xl font-semibold" />
+      <div className="flex self-center">
+        <YearMonthFilter
+          refreshData={getNewData}
+          group={currentGroup}
+          dateOptions={dateHook}
+        />
       </div>
 
       <AddExpenseBtn autoClick={!!quickInsert}>立即新增帳目</AddExpenseBtn>
 
       <OverView
-        dateStr={date.toISOString()}
+        dateStr={dateHook.today.toISOString()}
         costList={data}
         handleSelectDataPoint={handleSelectDataPoint}
       />

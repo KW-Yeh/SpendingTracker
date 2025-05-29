@@ -3,7 +3,7 @@
 import { CalendarIcon } from '@/components/icons/CalendarIcon';
 import { useDateCtx } from '@/context/DateProvider';
 import { WEEKDAY } from '@/utils/constants';
-import { ChangeEvent, useMemo, useRef } from 'react';
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 
 interface Props {
   className?: string;
@@ -13,31 +13,29 @@ interface Props {
 }
 
 export const DatePicker = (props: Props) => {
+  const { init = new Date(), format, className, labelClassName } = props;
   const inputRef = useRef<HTMLInputElement>(null);
   const { date, setDate } = useDateCtx();
+  const [year, setYear] = useState(init.getFullYear());
+  const [month, setMonth] = useState(init.getFullYear());
+  const [day, setDay] = useState(init.getFullYear());
+  const [weekday, setWeekday] = useState(init.getFullYear());
 
-  const year = useMemo(
-    () => (props.init ?? date).getFullYear(),
-    [date, props.init],
-  );
-  const month = useMemo(
-    () => (props.init ?? date).getMonth(),
-    [date, props.init],
-  );
-  const day = useMemo(() => (props.init ?? date).getDate(), [date, props.init]);
-  const weekday = useMemo(
-    () => (props.init ?? date).getDay(),
-    [date, props.init],
-  );
+  useEffect(() => {
+    setYear(date.getFullYear());
+    setMonth(date.getMonth());
+    setDay(date.getDate());
+    setWeekday(date.getDay());
+  }, [date]);
 
   const wording = useMemo(() => {
-    if (props.format === 'yyyy-mm-dd') {
+    if (format === 'yyyy-mm-dd') {
       return `${year}-${month + 1}-${day}`;
-    } else if (props.format === 'yyyy/mm/dd') {
+    } else if (format === 'yyyy/mm/dd') {
       return `${year}/${month + 1}/${day}`;
     }
     return `${year} 年 ${month + 1} 月 ${day} 日（週${WEEKDAY[weekday]}）`;
-  }, [year, month, day, weekday, props.format]);
+  }, [year, month, day, weekday, format]);
 
   const handleOnChangeDate = (event: ChangeEvent) => {
     const newDate = new Date((event.target as HTMLInputElement).value);
@@ -55,7 +53,7 @@ export const DatePicker = (props: Props) => {
   };
 
   return (
-    <div className={`relative flex items-center ${props.className}`}>
+    <div className={`relative flex items-center ${className}`}>
       <input
         ref={inputRef}
         type="date"
@@ -64,7 +62,7 @@ export const DatePicker = (props: Props) => {
       />
       <button
         type="button"
-        className={`z-20 flex w-full items-center justify-between gap-4 ${props.labelClassName}`}
+        className={`z-20 flex w-full items-center justify-between gap-4 ${labelClassName}`}
         onClick={showPicker}
       >
         <span>{wording}</span>
