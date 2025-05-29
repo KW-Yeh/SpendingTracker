@@ -19,6 +19,7 @@ export const viewport: Viewport = {
 
 const fonts = LXGW_WenKai_TC({
   weight: ['300', '400', '700'],
+  subsets: ['latin'],
 });
 
 export default function RootLayout({
