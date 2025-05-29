@@ -120,11 +120,12 @@ export const SpendingInfoSection = ({
 
   return (
     <div className="relative mx-auto flex w-full max-w-175 flex-1 flex-col items-center gap-6 p-6">
-      <div className="flex self-center">
+      <div className="flex self-center text-xl">
         <YearMonthFilter
           refreshData={getNewData}
           group={currentGroup}
           dateOptions={dateHook}
+          className="border-0 bg-transparent"
         />
       </div>
 
