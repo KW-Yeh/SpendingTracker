@@ -96,11 +96,11 @@ export const AsideMenu = (props: Props) => {
             </button>
           )}
         </div>
-        <div className="mt-4 flex flex-col items-center">
-          <h3 className="max-w-36 overflow-hidden text-base font-bold text-ellipsis whitespace-nowrap">
+        <div className="mt-4 flex w-full flex-col items-center px-4">
+          <h3 className="max-w-70 overflow-hidden text-base font-bold text-ellipsis whitespace-nowrap">
             {user ? user.name : '尚未登入'}
           </h3>
-          <p className="max-w-36 overflow-hidden text-xs text-ellipsis whitespace-nowrap text-gray-500">
+          <p className="max-w-70 overflow-hidden text-xs text-ellipsis whitespace-nowrap text-gray-500">
             {user ? user.email : '尚未登入'}
           </p>
         </div>
