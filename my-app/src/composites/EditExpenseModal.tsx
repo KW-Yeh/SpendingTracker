@@ -66,7 +66,9 @@ export const EditExpenseModal = (props: Props) => {
 
   const isNewDesc = useMemo(
     () =>
-      !(userData?.desc ?? DEFAULT_DESC)[selectedCategory].includes(description),
+      !{ ...DEFAULT_DESC, ...(userData?.desc ?? {}) }[
+        selectedCategory
+      ].includes(description),
     [description, selectedCategory, userData?.desc],
   );
 
@@ -82,13 +84,13 @@ export const EditExpenseModal = (props: Props) => {
       if (!userData) return;
       const commonDescMap = { ...userData.desc };
       if (isNew) {
-        const newCategories = commonDescMap[selectedCategory];
+        const newCategories = commonDescMap[selectedCategory] ?? [];
         if (!newCategories.includes(description)) {
           newCategories.push(description);
         }
         commonDescMap[selectedCategory] = newCategories;
       } else {
-        const newCategories = commonDescMap[selectedCategory];
+        const newCategories = commonDescMap[selectedCategory] ?? [];
         const index = newCategories.findIndex((item) => item === description);
         if (index !== -1) {
           newCategories.splice(index, 1);

@@ -99,7 +99,7 @@ export const useIDB = () => {
 
         signal.addEventListener('abort', () => {
           if (isTransactionActive) {
-            console.log('aborted');
+            // console.log('aborted');
             transaction.abort();
           }
         });

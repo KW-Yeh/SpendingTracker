@@ -19,6 +19,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { CategoricalChartState } from 'recharts/types/chart/types';
 
 const AddExpenseBtn = dynamic(() => import('@/app/insert/AddExpenseBtn'));
 
@@ -52,6 +53,17 @@ export const SpendingInfoSection = ({
     },
     [syncData, userData?.email, date],
   );
+
+  const handleSelectDataPoint = (state: CategoricalChartState) => {
+    const selectedLabel = state.activeLabel;
+    const element = document.getElementById(`spending-list-${selectedLabel}`);
+    if (!element) return;
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    element.style.backgroundColor = '#fff08570';
+    setTimeout(() => {
+      element.style.backgroundColor = 'transparent';
+    }, 2000);
+  };
 
   useEffect(() => {
     startTransition(() => {
@@ -93,7 +105,11 @@ export const SpendingInfoSection = ({
 
       <AddExpenseBtn autoClick={!!quickInsert}>立即新增帳目</AddExpenseBtn>
 
-      <OverView dateStr={date.toISOString()} costList={data} />
+      <OverView
+        dateStr={date.toISOString()}
+        costList={data}
+        handleSelectDataPoint={handleSelectDataPoint}
+      />
 
       <div className="bg-background flex w-full flex-col rounded-3xl border border-solid border-gray-300 p-6 shadow">
         <div className="mb-6 flex items-center gap-4">

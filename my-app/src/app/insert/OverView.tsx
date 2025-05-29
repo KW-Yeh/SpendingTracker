@@ -5,10 +5,12 @@ import { normalizeNumber } from '@/utils/normalizeNumber';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { MdOutlineWallet } from 'react-icons/md';
+import { CategoricalChartState } from 'recharts/types/chart/types';
 
 interface Props {
   dateStr: string;
   costList: SpendingRecord[];
+  handleSelectDataPoint: (state: CategoricalChartState) => void;
 }
 
 const UsagePieChart = dynamic(() => import('./UsagePieChart'), {
@@ -16,7 +18,7 @@ const UsagePieChart = dynamic(() => import('./UsagePieChart'), {
 });
 
 export const OverView = (props: Props) => {
-  const { costList, dateStr } = props;
+  const { costList, dateStr, handleSelectDataPoint } = props;
   const { totalIncome, totalOutcome } = getExpenseFromData(costList);
   const day = new Date(dateStr);
   const year = day.getFullYear();
@@ -60,7 +62,12 @@ export const OverView = (props: Props) => {
       </div>
 
       <div className="flex w-full items-end py-10 text-sm max-sm:hidden">
-        <UsagePieChart data={dailyCost} init={new Array(days).fill(0)} />
+        <UsagePieChart
+          month={month}
+          data={dailyCost}
+          init={new Array(days).fill(0)}
+          handleOnClick={handleSelectDataPoint}
+        />
       </div>
 
       <Link

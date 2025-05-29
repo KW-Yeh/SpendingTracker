@@ -97,7 +97,7 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
         .then((res) => {
           if (res && res.length === 1) {
             const _data = JSON.parse(res[0].data) as SpendingRecord[];
-            console.log('Get Data from IDB', _data);
+            // console.log('Get Data from IDB', _data);
             if (_data.length !== 0) {
               handleSetState(_data);
             }

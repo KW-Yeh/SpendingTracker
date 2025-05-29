@@ -53,7 +53,10 @@ export const SpendingList = (props: Props) => {
       {Object.keys(sortedByDay).map((dateStr) => (
         <div key={dateStr}>
           <span className="text-gray-500">{dateStr}</span>
-          <div className="flex flex-col">
+          <div
+            className="flex flex-col transition-all"
+            id={`spending-list-${dateStr}`}
+          >
             {sortedByDay[dateStr].map((spending, index) => (
               <SpendingItem
                 key={`${spending.id}-${index.toString()}`}
