@@ -1,8 +1,10 @@
 'use client';
 
+import { normalizeNumber } from '@/utils/normalizeNumber';
 import { startTransition, useEffect, useState } from 'react';
 import {
   CartesianGrid,
+  DefaultTooltipContentProps,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -24,8 +26,10 @@ type DataType = {
   cumulative: number;
 };
 
-const UsagePieChart = (props: Props) => {
-  const [dataList, setDataList] = useState<DataType[]>(formatData(props.init, props.month));
+const UsageLineChart = (props: Props) => {
+  const [dataList, setDataList] = useState<DataType[]>(
+    formatData(props.init, props.month),
+  );
 
   useEffect(() => {
     startTransition(() => {
@@ -35,16 +39,14 @@ const UsagePieChart = (props: Props) => {
 
   return (
     <ResponsiveContainer width="100%" height={250}>
-      <LineChart
-        data={dataList}
-        margin={{ right: 30 }}
-        onClick={props.handleOnClick}
-      >
+      <LineChart data={dataList} onClick={props.handleOnClick}>
         <CartesianGrid strokeDasharray="4" />
         <XAxis dataKey="date" />
-        <YAxis />
-        <Tooltip />
+        <YAxis yAxisId="left" orientation="left" tick={false} width={4} />
+        <YAxis yAxisId="right" orientation="right" tick={false} width={4} />
+        <Tooltip content={CustomToolTip} />
         <Line
+          yAxisId="left"
           type="monotone"
           dataKey="cumulative"
           stroke="hsl(256, 60%, 50%)"
@@ -56,7 +58,7 @@ const UsagePieChart = (props: Props) => {
   );
 };
 
-export default UsagePieChart;
+export default UsageLineChart;
 
 function formatData(list: number[], month: number) {
   const result: DataType[] = [];
@@ -70,3 +72,17 @@ function formatData(list: number[], month: number) {
   });
   return result;
 }
+
+const CustomToolTip = (props: DefaultTooltipContentProps<string, string>) => {
+  if (!props.payload) return null;
+  const payload = props.payload[0]?.payload;
+  if (!payload) return null;
+  return (
+    <div className="bg-background flex flex-col rounded p-2 shadow">
+      <span className="text-primary-700">
+        累積花費：${normalizeNumber(payload.cumulative)}
+      </span>
+      <span className="text-xs">{payload.date}</span>
+    </div>
+  );
+};

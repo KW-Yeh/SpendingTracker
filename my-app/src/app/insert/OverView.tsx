@@ -13,7 +13,7 @@ interface Props {
   handleSelectDataPoint: (state: CategoricalChartState) => void;
 }
 
-const UsagePieChart = dynamic(() => import('./UsagePieChart'), {
+const UsageLineChart = dynamic(() => import('././UsageLineChart'), {
   ssr: false,
 });
 
@@ -61,8 +61,8 @@ export const OverView = (props: Props) => {
         </span>
       </div>
 
-      <div className="flex w-full items-end py-10 text-sm max-sm:hidden">
-        <UsagePieChart
+      <div className="flex w-full items-end py-10 text-xs sm:text-sm">
+        <UsageLineChart
           month={month}
           data={dailyCost}
           init={new Array(days).fill(0)}
