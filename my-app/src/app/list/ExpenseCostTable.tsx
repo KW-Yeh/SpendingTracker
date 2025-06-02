@@ -69,7 +69,7 @@ const ExpenseCostTable = (props: Props) => {
     <>
       <CostTable
         title={`支出各項資訊 $${normalizeNumber(props.totalOutcome)}（${outcomePercentage.toFixed(0)}%）`}
-        total={total}
+        total={props.totalOutcome}
         list={outcomeList}
         options={{
           headerStyle: 'bg-red-500/30',
@@ -77,7 +77,7 @@ const ExpenseCostTable = (props: Props) => {
       />
       <CostTable
         title={`收入各項資訊 $${normalizeNumber(props.totalIncome)}（${incomePercentage.toFixed(0)}%）`}
-        total={total}
+        total={props.totalIncome}
         list={incomeList}
         options={{
           headerStyle: 'bg-green-500/30',

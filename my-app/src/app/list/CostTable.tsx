@@ -42,7 +42,9 @@ export const CostTable = ({
                 {item.name}
               </td>
               <td className="col-span-1 border border-solid border-gray-300 p-2 text-end">
-                {item.value === 0 ? 0 : ((item.value / total) * 100).toFixed(0)}
+                {item.value === 0
+                  ? 0
+                  : (Math.round((item.value / total) * 100) || 0).toFixed(0)}
                 %
               </td>
               <td className="col-span-2 border border-solid border-gray-300 p-2 text-end">
