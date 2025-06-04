@@ -24,8 +24,10 @@ const AddExpenseBtn = dynamic(() => import('@/app/insert/AddExpenseBtn'));
 
 export const SpendingInfoSection = ({
   quickInsert,
+  isMobile,
 }: {
   quickInsert?: string;
+  isMobile: boolean;
 }) => {
   useScrollToTop();
   const { config: userData } = useUserConfigCtx();
@@ -133,6 +135,7 @@ export const SpendingInfoSection = ({
       <OverView
         dateStr={dateHook.today.toISOString()}
         costList={data}
+        isMobile={isMobile}
         handleSelectDataPoint={handleSelectDataPoint}
       />
 

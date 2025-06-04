@@ -1,6 +1,8 @@
 import { SpendingInfoSection } from '@/app/insert/SpendingInfoSection';
 import { PrefetchRoute } from '@/components/PrefetchRoute';
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
+import { userAgent } from 'next/server';
 
 export const metadata: Metadata = {
   title: '消費追蹤',
@@ -26,10 +28,14 @@ export default async function Home({
   searchParams: Promise<Record<string, string>>;
 }) {
   const queryParams = await searchParams;
+  const {device} = userAgent({ headers: await headers() });
   return (
     <div className="flex w-full flex-1">
       <PrefetchRoute />
-      <SpendingInfoSection quickInsert={queryParams.quickInsert} />
+      <SpendingInfoSection
+        isMobile={device.type === 'mobile'}
+        quickInsert={queryParams.quickInsert}
+      />
     </div>
   );
 }

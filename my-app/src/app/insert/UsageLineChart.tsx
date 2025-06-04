@@ -18,6 +18,7 @@ interface Props {
   month: number;
   data: number[];
   init: number[];
+  isMobile: boolean;
   handleOnClick: (state: CategoricalChartState) => void;
 }
 
@@ -39,8 +40,12 @@ const UsageLineChart = (props: Props) => {
 
   return (
     <ResponsiveContainer width="100%" height={250}>
-      <BarChart data={dataList} onClick={props.handleOnClick}>
-        <CartesianGrid strokeDasharray="4" />
+      <BarChart
+        data={dataList}
+        barSize={props.isMobile ? 5 : 12}
+        onClick={props.handleOnClick}
+      >
+        <CartesianGrid strokeDasharray="3 3" syncWithTicks />
         <XAxis dataKey="date" />
         <YAxis yAxisId="left" orientation="left" tick={false} width={4} />
         <Tooltip content={CustomToolTip} />

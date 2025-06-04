@@ -9,6 +9,7 @@ import { CategoricalChartState } from 'recharts/types/chart/types';
 
 interface Props {
   dateStr: string;
+  isMobile: boolean;
   costList: SpendingRecord[];
   handleSelectDataPoint: (state: CategoricalChartState) => void;
 }
@@ -18,7 +19,7 @@ const UsageLineChart = dynamic(() => import('././UsageLineChart'), {
 });
 
 export const OverView = (props: Props) => {
-  const { costList, dateStr, handleSelectDataPoint } = props;
+  const { costList, dateStr, isMobile, handleSelectDataPoint } = props;
   const { totalIncome, totalOutcome } = getExpenseFromData(costList);
   const day = new Date(dateStr);
   const year = day.getFullYear();
@@ -66,6 +67,7 @@ export const OverView = (props: Props) => {
           month={month}
           data={dailyCost}
           init={new Array(days).fill(0)}
+          isMobile={isMobile}
           handleOnClick={handleSelectDataPoint}
         />
       </div>
