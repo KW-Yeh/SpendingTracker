@@ -35,7 +35,7 @@
 body {
     color: var(--color-text);
     background-color: var(--color-background);
-    font-family: "LXGW WenKai TC", Arial, Helvetica, sans-serif, cursive;
+    font-family: "Noto Sans TC", "Noto Sans TC Placeholder", sans-serif;
     width: 100%;
     min-height: 100vh;
     display: flex;
