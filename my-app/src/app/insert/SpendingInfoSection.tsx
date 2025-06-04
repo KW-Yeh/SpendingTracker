@@ -125,7 +125,6 @@ export const SpendingInfoSection = ({
           refreshData={getNewData}
           group={currentGroup}
           dateOptions={dateHook}
-          className="border-0 bg-transparent"
         />
       </div>
 

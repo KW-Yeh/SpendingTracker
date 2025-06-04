@@ -28,10 +28,16 @@ export const YearMonthFilter = (props: Props) => {
 
   return (
     <div
-      className={`bg-background flex w-full items-center justify-center gap-2 rounded-full border border-solid border-gray-300 px-4 py-1 ${className}`}
+      className={`flex w-full items-center justify-center gap-2 ${className}`}
     >
-      <div className="">
-        <Select name="year" value={year} onChange={setYear}>
+      <div className="border-text w-30 rounded-lg border border-solid bg-background px-4 py-2">
+        <Select
+          name="year"
+          caretStyle="rounded-full bg-text size-3 p-0.5 text-background"
+          className="w-full"
+          value={year}
+          onChange={setYear}
+        >
           {Array(11)
             .fill(0)
             .map((_, i) => (
@@ -44,14 +50,15 @@ export const YearMonthFilter = (props: Props) => {
             ))}
         </Select>
       </div>
-      <span>年</span>
-      <div className="">
+
+      <div className="border-text w-25 rounded-lg border border-solid bg-background px-4 py-2">
         <Select
           name="month"
           value={month}
           label={month.padStart(2, '0')}
           onChange={setMonth}
           className="w-full"
+          caretStyle="rounded-full bg-text size-3 p-0.5 text-background"
         >
           {Array(12)
             .fill(0)
@@ -62,7 +69,6 @@ export const YearMonthFilter = (props: Props) => {
             ))}
         </Select>
       </div>
-      <span>月</span>
     </div>
   );
 };

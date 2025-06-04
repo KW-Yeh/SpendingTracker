@@ -3,10 +3,10 @@
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import { startTransition, useEffect, useState } from 'react';
 import {
+  Bar,
+  BarChart,
   CartesianGrid,
   DefaultTooltipContentProps,
-  Line,
-  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -23,7 +23,7 @@ interface Props {
 
 type DataType = {
   date: string;
-  cumulative: number;
+  cost: number;
 };
 
 const UsageLineChart = (props: Props) => {
@@ -39,21 +39,13 @@ const UsageLineChart = (props: Props) => {
 
   return (
     <ResponsiveContainer width="100%" height={250}>
-      <LineChart data={dataList} onClick={props.handleOnClick}>
+      <BarChart data={dataList} onClick={props.handleOnClick}>
         <CartesianGrid strokeDasharray="4" />
         <XAxis dataKey="date" />
         <YAxis yAxisId="left" orientation="left" tick={false} width={4} />
-        <YAxis yAxisId="right" orientation="right" tick={false} width={4} />
         <Tooltip content={CustomToolTip} />
-        <Line
-          yAxisId="left"
-          type="monotone"
-          dataKey="cumulative"
-          stroke="hsl(256, 60%, 50%)"
-          strokeWidth={2}
-          dot={{ r: 3 }}
-        />
-      </LineChart>
+        <Bar yAxisId="left" dataKey="cost" fill="hsl(256, 60%, 70%)" />
+      </BarChart>
     </ResponsiveContainer>
   );
 };
@@ -62,12 +54,10 @@ export default UsageLineChart;
 
 function formatData(list: number[], month: number) {
   const result: DataType[] = [];
-  let cumulative = 0;
   list.forEach((item, index) => {
-    cumulative += item;
     result.push({
       date: `${(month + 1).toString().padStart(2, '0')}/${(index + 1).toString().padStart(2, '0')}`,
-      cumulative,
+      cost: item,
     });
   });
   return result;
@@ -80,7 +70,7 @@ const CustomToolTip = (props: DefaultTooltipContentProps<string, string>) => {
   return (
     <div className="bg-background flex flex-col rounded p-2 shadow">
       <span className="text-primary-700">
-        累積花費：${normalizeNumber(payload.cumulative)}
+        花費：${normalizeNumber(payload.cost)}
       </span>
       <span className="text-xs">{payload.date}</span>
     </div>
