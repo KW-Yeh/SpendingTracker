@@ -122,7 +122,7 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
         />
       </div>
 
-      <OverView costList={data} />
+      <OverView costList={data} isMobile={isMobile} />
 
       <DailyCostChart
         dateStr={dateHook.today.toISOString()}

@@ -6,24 +6,24 @@ import { MdOutlineWallet } from 'react-icons/md';
 
 interface Props {
   costList: SpendingRecord[];
+  isMobile: boolean;
 }
 
 const UsagePieChart = dynamic(() => import('./UsagePieChart'), {
   ssr: false,
-  loading: () => <div className="size-40"></div>,
 });
 
 export default function OverView(props: Props) {
-  const { costList } = props;
+  const { costList, isMobile } = props;
   const { totalIncome, totalOutcome } = getExpenseFromData(costList);
   return (
     <div className="bg-background relative flex w-full items-center justify-between rounded-3xl border border-solid border-gray-300 p-6 text-gray-300 shadow">
       <div className="flex flex-col">
         <span
-          className={`mb-4 flex items-center gap-2 text-xs sm:text-sm ${totalIncome !== 0 && totalIncome - totalOutcome < 0 ? 'text-red-400' : 'text-green-400'}`}
+          className={`flex items-center gap-2 text-xs leading-10 sm:text-sm ${totalIncome !== 0 && totalIncome - totalOutcome < 0 ? 'text-red-400' : 'text-green-400'}`}
         >
           <MdOutlineWallet className="size-6 text-gray-500" />
-          <span className="text-3xl leading-9 font-bold">
+          <span className="text-xl leading-9 font-bold sm:text-3xl">
             {totalIncome
               ? `$${normalizeNumber(totalIncome - totalOutcome)}`
               : '$0'}
@@ -40,9 +40,15 @@ export default function OverView(props: Props) {
           </span>
         </span>
 
-        <AddExpenseBtn className="mt-4">立即新增帳目</AddExpenseBtn>
+        <AddExpenseBtn className="mt-4 text-sm sm:text-lg">
+          立即新增帳目
+        </AddExpenseBtn>
       </div>
-      <UsagePieChart totalIncome={totalIncome} totalOutcome={totalOutcome} />
+      <UsagePieChart
+        totalIncome={totalIncome}
+        totalOutcome={totalOutcome}
+        isMobile={isMobile}
+      />
     </div>
   );
 }

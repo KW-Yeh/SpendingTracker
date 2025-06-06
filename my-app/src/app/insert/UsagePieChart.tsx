@@ -12,13 +12,17 @@ import {
 interface Props {
   totalIncome: number;
   totalOutcome: number;
+  isMobile: boolean;
 }
 
 const UsagePieChart = (props: Props) => {
-  const { totalIncome, totalOutcome } = props;
+  const { totalIncome, totalOutcome, isMobile } = props;
   const percent = totalIncome ? totalOutcome / totalIncome : 0;
   return (
-    <ResponsiveContainer width={160} height={160}>
+    <ResponsiveContainer
+      width={isMobile ? 100 : 160}
+      height={isMobile ? 100 : 160}
+    >
       <PieChart>
         <Pie
           dataKey="value"
@@ -31,8 +35,8 @@ const UsagePieChart = (props: Props) => {
             },
           ]}
           isAnimationActive={false}
-          outerRadius={65}
-          innerRadius={45}
+          outerRadius={isMobile ? 50 : 65}
+          innerRadius={isMobile ? 35 : 45}
         />
         <Tooltip content={CustomToolTip} />
         <text
