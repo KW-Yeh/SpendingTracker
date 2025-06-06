@@ -22,20 +22,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string>>;
-}) {
-  const queryParams = await searchParams;
-  const {device} = userAgent({ headers: await headers() });
+export default async function Home() {
+  const { device } = userAgent({ headers: await headers() });
   return (
     <div className="flex w-full flex-1">
       <PrefetchRoute />
-      <SpendingInfoSection
-        isMobile={device.type === 'mobile'}
-        quickInsert={queryParams.quickInsert}
-      />
+      <SpendingInfoSection isMobile={device.type === 'mobile'} />
     </div>
   );
 }

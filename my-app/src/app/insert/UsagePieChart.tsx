@@ -16,8 +16,9 @@ interface Props {
 
 const UsagePieChart = (props: Props) => {
   const { totalIncome, totalOutcome } = props;
+  const percent = totalIncome ? totalOutcome / totalIncome : 0;
   return (
-    <ResponsiveContainer width={100} height={100}>
+    <ResponsiveContainer width={160} height={160}>
       <PieChart>
         <Pie
           dataKey="value"
@@ -29,11 +30,20 @@ const UsagePieChart = (props: Props) => {
               fill: 'hsl(256, 60%, 90%)',
             },
           ]}
-          label={() => <CustomizedLabel percent={totalOutcome / totalIncome} />}
-          outerRadius={50}
-          innerRadius={35}
+          isAnimationActive={false}
+          outerRadius={65}
+          innerRadius={45}
         />
         <Tooltip content={CustomToolTip} />
+        <text
+          x="50%"
+          y="50%"
+          fill="hsl(256, 60%, 30%)"
+          textAnchor="middle"
+          dominantBaseline="central"
+        >
+          {`${(percent * 100).toFixed(0)}%`}
+        </text>
       </PieChart>
     </ResponsiveContainer>
   );
@@ -51,19 +61,5 @@ const CustomToolTip = (props: DefaultTooltipContentProps<string, string>) => {
         {payload.name}：${normalizeNumber(payload.value)}
       </span>
     </div>
-  );
-};
-
-const CustomizedLabel = ({ percent }: { percent: number }) => {
-  return (
-    <text
-      x="50%"
-      y="50%"
-      fill="hsl(256, 60%, 30%)"
-      textAnchor="middle"
-      dominantBaseline="central"
-    >
-      {`${(percent * 100).toFixed(0)}%`}
-    </text>
   );
 };

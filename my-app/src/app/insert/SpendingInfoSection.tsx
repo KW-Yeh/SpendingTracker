@@ -11,7 +11,6 @@ import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { useScrollToTop } from '@/hooks/useScrollToTop';
 import { useYearMonth } from '@/hooks/useYearMonth';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
-import dynamic from 'next/dynamic';
 import {
   startTransition,
   useCallback,
@@ -21,15 +20,7 @@ import {
 } from 'react';
 import { CategoricalChartState } from 'recharts/types/chart/types';
 
-const AddExpenseBtn = dynamic(() => import('@/app/insert/AddExpenseBtn'));
-
-export const SpendingInfoSection = ({
-  quickInsert,
-  isMobile,
-}: {
-  quickInsert?: string;
-  isMobile: boolean;
-}) => {
+export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
   useScrollToTop();
   const { config: userData } = useUserConfigCtx();
   const { syncData, data, loading } = useGetSpendingCtx();
@@ -130,8 +121,6 @@ export const SpendingInfoSection = ({
           dateOptions={dateHook}
         />
       </div>
-
-      <AddExpenseBtn autoClick={!!quickInsert}>立即新增帳目</AddExpenseBtn>
 
       <OverView costList={data} />
 

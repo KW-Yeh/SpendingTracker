@@ -1,28 +1,18 @@
-'use client';
-
 import Link from 'next/link';
-import { HTMLAttributes, useEffect, useRef } from 'react';
+import { ReactNode } from 'react';
 
-interface Props extends HTMLAttributes<HTMLButtonElement> {
-  autoClick: boolean;
-}
-
-const AddExpenseBtn = (props: Props) => {
-  const { autoClick, children } = props;
-  const LinkRef = useRef<HTMLAnchorElement>(null);
-
-  useEffect(() => {
-    if (autoClick) {
-      LinkRef.current?.click();
-    }
-  }, [autoClick]);
-
+const AddExpenseBtn = ({
+  children,
+  className = '',
+}: {
+  children: ReactNode;
+  className?: string;
+}) => {
   return (
-    <div className="bg-background w-full rounded-lg sm:mx-auto sm:w-fit">
+    <div className={`bg-background w-fit rounded-lg ${className}`}>
       <Link
-        ref={LinkRef}
         href="/edit"
-        className="gradient-r-from-purple-to-blue flex w-full items-center justify-center rounded-lg px-14 py-4 text-lg sm:w-fit"
+        className="gradient-r-from-purple-to-blue flex items-center justify-center rounded-lg px-6 py-2"
         scroll={false}
       >
         {children}

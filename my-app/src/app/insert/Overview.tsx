@@ -1,3 +1,4 @@
+import AddExpenseBtn from '@/app/insert/AddExpenseBtn';
 import { getExpenseFromData } from '@/utils/getExpenseFromData';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import dynamic from 'next/dynamic';
@@ -9,14 +10,14 @@ interface Props {
 
 const UsagePieChart = dynamic(() => import('./UsagePieChart'), {
   ssr: false,
-  loading: () => <div className="size-25"></div>,
+  loading: () => <div className="size-40"></div>,
 });
 
 export default function OverView(props: Props) {
   const { costList } = props;
   const { totalIncome, totalOutcome } = getExpenseFromData(costList);
   return (
-    <div className="bg-background relative flex w-full items-start justify-between rounded-3xl border border-solid border-gray-300 p-6 text-gray-300 shadow">
+    <div className="bg-background relative flex w-full items-center justify-between rounded-3xl border border-solid border-gray-300 p-6 text-gray-300 shadow">
       <div className="flex flex-col">
         <span
           className={`mb-4 flex items-center gap-2 text-xs sm:text-sm ${totalIncome !== 0 && totalIncome - totalOutcome < 0 ? 'text-red-400' : 'text-green-400'}`}
@@ -38,6 +39,8 @@ export default function OverView(props: Props) {
             {totalOutcome ? `$${normalizeNumber(totalOutcome)}` : '$0'}
           </span>
         </span>
+
+        <AddExpenseBtn className="mt-4">立即新增帳目</AddExpenseBtn>
       </div>
       <UsagePieChart totalIncome={totalIncome} totalOutcome={totalOutcome} />
     </div>
