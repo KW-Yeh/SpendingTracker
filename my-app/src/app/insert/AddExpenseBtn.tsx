@@ -18,11 +18,11 @@ const AddExpenseBtn = (props: Props) => {
   }, [autoClick]);
 
   return (
-    <div className="bg-background rounded-lg">
+    <div className="bg-background w-full rounded-lg sm:mx-auto sm:w-fit">
       <Link
         ref={LinkRef}
         href="/edit"
-        className="gradient-r-from-purple-to-blue mx-auto flex rounded-lg px-14 py-4 text-center text-lg"
+        className="gradient-r-from-purple-to-blue flex w-full items-center justify-center rounded-lg px-14 py-4 text-lg sm:w-fit"
         scroll={false}
       >
         {children}
