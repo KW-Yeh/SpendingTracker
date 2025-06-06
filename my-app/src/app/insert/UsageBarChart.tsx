@@ -38,7 +38,7 @@ const UsageBarChart = (props: Props) => {
   }, [data, month]);
 
   return (
-    <ResponsiveContainer width="100%" height={isMobile ? 200 : 250}>
+    <ResponsiveContainer width="100%" height={isMobile ? 180 : 250}>
       <BarChart
         data={dataList}
         barSize={isMobile ? 5 : 12}

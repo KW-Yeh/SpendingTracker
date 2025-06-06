@@ -36,7 +36,7 @@ export const DailyCostChart = (props: Props) => {
   return (
     <div className="bg-background relative flex w-full flex-col items-start rounded-3xl border border-solid border-gray-300 p-6 text-gray-300 shadow">
       <h3 className="text-text text-lg font-semibold">每日花費</h3>
-      <div className="flex w-full items-end py-10 text-xs sm:text-sm">
+      <div className="flex w-full items-end py-4 text-xs sm:text-sm">
         <UsageBarChart
           month={month}
           data={dailyCost}
