@@ -28,22 +28,21 @@ type DataType = {
 };
 
 const UsageBarChart = (props: Props) => {
-  const [dataList, setDataList] = useState<DataType[]>(
-    formatData(props.init, props.month),
-  );
+  const { init, month, data, isMobile, handleOnClick } = props;
+  const [dataList, setDataList] = useState<DataType[]>(formatData(init, month));
 
   useEffect(() => {
     startTransition(() => {
-      setDataList(formatData(props.data, props.month));
+      setDataList(formatData(data, month));
     });
-  }, [props.data, props.month]);
+  }, [data, month]);
 
   return (
-    <ResponsiveContainer width="100%" height={250}>
+    <ResponsiveContainer width="100%" height={isMobile ? 200 : 250}>
       <BarChart
         data={dataList}
-        barSize={props.isMobile ? 5 : 12}
-        onClick={props.handleOnClick}
+        barSize={isMobile ? 5 : 12}
+        onClick={handleOnClick}
       >
         <CartesianGrid strokeDasharray="3 3" syncWithTicks />
         <XAxis dataKey="date" />
