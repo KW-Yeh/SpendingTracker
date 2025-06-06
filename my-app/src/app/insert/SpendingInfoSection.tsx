@@ -1,6 +1,7 @@
 'use client';
 
-import { OverView } from '@/app/insert/OverView';
+import { DailyCostChart } from '@/app/insert/DailyCostChart';
+import OverView from '@/app/insert/Overview';
 import { SpendingList } from '@/app/insert/SpendingList';
 import { YearMonthFilter } from '@/app/list/YearMonthFilter';
 import { SearchIcon } from '@/components/icons/SearchIcon';
@@ -132,7 +133,9 @@ export const SpendingInfoSection = ({
 
       <AddExpenseBtn autoClick={!!quickInsert}>立即新增帳目</AddExpenseBtn>
 
-      <OverView
+      <OverView costList={data} />
+
+      <DailyCostChart
         dateStr={dateHook.today.toISOString()}
         costList={data}
         isMobile={isMobile}

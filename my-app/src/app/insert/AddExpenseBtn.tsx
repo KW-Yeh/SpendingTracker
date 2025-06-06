@@ -22,7 +22,7 @@ const AddExpenseBtn = (props: Props) => {
       <Link
         ref={LinkRef}
         href="/edit"
-        className="gradient-r-from-purple-to-blue mx-auto flex rounded-lg px-14 py-4 text-center text-lg font-bold"
+        className="gradient-r-from-purple-to-blue mx-auto flex rounded-lg px-14 py-4 text-center text-lg"
         scroll={false}
       >
         {children}

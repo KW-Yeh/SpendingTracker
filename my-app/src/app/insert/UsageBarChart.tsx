@@ -27,7 +27,7 @@ type DataType = {
   cost: number;
 };
 
-const UsageLineChart = (props: Props) => {
+const UsageBarChart = (props: Props) => {
   const [dataList, setDataList] = useState<DataType[]>(
     formatData(props.init, props.month),
   );
@@ -55,7 +55,7 @@ const UsageLineChart = (props: Props) => {
   );
 };
 
-export default UsageLineChart;
+export default UsageBarChart;
 
 function formatData(list: number[], month: number) {
   const result: DataType[] = [];
@@ -73,7 +73,7 @@ const CustomToolTip = (props: DefaultTooltipContentProps<string, string>) => {
   const payload = props.payload[0]?.payload;
   if (!payload) return null;
   return (
-    <div className="bg-background flex flex-col rounded p-2 shadow">
+    <div className="bg-background flex flex-col rounded p-2 text-xs shadow">
       <span className="text-primary-700">
         花費：${normalizeNumber(payload.cost)}
       </span>

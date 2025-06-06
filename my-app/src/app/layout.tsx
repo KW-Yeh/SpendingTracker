@@ -1,4 +1,3 @@
-import { LXGW_WenKai_TC } from 'next/font/google';
 import Footer from '@/composites/Footer';
 import { Header } from '@/composites/Header';
 import { PrepareData } from '@/composites/PrepareData';
@@ -17,11 +16,6 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
-const fonts = LXGW_WenKai_TC({
-  weight: ['300', '400', '700'],
-  subsets: ['latin'],
-});
-
 export default function RootLayout({
   children,
   modal,
@@ -30,7 +24,7 @@ export default function RootLayout({
   modal: ReactNode;
 }>) {
   return (
-    <html lang="zh-Hant" className={fonts.className}>
+    <html lang="zh-Hant">
       <body>
         <SessionProvider>
           <DateProvider>

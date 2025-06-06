@@ -1,10 +1,7 @@
 import { DoubleArrowIcon } from '@/components/icons/DoubleArrowIcon';
 import { SpendingType } from '@/utils/constants';
-import { getExpenseFromData } from '@/utils/getExpenseFromData';
-import { normalizeNumber } from '@/utils/normalizeNumber';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { MdOutlineWallet } from 'react-icons/md';
 import { CategoricalChartState } from 'recharts/types/chart/types';
 
 interface Props {
@@ -14,13 +11,12 @@ interface Props {
   handleSelectDataPoint: (state: CategoricalChartState) => void;
 }
 
-const UsageLineChart = dynamic(() => import('././UsageLineChart'), {
+const UsageBarChart = dynamic(() => import('./UsageBarChart'), {
   ssr: false,
 });
 
-export const OverView = (props: Props) => {
+export const DailyCostChart = (props: Props) => {
   const { costList, dateStr, isMobile, handleSelectDataPoint } = props;
-  const { totalIncome, totalOutcome } = getExpenseFromData(costList);
   const day = new Date(dateStr);
   const year = day.getFullYear();
   const month = day.getMonth();
@@ -39,31 +35,9 @@ export const OverView = (props: Props) => {
 
   return (
     <div className="bg-background relative flex w-full flex-col items-start rounded-3xl border border-solid border-gray-300 p-6 text-gray-300 shadow">
-      <div className="flex w-full flex-col">
-        <span
-          className={`flex items-center gap-2 text-xs sm:text-sm ${totalIncome !== 0 && totalIncome - totalOutcome < 0 ? 'text-red-400' : 'text-green-400'}`}
-        >
-          <MdOutlineWallet className="size-6 text-gray-500" />
-          <span className="text-3xl leading-9 font-bold">
-            {totalIncome
-              ? `$${normalizeNumber(totalIncome - totalOutcome)}`
-              : '$0'}
-          </span>
-        </span>
-        <span className="flex items-center gap-1 text-xs text-gray-300 sm:text-sm">
-          <span>收入</span>
-          <span>{totalIncome ? `$${normalizeNumber(totalIncome)}` : '$0'}</span>
-        </span>
-        <span className="flex items-center gap-1 text-xs text-gray-300 sm:text-sm">
-          <span>支出</span>
-          <span>
-            {totalOutcome ? `$${normalizeNumber(totalOutcome)}` : '$0'}
-          </span>
-        </span>
-      </div>
-
+      <h3 className="text-text text-lg font-semibold">每日花費</h3>
       <div className="flex w-full items-end py-10 text-xs sm:text-sm">
-        <UsageLineChart
+        <UsageBarChart
           month={month}
           data={dailyCost}
           init={new Array(days).fill(0)}
@@ -71,12 +45,11 @@ export const OverView = (props: Props) => {
           handleOnClick={handleSelectDataPoint}
         />
       </div>
-
       <Link
         href="/list"
         className="text-primary-500 active:text-primary-300 hover:text-primary-300 absolute right-4 bottom-4 flex items-center text-xs font-bold transition-colors"
       >
-        前往分析
+        更多分析
         <DoubleArrowIcon className="size-3" />
       </Link>
     </div>
