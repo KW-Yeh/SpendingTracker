@@ -64,12 +64,14 @@ export const EditExpenseModal = (props: Props) => {
     [selectedCategory, spendingCategories],
   );
 
+  const descriptionList = useMemo(
+    () => ({ ...DEFAULT_DESC, ...(userData?.desc ?? {}) })[selectedCategory],
+    [selectedCategory, userData?.desc],
+  );
+
   const isNewDesc = useMemo(
-    () =>
-      !{ ...DEFAULT_DESC, ...(userData?.desc ?? {}) }[
-        selectedCategory
-      ].includes(description),
-    [description, selectedCategory, userData?.desc],
+    () => !descriptionList.includes(description),
+    [description, descriptionList],
   );
 
   const handleSetSpendingType = (type: string) => {
@@ -248,42 +250,57 @@ export const EditExpenseModal = (props: Props) => {
               init={new Date(data.date)}
             />
           </div>
-          <div className="flex w-full items-center gap-4">
+          <div className="group flex w-full items-center">
             <fieldset className="flex-1">
               <input
-                list="common-description"
+                type="text"
                 id="description"
                 name="description"
-                className="h-10 w-full rounded-md border border-solid border-gray-300 px-2 py-1 focus:outline-0"
+                className="h-10 w-full rounded-md rounded-r-none border border-r-0 border-solid border-gray-300 px-2 py-1 transition-colors group-hover:border-gray-500 group-active:border-gray-500 focus:outline-0"
                 autoComplete="off"
                 placeholder="描述"
                 onChange={(e) => {
                   setDescription(e.target.value);
                 }}
-                defaultValue={data.description}
+                value={description}
               />
-              <datalist id="common-description">
-                {{ ...DEFAULT_DESC, ...(userData?.desc ?? {}) }[
-                  selectedCategory
-                ]?.map((commonDesc) => (
-                  <option key={commonDesc} value={commonDesc}></option>
+            </fieldset>
+            <fieldset className="w-10">
+              <Select
+                name="category"
+                onChange={setDescription}
+                className="h-10 w-10 justify-center rounded-md rounded-l-none border border-l-0 border-solid border-gray-300 px-3 py-1 transition-colors group-hover:border-gray-500 group-active:border-gray-500"
+                menuStyle="min-w-24"
+              >
+                {descriptionList.map((commonDesc) => (
+                  <Select.Item
+                    key={commonDesc}
+                    value={commonDesc}
+                    className="justify-center"
+                  >
+                    <span>{commonDesc}</span>
+                  </Select.Item>
                 ))}
-              </datalist>
+                {descriptionList.length === 0 && (
+                  <Select.Item value="" className="justify-center">
+                    <span>尚未設定</span>
+                  </Select.Item>
+                )}
+              </Select>
             </fieldset>
           </div>
-          <div
-            className={`grid w-full transition-all duration-300 ${description !== '' ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
+          <button
+            type="button"
+            disabled={description === ''}
+            className="border-text bg-text text-background w-full rounded-lg border border-solid p-2 font-semibold transition-colors hover:bg-gray-800 active:bg-gray-800 disabled:!cursor-not-allowed disabled:border-gray-300 disabled:bg-gray-300 disabled:text-gray-500"
+            onClick={() => handleSetCommonDesc(isNewDesc)}
           >
-            <div className="overflow-hidden">
-              <button
-                type="button"
-                className="border-text bg-text text-background w-full rounded-lg border border-solid p-2 font-semibold transition-colors hover:bg-gray-800 active:bg-gray-800"
-                onClick={() => handleSetCommonDesc(isNewDesc)}
-              >
-                {!isNewDesc ? '- 刪除常用描述' : '+ 新增常用描述'}
-              </button>
-            </div>
-          </div>
+            {description === ''
+              ? '+ 新增常用描述'
+              : !isNewDesc
+                ? '- 刪除常用描述'
+                : '+ 新增常用描述'}
+          </button>
         </div>
         <div className="flex flex-col gap-1">
           <div

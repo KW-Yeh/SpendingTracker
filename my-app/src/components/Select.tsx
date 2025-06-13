@@ -24,6 +24,8 @@ interface Props {
 enum MenuOpenDirection {
   Up = 'Up',
   Down = 'Down',
+  Left = 'Left',
+  Right = 'Right',
 }
 
 export const Select = (props: Props) => {
@@ -39,9 +41,10 @@ export const Select = (props: Props) => {
   } = props;
   const [openOptions, setOpenOptions] = useState(false);
   const [menuMaxHeight, setMenuMaxHeight] = useState(0);
-  const [openDirection, setOpenDirection] = useState<MenuOpenDirection>(
-    MenuOpenDirection.Down,
-  );
+  const [openVerticalDirection, setOpenVerticalDirection] =
+    useState<MenuOpenDirection>(MenuOpenDirection.Down);
+  const [openHorizontalDirection, setOpenHorizontalDirection] =
+    useState<MenuOpenDirection>(MenuOpenDirection.Left);
   const ref = useFocusRef<HTMLDivElement>(() => {
     setOpenOptions(false);
   });
@@ -49,8 +52,9 @@ export const Select = (props: Props) => {
   const updateMenuHeight = useCallback(() => {
     const element = ref.current;
     if (element) {
-      const direction = calOpenDirection(element);
-      setOpenDirection(direction);
+      const direction = calVerticalDirection(element);
+      setOpenVerticalDirection(direction);
+      setOpenHorizontalDirection(calHorizontalDirection(element));
       setMenuMaxHeight(calMenuHeight(element, direction));
     }
   }, [ref]);
@@ -60,9 +64,11 @@ export const Select = (props: Props) => {
     if (element) {
       updateMenuHeight();
       window.addEventListener('scroll', updateMenuHeight);
+      window.addEventListener('animationend', updateMenuHeight);
     }
     return () => {
       window.removeEventListener('scroll', updateMenuHeight);
+      window.removeEventListener('animationend', updateMenuHeight);
     };
   }, [ref, updateMenuHeight]);
 
@@ -80,20 +86,22 @@ export const Select = (props: Props) => {
           type="button"
           onClick={() => setOpenOptions((prevState) => !prevState)}
         >
-          <span className="overflow-hidden text-ellipsis whitespace-nowrap">
-            {label ?? value}
-          </span>
+          {(label || value) && (
+            <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+              {label ?? value}
+            </span>
+          )}
           <CaretDown className={`size-2 shrink-0 ${caretStyle}`} />
         </button>
         <div
-          className={`${openDirection === MenuOpenDirection.Down ? 'top-full mt-1' : 'bottom-full mb-1'} absolute left-1 z-40 w-fit overflow-hidden rounded-lg border border-solid border-gray-300 bg-background py-2 shadow transition-all ${openOptions ? 'visible opacity-100' : 'invisible opacity-0'}`}
+          className={`${openVerticalDirection === MenuOpenDirection.Down ? 'top-full mt-1' : 'bottom-full mb-1'} ${openHorizontalDirection === MenuOpenDirection.Left ? 'right-0' : 'left-0'} bg-background absolute z-40 w-fit overflow-hidden rounded-lg border border-solid border-gray-300 py-2 shadow transition-all ${openOptions ? 'visible opacity-100' : 'invisible opacity-0'}`}
           style={{
             minWidth: (ref.current?.clientWidth ?? 0) - 8 + 'px',
             maxHeight: menuMaxHeight + 'px',
           }}
         >
           <div
-            className={`${menuStyle} scrollbar flex h-full w-full flex-col overflow-y-auto overflow-x-hidden`}
+            className={`${menuStyle} scrollbar flex h-full w-full flex-col overflow-x-hidden overflow-y-auto`}
             style={{
               maxHeight: menuMaxHeight - 8 + 'px',
             }}
@@ -145,7 +153,7 @@ const Item = ({
 
 Select.Item = Item;
 
-const calOpenDirection = (element: HTMLDivElement) => {
+const calVerticalDirection = (element: HTMLDivElement) => {
   const dropdownHeight =
     element.getBoundingClientRect().bottom -
     element.getBoundingClientRect().top;
@@ -155,11 +163,21 @@ const calOpenDirection = (element: HTMLDivElement) => {
     : MenuOpenDirection.Up;
 };
 
+const calHorizontalDirection = (element: HTMLDivElement) => {
+  const dropdownWidth =
+    element.getBoundingClientRect().right -
+    element.getBoundingClientRect().left;
+
+  return element.getBoundingClientRect().left <
+    (window.innerWidth - dropdownWidth) / 2
+    ? MenuOpenDirection.Right
+    : MenuOpenDirection.Left;
+};
+
 const calMenuHeight = (
-  element: HTMLDivElement | null,
+  element: HTMLDivElement,
   openDirection: MenuOpenDirection,
 ) => {
-  if (!element) return window.innerHeight * (2 / 5);
   if (openDirection === MenuOpenDirection.Down) {
     return window.innerHeight - element.getBoundingClientRect().bottom - 24;
   } else {
