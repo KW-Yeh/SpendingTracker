@@ -19,14 +19,10 @@ export default function OverView(props: Props) {
   return (
     <div className="bg-background relative flex w-full items-start justify-between rounded-3xl border border-solid border-gray-300 p-6 text-gray-300 shadow">
       <div className="flex h-full min-h-30 flex-col">
-        <span
-          className={`flex items-center gap-2 text-xs leading-10 sm:text-sm ${totalIncome !== 0 && totalIncome - totalOutcome < 0 ? 'text-red-400' : 'text-green-400'}`}
-        >
+        <span className="flex items-center gap-2 text-xs leading-10 sm:text-sm">
           <MdOutlineWallet className="size-6 text-gray-500" />
-          <span className="text-xl leading-9 font-bold sm:text-3xl">
-            {totalIncome
-              ? `$${normalizeNumber(totalIncome - totalOutcome)}`
-              : '$0'}
+          <span className="text-xl leading-9 font-bold text-red-400 sm:text-3xl">
+            {totalOutcome ? `$${normalizeNumber(totalOutcome)}` : '$0'}
           </span>
         </span>
         <span className="flex items-center gap-1 text-xs text-gray-300 sm:text-sm">
@@ -34,9 +30,11 @@ export default function OverView(props: Props) {
           <span>{totalIncome ? `$${normalizeNumber(totalIncome)}` : '$0'}</span>
         </span>
         <span className="flex items-center gap-1 text-xs text-gray-300 sm:text-sm">
-          <span>支出</span>
+          <span>剩餘</span>
           <span>
-            {totalOutcome ? `$${normalizeNumber(totalOutcome)}` : '$0'}
+            {totalIncome
+              ? `$${normalizeNumber(totalIncome - totalOutcome)}`
+              : '$0'}
           </span>
         </span>
 
