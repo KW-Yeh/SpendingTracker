@@ -11,7 +11,11 @@ interface Props {
   handleSelectDataPoint: (state: CategoricalChartState) => void;
 }
 
-const UsageBarChart = dynamic(() => import('./UsageBarChart'), {
+// const UsageBarChart = dynamic(() => import('./UsageBarChart'), {
+//   ssr: false,
+// });
+
+const UsageLineChart = dynamic(() => import('./UsageLineChart'), {
   ssr: false,
 });
 
@@ -37,7 +41,7 @@ export const DailyCostChart = (props: Props) => {
     <div className="bg-background relative flex w-full flex-col items-start rounded-3xl border border-solid border-gray-300 p-6 text-gray-300 shadow">
       <h3 className="text-text text-lg font-semibold">每日花費</h3>
       <div className="flex w-full items-end py-4 text-xs sm:text-sm">
-        <UsageBarChart
+        <UsageLineChart
           month={month}
           data={dailyCost}
           init={new Array(days).fill(0)}
