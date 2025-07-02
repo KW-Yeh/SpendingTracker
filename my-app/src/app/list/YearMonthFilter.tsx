@@ -40,31 +40,34 @@ export const YearMonthFilter = (props: Props) => {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="bg-background border-text flex items-center gap-2 rounded-full border border-solid px-4 py-2"
+        className={`bg-background flex items-center gap-2 rounded-full border border-solid px-4 py-2 transition-colors ${open ? 'border-primary-700 bg-primary-100 text-primary-700' : 'bg-background border-gray-700 text-gray-700'}`}
       >
         <CalendarIcon className="size-4 sm:size-5" />
         <span className="w-12 text-end">{MONTH_MAP[month]}</span>
         <span className="w-14">{year}</span>
       </button>
       <div
+        className={`bg-primary-700 absolute left-1/2 z-10 h-3 w-0.25 -translate-x-1/2 ${open ? 'visible opacity-100' : 'invisible opacity-0'}`}
+      ></div>
+      <div
         ref={ref}
-        className={`bg-background border-text absolute left-1/2 z-10 mt-4 flex w-55 -translate-x-1/2 flex-col rounded-md border border-solid p-3 shadow transition-all ${open ? 'visible opacity-100' : 'invisible opacity-0'}`}
+        className={`bg-primary-100 text-primary-700 border-primary-700 absolute left-1/2 z-10 mt-3 flex w-55 -translate-x-1/2 flex-col rounded-md border border-solid p-3 shadow transition-all ${open ? 'visible opacity-100' : 'invisible opacity-0'}`}
       >
         <div className="flex w-full items-center justify-between gap-4">
           <a
             onClick={() => {
               setYear((Number(year) - 1).toString());
             }}
-            className="flex size-4 cursor-pointer items-center justify-center rounded border border-solid border-gray-300 p-1 text-gray-300 transition-colors hover:border-gray-500 hover:text-gray-500 sm:size-5"
+            className="border-primary-300 text-primary-300 hover:border-primary-500 hover:text-primary-500 flex size-5 cursor-pointer items-center justify-center rounded border border-solid p-1 transition-colors"
           >
             <BiSolidLeftArrow />
           </a>
-          <span>{year}</span>
+          <span className="font-bold">{year}</span>
           <a
             onClick={() => {
               setYear((Number(year) + 1).toString());
             }}
-            className="flex size-4 cursor-pointer items-center justify-center rounded border border-solid border-gray-300 p-1 text-gray-300 transition-colors hover:border-gray-500 hover:text-gray-500 sm:size-5"
+            className="border-primary-300 text-primary-300 hover:border-primary-500 hover:text-primary-500 flex size-5 cursor-pointer items-center justify-center rounded border border-solid p-1 transition-colors"
           >
             <BiSolidRightArrow />
           </a>

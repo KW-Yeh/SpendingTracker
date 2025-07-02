@@ -12,7 +12,7 @@ const AddExpenseBtn = ({
     <div className={`bg-background w-fit rounded-lg ${className}`}>
       <Link
         href="/edit"
-        className="gradient-r-from-purple-to-blue flex items-center justify-center rounded-lg px-6 py-2"
+        className="gradient-r-from-purple-to-blue flex items-center justify-center rounded-lg px-4 py-2 sm:px-6 sm:py-3"
         scroll={false}
       >
         {children}
