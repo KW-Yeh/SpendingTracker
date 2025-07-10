@@ -3,9 +3,9 @@
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import { startTransition, useEffect, useState } from 'react';
 import {
+  Area,
+  AreaChart,
   DefaultTooltipContentProps,
-  Line,
-  LineChart,
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
@@ -25,7 +25,7 @@ type DataType = {
 };
 
 const UsageLineChart = (props: Props) => {
-  const { init, month, data, isMobile, handleOnClick } = props;
+  const { init, month, data, handleOnClick } = props;
   const [dataList, setDataList] = useState<DataType[]>(formatData(init, month));
 
   useEffect(() => {
@@ -36,16 +36,25 @@ const UsageLineChart = (props: Props) => {
 
   return (
     <ResponsiveContainer width="100%" height={150}>
-      <LineChart data={dataList} onClick={handleOnClick}>
-        <Line
-          type="linear"
+      <AreaChart data={dataList} onClick={handleOnClick}>
+        <defs>
+          <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+            <stop
+              offset="5%"
+              stopColor="hsl(256, 60%, 70%)"
+              stopOpacity={0.8}
+            />
+            <stop offset="95%" stopColor="hsl(256, 60%, 70%)" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <Area
           dataKey="cost"
           stroke="hsl(256, 60%, 70%)"
-          strokeWidth={2}
-          dot={{ stroke: 'hsl(256, 60%, 70%)', r: isMobile ? 2 : 3 }}
+          fill="url(#colorUv)"
+          dot={{ stroke: 'hsl(256, 60%, 70%)', r: 1 }}
         />
         <Tooltip content={CustomToolTip} />
-      </LineChart>
+      </AreaChart>
     </ResponsiveContainer>
   );
 };

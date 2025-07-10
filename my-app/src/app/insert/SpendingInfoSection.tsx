@@ -113,7 +113,7 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
   ]);
 
   return (
-    <div className="relative mx-auto flex w-full max-w-175 flex-1 flex-col items-center gap-6 p-6">
+    <div className="relative mx-auto flex w-full flex-1 flex-col items-center gap-6 p-6">
       <div className="flex self-center text-base">
         <YearMonthFilter
           refreshData={getNewData}
@@ -122,33 +122,36 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
         />
       </div>
 
-      <OverView costList={data} isMobile={isMobile} />
-
-      <DailyCostChart
-        dateStr={dateHook.today.toISOString()}
-        costList={data}
-        isMobile={isMobile}
-        handleSelectDataPoint={handleSelectDataPoint}
-      />
-
-      <div className="bg-background flex w-full flex-col rounded-3xl border border-solid border-gray-300 p-6 shadow">
-        <div className="mb-6 flex items-center gap-4">
-          <h3 className="text-lg font-bold">帳目</h3>
-          <div className="group ml-auto flex items-center gap-2 rounded-lg border border-solid border-gray-300 px-2">
-            <SearchIcon className="group-hover:text-primary-500 text-gray-500 transition-colors" />
-            <input
-              ref={searchRef}
-              type="text"
-              className="w-20 bg-transparent py-1 text-sm font-semibold focus:outline-0"
-            />
-          </div>
+      <div className="flex w-full flex-col items-center gap-6 md:flex-row md:items-start">
+        <div className="flex w-full max-w-175 flex-col items-center gap-6">
+          <OverView costList={data} isMobile={isMobile} />
+          <DailyCostChart
+            dateStr={dateHook.today.toISOString()}
+            costList={data}
+            isMobile={isMobile}
+            handleSelectDataPoint={handleSelectDataPoint}
+          />
         </div>
-        <SpendingList
-          data={monthlyData}
-          filterStr={filterStr}
-          loading={isProcessing}
-          refreshData={refreshData}
-        />
+
+        <div className="bg-background flex w-full flex-col rounded-3xl border border-solid border-gray-300 p-6 shadow">
+          <div className="mb-6 flex items-center gap-4">
+            <h3 className="text-lg font-bold">帳目</h3>
+            <div className="group ml-auto flex items-center gap-2 rounded-lg border border-solid border-gray-300 px-2">
+              <SearchIcon className="group-hover:text-primary-500 text-gray-500 transition-colors" />
+              <input
+                ref={searchRef}
+                type="text"
+                className="w-20 bg-transparent py-1 text-sm font-semibold focus:outline-0"
+              />
+            </div>
+          </div>
+          <SpendingList
+            data={monthlyData}
+            filterStr={filterStr}
+            loading={isProcessing}
+            refreshData={refreshData}
+          />
+        </div>
       </div>
     </div>
   );
