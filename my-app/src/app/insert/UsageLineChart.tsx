@@ -25,7 +25,7 @@ type DataType = {
 };
 
 const UsageLineChart = (props: Props) => {
-  const { init, month, data, handleOnClick } = props;
+  const { init, month, data, isMobile, handleOnClick } = props;
   const [dataList, setDataList] = useState<DataType[]>(formatData(init, month));
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const UsageLineChart = (props: Props) => {
   }, [data, month]);
 
   return (
-    <ResponsiveContainer width="100%" height={150}>
+    <ResponsiveContainer width="100%" height={isMobile ? 150 : 200}>
       <AreaChart data={dataList} onClick={handleOnClick}>
         <defs>
           <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
