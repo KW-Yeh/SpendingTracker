@@ -63,7 +63,7 @@ export const SpendingItem = (props: Props) => {
 
   return (
     <div
-      className={`relative flex items-center gap-2 rounded-lg p-2 text-sm transition-all sm:text-base ${additionalStyle}`}
+      className={`relative bg-gray-50 flex items-center gap-2 rounded-lg p-2 md:p-3 text-sm transition-all sm:text-base ${additionalStyle}`}
     >
       {deleting && (
         <span className="absolute top-0 left-1 -translate-y-1/2 rounded-full bg-red-300 px-2 text-xs font-bold">

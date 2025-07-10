@@ -54,7 +54,7 @@ export const SpendingList = (props: Props) => {
         <div key={dateStr}>
           <span className="text-gray-500">{dateStr}</span>
           <div
-            className="flex flex-col transition-all"
+            className="flex flex-col gap-1 pt-1 transition-all md:gap-2"
             id={`spending-list-${index.toString()}`}
           >
             {sortedByDay[dateStr].map((spending, index) => (
