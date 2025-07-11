@@ -21,18 +21,18 @@ export default async function Home() {
   return (
     <div className="mx-auto mt-20 flex max-w-175 flex-1 flex-col items-center justify-start gap-6">
       <h1 className="text-2xl font-bold">歡迎使用記帳追蹤</h1>
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col items-center gap-4 md:flex-row">
         <SocialButton
           icon={<GoogleIcon className="size-5" />}
           type="Google"
           onClick={handleLoginGoogle}
-          className="bg-red-500 text-background hover:bg-red-600"
+          className="text-background bg-red-500 hover:bg-red-600"
         />
         <SocialButton
           icon={<LineIcon className="size-5" />}
           type="Line"
           onClick={handleLoginLine}
-          className="bg-green-500 text-background hover:bg-green-600"
+          className="text-background bg-green-500 hover:bg-green-600"
         />
       </div>
     </div>
@@ -49,12 +49,12 @@ const SocialButton = (props: SocialButtonProps) => {
   return (
     <button
       onClick={onClick}
-      className={`group flex w-fit items-center rounded-full transition-colors ${className}`}
+      className={`flex w-60 items-center justify-center gap-3 rounded-full px-6 py-3 transition-colors ${className}`}
       {...legacy}
     >
-      <span className="aspect-square p-4">{icon}</span>
-      <p className="w-0 overflow-hidden whitespace-nowrap text-center text-sm transition-all duration-300 group-active:w-44 sm:text-base group-hover:w-44">
-        Login with <strong className="font-bold">{type}</strong>
+      <span className="aspect-square">{icon}</span>
+      <p className="text-center text-sm transition-all sm:text-base">
+        透過 <strong className="font-bold">{type}</strong> 登入
       </p>
     </button>
   );
