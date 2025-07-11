@@ -35,8 +35,8 @@ const UsagePieChart = (props: Props) => {
             },
           ]}
           isAnimationActive={false}
-          outerRadius={isMobile ? 60 : 80}
-          innerRadius={isMobile ? 45 : 55}
+          outerRadius={isMobile ? 60 : 70}
+          innerRadius={isMobile ? 45 : 50}
         />
         <Tooltip content={CustomToolTip} />
         <text

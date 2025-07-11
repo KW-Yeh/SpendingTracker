@@ -42,7 +42,7 @@ export const ActionMenu = (props: Props) => {
             onClick={() => {
               if (onClick) onClick(option.value);
             }}
-            className={`group flex items-center gap-2 rounded px-4 py-2 whitespace-nowrap transition-colors hover:bg-gray-300 active:bg-gray-300 ${option.className ?? ''}`}
+            className={`group flex items-center gap-2 rounded px-4 py-2 whitespace-nowrap transition-colors hover:bg-gray-100 active:bg-gray-100 ${option.className ?? ''}`}
           >
             {option.label}
           </button>

@@ -4,7 +4,11 @@ import { ActionMenu } from '@/components/ActionMenu';
 import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { EditIcon } from '@/components/icons/EditIcon';
 import { deleteItem } from '@/services/getRecords';
-import { SpendingType } from '@/utils/constants';
+import {
+  CATEGORY_WORDING_MAP,
+  Necessity,
+  SpendingType,
+} from '@/utils/constants';
 import { getCategoryIcon } from '@/utils/getCategoryIcon';
 import { getSpendingCategoryMap } from '@/utils/getSpendingCategoryMap';
 import { normalizeNumber } from '@/utils/normalizeNumber';
@@ -63,7 +67,7 @@ export const SpendingItem = (props: Props) => {
 
   return (
     <div
-      className={`relative bg-gray-50 flex items-center gap-2 rounded-lg p-2 md:p-3 text-sm transition-all sm:text-base ${additionalStyle}`}
+      className={`relative flex items-center gap-2 rounded-lg bg-gray-50 p-2 text-sm transition-all sm:text-base md:p-3 ${additionalStyle}`}
     >
       {deleting && (
         <span className="absolute top-0 left-1 -translate-y-1/2 rounded-full bg-red-300 px-2 text-xs font-bold">
@@ -71,8 +75,14 @@ export const SpendingItem = (props: Props) => {
         </span>
       )}
       {category && (
-        <span className="bg-primary-300 text-background flex size-6 items-center justify-center rounded-md">
-          {getCategoryIcon(category.value)}
+        <span
+          title={CATEGORY_WORDING_MAP[category.value]}
+          className="flex size-6 items-center justify-center rounded-md"
+        >
+          {getCategoryIcon(
+            category.value,
+            `size-5 ${spending.necessity === Necessity.Need ? 'text-primary-500' : 'text-gray-500'}`,
+          )}
         </span>
       )}
       <div
@@ -94,9 +104,9 @@ export const SpendingItem = (props: Props) => {
             label: (
               <Link
                 href={`/edit?id=${spending.id}`}
-                className="text-primary-500 group-hover:text-text group-active:text-text flex items-center gap-2 rounded p-2 transition-colors"
+                className="text-text group-hover:text-primary-500 group-active:text-primary-500 flex items-center gap-3 rounded px-2 py-1 transition-colors"
               >
-                <EditIcon className="size-3 transition-colors sm:size-4" />
+                <EditIcon className="size-3 transition-colors sm:size-3.5" />
                 <span>編輯</span>
               </Link>
             ),
@@ -104,8 +114,8 @@ export const SpendingItem = (props: Props) => {
           {
             value: 'delete',
             label: (
-              <span className="group group-hover:text-text group-active:text-text flex items-center gap-2 rounded p-2 text-red-500 transition-colors">
-                <DeleteIcon className="size-3 transition-colors sm:size-4" />
+              <span className="group text-text flex items-center gap-3 rounded px-2 py-1 transition-colors group-hover:text-red-500 group-active:text-red-500">
+                <DeleteIcon className="size-3 transition-colors sm:size-3.5" />
                 <span>刪除</span>
               </span>
             ),

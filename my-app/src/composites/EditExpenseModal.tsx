@@ -39,7 +39,7 @@ interface Props {
 
 export const EditExpenseModal = (props: Props) => {
   const { data, isNewData, onClose } = props;
-  const { config: userData, setter: updateUser } = useUserConfigCtx();
+  const { config: userData, setter: updateUser, syncUser } = useUserConfigCtx();
   const { syncData } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
   const { date } = useDateCtx();
@@ -102,9 +102,11 @@ export const EditExpenseModal = (props: Props) => {
       updateUser({
         ...userData,
         desc: commonDescMap,
-      }).finally();
+      }).then(() => {
+        syncUser();
+      });
     },
-    [description, selectedCategory, updateUser, userData],
+    [description, selectedCategory, syncUser, updateUser, userData],
   );
 
   const cancel = useCallback(() => {

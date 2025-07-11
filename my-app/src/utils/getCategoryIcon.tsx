@@ -13,33 +13,33 @@ import {
   MdOutlineSchool,
 } from 'react-icons/md';
 
-export function getCategoryIcon(category: string) {
+export function getCategoryIcon(category: string, className: string = '') {
   switch (category) {
     case '🍔':
-      return <MdOutlineFastfood />;
+      return <MdOutlineFastfood className={className} />;
     case '👗':
-      return <MdOutlineCheckroom />;
+      return <MdOutlineCheckroom className={className} />;
     case '🏠':
-      return <MdOutlineHome />;
+      return <MdOutlineHome className={className} />;
     case '🚗':
-      return <MdOutlineDirectionsCar />;
+      return <MdOutlineDirectionsCar className={className} />;
     case '📚':
-      return <MdOutlineSchool />;
+      return <MdOutlineSchool className={className} />;
     case '🎲':
-      return <MdOutlineCatchingPokemon />;
+      return <MdOutlineCatchingPokemon className={className} />;
     case '🧻':
-      return <MdOutlineChecklistRtl />;
+      return <MdOutlineChecklistRtl className={className} />;
     case '💊':
-      return <MdOutlineHealing />;
+      return <MdOutlineHealing className={className} />;
     case '📉':
-      return <MdOutlineBalance />;
+      return <MdOutlineBalance className={className} />;
     case '📈':
-      return <MdOutlineBalance />;
+      return <MdOutlineBalance className={className} />;
     case '💰':
-      return <MdOutlineMonetizationOn />;
+      return <MdOutlineMonetizationOn className={className} />;
     case '🎁':
-      return <MdOutlineRedeem />;
+      return <MdOutlineRedeem className={className} />;
     case '✨':
-      return <MdOutlineCategory />;
+      return <MdOutlineCategory className={className} />;
   }
 }

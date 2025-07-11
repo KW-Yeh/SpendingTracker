@@ -72,25 +72,23 @@ export const OUTCOME_TYPE_MAP = OUTCOME_TYPE_OPTIONS.map((option, index) => ({
   label: OUTCOME_WORDINGS[index],
 }));
 
-export const OUTCOME_WORDING_MAP: Record<string, string> = {
-  飲食: '🍔',
-  服飾: '👗',
-  住宿: '🏠',
-  交通: '🚗',
-  學習: '📚',
-  娛樂: '🎲',
-  日常: '🧻',
-  醫療: '💊',
-  投資: '📉',
-  其他: '✨',
+export const CATEGORY_WORDING_MAP: Record<string, string> = {
+  '🍔': '飲食',
+  '👗': '服飾',
+  '🏠': '住宿',
+  '🚗': '交通',
+  '📚': '學習',
+  '🎲': '娛樂',
+  '🧻': '日常',
+  '💊': '醫療',
+  '📉': '投資',
+  '✨': '其他',
+  '📈': '投資',
+  '💰': '薪資',
+  '🎁': '獎金',
 };
 
 export const WEEKDAY = ['日', '一', '二', '三', '四', '五', '六'];
-
-export enum DateFilter {
-  Day = 'Day',
-  Month = 'Month',
-}
 
 export const DEFAULT_DESC: Record<string, string[]> = {
   '🍔': ['早餐', '午餐', '晚餐', '點心', '飲料'],
