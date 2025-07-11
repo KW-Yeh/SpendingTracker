@@ -133,7 +133,7 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
           />
         </div>
 
-        <div className="bg-background flex w-full flex-col rounded-3xl border border-solid border-gray-300 p-6 shadow">
+        <div className="bg-background flex w-full flex-col rounded-2xl border border-solid border-gray-300 p-6 shadow">
           <div className="mb-6 flex items-center gap-4">
             <h3 className="text-lg font-bold">帳目</h3>
             <div className="group ml-auto flex items-center gap-2 rounded-lg border border-solid border-gray-300 px-2">

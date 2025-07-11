@@ -17,7 +17,7 @@ export default function OverView(props: Props) {
   const { costList, isMobile } = props;
   const { totalIncome, totalOutcome } = getExpenseFromData(costList);
   return (
-    <div className="bg-background relative flex w-full items-start justify-between rounded-3xl border border-solid border-gray-300 p-6 text-gray-300 shadow md:items-center">
+    <div className="bg-background relative flex w-full items-start justify-between rounded-2xl border border-solid border-gray-300 p-6 text-gray-300 shadow md:items-center">
       <div className="flex h-full min-h-30 flex-col md:min-h-50">
         <span className="flex items-center gap-2 text-xs leading-10 sm:text-sm">
           <MdOutlineWallet className="size-6 text-gray-500" />
