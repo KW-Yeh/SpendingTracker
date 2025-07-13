@@ -4,7 +4,7 @@ import { MenuButton } from '@/composites/MenuButton';
 
 export const Caption = ({ openAside }: { openAside: () => void }) => {
   return (
-    <div className="sticky top-0 left-0 z-40 w-full p-4 shadow backdrop-blur">
+    <div className="sticky top-0 left-0 z-40 w-full bg-white/50 p-4 shadow backdrop-blur">
       <div className="relative flex items-center">
         <MenuButton openAside={openAside} />
         <div className="flex flex-1 justify-center gap-4 pr-8">

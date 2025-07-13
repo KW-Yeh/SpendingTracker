@@ -40,9 +40,16 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background-image: linear-gradient(to right, var(--color-gray-100) 1px, transparent 1px), linear-gradient(to bottom, var(--color-gray-100) 1px, transparent 1px);
-    background-size: 10px 10px;
+    background-image: radial-gradient(circle at -30% -30%, var(--color-primary-200), transparent 0%),
+    radial-gradient(circle at 50% 50%, var(--color-pink-200), transparent 100%),
+    radial-gradient(circle at 130% 130%, var(--color-primary-200), transparent 0%);
+    /*background-size: 100px 100px;*/
     overflow-y: scroll;
+}
+
+.divider {
+    @apply h-px w-full my-4;
+    background-image: linear-gradient(to right, transparent, var(--color-gray-500), transparent);
 }
 
 button {
