@@ -1,5 +1,5 @@
 import { ChartBlock } from '@/app/list/ChartBlock';
-import type { Metadata } from "next";
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: '分析消費',
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div className="flex w-full flex-1 flex-col items-center p-4">
+    <div className="bg-grid flex w-full flex-1 flex-col items-center p-4">
       <ChartBlock />
     </div>
   );

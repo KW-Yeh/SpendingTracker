@@ -94,8 +94,8 @@ export const ChartBlock = () => {
   }, [data, dateHook.year, dateHook.month, currentGroup?.id]);
 
   return (
-    <div className="flex w-full max-w-175 flex-col items-center gap-6">
-      <div className="flex items-center gap-4 text-base sm:text-lg">
+    <div className="relative mx-auto flex w-full flex-1 flex-col items-center gap-6 p-6">
+      <div className="flex self-center text-base">
         <YearMonthFilter
           refreshData={refreshData}
           group={currentGroup}
@@ -103,48 +103,50 @@ export const ChartBlock = () => {
         />
       </div>
 
-      <ChartContainer title="收支類別比例">
-        <div className="flex w-full flex-wrap justify-center gap-4">
-          <div className="size-75 sm:sticky sm:top-20">
-            <ExpensePieChart
-              totalIncome={chartData.income.total}
-              totalOutcome={chartData.outcome.total}
-              list={[...chartData.outcome.list, ...chartData.income.list]}
-            />
+      <div className="flex w-full flex-col items-center gap-6 md:flex-row md:items-start">
+        <ChartContainer title="收支類別比例">
+          <div className="flex w-full flex-wrap justify-center gap-4">
+            <div className="size-75 sm:sticky sm:top-20">
+              <ExpensePieChart
+                totalIncome={chartData.income.total}
+                totalOutcome={chartData.outcome.total}
+                list={[...chartData.outcome.list, ...chartData.income.list]}
+              />
+            </div>
+            <div className="flex flex-1 flex-col gap-4">
+              <ExpenseCostTable
+                totalIncome={chartData.income.total}
+                totalOutcome={chartData.outcome.total}
+                incomeList={chartData.income.list}
+                outcomeList={chartData.outcome.list}
+              />
+            </div>
           </div>
-          <div className="flex flex-1 flex-col gap-4">
-            <ExpenseCostTable
-              totalIncome={chartData.income.total}
-              totalOutcome={chartData.outcome.total}
-              incomeList={chartData.income.list}
-              outcomeList={chartData.outcome.list}
-            />
-          </div>
-        </div>
-      </ChartContainer>
+        </ChartContainer>
 
-      <ChartContainer title="支出類別比例（必要 vs 額外）">
-        <div className="flex w-full flex-wrap justify-center gap-4">
-          <div className="size-75 sm:sticky sm:top-20">
-            <NecessityPieChart
-              totalNecessity={chartData.outcome.necessary}
-              totalUnnecessity={chartData.outcome.unnecessary}
-              list={[
-                ...chartData.outcome.necessaryList,
-                ...chartData.outcome.unnecessaryList,
-              ]}
-            />
+        <ChartContainer title="支出類別比例（必要 vs 額外）">
+          <div className="flex w-full flex-wrap justify-center gap-4">
+            <div className="size-75 sm:sticky sm:top-20">
+              <NecessityPieChart
+                totalNecessity={chartData.outcome.necessary}
+                totalUnnecessity={chartData.outcome.unnecessary}
+                list={[
+                  ...chartData.outcome.necessaryList,
+                  ...chartData.outcome.unnecessaryList,
+                ]}
+              />
+            </div>
+            <div className="flex flex-1 flex-col gap-4">
+              <NecessityCostTable
+                totalNecessary={chartData.outcome.necessary}
+                totalUnnecessary={chartData.outcome.unnecessary}
+                necessaryList={chartData.outcome.necessaryList}
+                unnecessaryList={chartData.outcome.unnecessaryList}
+              />
+            </div>
           </div>
-          <div className="flex flex-1 flex-col gap-4">
-            <NecessityCostTable
-              totalNecessary={chartData.outcome.necessary}
-              totalUnnecessary={chartData.outcome.unnecessary}
-              necessaryList={chartData.outcome.necessaryList}
-              unnecessaryList={chartData.outcome.unnecessaryList}
-            />
-          </div>
-        </div>
-      </ChartContainer>
+        </ChartContainer>
+      </div>
     </div>
   );
 };
