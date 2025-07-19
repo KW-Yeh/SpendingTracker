@@ -19,7 +19,6 @@ export const BudgetDistributionChart = ({ data }: BudgetDistributionChartProps) 
   }));
   
   const totalBudget = validData.reduce((sum, item) => sum + item.amount, 0);
-  const totalSpent = validData.reduce((sum, item) => sum + item.spent, 0);
   
   // Sort data by amount (descending)
   chartData.sort((a, b) => b.value - a.value);
@@ -35,7 +34,7 @@ export const BudgetDistributionChart = ({ data }: BudgetDistributionChartProps) 
   
   return (
     <div className="flex h-full w-full flex-col">
-      <div className="flex h-80 w-full flex-col items-center">
+      <div className="flex h-full w-full flex-col items-center">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
@@ -115,24 +114,6 @@ export const BudgetDistributionChart = ({ data }: BudgetDistributionChartProps) 
             />
           </PieChart>
         </ResponsiveContainer>
-      </div>
-      
-      {/* Summary */}
-      <div className="mt-2 flex justify-center gap-6 text-center text-sm">
-        <div>
-          <p className="text-gray-500">總預算</p>
-          <p className="font-medium text-gray-800">${normalizeNumber(totalBudget)}</p>
-        </div>
-        <div>
-          <p className="text-gray-500">已使用</p>
-          <p className="font-medium text-green-600">${normalizeNumber(totalSpent)}</p>
-        </div>
-        <div>
-          <p className="text-gray-500">使用率</p>
-          <p className="font-medium text-primary-600">
-            {totalBudget > 0 ? ((totalSpent / totalBudget) * 100).toFixed(1) : '0.0'}%
-          </p>
-        </div>
       </div>
     </div>
   );

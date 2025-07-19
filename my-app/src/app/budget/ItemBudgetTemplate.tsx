@@ -217,39 +217,6 @@ export const ItemBudgetTemplate = () => {
         </button>
       </div>
       
-      {/* Summary Cards */}
-      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-lg bg-gradient-to-br from-primary-50 to-primary-100 p-5 shadow-sm">
-          <p className="text-sm font-medium text-primary-600">本月預算</p>
-          <p className="mt-1 text-2xl font-bold text-primary-700">${totalBudget.toLocaleString()}</p>
-          <div className="mt-2 h-1 w-full rounded-full bg-primary-200">
-            <div className="h-full rounded-full bg-primary-500" style={{ width: '100%' }}></div>
-          </div>
-        </div>
-        
-        <div className="rounded-lg bg-gradient-to-br from-green-50 to-green-100 p-5 shadow-sm">
-          <p className="text-sm font-medium text-green-600">已使用</p>
-          <p className="mt-1 text-2xl font-bold text-green-700">${totalSpent.toLocaleString()}</p>
-          <div className="mt-2 h-1 w-full rounded-full bg-green-200">
-            <div 
-              className="h-full rounded-full bg-green-500" 
-              style={{ width: `${spentPercentage}%` }}
-            ></div>
-          </div>
-        </div>
-        
-        <div className="rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 p-5 shadow-sm">
-          <p className="text-sm font-medium text-blue-600">剩餘預算</p>
-          <p className="mt-1 text-2xl font-bold text-blue-700">${remainingBudget.toLocaleString()}</p>
-          <div className="mt-2 h-1 w-full rounded-full bg-blue-200">
-            <div 
-              className="h-full rounded-full bg-blue-500" 
-              style={{ width: `${100 - spentPercentage}%` }}
-            ></div>
-          </div>
-        </div>
-      </div>
-      
       {/* Loading State */}
       {isLoading && (
         <div className="mb-8 flex w-full flex-col items-center justify-center rounded-lg bg-white p-12 text-center shadow-sm">
@@ -292,6 +259,22 @@ export const ItemBudgetTemplate = () => {
                     </div>
                   </div>
                   
+                  <div className="mb-4 flex items-center justify-between text-sm">
+                    <span className="text-gray-600">總預算</span>
+                    <span className="font-medium text-gray-800">${totalBudget.toLocaleString()}</span>
+                  </div>
+                  
+                  <div className="mb-4 flex items-center justify-between text-sm">
+                    <span className="text-gray-600">已使用</span>
+                    <span className="font-medium text-green-600">${totalSpent.toLocaleString()}</span>
+                  </div>
+                  
+                  <div className="mb-6 flex items-center justify-between text-sm">
+                    <span className="text-gray-600">剩餘預算</span>
+                    <span className="font-medium text-primary-600">${remainingBudget.toLocaleString()}</span>
+                  </div>
+                  
+                  <h4 className="mb-3 text-sm font-medium text-gray-700">主要支出類別</h4>
                   <div className="space-y-3">
                     {budgetItems.slice(0, 4).map(item => {
                       const itemPercentage = item.amount > 0 ? (item.spent / item.amount) * 100 : 0;
