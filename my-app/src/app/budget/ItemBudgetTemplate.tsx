@@ -274,33 +274,45 @@ export const ItemBudgetTemplate = () => {
                     <span className="font-medium text-primary-600">${remainingBudget.toLocaleString()}</span>
                   </div>
                   
-                  <h4 className="mb-3 text-sm font-medium text-gray-700">主要支出類別</h4>
+                  <h4 className="mb-3 text-sm font-medium text-gray-700">預算使用率最高類別</h4>
                   <div className="space-y-3">
-                    {budgetItems.slice(0, 4).map(item => {
-                      const itemPercentage = item.amount > 0 ? (item.spent / item.amount) * 100 : 0;
-                      return (
-                        <div key={item.id} className="space-y-1">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <div className="size-2.5 rounded-full bg-primary-500"></div>
-                              <span className="text-sm font-medium text-gray-700">{item.category}</span>
+                    {budgetItems
+                      .map(item => ({
+                        ...item,
+                        usagePercentage: item.amount > 0 ? (item.spent / item.amount) * 100 : 0
+                      }))
+                      .sort((a, b) => b.usagePercentage - a.usagePercentage)
+                      .slice(0, 4)
+                      .map(item => {
+                        const itemPercentage = item.usagePercentage;
+                        return (
+                          <div key={item.id} className="space-y-1">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <div className="size-2.5 rounded-full bg-primary-500"></div>
+                                <span className="text-sm font-medium text-gray-700">{item.category}</span>
+                              </div>
+                              <div className="flex flex-col items-end">
+                                <span className="text-sm font-medium text-gray-800">
+                                  {Math.round(itemPercentage)}%
+                                </span>
+                                <span className="text-xs text-gray-500">
+                                  ${item.spent.toLocaleString()} / ${item.amount.toLocaleString()}
+                                </span>
+                              </div>
                             </div>
-                            <span className="text-sm font-medium text-gray-800">
-                              {Math.round(itemPercentage)}%
-                            </span>
+                            <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
+                              <div 
+                                className={`h-full ${
+                                  itemPercentage < 50 ? 'bg-green-500' : 
+                                  itemPercentage < 80 ? 'bg-yellow-500' : 'bg-red-500'
+                                }`}
+                                style={{ width: `${Math.min(itemPercentage, 100)}%` }}
+                              ></div>
+                            </div>
                           </div>
-                          <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
-                            <div 
-                              className={`h-full ${
-                                itemPercentage < 50 ? 'bg-green-500' : 
-                                itemPercentage < 80 ? 'bg-yellow-500' : 'bg-red-500'
-                              }`}
-                              style={{ width: `${Math.min(itemPercentage, 100)}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
                     {budgetItems.length > 4 && (
                       <div className="pt-2 text-center text-sm text-primary-600 hover:text-primary-700">
                         +{budgetItems.length - 4} 個其他項目
