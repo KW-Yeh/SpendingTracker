@@ -8,17 +8,30 @@ interface BudgetDistributionChartProps {
 }
 
 export const BudgetDistributionChart = ({ data }: BudgetDistributionChartProps) => {
-  const chartData = data.map(item => ({
+  // Filter out items with zero amount to avoid chart errors
+  const validData = data.filter(item => item.amount > 0);
+  
+  const chartData = validData.map(item => ({
     name: item.category,
     value: item.amount,
     color: getCategoryColor(item.category),
     spent: item.spent
   }));
   
-  const totalBudget = data.reduce((sum, item) => sum + item.amount, 0);
+  const totalBudget = validData.reduce((sum, item) => sum + item.amount, 0);
+  const totalSpent = validData.reduce((sum, item) => sum + item.spent, 0);
   
   // Sort data by amount (descending)
   chartData.sort((a, b) => b.value - a.value);
+  
+  // If no data, show empty state
+  if (chartData.length === 0) {
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <p className="text-gray-500">沒有預算資料可顯示</p>
+      </div>
+    );
+  }
   
   return (
     <div className="flex h-full w-full flex-col">
@@ -52,13 +65,16 @@ export const BudgetDistributionChart = ({ data }: BudgetDistributionChartProps) 
                 const item = props.payload;
                 const percentage = ((value/totalBudget)*100).toFixed(1);
                 const spent = item.spent;
-                const spentPercentage = ((spent/value)*100).toFixed(1);
+                const spentPercentage = value > 0 ? ((spent/value)*100).toFixed(1) : '0.0';
                 
                 return [
                   <div key="tooltip" className="space-y-1">
-                    <div>${normalizeNumber(value)} ({percentage}%)</div>
+                    <div className="font-medium">${normalizeNumber(value)} ({percentage}%)</div>
                     <div className="text-sm text-gray-500">
                       已使用: ${normalizeNumber(spent)} ({spentPercentage}%)
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      剩餘: ${normalizeNumber(Math.max(0, value - spent))}
                     </div>
                   </div>,
                   item.name
@@ -99,6 +115,24 @@ export const BudgetDistributionChart = ({ data }: BudgetDistributionChartProps) 
             />
           </PieChart>
         </ResponsiveContainer>
+      </div>
+      
+      {/* Summary */}
+      <div className="mt-2 flex justify-center gap-6 text-center text-sm">
+        <div>
+          <p className="text-gray-500">總預算</p>
+          <p className="font-medium text-gray-800">${normalizeNumber(totalBudget)}</p>
+        </div>
+        <div>
+          <p className="text-gray-500">已使用</p>
+          <p className="font-medium text-green-600">${normalizeNumber(totalSpent)}</p>
+        </div>
+        <div>
+          <p className="text-gray-500">使用率</p>
+          <p className="font-medium text-primary-600">
+            {totalBudget > 0 ? ((totalSpent / totalBudget) * 100).toFixed(1) : '0.0'}%
+          </p>
+        </div>
       </div>
     </div>
   );
