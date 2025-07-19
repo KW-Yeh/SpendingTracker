@@ -1,74 +1,68 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useGetSpendingCtx } from '@/context/SpendingProvider';
+import { useUserConfigCtx } from '@/context/UserConfigProvider';
+import { CATEGORY_WORDING_MAP } from '@/utils/constants';
+import { useEffect, useMemo, useState } from 'react';
 import { BiFilter, BiPlus, BiSearch } from 'react-icons/bi';
 import { BudgetCard } from './BudgetCard';
 import { BudgetDistributionChart } from './BudgetDistributionChart';
 import { BudgetForm } from './BudgetForm';
 
-// Sample data
-const SAMPLE_BUDGET_ITEMS: BudgetItem[] = [
-  {
-    id: '1',
-    category: '飲食',
-    amount: 5000,
-    spent: 3200,
-    period: '每月',
-    note: '包含外食和食材'
-  },
-  {
-    id: '2',
-    category: '交通',
-    amount: 2000,
-    spent: 1800,
-    period: '每月',
-    note: '包含公車、捷運和計程車'
-  },
-  {
-    id: '3',
-    category: '住宿',
-    amount: 15000,
-    spent: 15000,
-    period: '每月',
-    note: '房租'
-  },
-  {
-    id: '4',
-    category: '娛樂',
-    amount: 3000,
-    spent: 1500,
-    period: '每月',
-    note: '電影、遊戲等'
-  },
-  {
-    id: '5',
-    category: '醫療',
-    amount: 1000,
-    spent: 200,
-    period: '每月',
-    note: '保健品和醫療費用'
-  },
-  {
-    id: '6',
-    category: '學習',
-    amount: 2500,
-    spent: 2000,
-    period: '每月',
-    note: '書籍、課程等'
-  }
-];
-
 export const ItemBudgetTemplate = () => {
+  const { data: spendingData } = useGetSpendingCtx();
+  const { config: userData } = useUserConfigCtx();
+  
   const [budgetItems, setBudgetItems] = useState<BudgetItem[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<BudgetItem | null>(null);
   const [filterPeriod, setFilterPeriod] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
   
+  // Process spending data to create budget items
+  const processedSpendingData = useMemo(() => {
+    if (!spendingData || spendingData.length === 0) return [];
+    
+    // Group spending by category
+    const categoryMap = new Map<string, { total: number, spent: number }>();
+    
+    spendingData.forEach(record => {
+      const category = CATEGORY_WORDING_MAP[record.category] || record.category;
+      
+      if (!categoryMap.has(category)) {
+        categoryMap.set(category, { total: 0, spent: 0 });
+      }
+      
+      const categoryData = categoryMap.get(category)!;
+      
+      // For outcome type, add to spent amount
+      if (record.type === 'Outcome') {
+        categoryData.spent += record.amount;
+      }
+    });
+    
+    // Convert map to array of budget items
+    return Array.from(categoryMap.entries()).map(([category, data], index) => {
+      // Set budget to be slightly higher than spent for demonstration
+      const budgetAmount = Math.max(data.spent, 0) * 1.2;
+      
+      return {
+        id: `budget-${index}`,
+        category,
+        amount: Math.round(budgetAmount),
+        spent: Math.round(data.spent),
+        period: '每月',
+        note: ''
+      };
+    });
+  }, [spendingData]);
+  
+  // Initialize budget items from processed spending data
   useEffect(() => {
-    // In a real app, you would fetch this data from an API or local storage
-    setBudgetItems(SAMPLE_BUDGET_ITEMS);
-  }, []);
+    if (processedSpendingData.length > 0 && budgetItems.length === 0) {
+      setBudgetItems(processedSpendingData);
+    }
+  }, [processedSpendingData, budgetItems.length]);
   
   const handleAddItem = () => {
     setEditingItem(null);

@@ -1,6 +1,6 @@
 'use client';
 
-import { OUTCOME_TYPE_MAP } from '@/utils/constants';
+import { CATEGORY_WORDING_MAP, OUTCOME_TYPE_MAP } from '@/utils/constants';
 import { useEffect, useState } from 'react';
 import { BiCalendar, BiCategory, BiMoney, BiNote, BiX } from 'react-icons/bi';
 
@@ -50,6 +50,9 @@ export const BudgetForm = ({ isOpen, onClose, onSave, editItem }: BudgetFormProp
     onClose();
   };
   
+  // Get unique categories from CATEGORY_WORDING_MAP
+  const uniqueCategories = Array.from(new Set(Object.values(CATEGORY_WORDING_MAP)));
+  
   if (!isOpen) return null;
   
   return (
@@ -90,9 +93,9 @@ export const BudgetForm = ({ isOpen, onClose, onSave, editItem }: BudgetFormProp
                 required
               >
                 <option value="">選擇類別</option>
-                {OUTCOME_TYPE_MAP.map((item) => (
-                  <option key={item.label} value={item.label}>
-                    {item.value} {item.label}
+                {uniqueCategories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
                   </option>
                 ))}
               </select>

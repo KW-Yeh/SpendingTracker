@@ -1,6 +1,6 @@
 'use client';
 
-import { CATEGORY_WORDING_MAP, OUTCOME_TYPE_MAP } from '@/utils/constants';
+import { CATEGORY_WORDING_MAP } from '@/utils/constants';
 import { getCategoryIcon } from '@/utils/getCategoryIcon';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import { useState } from 'react';
@@ -22,7 +22,6 @@ export const BudgetCard = ({ item, onEdit, onDelete }: BudgetCardProps) => {
   };
   
   const categoryIcon = getIconForCategory(item.category);
-  // Instead of storing the component, we'll render it directly
   
   const getProgressColor = (percentage: number) => {
     if (percentage < 50) return 'bg-gradient-to-r from-green-400 to-green-500';
@@ -30,7 +29,7 @@ export const BudgetCard = ({ item, onEdit, onDelete }: BudgetCardProps) => {
     return 'bg-gradient-to-r from-red-400 to-red-500';
   };
   
-  const spentPercentage = (item.spent / item.amount) * 100;
+  const spentPercentage = item.amount > 0 ? (item.spent / item.amount) * 100 : 0;
   const progressColor = getProgressColor(spentPercentage);
   
   return (
@@ -45,7 +44,7 @@ export const BudgetCard = ({ item, onEdit, onDelete }: BudgetCardProps) => {
           <div className="flex items-center gap-2.5">
             <div className="flex size-10 items-center justify-center rounded-full bg-white text-primary-600 shadow-sm">
               {/* Render the icon directly */}
-              {getCategoryIcon(categoryIcon, "size-5")}
+              {getCategoryIcon(categoryIcon, "size-5") || categoryIcon}
             </div>
             <h3 className="text-lg font-medium text-gray-800">{item.category}</h3>
           </div>
@@ -104,7 +103,7 @@ export const BudgetCard = ({ item, onEdit, onDelete }: BudgetCardProps) => {
         <div className="mb-4 flex items-baseline justify-between">
           <span className="text-sm text-gray-500">剩餘預算</span>
           <span className="text-base font-medium text-primary-600">
-            ${normalizeNumber(item.amount - item.spent)}
+            ${normalizeNumber(Math.max(0, item.amount - item.spent))}
           </span>
         </div>
         

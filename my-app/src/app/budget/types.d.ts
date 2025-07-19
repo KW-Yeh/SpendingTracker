@@ -11,10 +11,3 @@ interface MonthlyBudgetData {
   month: string;
   [category: string]: string | number;
 }
-
-interface Allocation {
-  id: number;
-  name: string;
-  budget: number;
-  percentage: number;
-}
