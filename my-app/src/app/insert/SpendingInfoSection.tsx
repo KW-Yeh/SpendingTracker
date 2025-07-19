@@ -113,17 +113,16 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
   ]);
 
   return (
-    <div className="relative mx-auto flex w-full flex-1 flex-col items-center gap-6 p-6">
-      <div className="flex self-center text-base">
-        <YearMonthFilter
-          refreshData={getNewData}
-          group={currentGroup}
-          dateOptions={dateHook}
-        />
-      </div>
+    <div className="relative mx-auto flex w-full flex-1 flex-col items-center gap-5 p-5">
+      <YearMonthFilter
+        refreshData={getNewData}
+        group={currentGroup}
+        dateOptions={dateHook}
+        className="flex self-center rounded-lg border border-gray-200 bg-white p-2 text-base shadow-sm"
+      />
 
-      <div className="flex w-full flex-col items-center gap-6 md:flex-row md:items-start">
-        <div className="flex w-full max-w-175 flex-col items-center gap-6">
+      <div className="flex w-full flex-col items-center gap-5 md:flex-row md:items-start">
+        <div className="flex w-full max-w-175 flex-col items-center gap-5">
           <OverView costList={data} isMobile={isMobile} />
           <DailyCostChart
             dateStr={dateHook.today.toISOString()}
@@ -133,15 +132,16 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
           />
         </div>
 
-        <div className="bg-background flex w-full flex-col rounded-2xl border border-solid border-gray-300 p-6 shadow">
-          <div className="mb-6 flex items-center gap-4">
+        <div className="bg-background flex w-full flex-col rounded-2xl border border-solid border-gray-200 p-5 shadow-sm transition-shadow duration-200 hover:shadow">
+          <div className="mb-5 flex items-center gap-4">
             <h3 className="text-lg font-bold">帳目</h3>
-            <div className="group ml-auto flex items-center gap-2 rounded-lg border border-solid border-gray-300 px-2">
-              <SearchIcon className="group-hover:text-primary-500 text-gray-500 transition-colors" />
+            <div className="group hover:border-primary-400 focus-within:border-primary-500 relative ml-auto flex items-center gap-2 rounded-lg border border-solid border-gray-300 px-3 py-1.5 transition-all focus-within:shadow-sm">
+              <SearchIcon className="group-hover:text-primary-500 group-focus-within:text-primary-500 text-gray-500 transition-colors" />
               <input
                 ref={searchRef}
                 type="text"
-                className="w-20 bg-transparent py-1 text-sm font-semibold focus:outline-0"
+                placeholder="搜尋帳目..."
+                className="w-32 bg-transparent py-0.5 text-sm font-medium focus:outline-0"
               />
             </div>
           </div>

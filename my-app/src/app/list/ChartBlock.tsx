@@ -94,19 +94,18 @@ export const ChartBlock = () => {
   }, [data, dateHook.year, dateHook.month, currentGroup?.id]);
 
   return (
-    <div className="relative mx-auto flex w-full flex-1 flex-col items-center gap-6 p-6">
-      <div className="flex self-center text-base">
-        <YearMonthFilter
-          refreshData={refreshData}
-          group={currentGroup}
-          dateOptions={dateHook}
-        />
-      </div>
+    <div className="relative z-10 mx-auto flex w-full flex-1 flex-col items-center gap-6 p-6">
+      <YearMonthFilter
+        refreshData={refreshData}
+        group={currentGroup}
+        dateOptions={dateHook}
+        className="flex self-center rounded-lg border border-gray-200 bg-white p-2 text-base shadow-sm"
+      />
 
-      <div className="flex w-full flex-col items-center gap-6 md:flex-row md:items-start">
+      <div className="flex w-full flex-col items-center gap-8 md:flex-row md:items-start">
         <ChartContainer title="收支類別比例">
           <div className="flex w-full flex-wrap justify-center gap-4">
-            <div className="size-75 sm:sticky sm:top-20">
+            <div className="size-75">
               <ExpensePieChart
                 totalIncome={chartData.income.total}
                 totalOutcome={chartData.outcome.total}
@@ -126,7 +125,7 @@ export const ChartBlock = () => {
 
         <ChartContainer title="支出類別比例（必要 vs 額外）">
           <div className="flex w-full flex-wrap justify-center gap-4">
-            <div className="size-75 sm:sticky sm:top-20">
+            <div className="size-75">
               <NecessityPieChart
                 totalNecessity={chartData.outcome.necessary}
                 totalUnnecessity={chartData.outcome.unnecessary}

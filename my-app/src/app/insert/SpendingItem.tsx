@@ -70,7 +70,7 @@ export const SpendingItem = (props: Props) => {
       className={`relative flex items-center gap-2 rounded-lg bg-gray-50 p-2 text-sm transition-all sm:text-base md:p-3 ${additionalStyle}`}
     >
       {deleting && (
-        <span className="absolute top-0 left-1 -translate-y-1/2 rounded-full bg-red-300 px-2 text-xs font-bold">
+        <span className="absolute top-0 left-1 -translate-y-1/2 rounded-full bg-red-300 px-2 py-0.5 text-xs font-bold text-white">
           刪除中
         </span>
       )}
@@ -87,7 +87,7 @@ export const SpendingItem = (props: Props) => {
       )}
       <div
         title={spending.description}
-        className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap sm:col-span-5"
+        className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap sm:col-span-5 font-medium"
       >
         {spending.description}
       </div>
@@ -106,7 +106,7 @@ export const SpendingItem = (props: Props) => {
                 href={`/edit?id=${spending.id}`}
                 className="text-text group-hover:text-primary-500 group-active:text-primary-500 flex items-center gap-3 rounded px-2 py-1 transition-colors"
               >
-                <EditIcon className="size-3 transition-colors sm:size-3.5" />
+                <EditIcon className="size-3.5 transition-colors sm:size-4" />
                 <span>編輯</span>
               </Link>
             ),
@@ -115,7 +115,7 @@ export const SpendingItem = (props: Props) => {
             value: 'delete',
             label: (
               <span className="group text-text flex items-center gap-3 rounded px-2 py-1 transition-colors group-hover:text-red-500 group-active:text-red-500">
-                <DeleteIcon className="size-3 transition-colors sm:size-3.5" />
+                <DeleteIcon className="size-3.5 transition-colors sm:size-4" />
                 <span>刪除</span>
               </span>
             ),

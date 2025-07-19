@@ -11,12 +11,9 @@ interface Props {
   handleSelectDataPoint: (state: CategoricalChartState) => void;
 }
 
-// const UsageBarChart = dynamic(() => import('./UsageBarChart'), {
-//   ssr: false,
-// });
-
 const UsageLineChart = dynamic(() => import('./UsageLineChart'), {
   ssr: false,
+  loading: () => <div className="h-64 w-full animate-pulse rounded-lg bg-gray-100"></div>
 });
 
 export const DailyCostChart = (props: Props) => {
@@ -37,9 +34,23 @@ export const DailyCostChart = (props: Props) => {
     }
   });
 
+  // Get month name in Chinese
+  const monthNames = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
+  const monthName = monthNames[month];
+
   return (
-    <div className="bg-background relative flex w-full flex-col items-start rounded-2xl border border-solid border-gray-300 p-6 text-gray-300 shadow">
-      <h3 className="text-text text-lg font-semibold">每日花費趨勢圖</h3>
+    <div className="bg-background relative flex w-full flex-col items-start rounded-2xl border border-solid border-gray-300 p-6 text-gray-700 shadow-sm hover:shadow transition-shadow duration-200">
+      <div className="flex w-full items-center justify-between mb-2">
+        <h3 className="text-lg font-semibold">{monthName}花費趨勢</h3>
+        <Link
+          href="/list"
+          className="text-primary-500 active:text-primary-600 hover:text-primary-400 flex items-center gap-1 text-xs font-bold transition-colors"
+        >
+          更多分析
+          <DoubleArrowIcon className="size-3" />
+        </Link>
+      </div>
+      
       <div className="flex w-full items-end py-4 text-xs sm:text-sm">
         <UsageLineChart
           month={month}
@@ -49,13 +60,10 @@ export const DailyCostChart = (props: Props) => {
           handleOnClick={handleSelectDataPoint}
         />
       </div>
-      <Link
-        href="/list"
-        className="text-primary-500 active:text-primary-300 hover:text-primary-300 flex items-center self-end text-xs font-bold transition-colors"
-      >
-        更多分析
-        <DoubleArrowIcon className="size-3" />
-      </Link>
+      
+      <div className="w-full text-xs text-gray-500 mt-2">
+        點擊圖表上的點可查看當日消費明細
+      </div>
     </div>
   );
 };

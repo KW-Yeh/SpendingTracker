@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 export default async function Home() {
   const { device } = userAgent({ headers: await headers() });
   return (
-    <div className="bg-grid flex w-full flex-1">
+    <div className="bg-soft relative flex w-full flex-1">
       <PrefetchRoute />
       <SpendingInfoSection isMobile={device.type === 'mobile'} />
     </div>

@@ -33,17 +33,22 @@ export const SpendingList = (props: Props) => {
 
   if (loading) {
     return (
-      <div className="flex w-full flex-col gap-1 text-xs sm:text-sm">
-        <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100 sm:h-14"></div>
-        <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100 sm:h-14"></div>
-        <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100 sm:h-14"></div>
+      <div className="flex w-full flex-col gap-2 text-xs sm:text-sm">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="flex flex-col gap-1">
+            <div className="h-4 w-24 animate-pulse rounded-md bg-gray-200 mb-1"></div>
+            <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100 sm:h-14"></div>
+            <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100 sm:h-14 mt-1"></div>
+          </div>
+        ))}
       </div>
     );
   } else if (filteredBySearch.length === 0) {
     return (
-      <div className="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-gray-100 px-2 text-xs sm:h-14 sm:text-sm">
-        <SearchIcon className="size-5 text-gray-700" />
-        <span className="text-gray-700">找不到資料</span>
+      <div className="flex flex-col items-center justify-center py-8 text-center">
+        <SearchIcon className="size-10 text-gray-300 mb-3" />
+        <p className="text-gray-600 font-medium mb-1">找不到符合的帳目</p>
+        <p className="text-gray-400 text-sm">請嘗試其他搜尋條件或新增帳目</p>
       </div>
     );
   }

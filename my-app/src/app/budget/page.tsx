@@ -1,15 +1,13 @@
-import { MonthlyBudgetTemplate } from '@/app/budget/MonthlyBudgetTemplate';
-import { TabSwitch } from '@/app/budget/TabSwitch';
-import { YearlyBudgetTemplate } from '@/app/budget/YearlyBudgetTemplate';
+import { ItemBudgetTemplate } from '@/app/budget/ItemBudgetTemplate';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: '消費預算',
-  description: '預算安排',
+  title: '預算管理',
+  description: '預算安排與追蹤',
   authors: { name: 'KW' },
   openGraph: {
-    title: '消費預算',
-    description: '預算安排',
+    title: '預算管理',
+    description: '預算安排與追蹤',
     url: 'https://gs-db.vercel.app/budget',
     images: [
       {
@@ -21,24 +19,19 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Home() {
+export default function BudgetPage() {
   return (
-    <div className="flex w-full flex-1 flex-col items-center px-2 sm:px-8">
-      <h2 className="bg-background my-10 text-xl font-semibold sm:text-2xl">
-        編列預算工具
-      </h2>
-      <TabSwitch
-        config={[
-          {
-            tabName: '年度預算',
-            template: <YearlyBudgetTemplate />,
-          },
-          {
-            tabName: '每月預算',
-            template: <MonthlyBudgetTemplate />,
-          },
-        ]}
-      />
+    <div className="bg-soft relative flex w-full flex-1 flex-col items-center px-4 py-6 sm:px-8">
+      <div className="mb-6 w-full max-w-6xl">
+        <h1 className="text-2xl font-bold text-gray-800 sm:text-3xl">預算管理</h1>
+        <p className="mt-2 text-gray-600">
+          設定和追蹤您的預算，掌握財務狀況
+        </p>
+      </div>
+      
+      <div className="w-full max-w-6xl rounded-lg bg-white p-6 shadow-md sm:p-8">
+        <ItemBudgetTemplate />
+      </div>
     </div>
   );
 }
