@@ -96,29 +96,6 @@ body {
     overflow: hidden;
 }
 
-.bg-soft::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: 
-        radial-gradient(circle at 30% 40%, rgba(147, 112, 219, 0.02) 0%, transparent 60%),
-        radial-gradient(circle at 70% 60%, rgba(94, 114, 228, 0.02) 0%, transparent 60%);
-    z-index: 0;
-    animation: subtle-shift 20s ease-in-out infinite alternate;
-}
-
-@keyframes subtle-shift {
-    0% {
-        transform: translateX(-5px) translateY(-5px);
-    }
-    100% {
-        transform: translateX(5px) translateY(5px);
-    }
-}
-
 .divider {
     @apply h-px w-full my-4;
     background-image: linear-gradient(to right, transparent, var(--color-gray-500), transparent);

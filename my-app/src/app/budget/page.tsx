@@ -1,23 +1,6 @@
-import { ItemBudgetTemplate } from '@/app/budget/ItemBudgetTemplate';
-import type { Metadata } from 'next';
+'use client';
 
-export const metadata: Metadata = {
-  title: '預算管理',
-  description: '預算安排與追蹤',
-  authors: { name: 'KW' },
-  openGraph: {
-    title: '預算管理',
-    description: '預算安排與追蹤',
-    url: 'https://gs-db.vercel.app/budget',
-    images: [
-      {
-        url: '/Spending-512.png',
-        width: 512,
-        height: 512,
-      },
-    ],
-  },
-};
+import { BudgetTemplateWithModal } from '@/app/budget/BudgetTemplateWithModal';
 
 export default function BudgetPage() {
   return (
@@ -30,7 +13,7 @@ export default function BudgetPage() {
       </div>
       
       <div className="w-full max-w-6xl rounded-lg bg-white p-6 shadow-md sm:p-8">
-        <ItemBudgetTemplate />
+        <BudgetTemplateWithModal />
       </div>
     </div>
   );

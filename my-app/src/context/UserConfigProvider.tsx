@@ -38,6 +38,8 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
 
   const handleUpdateUser = async (value: User) => {
     await putUser(value);
+    // Update local state after API call
+    setConfig(value);
   };
 
   const handleNewUser = useCallback(

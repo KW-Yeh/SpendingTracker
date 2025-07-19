@@ -4,7 +4,6 @@ interface BudgetItem {
   amount: number;
   spent: number;
   period: string;
-  note?: string;
 }
 
 interface MonthlyBudgetData {

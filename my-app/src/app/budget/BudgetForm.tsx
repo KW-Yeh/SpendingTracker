@@ -1,8 +1,9 @@
 'use client';
 
-import { CATEGORY_WORDING_MAP, OUTCOME_TYPE_MAP } from '@/utils/constants';
+import { CATEGORY_WORDING_MAP } from '@/utils/constants';
 import { useEffect, useState } from 'react';
 import { BiCalendar, BiCategory, BiMoney, BiNote, BiX } from 'react-icons/bi';
+import { createPortal } from 'react-dom';
 
 interface BudgetFormProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface BudgetFormProps {
 }
 
 export const BudgetForm = ({ isOpen, onClose, onSave, editItem }: BudgetFormProps) => {
+  console.log('BudgetForm rendered, isOpen:', isOpen);
   const [formData, setFormData] = useState<BudgetItem>({
     id: '',
     category: '',
@@ -21,6 +23,14 @@ export const BudgetForm = ({ isOpen, onClose, onSave, editItem }: BudgetFormProp
     note: ''
   });
   
+  // For client-side portal rendering
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+  
   useEffect(() => {
     if (editItem) {
       setFormData(editItem);
@@ -29,7 +39,7 @@ export const BudgetForm = ({ isOpen, onClose, onSave, editItem }: BudgetFormProp
         id: generateId(),
         category: '',
         amount: 0,
-        spent: 0,
+        spent: 0, // This will be calculated from real data, not editable
         period: '每月',
         note: ''
       });
@@ -38,9 +48,13 @@ export const BudgetForm = ({ isOpen, onClose, onSave, editItem }: BudgetFormProp
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    
+    // Skip changes to the spent field as it's read-only
+    if (name === 'spent') return;
+    
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'amount' || name === 'spent' ? Number(value) : value
+      [name]: name === 'amount' ? Number(value) : value
     }));
   };
   
@@ -53,10 +67,19 @@ export const BudgetForm = ({ isOpen, onClose, onSave, editItem }: BudgetFormProp
   // Get unique categories from CATEGORY_WORDING_MAP
   const uniqueCategories = Array.from(new Set(Object.values(CATEGORY_WORDING_MAP)));
   
-  if (!isOpen) return null;
+  // If not open or not mounted, don't render anything
+  if (!isOpen || !mounted) {
+    return null;
+  }
   
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+  console.log('BudgetForm rendering modal, isOpen is true');
+  
+  // Modal content
+  const modalContent = (
+    <div 
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50 p-4"
+      onClick={onClose}
+    >
       <div 
         className="w-full max-w-md overflow-hidden rounded-xl bg-white shadow-xl"
         onClick={(e) => e.stopPropagation()}
@@ -121,23 +144,23 @@ export const BudgetForm = ({ isOpen, onClose, onSave, editItem }: BudgetFormProp
               </div>
             </div>
             
-            {/* Spent Amount */}
+            {/* Spent Amount - Read Only */}
             <div>
               <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700">
                 <BiMoney className="size-4 text-green-500" />
-                已使用金額
+                已使用金額 (自動計算)
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
                 <input
-                  type="number"
-                  name="spent"
+                  type="text"
                   value={formData.spent}
-                  onChange={handleChange}
-                  className="w-full rounded-lg border border-gray-300 pl-7 pr-3 py-2.5 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
-                  min="0"
+                  className="w-full rounded-lg border border-gray-200 bg-gray-50 pl-7 pr-3 py-2.5 text-gray-700"
+                  disabled
+                  readOnly
                 />
               </div>
+              <p className="mt-1 text-xs text-gray-500">此金額根據實際支出自動計算，無需手動輸入</p>
             </div>
             
             {/* Period */}
@@ -196,6 +219,8 @@ export const BudgetForm = ({ isOpen, onClose, onSave, editItem }: BudgetFormProp
       </div>
     </div>
   );
+  
+  return createPortal(modalContent, document.body);
 };
 
 // Helper function to generate a unique ID

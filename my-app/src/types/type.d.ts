@@ -31,6 +31,7 @@ interface User {
   allocation?: Allocation[];
   monthlyPlan?: MonthlyPlan[];
   desc?: Record<string, string[]>;
+  budget?: BudgetItem[];
 }
 
 interface MonthlyPlan {
