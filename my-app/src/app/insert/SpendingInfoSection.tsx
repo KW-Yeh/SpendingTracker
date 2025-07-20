@@ -66,9 +66,9 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
     const element = document.getElementById(`spending-list-${selectedLabel}`);
     if (!element) return;
     element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    element.style.backgroundColor = '#fff08570';
+    element.style.borderColor = '#fff085';
     setTimeout(() => {
-      element.style.backgroundColor = 'transparent';
+      element.style.borderColor = 'transparent';
     }, 2000);
   };
 
@@ -123,7 +123,11 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
 
       <div className="flex w-full flex-col items-center gap-5 md:flex-row md:items-start">
         <div className="flex w-full max-w-175 flex-col items-center gap-5">
-          <OverView costList={data} isMobile={isMobile} />
+          <OverView
+            budgets={userData?.budget}
+            costList={data}
+            isMobile={isMobile}
+          />
           <DailyCostChart
             dateStr={dateHook.today.toISOString()}
             costList={data}

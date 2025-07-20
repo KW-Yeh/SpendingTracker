@@ -57,6 +57,7 @@ export const EditExpenseModal = (props: Props) => {
       label: string;
     }[]
   >(data.type === SpendingType.Income ? INCOME_TYPE_MAP : OUTCOME_TYPE_MAP);
+  const [updatingCategory, setUpdatingCategory] = useState(false);
 
   const selectedCategoryLabel = useMemo(
     () =>
@@ -84,6 +85,7 @@ export const EditExpenseModal = (props: Props) => {
   const handleSetCommonDesc = useCallback(
     (isNew: boolean) => {
       if (!userData) return;
+      setUpdatingCategory(true);
       const commonDescMap = { ...userData.desc };
       if (isNew) {
         const newCategories = commonDescMap[selectedCategory] ?? [];
@@ -104,6 +106,7 @@ export const EditExpenseModal = (props: Props) => {
         desc: commonDescMap,
       }).then(() => {
         syncUser();
+        setUpdatingCategory(false);
       });
     },
     [description, selectedCategory, syncUser, updateUser, userData],
@@ -172,7 +175,7 @@ export const EditExpenseModal = (props: Props) => {
     <Modal
       defaultOpen={true}
       onClose={cancel}
-      className="flex w-full flex-col self-end rounded-t-xl sm:max-w-96 sm:self-center sm:rounded-xl"
+      className="flex w-full flex-col self-end sm:max-w-96 sm:self-center sm:rounded-xl"
       title={isNewData ? '新增帳目' : '編輯帳目'}
     >
       <form
@@ -185,17 +188,13 @@ export const EditExpenseModal = (props: Props) => {
               option1={{
                 label: '支出',
                 value: SpendingType.Outcome,
-                onSelectColor: '#F56666',
-                className: '!px-2 !py-1',
               }}
               option2={{
                 label: '收入',
                 value: SpendingType.Income,
-                onSelectColor: '#48BB78',
-                className: '!px-2 !py-1',
               }}
               value={spendingType}
-              className="h-10 flex-1 border border-solid border-gray-300 bg-gray-300 text-sm"
+              className="h-10 flex-1 border border-solid border-gray-300 text-sm"
               onChange={handleSetSpendingType}
             />
             <Switch
@@ -205,8 +204,6 @@ export const EditExpenseModal = (props: Props) => {
                     ? '必要支出'
                     : '必要收入',
                 value: Necessity.Need,
-                onSelectColor: '#ED8936',
-                className: '!px-2 !py-1',
               }}
               option2={{
                 label:
@@ -214,10 +211,9 @@ export const EditExpenseModal = (props: Props) => {
                     ? '額外支出'
                     : '額外收入',
                 value: Necessity.NotNeed,
-                className: '!px-2 !py-1',
               }}
               value={necessity}
-              className="h-10 flex-1 border border-solid border-gray-300 bg-gray-300 text-sm"
+              className="h-10 flex-1 border border-solid border-gray-300 text-sm"
               onChange={setNecessity}
             />
           </div>
@@ -293,12 +289,12 @@ export const EditExpenseModal = (props: Props) => {
           </div>
           <button
             type="button"
-            disabled={description === ''}
-            className="border-text bg-text text-background w-full rounded-lg border border-solid p-2 font-semibold transition-colors hover:bg-gray-800 active:bg-gray-800 disabled:!cursor-not-allowed disabled:border-gray-300 disabled:bg-gray-300 disabled:text-gray-500"
+            disabled={description === '' || updatingCategory}
+            className={`border-text bg-text text-background w-full rounded-lg border border-solid p-2 font-semibold transition-colors hover:bg-gray-800 active:bg-gray-800 disabled:!cursor-not-allowed disabled:border-gray-300 disabled:bg-gray-300 disabled:text-gray-500 ${description === '' ? 'hidden' : ''}`}
             onClick={() => handleSetCommonDesc(isNewDesc)}
           >
-            {description === ''
-              ? '+ 新增常用描述'
+            {updatingCategory
+              ? '更新資料中...'
               : !isNewDesc
                 ? '- 刪除常用描述'
                 : '+ 新增常用描述'}
@@ -327,7 +323,7 @@ export const EditExpenseModal = (props: Props) => {
             disabled={loading}
             type="button"
             onClick={cancel}
-            className="bg-background flex w-24 items-center justify-center rounded-lg border border-solid border-red-300 p-2 text-red-300 transition-colors hover:border-red-500 hover:text-red-500 active:border-red-500 active:text-red-500"
+            className="bg-background flex w-24 items-center justify-center rounded-lg border border-solid border-gray-300 p-2 text-gray-300 transition-colors hover:border-gray-500 hover:text-gray-500 active:border-gray-500 active:text-gray-500"
           >
             <span>取消</span>
           </button>

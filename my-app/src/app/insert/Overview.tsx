@@ -8,6 +8,7 @@ import { IoMdArrowUp, IoMdArrowDown } from 'react-icons/io';
 interface Props {
   costList: SpendingRecord[];
   isMobile: boolean;
+  budgets?: BudgetItem[];
 }
 
 const UsagePieChart = dynamic(() => import('./UsagePieChart'), {
@@ -15,43 +16,51 @@ const UsagePieChart = dynamic(() => import('./UsagePieChart'), {
 });
 
 export default function OverView(props: Props) {
-  const { costList, isMobile } = props;
+  const { budgets, costList, isMobile } = props;
   const { totalIncome, totalOutcome } = getExpenseFromData(costList);
   const balance = totalIncome - totalOutcome;
-  
+  const totalBudget =
+    budgets?.map((d) => d.amount).reduce((a, b) => a + b, 0) ?? 0;
+
   return (
-    <div className="bg-background relative flex w-full items-center justify-between rounded-2xl border border-solid border-gray-300 p-6 text-gray-700 shadow-sm hover:shadow transition-shadow duration-200">
+    <div className="bg-background relative flex w-full items-center justify-between rounded-2xl border border-solid border-gray-300 p-6 text-gray-700 shadow-sm transition-shadow duration-200 hover:shadow">
       <div className="flex h-full min-h-35 flex-col md:min-h-50">
         <div className="mb-2">
-          <h3 className="text-sm text-gray-500 font-medium mb-1">總支出</h3>
+          <h3 className="mb-1 text-sm font-medium text-gray-500">剩餘預算</h3>
           <span className="flex items-center gap-2">
             <MdOutlineWallet className="text-primary-400 size-6" />
             <span className="text-primary-500 text-xl leading-12 font-bold sm:text-3xl">
-              {totalOutcome ? `$${normalizeNumber(totalOutcome)}` : '$0'}
+              {`$${normalizeNumber(totalBudget - totalOutcome)}`}
             </span>
           </span>
         </div>
-        
-        <div className="flex flex-col gap-1 mb-4">
+
+        <div className="mb-4 flex flex-col gap-1">
           <div className="flex items-center justify-between text-sm">
             <span className="flex items-center gap-1 text-gray-500">
               <IoMdArrowUp className="text-green-500" />
               <span>收入</span>
             </span>
-            <span className="font-medium text-green-600">{totalIncome ? `$${normalizeNumber(totalIncome)}` : '$0'}</span>
+            <span className="font-medium text-green-600">
+              {totalIncome ? `$${normalizeNumber(totalIncome)}` : '$0'}
+            </span>
           </div>
-          
+
           <div className="flex items-center justify-between text-sm">
             <span className="flex items-center gap-1 text-gray-500">
               <IoMdArrowDown className="text-red-500" />
               <span>支出</span>
             </span>
-            <span className="font-medium text-red-600">{totalOutcome ? `$${normalizeNumber(totalOutcome)}` : '$0'}</span>
+            <span className="font-medium text-red-600">
+              {totalOutcome ? `$${normalizeNumber(totalOutcome)}` : '$0'}
+            </span>
           </div>
-          
-          <div className="flex items-center justify-between text-sm pt-1 border-t border-gray-100 mt-1">
+
+          <div className="mt-1 flex items-center justify-between border-t border-gray-100 pt-1 text-sm">
             <span className="text-gray-500">剩餘</span>
-            <span className={`font-medium ${balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            <span
+              className={`font-medium ${balance >= 0 ? 'text-green-600' : 'text-red-600'}`}
+            >
               {`$${normalizeNumber(balance)}`}
             </span>
           </div>
@@ -62,7 +71,7 @@ export default function OverView(props: Props) {
         </AddExpenseBtn>
       </div>
       <UsagePieChart
-        totalIncome={totalIncome}
+        totalIncome={totalBudget}
         totalOutcome={totalOutcome}
         isMobile={isMobile}
       />

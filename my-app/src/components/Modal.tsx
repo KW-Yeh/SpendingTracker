@@ -38,19 +38,19 @@ export const Modal = forwardRef<ModalRef, Props>((props, ref) => {
     <div className="fixed top-0 right-0 bottom-0 left-0 z-50 flex justify-center bg-black/60 backdrop-blur-sm">
       <div
         ref={contentRef}
-        className={`bg-background animate-modal relative p-6 ${props.className}`}
+        className={`bg-background animate-modal relative rounded-xl ${props.className}`}
       >
         <button
           type="button"
           onClick={handleCloseModal}
-          className="absolute top-3 right-3 size-6 rounded-full p-1 transition-colors hover:bg-gray-300"
+          className="bg-background absolute top-4 right-6 size-6 rounded-full p-1.5 text-gray-500 transition-colors hover:text-gray-700"
         >
           <CloseIcon className="size-full" />
         </button>
-        <h1 className="text-primary-500 mb-6 text-lg font-bold sm:text-xl">
+        <h1 className="from-primary-500 to-primary-600 rounded-t-xl bg-gradient-to-r px-6 py-4 text-lg font-semibold text-white sm:text-xl">
           {props.title}
         </h1>
-        {props.children}
+        <div className="p-6">{props.children}</div>
       </div>
     </div>
   );

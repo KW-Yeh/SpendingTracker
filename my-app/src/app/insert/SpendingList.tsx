@@ -36,9 +36,9 @@ export const SpendingList = (props: Props) => {
       <div className="flex w-full flex-col gap-2 text-xs sm:text-sm">
         {[1, 2, 3].map((i) => (
           <div key={i} className="flex flex-col gap-1">
-            <div className="h-4 w-24 animate-pulse rounded-md bg-gray-200 mb-1"></div>
+            <div className="mb-1 h-4 w-24 animate-pulse rounded-md bg-gray-200"></div>
             <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100 sm:h-14"></div>
-            <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100 sm:h-14 mt-1"></div>
+            <div className="mt-1 h-12 w-full animate-pulse rounded-lg bg-gray-100 sm:h-14"></div>
           </div>
         ))}
       </div>
@@ -46,9 +46,9 @@ export const SpendingList = (props: Props) => {
   } else if (filteredBySearch.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-8 text-center">
-        <SearchIcon className="size-10 text-gray-300 mb-3" />
-        <p className="text-gray-600 font-medium mb-1">找不到符合的帳目</p>
-        <p className="text-gray-400 text-sm">請嘗試其他搜尋條件或新增帳目</p>
+        <SearchIcon className="mb-3 size-10 text-gray-300" />
+        <p className="mb-1 font-medium text-gray-600">找不到符合的帳目</p>
+        <p className="text-sm text-gray-400">請嘗試其他搜尋條件或新增帳目</p>
       </div>
     );
   }
@@ -59,7 +59,7 @@ export const SpendingList = (props: Props) => {
         <div key={dateStr}>
           <span className="text-gray-500">{dateStr}</span>
           <div
-            className="flex flex-col gap-1 rounded p-1 transition-all"
+            className="flex flex-col gap-1 rounded border-2 border-solid border-transparent p-1 transition-all"
             id={`spending-list-${index.toString()}`}
           >
             {sortedByDay[dateStr].map((spending, index) => (

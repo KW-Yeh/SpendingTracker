@@ -88,10 +88,10 @@ body {
 .bg-soft {
     background-color: #f8f9fc;
     background-image: 
-        radial-gradient(circle at 10% 10%, rgba(147, 112, 219, 0.04) 0%, transparent 70%),
-        radial-gradient(circle at 90% 90%, rgba(94, 114, 228, 0.04) 0%, transparent 70%),
-        radial-gradient(circle at 90% 10%, rgba(45, 206, 137, 0.03) 0%, transparent 60%),
-        radial-gradient(circle at 10% 90%, rgba(251, 99, 64, 0.03) 0%, transparent 60%);
+        radial-gradient(circle at 10% 10%, rgba(147, 112, 219, 0.2) 0%, transparent 70%),
+        radial-gradient(circle at 90% 90%, rgba(94, 114, 228, 0.2) 0%, transparent 70%),
+        radial-gradient(circle at 90% 10%, rgba(45, 206, 137, 0.1) 0%, transparent 60%),
+        radial-gradient(circle at 10% 90%, rgba(251, 99, 64, 0.1) 0%, transparent 60%);
     position: relative;
     overflow: hidden;
 }
