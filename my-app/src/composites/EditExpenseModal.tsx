@@ -2,7 +2,7 @@
 import { DatePicker } from '@/components/DatePicker';
 import { Loading } from '@/components/icons/Loading';
 import { Modal } from '@/components/Modal';
-import { NumberKeyboard, NumberKeyboardRef } from '@/components/NumberKeyboard';
+import { NumberKeyboard } from '@/components/NumberKeyboard';
 import { Select } from '@/components/Select';
 import { Switch } from '@/components/Switch';
 import { useDateCtx } from '@/context/DateProvider';
@@ -21,14 +21,7 @@ import { getCategoryIcon } from '@/utils/getCategoryIcon';
 import { getSpendingCategoryMap } from '@/utils/getSpendingCategoryMap';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
 import { normalizeNumber } from '@/utils/normalizeNumber';
-import {
-  FormEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { v7 as uuid } from 'uuid';
 
 interface Props {
@@ -43,7 +36,6 @@ export const EditExpenseModal = (props: Props) => {
   const { syncData } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
   const { date } = useDateCtx();
-  const numberKeyboardRef = useRef<NumberKeyboardRef>(null);
   const [spendingType, setSpendingType] = useState<string>(data.type);
   const [necessity, setNecessity] = useState<string>(data.necessity);
   const [selectedCategory, setSelectedCategory] = useState(data.category);
@@ -312,11 +304,7 @@ export const EditExpenseModal = (props: Props) => {
               readOnly
             />
           </div>
-          <NumberKeyboard
-            ref={numberKeyboardRef}
-            default={data.amount}
-            onChange={setAmount}
-          />
+          <NumberKeyboard default={data.amount} onChange={setAmount} />
         </div>
         <div className="flex w-full flex-1 items-end justify-between py-2">
           <button
