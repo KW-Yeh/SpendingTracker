@@ -34,6 +34,13 @@ interface User {
   budget?: BudgetItem[];
 }
 
+interface BudgetItem {
+  id: string;
+  category: string;
+  amount: number;
+  period: string;
+}
+
 interface MonthlyPlan {
   month: number;
   budget: number;
