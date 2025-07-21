@@ -113,7 +113,7 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
   ]);
 
   return (
-    <div className="relative mx-auto flex w-full flex-1 flex-col items-center gap-5 p-5">
+    <div className="content-wrapper">
       <YearMonthFilter
         refreshData={getNewData}
         group={currentGroup}

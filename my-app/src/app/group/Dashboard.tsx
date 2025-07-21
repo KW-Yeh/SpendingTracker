@@ -51,23 +51,26 @@ export const Dashboard = () => {
   }, [userData, syncGroup, syncUser]);
 
   return (
-    <div className="flex w-full flex-col items-center gap-4 text-sm sm:text-base">
+    <div className="content-wrapper">
       <div className="flex w-full items-center justify-end gap-4">
         <button
           type="button"
           onClick={handleCreateGroup}
-          className="flex items-center rounded-md bg-primary-300 px-4 py-2 transition-colors active:brightness-105 hover:brightness-105"
+          className="gradient-r-from-purple-to-blue flex items-center rounded-md px-4 py-2"
         >
           <PlusIcon className="mr-2 size-4" />
-          <span className="font-semibold">建立群組</span>
+          <span>建立群組</span>
         </button>
         <button
           type="button"
           onClick={refresh}
           disabled={loading}
-          className="rounded-md bg-gray-300 p-2 transition-colors active:bg-gray-400 hover:bg-gray-400"
+          className="flex items-center rounded-md px-4 py-2 text-gray-500 transition-colors hover:text-gray-700 active:text-gray-700"
         >
-          <RefreshIcon className={`size-4 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshIcon
+            className={`mr-2 size-4 ${loading ? 'animate-spin' : ''}`}
+          />
+          <span>刷新</span>
         </button>
       </div>
       <div className="flex w-full flex-col gap-4 sm:flex-row sm:flex-wrap">
@@ -132,12 +135,12 @@ const GroupCard = ({
   };
 
   return (
-    <div className="relative grid w-full max-w-[350px] grid-cols-12 gap-4 rounded-xl border border-solid border-gray-300 p-4">
+    <div className="bg-background relative grid w-full max-w-[350px] grid-cols-12 gap-4 rounded-xl p-4 shadow-md">
       <div
-        className={`absolute bottom-0 left-0 right-0 top-0 animate-pulse rounded-xl border border-solid border-transparent bg-gray-500/50 ${loading ? 'visible' : 'invisible'}`}
+        className={`absolute top-0 right-0 bottom-0 left-0 animate-pulse rounded-xl border border-solid border-transparent bg-gray-500/50 ${loading ? 'visible' : 'invisible'}`}
       ></div>
       <div className="col-span-10 flex flex-col justify-between gap-2">
-        <h3 className="overflow-hidden text-ellipsis whitespace-nowrap text-base font-bold sm:text-lg">
+        <h3 className="overflow-hidden text-base font-bold text-ellipsis whitespace-nowrap sm:text-lg">
           {group.name}
         </h3>
         <div className="flex flex-wrap items-center gap-2">
@@ -191,7 +194,7 @@ const GroupCard = ({
       </div>
       <Modal
         ref={modalRef}
-        className="w-full max-w-96"
+        className="flex w-full flex-col self-end sm:max-w-96 sm:self-center sm:rounded-xl"
         title="邀請成員一起記帳！"
       >
         <div className="flex w-full flex-col items-center">
@@ -207,7 +210,7 @@ const GroupCard = ({
           <div className="flex w-full items-center justify-end">
             <button
               type="button"
-              className="w-36 rounded-md bg-text p-2 font-bold text-background transition-colors active:bg-gray-600 hover:bg-gray-600"
+              className="bg-text text-background w-full rounded-md p-2 font-bold transition-colors hover:bg-gray-600 active:bg-gray-600"
               onClick={handleCopyInviteLink}
             >
               複製

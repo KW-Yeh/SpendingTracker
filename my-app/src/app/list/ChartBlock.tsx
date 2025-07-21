@@ -94,7 +94,7 @@ export const ChartBlock = () => {
   }, [data, dateHook.year, dateHook.month, currentGroup?.id]);
 
   return (
-    <div className="relative z-10 mx-auto flex w-full flex-1 flex-col items-center gap-6 p-6">
+    <div className="content-wrapper">
       <YearMonthFilter
         refreshData={refreshData}
         group={currentGroup}
