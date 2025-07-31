@@ -1,7 +1,10 @@
 'use client';
 import { EditBudgetModal } from '@/app/budget/EditBudgetModal';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { CATEGORY_WORDING_MAP } from '@/utils/constants';
+import {
+  BUDGET_PERIOD_WORDINGS,
+  CATEGORY_WORDING_MAP,
+} from '@/utils/constants';
 import { getCategoryIcon } from '@/utils/getCategoryIcon';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import { useCallback, useState } from 'react';
@@ -57,7 +60,7 @@ export const BudgetCard = ({ budget }: { budget: BudgetItem }) => {
           {CATEGORY_WORDING_MAP[budget.category]}
         </span>
         <span className="ml-2 text-sm text-gray-600 before:mr-1 before:inline-block before:content-['-']">
-          {budget.period}
+          {BUDGET_PERIOD_WORDINGS[budget.period]}
         </span>
       </h2>
       <p className="my-1 text-lg font-semibold">

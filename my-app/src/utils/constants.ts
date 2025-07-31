@@ -143,3 +143,6 @@ export const BUDGET_PERIOD_WORDINGS: Record<string, string> = {
   weekly: '每週',
   daily: '每日',
 };
+
+export const IDB_NAME = 'Expense Tracking';
+export const IDB_VERSION = 2;

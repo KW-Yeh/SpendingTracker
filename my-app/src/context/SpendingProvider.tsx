@@ -37,7 +37,11 @@ const reducer = (
 
 export const SpendingProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(reducer, { data: [], loading: true });
-  const { db: IDB, getData: getDataFromIDB, setData: setData2IDB } = useIDB();
+  const {
+    db: IDB,
+    getSpendingData: getDataFromIDB,
+    setSpendingData: setData2IDB,
+  } = useIDB();
   const controllerRef = useRef<AbortController>(new AbortController());
 
   const handleSetState = useCallback((_data: SpendingRecord[]) => {

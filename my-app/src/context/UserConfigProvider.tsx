@@ -1,5 +1,6 @@
 'use client';
 
+import { useIDB } from '@/hooks/useIDB';
 import { getUser, putUser } from '@/services/userServices';
 import { useSession } from 'next-auth/react';
 import { redirect, usePathname } from 'next/navigation';
@@ -10,6 +11,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
@@ -29,6 +31,8 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
   const [config, setConfig] = useState<User>();
   const [loading, setLoading] = useState(true);
   const { data: session, status } = useSession();
+  const { db: IDB, getUserData, setUserData } = useIDB();
+  const controllerRef = useRef<AbortController>(new AbortController());
   const pathname = usePathname();
 
   const handleState = (value: User) => {
@@ -69,11 +73,18 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
             });
           } else {
             handleState(res);
+            setUserData(IDB, res)
+              .then(() => {
+                console.log('Update User IDB success.');
+              })
+              .catch((err) => {
+                console.log('Update User IDB failed: ', err);
+              });
           }
         })
         .catch(console.error);
     },
-    [handleNewUser],
+    [IDB, handleNewUser, setUserData],
   );
 
   const syncUser = useCallback(() => {
@@ -106,6 +117,24 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
       handleLogin();
     }
   }, [status, handleLogin]);
+
+  useEffect(() => {
+    const controller = (controllerRef.current = new AbortController());
+    if (IDB && !config) {
+      getUserData(IDB, session?.user?.email ?? '', controller.signal)
+        .then((res) => {
+          if (res) {
+            const _data = JSON.parse(res.data) as User;
+            // console.log('Get User Data from IDB', _data);
+            handleState(_data);
+          }
+        })
+        .catch((err) => {
+          console.log('Error while syncing data: ', err);
+        });
+    }
+    return () => controller.abort();
+  }, [IDB, config, getUserData, handleState, session?.user?.email]);
 
   return <Ctx.Provider value={ctxVal}>{children}</Ctx.Provider>;
 };
