@@ -35,7 +35,7 @@ interface User {
 }
 
 interface BudgetItem {
-  id: string;
+  name: string;
   category: string;
   amount: number;
   period: string;

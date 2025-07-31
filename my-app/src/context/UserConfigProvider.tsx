@@ -50,6 +50,7 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
           email: email,
           image: session.user.image || '',
           groups: [],
+          budget: [],
         });
       }
     },

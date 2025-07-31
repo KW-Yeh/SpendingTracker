@@ -135,3 +135,11 @@ export const MONTH_LABEL: Record<string, string> = {
   Nov: '11',
   Dec: '12',
 };
+
+export const BUDGET_PERIOD_OPTIONS = ['yearly', 'monthly', 'weekly', 'daily'];
+export const BUDGET_PERIOD_WORDINGS: Record<string, string> = {
+  yearly: '每年',
+  monthly: '每月',
+  weekly: '每週',
+  daily: '每日',
+};
