@@ -26,7 +26,9 @@ export default function OverView(props: Props) {
     <div className="bg-background relative flex w-full items-center justify-between rounded-2xl border border-solid border-gray-300 p-6 text-gray-700 shadow-sm transition-shadow duration-200 hover:shadow">
       <div className="flex h-full min-h-35 flex-col md:min-h-50">
         <div className="mb-2">
-          <h3 className="mb-1 text-sm font-medium text-gray-500">剩餘預算</h3>
+          <h3 className="mb-1 text-sm font-medium text-gray-500">
+            剩餘預算 (總預算: ${normalizeNumber(totalBudget)})
+          </h3>
           <span className="flex items-center gap-2">
             <MdOutlineWallet className="text-primary-400 size-6" />
             <span className="text-primary-500 text-xl leading-12 font-bold sm:text-3xl">
