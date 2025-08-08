@@ -32,6 +32,7 @@ export const BudgetList = () => {
           budget={null}
           onClose={() => setOpenModal(false)}
           loading={loading}
+          isNew={true}
         />
       )}
     </div>

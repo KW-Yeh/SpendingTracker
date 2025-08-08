@@ -29,6 +29,7 @@ export const useBudget = (budgetName?: string) => {
       }).then(() => {
         syncUser();
         setLoading(false);
+        setOpenModal(false);
       });
     },
     [setter, syncUser, userData],

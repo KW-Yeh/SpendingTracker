@@ -17,10 +17,11 @@ interface Props {
   onSave: (item: BudgetItem, isNew: boolean) => void;
   onClose: () => void;
   loading: boolean;
+  isNew: boolean;
 }
 
 export const EditBudgetModal = (props: Props) => {
-  const { budget, onSave, onClose, loading } = props;
+  const { budget, onSave, onClose, loading, isNew } = props;
   const [selectedCategory, setSelectedCategory] = useState(
     budget?.category ?? '🍔',
   );
@@ -38,9 +39,9 @@ export const EditBudgetModal = (props: Props) => {
         name: description,
         amount: amount,
       },
-      false,
+      isNew,
     );
-  }, [onSave, selectedCategory, selectedPeriod, description, amount]);
+  }, [onSave, selectedCategory, selectedPeriod, description, amount, isNew]);
 
   return (
     <Modal

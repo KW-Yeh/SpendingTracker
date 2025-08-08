@@ -49,6 +49,7 @@ export const BudgetCard = ({ budget }: { budget: BudgetItem }) => {
           budget={budget}
           onClose={() => setOpenModal(false)}
           loading={loading}
+          isNew={false}
         />
       )}
     </div>
