@@ -1,59 +1,19 @@
 'use client';
 import { EditBudgetModal } from '@/app/budget/EditBudgetModal';
-import { useUserConfigCtx } from '@/context/UserConfigProvider';
+import { useBudget } from '@/hooks/useBudget';
 import {
   BUDGET_PERIOD_WORDINGS,
   CATEGORY_WORDING_MAP,
 } from '@/utils/constants';
 import { getCategoryIcon } from '@/utils/getCategoryIcon';
 import { normalizeNumber } from '@/utils/normalizeNumber';
-import { useCallback, useState } from 'react';
 
 export const BudgetCard = ({ budget }: { budget: BudgetItem }) => {
-  const { config: userData, setter, syncUser } = useUserConfigCtx();
-  const [openModal, setOpenModal] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const handleSave = useCallback(
-    (item: BudgetItem, isNew: boolean) => {
-      if (!userData) return;
-      setLoading(true);
-      const newBudget = [...(userData?.budget ?? [])];
-      if (isNew) {
-        newBudget.push(item);
-      } else {
-        const index = newBudget.findIndex(
-          (budgetItem) => budgetItem.name === item.name,
-        );
-        if (index !== -1) {
-          newBudget[index] = item;
-        }
-      }
-      setter({
-        ...userData,
-        budget: newBudget,
-      }).then(() => {
-        syncUser();
-        setLoading(false);
-      });
-    },
-    [setter, syncUser, userData],
-  );
-
-  const handleDelete = useCallback(() => {
-    if (!userData) return;
-    setter({
-      ...userData,
-      budget: userData?.budget?.filter(
-        (budgetItem) => budgetItem.name !== budget.name,
-      ),
-    }).then(() => {
-      syncUser();
-    });
-  }, [budget.name, setter, syncUser, userData]);
+  const { openModal, setOpenModal, loading, handleSave, handleDelete } =
+    useBudget(budget.name);
 
   return (
-    <div className="bg-background flex min-w-70 flex-col rounded-2xl border border-solid border-gray-300 p-4 shadow">
+    <div className="bg-background flex w-full flex-col rounded-2xl border border-solid border-gray-300 p-4 shadow md:max-w-70">
       <h2 className="flex items-center">
         <span className="flex items-center gap-1">
           {getCategoryIcon(budget.category)}

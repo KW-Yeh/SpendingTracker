@@ -13,7 +13,7 @@ export const MENU_CONFIG: Record<string, string> = {
   [Route.Insert]: '記帳',
   [Route.Group]: '群組',
   [Route.List]: '分析',
-  [Route.Budget]: '儲蓄',
+  [Route.Budget]: '預算',
 };
 
 export const PAGE_TITLE: Record<string, string> = {
@@ -21,7 +21,7 @@ export const PAGE_TITLE: Record<string, string> = {
   [Route.Insert]: '快速記帳',
   [Route.Group]: '群組管理',
   [Route.List]: '消費分析',
-  [Route.Budget]: '儲蓄計劃',
+  [Route.Budget]: '預算規劃',
   [Route.Login]: '會員登入',
   [Route.Setting]: '設定',
 };
