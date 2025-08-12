@@ -299,7 +299,7 @@ export const EditExpenseModal = (props: Props) => {
             <span className="text-sm text-gray-500">金額</span>
             <input
               type="text"
-              className="h-10 flex-1 bg-transparent py-1 text-end focus:outline-0"
+              className="h-10 flex-1 bg-transparent py-1 text-end focus:outline-0 focus-visible:outline-0"
               value={normalizeNumber(amount)}
               readOnly
             />
