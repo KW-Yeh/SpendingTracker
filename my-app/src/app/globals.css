@@ -67,7 +67,7 @@
 body {
     color: var(--color-text);
     background-color: var(--color-background);
-    font-family: "Noto Sans TC", "Noto Sans TC Placeholder", sans-serif;
+    font-family: "Poppins", "Open Sans", Meiryo, 微軟正黑體, "MS UI Gothic", "MS PGothic", Arial, Helvetica, sans-serif;
     width: 100%;
     min-height: 100vh;
     display: flex;

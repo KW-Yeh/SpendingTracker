@@ -29,7 +29,7 @@ export const EditBudgetModal = (props: Props) => {
     budget?.period ?? 'monthly',
   );
   const [description, setDescription] = useState(budget?.name ?? '');
-  const [amount, setAmount] = useState(budget?.amount ?? 0);
+  const [amount, setAmount] = useState(budget?.amount);
 
   const handleSave = useCallback(() => {
     onSave(
@@ -37,7 +37,7 @@ export const EditBudgetModal = (props: Props) => {
         category: selectedCategory,
         period: selectedPeriod,
         name: description,
-        amount: amount,
+        amount: amount ?? 0,
       },
       isNew,
     );
