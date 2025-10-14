@@ -63,7 +63,7 @@ export const Modal = forwardRef<ModalRef, Props>((props, ref) => {
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-      onClick={onClose}
+      onClick={props.onClose}
       style={{
         position: 'fixed',
         top: 0,
