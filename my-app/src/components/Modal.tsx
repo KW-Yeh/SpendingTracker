@@ -61,7 +61,19 @@ export const Modal = forwardRef<ModalRef, Props>((props, ref) => {
   if (!open) return null;
 
   return (
-    <div className="fixed top-0 right-0 bottom-0 left-0 z-50 flex justify-center bg-black/60 backdrop-blur-sm">
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      onClick={onClose}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        height: '100vh',
+        height: '100dvh',
+      }}
+    >
       <div
         ref={contentRef}
         className={`bg-background animate-modal relative rounded-xl ${props.className}`}
