@@ -1,13 +1,7 @@
 'use client';
 import { CloseIcon } from '@/components/icons/CloseIcon';
 import useFocusRef from '@/hooks/useFocusRef';
-import {
-  forwardRef,
-  ReactNode,
-  useEffect,
-  useImperativeHandle,
-  useState,
-} from 'react';
+import { forwardRef, ReactNode, useImperativeHandle, useState } from 'react';
 
 interface Props {
   children: ReactNode;
@@ -37,26 +31,6 @@ export const Modal = forwardRef<ModalRef, Props>((props, ref) => {
     props.onClose?.();
     setOpen(false);
   };
-
-  useEffect(() => {
-    if (!open) return;
-
-    const handleResize = () => {
-      window.scrollTo(0, 0);
-    };
-
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', handleResize);
-      return () => {
-        window.visualViewport?.removeEventListener('resize', handleResize);
-      };
-    }
-
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [open]);
 
   if (!open) return null;
 
