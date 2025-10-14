@@ -1,7 +1,13 @@
 'use client';
 import { CloseIcon } from '@/components/icons/CloseIcon';
 import useFocusRef from '@/hooks/useFocusRef';
-import { forwardRef, ReactNode, useImperativeHandle, useState } from 'react';
+import { 
+  forwardRef, 
+  ReactNode, 
+  useEffect,
+  useImperativeHandle, 
+  useState 
+} from 'react';
 
 interface Props {
   children: ReactNode;
@@ -32,16 +38,19 @@ export const Modal = forwardRef<ModalRef, Props>((props, ref) => {
     setOpen(false);
   };
 
+  useEffect(() => {
+    if (open) {
+      document.body.style.position = "fixed"
+    }
+    return () => {
+      document.body.style.position = "unset"
+    }
+  }, [open]);
+
   if (!open) return null;
 
   return (
-    <div
-      className="fixed top-0 right-0 bottom-0 left-0 z-50 flex justify-center bg-black/60 backdrop-blur-sm"
-      style={{
-        width: '100vw',
-        height: '100dvh',
-      }}
-    >
+    <div className="fixed top-0 right-0 bottom-0 left-0 z-50 flex justify-center bg-black/60 backdrop-blur-sm">
       <div
         ref={contentRef}
         className={`bg-background animate-modal relative rounded-xl ${props.className}`}
