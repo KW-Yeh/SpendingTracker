@@ -70,7 +70,7 @@ export const Modal = forwardRef<ModalRef, Props>((props, ref) => {
         left: 0,
         right: 0,
         bottom: 0,
-        height: '100vh',
+        weight: '100vw',
         height: '100dvh',
       }}
     >
