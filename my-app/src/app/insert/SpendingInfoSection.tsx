@@ -62,8 +62,8 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
   );
 
   const handleSelectDataPoint = (state: CategoricalChartState) => {
-    console.log("Select Date Point: ", state);
-    const selectedLabel = state.activeLabel;
+    const selectedLabel = state.activePayload[0]?.payload.date;
+    if (!selectedLabel) return;
     const element = document.getElementById(`spending-list-${selectedLabel}`);
     if (!element) return;
     element.scrollIntoView({ behavior: 'smooth', block: 'center' });
