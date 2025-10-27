@@ -26,7 +26,7 @@ export default function OverView(props: Props) {
       <div className="flex h-full min-h-35 flex-col md:min-h-50">
         <div className="mb-2">
           <h3 className="mb-1 text-sm font-medium text-gray-500">
-            結餘 (總預算: ${normalizeNumber(totalBudget)})
+            結餘 (總收入: ${normalizeNumber(totalIncome)})
           </h3>
           <span className="flex items-center gap-2">
             <MdOutlineWallet className="text-primary-400 size-6" />
