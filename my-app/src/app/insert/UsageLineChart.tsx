@@ -63,7 +63,7 @@ export default UsageLineChart;
 
 function formatData(list: number[], month: number) {
   const result: DataType[] = [];
-  const cumulation = 0;
+  let cumulation = 0;
   list.forEach((item, index) => {
     cumulation += item;
     result.push({
