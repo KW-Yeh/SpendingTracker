@@ -52,6 +52,7 @@ const UsageLineChart = (props: Props) => {
           dataKey="cumulation"
           stroke="hsl(256, 60%, 70%)"
           fill="url(#colorUv)"
+          type="monotone"
           dot={{ stroke: 'hsl(256, 60%, 70%)', r: 1 }}
         />
         <Tooltip content={CustomToolTip} />
