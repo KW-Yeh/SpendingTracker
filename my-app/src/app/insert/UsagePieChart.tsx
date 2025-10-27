@@ -17,7 +17,7 @@ interface Props {
 
 const UsagePieChart = (props: Props) => {
   const { totalIncome, totalOutcome, isMobile } = props;
-  const percent = totalIncome ? Math.min(totalOutcome / totalIncome, 100) : 0;
+  const percent = totalIncome ? totalOutcome / totalIncome : 0;
   const isOverSpent = totalOutcome > totalIncome;
   return (
     <ResponsiveContainer
@@ -47,7 +47,7 @@ const UsagePieChart = (props: Props) => {
           textAnchor="middle"
           dominantBaseline="central"
         >
-          {`${(percent * 100).toFixed(0)}%`}
+          {`${Math.min(percent * 100, 100).toFixed(0)}%`}
         </text>
       </PieChart>
     </ResponsiveContainer>
