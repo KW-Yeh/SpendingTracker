@@ -17,7 +17,8 @@ interface Props {
 
 const UsagePieChart = (props: Props) => {
   const { totalIncome, totalOutcome, isMobile } = props;
-  const percent = totalIncome ? totalOutcome / totalIncome : 0;
+  const percent = totalIncome ? Math.min(totalOutcome / totalIncome, 100) : 0;
+  const isOverSpent = totalOutcome > totalIncome;
   return (
     <ResponsiveContainer
       width={isMobile ? 120 : 200}
@@ -30,7 +31,7 @@ const UsagePieChart = (props: Props) => {
             { name: '使用', value: totalOutcome, fill: 'hsl(256, 60%, 70%)' },
             {
               name: '剩餘',
-              value: totalIncome - totalOutcome,
+              value: isOverSpent ? 0 : (totalIncome - totalOutcome),
               fill: 'hsl(256, 60%, 90%)',
             },
           ]}
