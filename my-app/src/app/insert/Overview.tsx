@@ -17,9 +17,9 @@ const UsagePieChart = dynamic(() => import('./UsagePieChart'), {
 export default function OverView(props: Props) {
   const { budgets, costList, isMobile } = props;
   const { totalIncome, totalOutcome } = getExpenseFromData(costList);
-  const balance = totalIncome - totalOutcome;
   const totalBudget =
     budgets?.map((d) => d.amount).reduce((a, b) => a + b, 0) ?? 0;
+  const balance = totalBudget - totalOutcome;
 
   return (
     <div className="bg-background relative flex w-full items-center justify-between rounded-2xl border border-solid border-gray-300 p-6 text-gray-700 shadow-sm transition-shadow duration-200 hover:shadow">
