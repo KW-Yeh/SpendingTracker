@@ -62,7 +62,8 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
   );
 
   const handleSelectDataPoint = (state: CategoricalChartState) => {
-    const selectedLabel = state.activePayload[0]?.payload.date;
+    if (!state.activePayload || !state.activePayload[0]) return;
+    const selectedLabel = state.activePayload[0].payload.date;
     if (!selectedLabel) return;
     const element = document.getElementById(`spending-list-${selectedLabel}`);
     if (!element) return;
