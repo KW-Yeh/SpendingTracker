@@ -21,6 +21,7 @@ interface Props {
 
 type DataType = {
   date: string;
+  cumulation: number;
   cost: number;
 };
 
