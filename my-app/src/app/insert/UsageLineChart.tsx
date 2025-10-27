@@ -48,7 +48,7 @@ const UsageLineChart = (props: Props) => {
           </linearGradient>
         </defs>
         <Area
-          dataKey="cost"
+          dataKey="cumulation"
           stroke="hsl(256, 60%, 70%)"
           fill="url(#colorUv)"
           dot={{ stroke: 'hsl(256, 60%, 70%)', r: 1 }}
@@ -63,9 +63,12 @@ export default UsageLineChart;
 
 function formatData(list: number[], month: number) {
   const result: DataType[] = [];
+  const cumulation = 0;
   list.forEach((item, index) => {
+    cumulation += item;
     result.push({
       date: `${(month + 1).toString().padStart(2, '0')}/${(index + 1).toString().padStart(2, '0')}`,
+      cumulation: cumulation,
       cost: item,
     });
   });
