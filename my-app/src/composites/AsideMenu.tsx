@@ -141,6 +141,7 @@ export const AsideMenu = (props: Props) => {
 const ROUTE_ICON: Record<string, ReactNode> = {
   '/': <HomeIcon className="mr-3 size-4 sm:mr-4" />,
   '/insert': <EditIcon className="mr-3 size-4 sm:mr-4" />,
+  '/collaborate': <PeopleIcon className="mr-3 size-4 sm:mr-4" />,
   '/list': <ListIcon className="mr-3 size-4 sm:mr-4" />,
   '/budget': <CoinIcon className="mr-3 size-4 sm:mr-4" />,
   '/group': <PeopleIcon className="mr-3 size-4 sm:mr-4" />,

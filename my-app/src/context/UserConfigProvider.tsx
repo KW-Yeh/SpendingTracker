@@ -35,16 +35,16 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
   const controllerRef = useRef<AbortController>(new AbortController());
   const pathname = usePathname();
 
-  const handleState = (value: User) => {
+  const handleState = useCallback((value: User) => {
     setConfig(value);
     setLoading(false);
-  };
+  }, []);
 
-  const handleUpdateUser = async (value: User) => {
+  const handleUpdateUser = useCallback(async (value: User) => {
     await putUser(value);
     // Update local state after API call
     setConfig(value);
-  };
+  }, []);
 
   const handleNewUser = useCallback(
     async (email: string) => {
@@ -84,7 +84,7 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
         })
         .catch(console.error);
     },
-    [IDB, handleNewUser, setUserData],
+    [IDB, handleNewUser, setUserData, handleState],
   );
 
   const syncUser = useCallback(() => {
@@ -103,7 +103,7 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
       syncUser,
       setter: handleUpdateUser,
     }),
-    [loading, config, syncUser],
+    [loading, config, syncUser, handleUpdateUser],
   );
 
   const handleLogin = useCallback(() => {

@@ -1,0 +1,10 @@
+{
+  "prettier.prettierPath": "./my-app/node_modules/prettier",
+  "prettier.configPath": "./my-app/.prettierrc",
+  "eslint.workingDirectories": ["./my-app"],
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.next": true
+  }
+}

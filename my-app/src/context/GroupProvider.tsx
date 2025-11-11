@@ -31,19 +31,22 @@ export const GroupProvider = ({ children }: { children: ReactNode }) => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [currentGroup, setCurrentGroup] = useState<Group>();
 
-  const handleState = (res: Group[]) => {
+  const handleState = useCallback((res: Group[]) => {
     setGroups(res);
     setLoading(false);
-  };
-
-  const queryGroup = useCallback((groupId: string | string[]) => {
-    setLoading(true);
-    getGroups(groupId)
-      .then(({ data: res }) => {
-        handleState(res);
-      })
-      .catch(console.error);
   }, []);
+
+  const queryGroup = useCallback(
+    (groupId: string | string[]) => {
+      setLoading(true);
+      getGroups(groupId)
+        .then(({ data: res }) => {
+          handleState(res);
+        })
+        .catch(console.error);
+    },
+    [handleState],
+  );
 
   const ctxVal = useMemo(
     () => ({
@@ -54,7 +57,7 @@ export const GroupProvider = ({ children }: { children: ReactNode }) => {
       syncGroup: queryGroup,
       setter: handleState,
     }),
-    [currentGroup, groups, loading, queryGroup],
+    [currentGroup, groups, loading, queryGroup, handleState],
   );
 
   return <Ctx.Provider value={ctxVal}>{children}</Ctx.Provider>;
