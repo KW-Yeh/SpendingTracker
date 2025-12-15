@@ -29,7 +29,7 @@ export const DailyCostChart = (props: Props) => {
     if (item.type === SpendingType.Outcome) {
       const date = new Date(item.date);
       const dayIndex = date.getDate() - 1;
-      dailyCost[dayIndex] += item.amount;
+      dailyCost[dayIndex] += Number(item.amount);
       largestCost = Math.max(largestCost, Math.abs(dailyCost[dayIndex]));
     }
   });

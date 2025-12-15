@@ -1,4 +1,4 @@
-const URL = '/api/aws/items';
+const URL = '/api/aurora/items';
 
 export const getItems = async (
   groupId?: string,

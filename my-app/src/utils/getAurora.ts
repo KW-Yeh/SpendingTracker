@@ -1,10 +1,8 @@
 import 'server-only';
-import { awsCredentialsProvider } from '@vercel/functions/oidc';
 import { DsqlSigner } from '@aws-sdk/dsql-signer';
-import { Client } from 'pg';
+import { Client, Pool } from 'pg';
 
 const {
-  AWS_ROLE_ARN,
   AURORA_DSQL_HOST,
   AURORA_DSQL_PORT,
   AURORA_DSQL_REGION,
@@ -13,18 +11,6 @@ const {
 } = process.env;
 
 async function getPassword() {
-  // if (process.env.VERCEL) {
-  //   const creds = await awsCredentialsProvider({
-  //     roleArn: AWS_ROLE_ARN!,
-  //   });
-  //   const signer = new DsqlSigner({
-  //     hostname: AURORA_DSQL_HOST!,
-  //     region: AURORA_DSQL_REGION!,
-  //     credentials: creds,
-  //   });
-  //   return await signer.getDbConnectAdminAuthToken();
-  // }
-
   const signer = new DsqlSigner({
     hostname: AURORA_DSQL_HOST!,
     region: AURORA_DSQL_REGION!,

@@ -5,9 +5,9 @@ export const getExpenseFromData = (data: SpendingRecord[]) => {
   let _totalOutcome = 0;
   data.forEach((item) => {
     if (item.type === SpendingType.Income) {
-      _totalIncome += item.amount;
+      _totalIncome += Number(item.amount);
     } else {
-      _totalOutcome += item.amount;
+      _totalOutcome += Number(item.amount);
     }
   });
   return {

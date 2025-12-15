@@ -5,7 +5,7 @@ interface SpendingRecord {
   type: string;
   date: string;
   necessity: string;
-  amount: number;
+  amount: string;
   category: string;
   description: string;
 }
@@ -23,6 +23,7 @@ type MemberType = {
 };
 
 interface User {
+  user_id: number;
   name: string;
   email: string;
   image: string;

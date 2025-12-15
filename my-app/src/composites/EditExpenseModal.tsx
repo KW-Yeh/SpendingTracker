@@ -40,7 +40,7 @@ export const EditExpenseModal = (props: Props) => {
   const [necessity, setNecessity] = useState<string>(data.necessity);
   const [selectedCategory, setSelectedCategory] = useState(data.category);
   const [description, setDescription] = useState(data.description);
-  const [amount, setAmount] = useState(data.amount);
+  const [amount, setAmount] = useState(Number(data.amount));
   const [isNoAmount, setIsNoAmount] = useState(false);
   const [loading, setLoading] = useState(false);
   const [spendingCategories, setSpendingCategories] = useState<
@@ -128,7 +128,7 @@ export const EditExpenseModal = (props: Props) => {
         necessity,
         category: selectedCategory,
         description,
-        amount,
+        amount: amount.toString(),
       };
 
       await putItem(newSpending);
@@ -304,7 +304,7 @@ export const EditExpenseModal = (props: Props) => {
               readOnly
             />
           </div>
-          <NumberKeyboard default={data.amount} onChange={setAmount} />
+          <NumberKeyboard default={Number(data.amount)} onChange={setAmount} />
         </div>
         <div className="flex w-full flex-1 items-end justify-between py-2">
           <button

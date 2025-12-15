@@ -1,6 +1,8 @@
+const URL = '/api/aurora/groups';
+
 export const putGroup = async (data: Group) => {
   try {
-    await fetch('/api/aws/groups', {
+    await fetch(URL, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -16,7 +18,7 @@ export const putGroup = async (data: Group) => {
 
 export const deleteGroup = async (id: string) => {
   try {
-    await fetch(`/api/aws/groups?id=${id}`, {
+    await fetch(`${URL}?id=${id}`, {
       method: 'DELETE',
     });
     return { status: true, message: 'success' };

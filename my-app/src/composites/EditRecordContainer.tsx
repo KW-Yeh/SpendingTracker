@@ -29,7 +29,7 @@ const EditRecordContainer = ({ recordId }: { recordId?: string | null }) => {
         category: '🍔',
         necessity: Necessity.Need,
         type: SpendingType.Outcome,
-        amount: 0,
+        amount: '0',
         description: '',
         date: new Date().toISOString(),
       };

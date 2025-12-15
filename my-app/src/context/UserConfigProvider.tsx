@@ -1,7 +1,7 @@
 'use client';
 
 import { useIDB } from '@/hooks/useIDB';
-import { getUser, putUser } from '@/services/userServices';
+import { getUser, putUser, createUser } from '@/services/userServices';
 import { useSession } from 'next-auth/react';
 import { redirect, usePathname } from 'next/navigation';
 import {
@@ -49,7 +49,8 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
   const handleNewUser = useCallback(
     async (email: string) => {
       if (session?.user) {
-        await putUser({
+        await createUser({
+          user_id: Date.now(),
           name: session.user.name || '匿名',
           email: email,
           image: session.user.image || '',

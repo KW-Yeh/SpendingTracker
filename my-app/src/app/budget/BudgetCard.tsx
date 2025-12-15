@@ -24,7 +24,7 @@ export const BudgetCard = ({ budget }: { budget: BudgetItem }) => {
         </span>
       </h2>
       <p className="my-1 text-lg font-semibold">
-        {normalizeNumber(budget.amount)} 元
+        {normalizeNumber(Number(budget.amount))} 元
       </p>
       <div className="mt-2 flex w-full items-center justify-end gap-2">
         <button

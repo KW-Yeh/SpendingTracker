@@ -127,7 +127,7 @@ export const CollaborateRecordItem = (props: Props) => {
       <div
         className={`w-fit text-end font-bold ${spending.type === SpendingType.Outcome ? 'text-red-500' : 'text-green-500'}`}
       >
-        ${normalizeNumber(spending.amount)}
+        ${normalizeNumber(Number(spending.amount))}
       </div>
       
       {/* 操作選單 - 只有當 canEdit 為 true 時才顯示 */}

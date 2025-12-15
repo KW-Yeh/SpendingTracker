@@ -94,7 +94,7 @@ export const SpendingItem = (props: Props) => {
       <div
         className={`w-fit text-end font-bold ${spending.type === SpendingType.Outcome ? 'text-red-500' : 'text-green-500'}`}
       >
-        ${normalizeNumber(spending.amount)}
+        ${normalizeNumber(Number(spending.amount))}
       </div>
       <ActionMenu
         onClick={handleAction}

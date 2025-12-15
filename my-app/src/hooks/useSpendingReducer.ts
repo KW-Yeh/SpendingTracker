@@ -6,7 +6,7 @@ import { useReducer } from 'react';
 type Action =
   | {
       type: 'SET_AMOUNT';
-      payload: number;
+      payload: string;
     }
   | {
       type: 'SET_CATEGORY';
@@ -39,7 +39,7 @@ type Action =
 
 const INITIAL_STATE: SpendingRecord = {
   id: '',
-  amount: 0,
+  amount: '0',
   category: '🍔',
   date: new Date().toISOString(),
   description: '',

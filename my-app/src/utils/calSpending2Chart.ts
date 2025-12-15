@@ -129,26 +129,26 @@ const parseData = (data: SpendingRecord[]) => {
     if (record.type === SpendingType.Income) {
       const category = INCOME_TYPE_MAP.find((d) => d.value === record.category);
       if (category) {
-        totalIncome += record.amount;
+        totalIncome += Number(record.amount);
         let temp = incomeResult.get(category.label) ?? getEmptyResult();
         if (record.necessity === Necessity.Need) {
-          necessaryIncome += record.amount;
+          necessaryIncome += Number(record.amount);
           temp = {
             ...temp,
-            necessary: temp.necessary + record.amount,
-            necessaryList: [...temp.necessaryList, record.amount],
+            necessary: temp.necessary + Number(record.amount),
+            necessaryList: [...temp.necessaryList, Number(record.amount)],
           };
         } else {
-          unnecessaryIncome += record.amount;
+          unnecessaryIncome += Number(record.amount);
           temp = {
             ...temp,
-            unnecessary: temp.unnecessary + record.amount,
-            unnecessaryList: [...temp.unnecessaryList, record.amount],
+            unnecessary: temp.unnecessary + Number(record.amount),
+            unnecessaryList: [...temp.unnecessaryList, Number(record.amount)],
           };
         }
         incomeResult.set(category.label, {
           ...temp,
-          total: temp.total + record.amount,
+          total: temp.total + Number(record.amount),
         });
       }
     } else {
@@ -156,26 +156,26 @@ const parseData = (data: SpendingRecord[]) => {
         (d) => d.value === record.category,
       );
       if (category) {
-        totalOutcome += record.amount;
+        totalOutcome += Number(record.amount);
         let temp = outcomeResult.get(category.label) ?? getEmptyResult();
         if (record.necessity === Necessity.Need) {
-          necessaryOutcome += record.amount;
+          necessaryOutcome += Number(record.amount);
           temp = {
             ...temp,
-            necessary: temp.necessary + record.amount,
-            necessaryList: [...temp.necessaryList, record.amount],
+            necessary: temp.necessary + Number(record.amount),
+            necessaryList: [...temp.necessaryList, Number(record.amount)],
           };
         } else {
-          unnecessaryOutcome += record.amount;
+          unnecessaryOutcome += Number(record.amount);
           temp = {
             ...temp,
-            unnecessary: temp.unnecessary + record.amount,
-            unnecessaryList: [...temp.unnecessaryList, record.amount],
+            unnecessary: temp.unnecessary + Number(record.amount),
+            unnecessaryList: [...temp.unnecessaryList, Number(record.amount)],
           };
         }
         outcomeResult.set(category.label, {
           ...temp,
-          total: temp.total + record.amount,
+          total: temp.total + Number(record.amount),
         });
       }
     }
