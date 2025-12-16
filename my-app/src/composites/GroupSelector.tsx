@@ -22,7 +22,7 @@ export const GroupSelector = ({ className = '' }: { className?: string }) => {
       name="group"
       value={currentGroup?.name ?? '...'}
       onChange={handleOnSelectGroup}
-      className={`bg-background rounded-full border border-solid border-gray-300 px-3 py-1 transition-colors active:border-gray-500 sm:hover:border-gray-500 ${className}`}
+      className={`bg-background max-w-25 rounded-full border border-solid border-gray-300 px-3 py-1 transition-colors active:border-gray-500 sm:hover:border-gray-500 ${className}`}
     >
       {!loading &&
         groups.map(

@@ -22,7 +22,7 @@ export default function OverView(props: Props) {
   const balance = totalBudget - totalOutcome;
 
   return (
-    <div className="bg-background relative flex w-full items-center justify-between rounded-2xl border border-solid border-gray-300 p-6 text-gray-700 shadow-sm transition-shadow duration-200 hover:shadow">
+    <div className="bg-background relative flex w-full items-center justify-between gap-4 rounded-2xl border border-solid border-gray-300 p-6 text-gray-700 shadow-sm transition-shadow duration-200 hover:shadow">
       <div className="flex h-full min-h-35 flex-col md:min-h-50">
         <div className="mb-2">
           <h3 className="mb-1 text-sm font-medium text-gray-500">

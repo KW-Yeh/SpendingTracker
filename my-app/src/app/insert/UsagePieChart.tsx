@@ -21,7 +21,7 @@ const UsagePieChart = (props: Props) => {
   const isOverSpent = totalOutcome > totalIncome;
   return (
     <ResponsiveContainer
-      minWidth={120}
+      minWidth={150}
       width="100%"
       style={{
         maxWidth: '200px',
@@ -40,8 +40,8 @@ const UsagePieChart = (props: Props) => {
             },
           ]}
           isAnimationActive={false}
-          outerRadius={isMobile ? 60 : 70}
-          innerRadius={isMobile ? 45 : 50}
+          outerRadius={isMobile ? 55 : 65}
+          innerRadius={isMobile ? 40 : 45}
         />
         <Tooltip content={CustomToolTip} />
         <text
