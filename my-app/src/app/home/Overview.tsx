@@ -1,4 +1,4 @@
-import AddExpenseBtn from '@/app/insert/AddExpenseBtn';
+import AddExpenseBtn from '@/app/home/AddExpenseBtn';
 import { getExpenseFromData } from '@/utils/getExpenseFromData';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import dynamic from 'next/dynamic';

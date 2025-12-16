@@ -1,8 +1,8 @@
 'use client';
 
-import { DailyCostChart } from '@/app/insert/DailyCostChart';
-import OverView from '@/app/insert/Overview';
-import { SpendingList } from '@/app/insert/SpendingList';
+import { DailyCostChart } from '@/app/home/DailyCostChart';
+import OverView from '@/app/home/Overview';
+import { SpendingList } from '@/app/home/SpendingList';
 import { YearMonthFilter } from '@/app/list/YearMonthFilter';
 import { SearchIcon } from '@/components/icons/SearchIcon';
 import { useGroupCtx } from '@/context/GroupProvider';

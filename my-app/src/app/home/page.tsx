@@ -1,4 +1,4 @@
-import { SpendingInfoSection } from '@/app/insert/SpendingInfoSection';
+import { SpendingInfoSection } from '@/app/home/SpendingInfoSection';
 import { PrefetchRoute } from '@/components/PrefetchRoute';
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: '消費追蹤',
     description: '幫助記賬',
-    url: 'https://gs-db.vercel.app/insert',
+    url: 'https://gs-db.vercel.app/home',
     images: [
       {
         url: '/Spending-512.png',

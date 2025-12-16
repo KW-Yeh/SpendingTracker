@@ -1,6 +1,6 @@
 export enum Route {
   Base = '/',
-  Insert = '/insert',
+  Insert = '/home',
   List = '/list',
   Budget = '/budget',
   Login = '/login',

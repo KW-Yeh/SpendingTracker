@@ -1,6 +1,6 @@
 'use client';
 
-import { SpendingItem } from '@/app/insert/SpendingItem';
+import { SpendingItem } from '@/app/home/SpendingItem';
 import { SearchIcon } from '@/components/icons/SearchIcon';
 import { formatDate } from '@/utils/formatDate';
 import { useMemo } from 'react';
