@@ -122,7 +122,9 @@ export const EditExpenseModal = (props: Props) => {
         ...data,
         id: data.id || uuid(),
         'user-token': userEmail,
-        groupId: currentGroup?.id,
+        groupId: currentGroup?.account_id
+          ? String(currentGroup.account_id)
+          : undefined,
         type: spendingType,
         date: date.toISOString(),
         necessity,
@@ -134,7 +136,7 @@ export const EditExpenseModal = (props: Props) => {
       await putItem(newSpending);
       const { startDate, endDate } = getStartEndOfMonth(date);
       syncData(
-        currentGroup?.id,
+        currentGroup?.account_id ? String(currentGroup.account_id) : undefined,
         userEmail,
         startDate.toISOString(),
         endDate.toISOString(),
@@ -144,7 +146,7 @@ export const EditExpenseModal = (props: Props) => {
     },
     [
       amount,
-      currentGroup?.id,
+      currentGroup?.account_id,
       data,
       date,
       description,

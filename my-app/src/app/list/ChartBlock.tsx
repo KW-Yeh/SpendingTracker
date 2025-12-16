@@ -87,11 +87,11 @@ export const ChartBlock = () => {
         (record) =>
           `${new Date(record.date).getFullYear()}` === dateHook.year &&
           `${new Date(record.date).getMonth() + 1}` === dateHook.month &&
-          record.groupId === currentGroup?.id,
+          Number(record.groupId) === currentGroup?.account_id,
       );
       setChartData(calSpending2Chart(filteredData));
     });
-  }, [data, dateHook.year, dateHook.month, currentGroup?.id]);
+  }, [data, dateHook.year, dateHook.month, currentGroup?.account_id]);
 
   return (
     <div className="content-wrapper">

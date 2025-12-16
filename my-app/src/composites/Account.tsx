@@ -1,5 +1,6 @@
 'use client';
 
+import { UserAvatar } from '@/components/UserAvatar';
 import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -14,21 +15,13 @@ export const Account = (props: Props) => {
   return (
     <div className="relative mb-4 flex w-full items-center gap-3 p-4">
       <div className="size-12 shrink-0 rounded-full bg-gray-500 p-px">
-        {user && (
-          <Image
-            src={user.image ?? ''}
-            alt={user.email ?? ''}
-            width={48}
-            height={48}
-            className="rounded-full"
-          />
-        )}
+        <UserAvatar user={user} />
       </div>
       <div className="flex flex-col">
-        <h3 className="max-w-36 overflow-hidden text-ellipsis whitespace-nowrap text-base font-bold">
+        <h3 className="max-w-36 overflow-hidden text-base font-bold text-ellipsis whitespace-nowrap">
           {user ? user.name : '尚未登入'}
         </h3>
-        <p className="max-w-36 overflow-hidden text-ellipsis whitespace-nowrap text-xs text-gray-500">
+        <p className="max-w-36 overflow-hidden text-xs text-ellipsis whitespace-nowrap text-gray-500">
           {user ? user.email : '尚未登入'}
         </p>
       </div>
@@ -41,7 +34,7 @@ export const Account = (props: Props) => {
               close();
             }
           }}
-          className="absolute right-2 top-4 flex shrink-0 items-center justify-center rounded-md p-2 text-red-300 transition-all hover:bg-red-100 hover:text-red-500"
+          className="absolute top-4 right-2 flex shrink-0 items-center justify-center rounded-md p-2 text-red-300 transition-all hover:bg-red-100 hover:text-red-500"
         >
           <span className="text-xs">登出</span>
         </button>
@@ -52,7 +45,7 @@ export const Account = (props: Props) => {
           onClick={() => {
             close();
           }}
-          className="flex shrink-0 items-center justify-center rounded-md p-2 text-primary-300 transition-all hover:bg-primary-100 hover:text-text"
+          className="text-primary-300 hover:bg-primary-100 hover:text-text flex shrink-0 items-center justify-center rounded-md p-2 transition-all"
         >
           <span className="text-xs">登入</span>
         </Link>

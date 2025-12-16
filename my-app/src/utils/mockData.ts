@@ -3,70 +3,14 @@
 
 export const MOCK_GROUPS: Group[] = [
   {
-    id: 'test-group-1',
+    account_id: 999999,
     name: '家庭記帳本',
-    users: [
-      {
-        name: 'KaiWei Yeh',
-        email: 'a0979597291@gmail.com',
-        image:
-          'https://lh3.googleusercontent.com/a/ACg8ocKqGZJ8Zv5Z4xQKw8qGZJ8Zv5Z4xQKw8qGZJ8Zv5Z4xQ=s96-c',
-      },
-      {
-        name: 'Alice Chen',
-        email: 'alice.chen@example.com',
-        image: 'https://i.pravatar.cc/150?img=1',
-      },
-      {
-        name: 'Bob Wang',
-        email: 'bob.wang@example.com',
-        image: 'https://i.pravatar.cc/150?img=2',
-      },
-    ],
+    owner_id: 1,
   },
   {
-    id: 'test-group-2',
+    account_id: 999998,
     name: '旅遊基金',
-    users: [
-      {
-        name: 'KaiWei Yeh',
-        email: 'a0979597291@gmail.com',
-        image:
-          'https://lh3.googleusercontent.com/a/ACg8ocKqGZJ8Zv5Z4xQKw8qGZJ8Zv5Z4xQKw8qGZJ8Zv5Z4xQ=s96-c',
-      },
-      {
-        name: 'Charlie Lin',
-        email: 'charlie.lin@example.com',
-        image: 'https://i.pravatar.cc/150?img=3',
-      },
-      {
-        name: 'Diana Wu',
-        email: 'diana.wu@example.com',
-        image: 'https://i.pravatar.cc/150?img=4',
-      },
-      {
-        name: 'Eric Huang',
-        email: 'eric.huang@example.com',
-        image: 'https://i.pravatar.cc/150?img=5',
-      },
-    ],
-  },
-  {
-    id: 'test-group-3',
-    name: '室友共同開銷',
-    users: [
-      {
-        name: 'KaiWei Yeh',
-        email: 'a0979597291@gmail.com',
-        image:
-          'https://lh3.googleusercontent.com/a/ACg8ocKqGZJ8Zv5Z4xQKw8qGZJ8Zv5Z4xQKw8qGZJ8Zv5Z4xQ=s96-c',
-      },
-      {
-        name: 'Frank Liu',
-        email: 'frank.liu@example.com',
-        image: 'https://i.pravatar.cc/150?img=6',
-      },
-    ],
+    owner_id: 1,
   },
 ];
 
@@ -74,7 +18,7 @@ export const MOCK_SPENDING_RECORDS: SpendingRecord[] = [
   {
     id: 'record-1',
     'user-token': 'a0979597291@gmail.com',
-    groupId: 'test-group-1',
+    groupId: '999999',
     type: 'Outcome',
     date: new Date().toISOString(),
     necessity: '必',
@@ -85,7 +29,7 @@ export const MOCK_SPENDING_RECORDS: SpendingRecord[] = [
   {
     id: 'record-2',
     'user-token': 'alice.chen@example.com',
-    groupId: 'test-group-1',
+    groupId: '999999',
     type: 'Outcome',
     date: new Date().toISOString(),
     necessity: '非',
@@ -96,7 +40,7 @@ export const MOCK_SPENDING_RECORDS: SpendingRecord[] = [
   {
     id: 'record-3',
     'user-token': 'bob.wang@example.com',
-    groupId: 'test-group-1',
+    groupId: '999999',
     type: 'Outcome',
     date: new Date(Date.now() - 86400000).toISOString(), // 昨天
     necessity: '必',
@@ -107,7 +51,7 @@ export const MOCK_SPENDING_RECORDS: SpendingRecord[] = [
   {
     id: 'record-4',
     'user-token': 'a0979597291@gmail.com',
-    groupId: 'test-group-1',
+    groupId: '999999',
     type: 'Outcome',
     date: new Date(Date.now() - 86400000).toISOString(),
     necessity: '必',
@@ -118,7 +62,7 @@ export const MOCK_SPENDING_RECORDS: SpendingRecord[] = [
   {
     id: 'record-5',
     'user-token': 'alice.chen@example.com',
-    groupId: 'test-group-1',
+    groupId: '999999',
     type: 'Income',
     date: new Date(Date.now() - 172800000).toISOString(), // 前天
     necessity: '必',
@@ -129,7 +73,7 @@ export const MOCK_SPENDING_RECORDS: SpendingRecord[] = [
   {
     id: 'record-6',
     'user-token': 'charlie.lin@example.com',
-    groupId: 'test-group-2',
+    groupId: '999998',
     type: 'Outcome',
     date: new Date().toISOString(),
     necessity: '非',
@@ -140,24 +84,13 @@ export const MOCK_SPENDING_RECORDS: SpendingRecord[] = [
   {
     id: 'record-7',
     'user-token': 'diana.wu@example.com',
-    groupId: 'test-group-2',
+    groupId: '999998',
     type: 'Outcome',
     date: new Date().toISOString(),
     necessity: '非',
     amount: '3500',
     category: '🏨',
     description: '住宿預訂',
-  },
-  {
-    id: 'record-8',
-    'user-token': 'frank.liu@example.com',
-    groupId: 'test-group-3',
-    type: 'Outcome',
-    date: new Date().toISOString(),
-    necessity: '必',
-    amount: '800',
-    category: '🛒',
-    description: '購買生活用品',
   },
 ];
 

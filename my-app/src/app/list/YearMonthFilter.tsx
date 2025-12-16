@@ -33,8 +33,12 @@ export const YearMonthFilter = (props: Props) => {
   });
 
   useEffect(() => {
-    refreshData(group?.id, year, month);
-  }, [group?.id, year, month, refreshData]);
+    refreshData(
+      group?.account_id ? String(group.account_id) : undefined,
+      year,
+      month,
+    );
+  }, [group?.account_id, year, month, refreshData]);
 
   const handlePreviousMonth = () => {
     if (month === '1') {

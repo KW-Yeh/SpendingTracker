@@ -11,9 +11,33 @@ interface SpendingRecord {
 }
 
 interface Group {
-  id: string;
-  users: MemberType[];
+  account_id?: number;
   name: string;
+  owner_id: number;
+  created_at?: string;
+  // 擴充資訊
+  owner_email?: string;
+  owner_name?: string;
+  member_count?: number;
+  user_role?: string;
+}
+
+interface GroupMember {
+  account_id: number;
+  user_id: number;
+  role: string;
+  joined_at: string;
+  // 使用者資訊
+  email?: string;
+  name?: string;
+}
+
+interface GroupStats {
+  total_transactions: number;
+  total_outcome: number;
+  total_income: number;
+  net_amount: number;
+  member_count: number;
 }
 
 type MemberType = {

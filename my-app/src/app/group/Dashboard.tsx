@@ -9,12 +9,9 @@ import { RefreshIcon } from '@/components/icons/RefreshIcon';
 import { Modal } from '@/components/Modal';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { deleteGroup, putGroup } from '@/services/groupServices';
-import { getUser, putUser } from '@/services/userServices';
-import Image from 'next/image';
+import { createGroup } from '@/services/groupServices';
 import { useCallback, useRef, useState } from 'react';
 import QRCode from 'react-qr-code';
-import { v7 as uuid } from 'uuid';
 
 export const Dashboard = () => {
   const { config: userData, syncUser } = useUserConfigCtx();
@@ -22,7 +19,7 @@ export const Dashboard = () => {
 
   const refresh = useCallback(() => {
     if (userData) {
-      syncGroup(userData.groups);
+      syncGroup(userData.user_id);
     }
   }, [userData, syncGroup]);
 
@@ -30,23 +27,12 @@ export const Dashboard = () => {
     if (!userData) return;
     const groupName = prompt('請輸入身分群組名稱');
     if (!groupName) return;
-    const groupId = uuid();
-    await putGroup({
-      id: groupId,
+    await createGroup({
+      account_id: Date.now(),
       name: groupName,
-      users: [
-        {
-          name: userData.name,
-          email: userData.email,
-          image: userData.image,
-        },
-      ],
+      owner_id: userData.user_id,
     });
-    await putUser({
-      ...userData,
-      groups: [...userData.groups, groupId],
-    });
-    syncGroup([...userData.groups, groupId]);
+    syncGroup(userData.user_id);
     syncUser();
   }, [userData, syncGroup, syncUser]);
 
@@ -75,7 +61,7 @@ export const Dashboard = () => {
       </div>
       <div className="flex w-full flex-col gap-4 sm:flex-row sm:flex-wrap">
         {groups.map((group) => (
-          <GroupCard key={group.id} group={group} refresh={refresh} />
+          <GroupCard key={group.account_id} group={group} refresh={refresh} />
         ))}
       </div>
     </div>
@@ -90,7 +76,7 @@ const GroupCard = ({
   refresh: () => void;
 }) => {
   const [loading, setLoading] = useState(false);
-  const inviteLink = `${location.origin}/group/invite/${group.id}`;
+  const inviteLink = `${location.origin}/group/invite/${group.account_id}`;
   const modalRef = useRef<ModalRef>(null);
 
   const handleCopyInviteLink = () => {
@@ -110,24 +96,8 @@ const GroupCard = ({
         refresh();
         break;
       case 'delete':
-        if (!confirm('確定要刪除此群組嗎?（此動作會將所有人剔除該群組）'))
-          return;
-        setLoading(true);
-        const groupUserEmails = group.users.map((user) => user.email);
-        const responses = await Promise.all(groupUserEmails.map(getUser));
-        await Promise.all(
-          responses.map(({ data: user }) => {
-            if (user) {
-              putUser({
-                ...user,
-                groups: user.groups.filter((groupId) => groupId !== group.id),
-              });
-            }
-          }),
-        );
-        await deleteGroup(group.id);
+        alert('尚無編輯功能');
         refresh();
-        setLoading(false);
         break;
       default:
         break;
@@ -145,17 +115,6 @@ const GroupCard = ({
         </h3>
         <div className="flex flex-wrap items-center gap-2">
           <span>成員:</span>
-          {group.users.map((user) => (
-            <Image
-              key={user.email}
-              src={user.image}
-              alt={user.name}
-              title={user.name}
-              width={20}
-              height={20}
-              className="size-5 rounded-full"
-            />
-          ))}
         </div>
       </div>
       <div className="col-span-2 flex flex-col items-end justify-between gap-4">

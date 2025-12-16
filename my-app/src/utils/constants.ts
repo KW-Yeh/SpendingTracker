@@ -5,14 +5,12 @@ export enum Route {
   Budget = '/budget',
   Login = '/login',
   Group = '/group',
-  Collaborate = '/collaborate',
   Setting = '/setting',
 }
 
 export const MENU_CONFIG: Record<string, string> = {
   [Route.Base]: '首頁',
   [Route.Insert]: '記帳',
-  [Route.Collaborate]: '協作記帳',
   [Route.Group]: '群組',
   [Route.List]: '分析',
   [Route.Budget]: '預算',
@@ -21,7 +19,6 @@ export const MENU_CONFIG: Record<string, string> = {
 export const PAGE_TITLE: Record<string, string> = {
   [Route.Base]: '首頁',
   [Route.Insert]: '快速記帳',
-  [Route.Collaborate]: '協作記帳',
   [Route.Group]: '群組管理',
   [Route.List]: '消費分析',
   [Route.Budget]: '預算規劃',

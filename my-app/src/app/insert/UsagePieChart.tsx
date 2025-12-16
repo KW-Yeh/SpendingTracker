@@ -21,8 +21,12 @@ const UsagePieChart = (props: Props) => {
   const isOverSpent = totalOutcome > totalIncome;
   return (
     <ResponsiveContainer
-      width={isMobile ? 120 : 200}
-      height={isMobile ? 120 : 200}
+      minWidth={120}
+      width="100%"
+      style={{
+        maxWidth: '200px',
+        aspectRatio: 1,
+      }}
     >
       <PieChart>
         <Pie
@@ -31,7 +35,7 @@ const UsagePieChart = (props: Props) => {
             { name: '使用', value: totalOutcome, fill: 'hsl(256, 60%, 70%)' },
             {
               name: '剩餘',
-              value: isOverSpent ? 0 : (totalIncome - totalOutcome),
+              value: isOverSpent ? 0 : totalIncome - totalOutcome,
               fill: 'hsl(256, 60%, 90%)',
             },
           ]}

@@ -7,7 +7,12 @@ export const GroupSelector = ({ className = '' }: { className?: string }) => {
 
   const handleOnSelectGroup = useCallback(
     (groupId: string) => {
-      setCurrentGroup(groups.find((group) => group.id === groupId));
+      console.log(groups, groupId);
+      const newGroup = groups.find(
+        (group) => String(group.account_id) === groupId,
+      );
+      console.log('Selected group:', newGroup);
+      if (newGroup) setCurrentGroup(newGroup);
     },
     [groups, setCurrentGroup],
   );
@@ -15,17 +20,22 @@ export const GroupSelector = ({ className = '' }: { className?: string }) => {
   return (
     <Select
       name="group"
-      value={currentGroup?.name ?? '個人'}
+      value={currentGroup?.name ?? '...'}
       onChange={handleOnSelectGroup}
       className={`bg-background rounded-full border border-solid border-gray-300 px-3 py-1 transition-colors active:border-gray-500 sm:hover:border-gray-500 ${className}`}
     >
-      <Select.Item value="">個人</Select.Item>
       {!loading &&
-        groups.map((group) => (
-          <Select.Item key={group.id} value={group.id}>
-            {group.name}
-          </Select.Item>
-        ))}
+        groups.map(
+          (group) =>
+            group.account_id && (
+              <Select.Item
+                key={group.account_id}
+                value={group.account_id.toString()}
+              >
+                {group.name}
+              </Select.Item>
+            ),
+        )}
     </Select>
   );
 };

@@ -101,13 +101,13 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
       new Date(Number(dateHook.year), Number(dateHook.month) - 1),
     );
     syncData(
-      currentGroup?.id,
+      currentGroup?.account_id ? String(currentGroup.account_id) : undefined,
       userData?.email,
       startDate.toISOString(),
       endDate.toISOString(),
     );
   }, [
-    currentGroup?.id,
+    currentGroup?.account_id,
     dateHook.month,
     dateHook.year,
     syncData,

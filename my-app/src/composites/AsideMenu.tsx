@@ -7,6 +7,7 @@ import { ListIcon } from '@/components/icons/ListIcon';
 import { PeopleIcon } from '@/components/icons/PeopleIcon';
 import { SettingIcon } from '@/components/icons/SettingIcon';
 import { WhereIcon } from '@/components/icons/WhereIcon';
+import { UserAvatar } from '@/components/UserAvatar';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import useFocusRef from '@/hooks/useFocusRef';
 import { MENU_CONFIG } from '@/utils/constants';
@@ -73,13 +74,7 @@ export const AsideMenu = (props: Props) => {
         <div className="gradient-r-from-purple-to-blue clip-profile-bg absolute h-30 w-full"></div>
         <div className="relative flex w-full flex-col items-center pt-17">
           <div className="bg-background flex size-20 items-center justify-center rounded-full p-1">
-            <Image
-              src={user?.image ?? '/Spending-origin.png'}
-              alt="logo"
-              width={1000}
-              height={1000}
-              className="border-primary-500 rounded-full border-2 border-solid p-1"
-            />
+            <UserAvatar user={user} />
           </div>
           {user && (
             <button

@@ -14,7 +14,7 @@ const INIT_CTX_VAL: {
   loading: boolean;
   currentGroup?: Group;
   groups: Group[];
-  syncGroup: (groupId: string | string[]) => void;
+  syncGroup: (user_id: number) => void;
   setter: (_groups: Group[]) => void;
   setCurrentGroup: (_group?: Group) => void;
 } = {
@@ -37,11 +37,13 @@ export const GroupProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const queryGroup = useCallback(
-    (groupId: string | string[]) => {
+    (user_id: number) => {
       setLoading(true);
-      getGroups(groupId)
-        .then(({ data: res }) => {
-          handleState(res);
+      getGroups(user_id)
+        .then((res) => {
+          if (res.status) {
+            handleState(res.data);
+          }
         })
         .catch(console.error);
     },
