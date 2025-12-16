@@ -65,7 +65,7 @@ export default function OverView(props: Props) {
           </div>
         </div>
 
-        <AddExpenseBtn className="mt-auto text-sm sm:text-base">
+        <AddExpenseBtn className="mt-auto text-sm whitespace-nowrap sm:text-base">
           立即新增帳目
         </AddExpenseBtn>
       </div>

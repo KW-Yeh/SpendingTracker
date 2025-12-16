@@ -31,6 +31,7 @@ export const GroupSelector = ({ className = '' }: { className?: string }) => {
               <Select.Item
                 key={group.account_id}
                 value={group.account_id.toString()}
+                className="text-sm"
               >
                 {group.name}
               </Select.Item>
