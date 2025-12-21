@@ -2,6 +2,7 @@
 
 import { useIDB } from '@/hooks/useIDB';
 import { getItems } from '@/services/getRecords';
+import { getCookie } from '@/utils/handleCookie';
 import {
   createContext,
   ReactNode,
@@ -42,7 +43,7 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
     getSpendingData: getDataFromIDB,
     setSpendingData: setData2IDB,
   } = useIDB();
-  const controllerRef = useRef<AbortController>(new AbortController());
+  const controllerRef = useRef<AbortController | null>(null);
 
   const handleSetState = useCallback((_data: SpendingRecord[]) => {
     dispatch(_data);
@@ -58,10 +59,12 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       if (!email && !groupId) return;
       getItems(groupId, email, startDate, endDate)
         .then((res) => {
-          controllerRef.current.abort();
+          if (controllerRef.current) {
+            controllerRef.current.abort();
+          }
           console.log('Get Data from API');
           handleSetState(res.data);
-          setData2IDB(IDB, res.data, startDate)
+          setData2IDB(IDB, res.data, Number(groupId), startDate)
             .then(() => {
               console.log('Update IDB success.');
             })
@@ -97,13 +100,15 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const controller = (controllerRef.current = new AbortController());
     if (IDB) {
-      getDataFromIDB(IDB, controller.signal)
+      const groupId = getCookie('currentGroupId');
+      getDataFromIDB(IDB, Number(groupId), controller.signal)
         .then((res) => {
           if (res && res.length === 1) {
             const _data = JSON.parse(res[0].data) as SpendingRecord[];
-            // console.log('Get Data from IDB', _data);
+            console.log('Get Data from IDB', _data);
             if (_data.length !== 0) {
               handleSetState(_data);
+              controllerRef.current = null;
             }
           }
         })

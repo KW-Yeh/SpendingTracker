@@ -32,7 +32,7 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const { data: session, status } = useSession();
   const { db: IDB, getUserData, setUserData } = useIDB();
-  const controllerRef = useRef<AbortController>(new AbortController());
+  const controllerRef = useRef<AbortController | null>(null);
   const pathname = usePathname();
 
   const handleState = useCallback((value: User) => {
@@ -66,6 +66,9 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
     (email: string) => {
       getUser(email)
         .then(({ data: res }) => {
+          if (controllerRef.current) {
+            controllerRef.current.abort();
+          }
           if (!res?.email) {
             handleNewUser(email).then(() => {
               setTimeout(() => {
@@ -128,6 +131,7 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
             const _data = JSON.parse(res.data) as User;
             // console.log('Get User Data from IDB', _data);
             handleState(_data);
+            controllerRef.current = null;
           }
         })
         .catch((err) => {

@@ -19,8 +19,9 @@ const STORE_CONFIG: Record<
   }
 > = {
   [StoreName.ExpenseRecord]: {
-    indexName: 'year_month',
-    indexValue: ['year', 'month'],
+    // include group_id in the compound index so we can scope queries by group
+    indexName: 'group_year_month',
+    indexValue: ['group_id', 'year', 'month'],
   },
   [StoreName.UserConfig]: {
     indexName: 'email',
@@ -28,8 +29,18 @@ const STORE_CONFIG: Record<
   },
 };
 
-interface DATA_IDB {
+// Generic DB record shapes used by the API below
+interface UserDATA_IDB {
+  id?: number;
   email: string;
+  data: string;
+}
+
+interface SpendingDATA_IDB {
+  id?: number;
+  group_id: string | number;
+  year: number;
+  month: number;
   data: string;
 }
 
@@ -99,9 +110,9 @@ export const useIDB = () => {
           }
           const request = store.put(newData);
           request.onsuccess = () => resolve();
-          request.onerror = () => reject(request.error);
+          request.onerror = () => console.error(request.error);
         };
-        checkRequest.onerror = () => reject(checkRequest.error);
+        checkRequest.onerror = () => console.error(checkRequest.error);
       });
     },
     [],
@@ -112,7 +123,7 @@ export const useIDB = () => {
       db: IDBDatabase | null,
       email: string,
       signal: AbortSignal,
-    ): Promise<DATA_IDB | undefined> => {
+    ): Promise<UserDATA_IDB | undefined> => {
       if (!db) return Promise.reject('Database not initialized');
 
       return new Promise((resolve, reject) => {
@@ -125,12 +136,12 @@ export const useIDB = () => {
 
         transaction.onerror = (event) => {
           isTransactionActive = false;
-          reject((event.target as IDBTransaction).error);
+          console.error((event.target as IDBTransaction).error);
         };
 
         signal.addEventListener('abort', () => {
           if (isTransactionActive) {
-            // console.log('aborted');
+            console.log('getUserData aborted');
             transaction.abort();
           }
         });
@@ -139,11 +150,16 @@ export const useIDB = () => {
         const index = store.index(STORE_CONFIG[StoreName.UserConfig].indexName);
         const request = index.get([email]);
 
-        request.onsuccess = () =>
-          resolve(request.result as unknown as DATA_IDB);
-        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+          isTransactionActive = false;
+          resolve(request.result as unknown as UserDATA_IDB);
+        };
+        request.onerror = () => {
+          isTransactionActive = false;
+          console.error(request.error);
+        };
 
-        transaction.onabort = () => reject('Transaction aborted');
+        transaction.onabort = () => console.error('Transaction aborted');
       });
     },
     [],
@@ -153,9 +169,13 @@ export const useIDB = () => {
     (
       db: IDBDatabase | null,
       record: SpendingRecord[],
+      groupId: string | number,
       time: string = new Date().toISOString(),
     ): Promise<void> => {
       if (!db) return Promise.reject('Database not initialized');
+      if (groupId === undefined || groupId === null) {
+        return Promise.reject('Invalid groupId');
+      }
 
       return new Promise((resolve, reject) => {
         const transaction = db.transaction(STORE_NAME, 'readwrite');
@@ -165,10 +185,12 @@ export const useIDB = () => {
 
         const newData: {
           id?: number;
+          group_id: string | number;
           year: number;
           month: number;
           data: string;
         } = {
+          group_id: groupId,
           year,
           month,
           data: JSON.stringify(record),
@@ -177,17 +199,42 @@ export const useIDB = () => {
         const index = store.index(
           STORE_CONFIG[StoreName.ExpenseRecord].indexName,
         );
-        const checkRequest = index.get([year, month]);
-        checkRequest.onsuccess = () => {
-          const existingRecord = checkRequest.result;
-          if (existingRecord) {
-            newData.id = existingRecord.id;
-          }
-          const request = store.put(newData);
-          request.onsuccess = () => resolve();
-          request.onerror = () => reject(request.error);
-        };
-        checkRequest.onerror = () => reject(checkRequest.error);
+        // include groupId in the lookup key for the compound index
+        // index.get may throw a DataError synchronously if the key is invalid
+        try {
+          const checkRequest = index.get([groupId, year, month]);
+          checkRequest.onsuccess = () => {
+            const existingRecord = checkRequest.result;
+            if (existingRecord) {
+              newData.id = existingRecord.id;
+            }
+            const request = store.put(newData);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+          };
+          checkRequest.onerror = () => reject(checkRequest.error);
+        } catch (err) {
+          // Fallback: scan all records and find matching group/year/month
+          const allReq = store.getAll();
+          allReq.onsuccess = () => {
+            try {
+              const all = allReq.result as unknown as SpendingDATA_IDB[];
+              const existingRecord = all.find(
+                (r) =>
+                  r.group_id == groupId && r.year === year && r.month === month,
+              );
+              if (existingRecord) {
+                newData.id = existingRecord.id;
+              }
+              const request = store.put(newData);
+              request.onsuccess = () => resolve();
+              request.onerror = () => reject(request.error);
+            } catch (e) {
+              reject(e);
+            }
+          };
+          allReq.onerror = () => reject(allReq.error);
+        }
       });
     },
     [],
@@ -196,8 +243,9 @@ export const useIDB = () => {
   const getSpendingData = useCallback(
     (
       db: IDBDatabase | null,
+      groupId: string | number,
       signal: AbortSignal,
-    ): Promise<DATA_IDB[] | undefined> => {
+    ): Promise<SpendingDATA_IDB[] | undefined> => {
       if (!db) return Promise.reject('Database not initialized');
 
       return new Promise((resolve, reject) => {
@@ -210,12 +258,12 @@ export const useIDB = () => {
 
         transaction.onerror = (event) => {
           isTransactionActive = false;
-          reject((event.target as IDBTransaction).error);
+          console.error((event.target as IDBTransaction).error);
         };
 
         signal.addEventListener('abort', () => {
           if (isTransactionActive) {
-            // console.log('aborted');
+            console.log('getUserData aborted');
             transaction.abort();
           }
         });
@@ -226,13 +274,19 @@ export const useIDB = () => {
         );
         const year = new Date().getFullYear();
         const month = new Date().getMonth();
-        const request = index.getAll([year, month]);
+        // include groupId in the query key so we only fetch records for that group
+        const request = index.getAll([groupId, year, month]);
 
-        request.onsuccess = () =>
-          resolve(request.result as unknown as DATA_IDB[]);
-        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+          isTransactionActive = false;
+          resolve(request.result as unknown as SpendingDATA_IDB[]);
+        };
+        request.onerror = () => {
+          isTransactionActive = false;
+          console.error(request.error);
+        };
 
-        transaction.onabort = () => reject('Transaction aborted');
+        transaction.onabort = () => console.error('Transaction aborted');
       });
     },
     [],

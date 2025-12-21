@@ -1,5 +1,6 @@
 import { Select } from '@/components/Select';
 import { useGroupCtx } from '@/context/GroupProvider';
+import { setCookie } from '@/utils/handleCookie';
 import { useCallback } from 'react';
 
 export const GroupSelector = ({ className = '' }: { className?: string }) => {
@@ -7,12 +8,15 @@ export const GroupSelector = ({ className = '' }: { className?: string }) => {
 
   const handleOnSelectGroup = useCallback(
     (groupId: string) => {
-      console.log(groups, groupId);
       const newGroup = groups.find(
         (group) => String(group.account_id) === groupId,
       );
-      console.log('Selected group:', newGroup);
-      if (newGroup) setCurrentGroup(newGroup);
+      if (newGroup) {
+        setCookie('currentGroupId', String(newGroup.account_id), {
+          expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        });
+        setCurrentGroup(newGroup);
+      }
     },
     [groups, setCurrentGroup],
   );
