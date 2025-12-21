@@ -14,6 +14,10 @@ async function getPassword() {
   const signer = new DsqlSigner({
     hostname: AURORA_DSQL_HOST!,
     region: AURORA_DSQL_REGION!,
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    },
   });
   return await signer.getDbConnectAdminAuthToken();
 }
