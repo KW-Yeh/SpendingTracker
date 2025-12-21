@@ -65,20 +65,19 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
   const queryUser = useCallback(
     (email: string) => {
       getUser(email)
-        .then(({ data: res }) => {
+        .then((res) => {
           if (controllerRef.current) {
             controllerRef.current.abort();
           }
-          console.log("Get User Data from API", res);
-          if (!res?.email) {
+          if (res.status && res.data === null) {
             handleNewUser(email).then(() => {
               setTimeout(() => {
                 queryUser(email);
               }, 3000);
             });
-          } else {
-            handleState(res);
-            setUserData(IDB, res)
+          } else if (res.status && res.data !== null) {
+            handleState(res.data);
+            setUserData(IDB, res.data)
               .then(() => {
                 console.log('Update User IDB success.');
               })
