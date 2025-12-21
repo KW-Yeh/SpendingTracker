@@ -69,6 +69,7 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
           if (controllerRef.current) {
             controllerRef.current.abort();
           }
+          console.log("Get User Data from API", res);
           if (!res?.email) {
             handleNewUser(email).then(() => {
               setTimeout(() => {
