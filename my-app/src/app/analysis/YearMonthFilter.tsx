@@ -71,7 +71,7 @@ export const YearMonthFilter = (props: Props) => {
 
   return (
     <div
-      className={`relative ${className} transition-all ${
+      className={`relative w-full md:max-w-80 ${className} transition-all ${
         open
           ? 'border-primary-500 bg-primary-50 text-primary-700 shadow-md'
           : 'hover:border-primary-300 hover:bg-primary-50 border-gray-300 bg-white text-gray-800'

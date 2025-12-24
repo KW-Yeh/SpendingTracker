@@ -64,10 +64,10 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
         refreshData={getNewData}
         group={currentGroup}
         dateOptions={dateHook}
-        className="flex w-full max-w-80 justify-center rounded-lg border border-gray-200 bg-white p-2 text-base shadow-sm"
+        className="flex justify-center rounded-lg border border-gray-200 bg-white p-2 text-base shadow-sm"
       />
 
-      <div className="flex w-full flex-col gap-5 md:w-auto md:flex-row">
+      <div className="flex w-full flex-col gap-3 md:w-auto md:flex-row md:gap-5">
         <Overview
           budgets={userData?.budget}
           costList={monthlyData}
@@ -81,7 +81,7 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
         />
       </div>
 
-      <div className="flex w-full flex-col gap-5 md:w-auto md:flex-row">
+      <div className="flex w-full flex-col gap-3 md:w-auto md:flex-row md:gap-5">
         <QuickNavigationCards isMobile={isMobile} />
         <RecentTransactionsList data={monthlyData} loading={loading} />
       </div>
