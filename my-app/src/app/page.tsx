@@ -1,16 +1,20 @@
-import { getDb } from '@/utils/getAurora';
+import { DashboardSection } from '@/app/DashboardSection';
+import { PrefetchRoute } from '@/components/PrefetchRoute';
+import type { Metadata } from 'next';
+import { headers } from 'next/headers';
+import { userAgent } from 'next/server';
+
+export const metadata: Metadata = {
+  title: '首頁 - 消費追蹤',
+  description: '查看消費概況和快速導航',
+};
 
 export default async function Home() {
-  const db = await getDb();
-  try {
-    const result = await db.query('SELECT NOW()');
-    return (
-      <h1>
-        Test AWS Aurora DSQL Connection:{' '}
-        {new Date(result.rows[0].now).toString()}
-      </h1>
-    );
-  } finally {
-    await db.end();
-  }
+  const { device } = userAgent({ headers: await headers() });
+  return (
+    <div className="bg-soft relative flex w-full flex-1">
+      <PrefetchRoute />
+      <DashboardSection isMobile={device.type === 'mobile'} />
+    </div>
+  );
 }

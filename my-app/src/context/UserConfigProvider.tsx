@@ -66,16 +66,19 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
     (email: string) => {
       getUser(email)
         .then((res) => {
+          console.log('Querying user response: ', res);
           if (controllerRef.current) {
             controllerRef.current.abort();
           }
           if (res.status && res.data === null) {
+            console.log('User not found, creating new user...');  
             handleNewUser(email).then(() => {
               setTimeout(() => {
                 queryUser(email);
               }, 3000);
             });
           } else if (res.status && res.data !== null) {
+            console.log('User found, updating local state...'); 
             handleState(res.data);
             setUserData(IDB, res.data)
               .then(() => {
@@ -93,11 +96,10 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
 
   const syncUser = useCallback(() => {
     setLoading(true);
-    if (!session?.user?.email) {
-      setLoading(false);
-      return;
+    if (session?.user?.email) {
+      console.log('Syncing user: ', session.user.email);
+      queryUser(session.user.email);
     }
-    queryUser(session.user.email);
   }, [queryUser, session?.user?.email]);
 
   const ctxVal = useMemo(
@@ -121,6 +123,12 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
       handleLogin();
     }
   }, [status, handleLogin]);
+
+  useEffect(() => {
+    if (!session?.user?.email) {
+      syncUser();
+    }
+  }, [session?.user?.email, syncUser]);
 
   useEffect(() => {
     const controller = (controllerRef.current = new AbortController());
