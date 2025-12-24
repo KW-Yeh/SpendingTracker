@@ -1,34 +1,35 @@
 'use client';
 
 import { CoinIcon } from '@/components/icons/CoinIcon';
-import { EditIcon } from '@/components/icons/EditIcon';
 import { ListIcon } from '@/components/icons/ListIcon';
 import Link from 'next/link';
+import { PlusIcon } from './icons/PlusIcon';
+import { EditIcon } from './icons/EditIcon';
 
 const NAVIGATION_CARDS = [
   {
-    title: '記帳',
-    description: '快速新增收支記錄',
+    title: '帳目編輯',
+    description: '詳細收支記錄',
     href: '/transactions',
     icon: EditIcon,
     gradient: 'from-purple-400 to-pink-300',
   },
   {
-    title: '新增支出',
-    description: '詳細支出項目登記',
+    title: '帳目新增',
+    description: '新增收支項目',
     href: '/edit',
-    icon: CoinIcon,
+    icon: PlusIcon,
     gradient: 'from-primary-400 to-primary-600',
   },
   {
-    title: '分析消費',
+    title: '帳目分析',
     description: '查看消費統計圖表',
     href: '/analysis',
     icon: ListIcon,
     gradient: 'from-blue-400 to-indigo-500',
   },
   {
-    title: '預算規劃',
+    title: '預算管理',
     description: '設定與管理預算',
     href: '/budget',
     icon: CoinIcon,
