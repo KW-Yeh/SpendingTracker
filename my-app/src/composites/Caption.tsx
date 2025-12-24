@@ -8,7 +8,7 @@ export const Caption = ({ openAside }: { openAside: () => void }) => {
       <div className="relative flex items-center">
         <MenuButton openAside={openAside} />
         <div className="mx-auto">
-          <GroupSelector className="border-0" />
+          <GroupSelector className="border-0 max-w-80" />
         </div>
       </div>
       <button
