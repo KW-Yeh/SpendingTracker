@@ -1,7 +1,7 @@
 'use client';
 
-import { MiniDailyCostChart } from '@/app/home/MiniDailyCostChart';
-import Overview from '@/app/home/Overview';
+import { MiniDailyCostChart } from '@/app/transactions/MiniDailyCostChart';
+import Overview from '@/app/transactions/Overview';
 import { QuickNavigationCards } from '@/components/QuickNavigationCards';
 import { RecentTransactionsList } from '@/components/RecentTransactionsList';
 import { useGroupCtx } from '@/context/GroupProvider';

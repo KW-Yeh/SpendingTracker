@@ -1,6 +1,6 @@
 'use client';
 
-import { SpendingItem } from '@/app/home/SpendingItem';
+import { SpendingItem } from '@/app/transactions/SpendingItem';
 import { DoubleArrowIcon } from '@/components/icons/DoubleArrowIcon';
 import Link from 'next/link';
 import { useMemo } from 'react';
@@ -38,7 +38,7 @@ export const RecentTransactionsList = ({ data, loading }: Props) => {
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-lg font-bold">最近交易</h3>
         <Link
-          href="/home"
+          href="/transactions"
           className="text-primary-500 hover:text-primary-400 active:text-primary-600 flex items-center gap-1 text-xs font-bold transition-colors"
         >
           查看更多

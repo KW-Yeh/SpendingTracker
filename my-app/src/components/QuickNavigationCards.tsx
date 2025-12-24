@@ -9,7 +9,7 @@ const NAVIGATION_CARDS = [
   {
     title: '記帳',
     description: '快速新增收支記錄',
-    href: '/home',
+    href: '/transactions',
     icon: EditIcon,
     gradient: 'from-purple-400 to-pink-300',
   },
@@ -23,7 +23,7 @@ const NAVIGATION_CARDS = [
   {
     title: '分析消費',
     description: '查看消費統計圖表',
-    href: '/list',
+    href: '/analysis',
     icon: ListIcon,
     gradient: 'from-blue-400 to-indigo-500',
   },

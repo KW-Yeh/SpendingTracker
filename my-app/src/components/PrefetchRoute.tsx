@@ -4,7 +4,7 @@ import { usePrefetchRoute } from '@/hooks/usePrefetchRoute';
 
 export const PrefetchRoute = () => {
   usePrefetchRoute('/edit');
-  usePrefetchRoute('/list');
+  usePrefetchRoute('/analysis');
   usePrefetchRoute('/group');
   return null;
 };

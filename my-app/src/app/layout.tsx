@@ -1,3 +1,4 @@
+import { BottomNav } from '@/composites/BottomNav';
 import Footer from '@/composites/Footer';
 import { Header } from '@/composites/Header';
 import { PrepareData } from '@/composites/PrepareData';
@@ -54,6 +55,7 @@ export default function RootLayout({
           </DateProvider>
         </SessionProvider>
         <Footer />
+        <BottomNav />
       </body>
     </html>
   );

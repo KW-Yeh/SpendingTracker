@@ -73,6 +73,13 @@ body {
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
+    padding-bottom: 5rem;
+}
+
+@media (min-width: 768px) {
+    body {
+        padding-bottom: 0;
+    }
 }
 
 .bg-radial {
