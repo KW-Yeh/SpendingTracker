@@ -124,7 +124,7 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
       />
 
       <div className="flex w-full flex-col items-center gap-5 md:flex-row md:items-start">
-        <div className="flex w-full max-w-175 flex-col items-center gap-5">
+        {/* <div className="flex w-full max-w-175 flex-col items-center gap-5">
           <OverView
             budgets={userData?.budget}
             costList={data}
@@ -136,7 +136,7 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
             isMobile={isMobile}
             handleSelectDataPoint={handleSelectDataPoint}
           />
-        </div>
+        </div> */}
 
         <div className="bg-background flex w-full flex-col rounded-2xl border border-solid border-gray-200 p-5 shadow-sm transition-shadow duration-200 hover:shadow">
           <div className="mb-5 flex items-center gap-4">

@@ -6,12 +6,9 @@ import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { createGroup } from '@/services/groupServices';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
 import { getCookie } from '@/utils/handleCookie';
-import { group } from 'console';
-import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 
 export const usePrepareData = () => {
-  const { data: session } = useSession();
   const { syncGroup, groups, setCurrentGroup, currentGroup, loading } =
     useGroupCtx();
   const { config: userData, syncUser } = useUserConfigCtx();
@@ -56,23 +53,23 @@ export const usePrepareData = () => {
         }
       });
     }
-  }, [loading, groups.length, userData?.user_id, syncGroup]);
+  }, [loading, groups.length, userData?.user_id, syncGroup, userData?.name]);
 
   useEffect(() => {
     console.log('Preparing data for', {
-      email: session?.user?.email,
+      email: userData?.email,
       group: currentGroup?.account_id,
     });
-    if (session?.user?.email && currentGroup?.account_id) {
+    if (userData?.email && currentGroup?.account_id) {
       const { startDate, endDate } = getStartEndOfMonth(new Date());
       syncData(
         String(currentGroup.account_id),
-        session.user.email,
+        userData.email,
         startDate.toISOString(),
         endDate.toISOString(),
       );
     }
-  }, [session?.user?.email, syncData]);
+  }, [userData?.email, syncData, currentGroup?.account_id]);
 
   useEffect(() => {
     syncUser();
