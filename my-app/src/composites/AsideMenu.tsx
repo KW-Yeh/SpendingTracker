@@ -63,11 +63,11 @@ export const AsideMenu = (props: Props) => {
     <>
       <div
         ref={bgRef}
-        className="fixed top-0 right-full bottom-0 left-0 z-50 bg-black/50"
+        className="fixed top-0 right-full bottom-0 left-0 z-50 bg-black/50 max-md:hidden"
       ></div>
       <aside
         ref={asideRef}
-        className="bg-background fixed top-0 bottom-0 -left-72 z-50 flex w-72 origin-right flex-col items-center justify-between shadow-[1px_0_16px_0px_black] transition-all"
+        className="bg-background fixed top-0 bottom-0 -left-72 z-50 flex max-md:hidden w-72 origin-right flex-col items-center justify-between shadow-[1px_0_16px_0px_black] transition-all"
       >
         <div className="gradient-r-from-purple-to-blue clip-profile-bg absolute h-30 w-full"></div>
         <div className="relative flex w-full flex-col items-center pt-17">
