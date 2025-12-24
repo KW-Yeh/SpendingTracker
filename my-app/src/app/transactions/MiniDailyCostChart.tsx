@@ -33,7 +33,7 @@ export const MiniDailyCostChart = (props: Props) => {
   });
 
   return (
-    <div className="bg-background relative flex w-full flex-col items-start rounded-2xl border border-solid border-gray-300 p-6 text-gray-700 shadow-sm transition-shadow duration-200 hover:shadow">
+    <div className="bg-background relative flex w-full flex-col items-start rounded-2xl border border-solid border-gray-300 p-6 text-gray-700 shadow-sm transition-shadow duration-200 hover:shadow md:min-w-110">
       <h3 className="mb-2 text-lg font-semibold">本月消費趨勢</h3>
 
       <div className="flex w-full items-end py-4 text-xs sm:text-sm">

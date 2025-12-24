@@ -77,7 +77,7 @@ export const YearMonthFilter = (props: Props) => {
           : 'hover:border-primary-300 hover:bg-primary-50 border-gray-300 bg-white text-gray-800'
       }`}
     >
-      <div className="flex items-center gap-2">
+      <div className="flex w-full items-center gap-2">
         <button
           type="button"
           onClick={handlePreviousMonth}
@@ -90,7 +90,7 @@ export const YearMonthFilter = (props: Props) => {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className={`flex items-center gap-3 rounded-lg px-4 py-2`}
+          className={`flex flex-1 items-center justify-center gap-3 rounded-lg px-4 py-2`}
         >
           <CalendarIcon className="text-primary-500 size-5" />
           <div className="flex items-baseline gap-1.5">

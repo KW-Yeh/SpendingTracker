@@ -8,13 +8,31 @@ import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
-import { startTransition, useEffect, useState } from 'react';
+import { startTransition, useCallback, useEffect, useState } from 'react';
+import { YearMonthFilter } from './analysis/YearMonthFilter';
+import { useYearMonth } from '@/hooks/useYearMonth';
 
 export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
   const { config: userData } = useUserConfigCtx();
   const { syncData, data, loading } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
   const [monthlyData, setMonthlyData] = useState<SpendingRecord[]>([]);
+  const dateHook = useYearMonth(new Date());
+
+  const getNewData = useCallback(
+    (_groupId: string | undefined, year: string, month: string) => {
+      const { startDate, endDate } = getStartEndOfMonth(
+        new Date(Number(year), Number(month) - 1),
+      );
+      syncData(
+        _groupId || undefined,
+        userData?.email,
+        startDate.toISOString(),
+        endDate.toISOString(),
+      );
+    },
+    [syncData, userData?.email],
+  );
 
   // Auto-sync current month data
   useEffect(() => {
@@ -41,20 +59,29 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
   }, [data, userData?.email, loading]);
 
   return (
-    <div className="content-wrapper max-w-6xl">
-      <Overview
-        budgets={userData?.budget}
-        costList={monthlyData}
-        isMobile={isMobile}
+    <div className="content-wrapper">
+      <YearMonthFilter
+        refreshData={getNewData}
+        group={currentGroup}
+        dateOptions={dateHook}
+        className="flex w-full max-w-80 justify-center rounded-lg border border-gray-200 bg-white p-2 text-base shadow-sm"
       />
 
-      <MiniDailyCostChart
-        dateStr={new Date().toISOString()}
-        costList={monthlyData}
-        isMobile={isMobile}
-      />
+      <div className="flex w-full flex-col gap-5 md:w-auto md:flex-row">
+        <Overview
+          budgets={userData?.budget}
+          costList={monthlyData}
+          isMobile={isMobile}
+        />
 
-      <div className="flex w-full flex-col gap-5 md:flex-row">
+        <MiniDailyCostChart
+          dateStr={new Date().toISOString()}
+          costList={monthlyData}
+          isMobile={isMobile}
+        />
+      </div>
+
+      <div className="flex w-full flex-col gap-5 md:w-auto md:flex-row">
         <QuickNavigationCards isMobile={isMobile} />
         <RecentTransactionsList data={monthlyData} loading={loading} />
       </div>

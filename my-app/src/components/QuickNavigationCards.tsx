@@ -39,7 +39,7 @@ const NAVIGATION_CARDS = [
 
 export const QuickNavigationCards = ({ isMobile }: { isMobile: boolean }) => {
   return (
-    <div className="grid w-full grid-cols-2 gap-3 md:w-1/2">
+    <div className="grid w-full grid-cols-2 gap-3 md:min-w-110">
       {NAVIGATION_CARDS.map((card) => {
         const Icon = card.icon;
         return (
