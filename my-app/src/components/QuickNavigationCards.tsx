@@ -1,10 +1,10 @@
 'use client';
 
 import { BarChartIcon } from '@/components/icons/BarChartIcon';
+import { BookIcon } from '@/components/icons/BookIcon';
 import { CoinIcon } from '@/components/icons/CoinIcon';
 import { ListTaskIcon } from '@/components/icons/ListTaskIcon';
 import Link from 'next/link';
-import { PlusIcon } from './icons/PlusIcon';
 
 const NAVIGATION_CARDS = [
   {
@@ -15,10 +15,10 @@ const NAVIGATION_CARDS = [
     gradient: 'from-purple-400 to-pink-300',
   },
   {
-    title: '帳目新增',
-    description: '新增收支項目',
-    href: '/edit',
-    icon: PlusIcon,
+    title: '帳本管理',
+    description: '管理帳本與成員',
+    href: '/group',
+    icon: BookIcon,
     gradient: 'from-primary-400 to-primary-600',
   },
   {
