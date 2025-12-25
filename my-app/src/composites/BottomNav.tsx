@@ -1,10 +1,10 @@
 'use client';
 
+import { BarChartIcon } from '@/components/icons/BarChartIcon';
+import { BookIcon } from '@/components/icons/BookIcon';
 import { CoinIcon } from '@/components/icons/CoinIcon';
-import { EditIcon } from '@/components/icons/EditIcon';
 import { HomeIcon } from '@/components/icons/HomeIcon';
-import { ListIcon } from '@/components/icons/ListIcon';
-import { PeopleIcon } from '@/components/icons/PeopleIcon';
+import { ListTaskIcon } from '@/components/icons/ListTaskIcon';
 import { MENU_CONFIG } from '@/utils/constants';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -12,9 +12,9 @@ import { ReactNode } from 'react';
 
 const ROUTE_ICON: Record<string, ReactNode> = {
   '/': <HomeIcon className="size-4" />,
-  '/transactions': <EditIcon className="size-4" />,
-  '/group': <PeopleIcon className="size-4" />,
-  '/analysis': <ListIcon className="size-4" />,
+  '/transactions': <ListTaskIcon className="size-4" />,
+  '/group': <BookIcon className="size-4" />,
+  '/analysis': <BarChartIcon className="size-4" />,
   '/budget': <CoinIcon className="size-4" />,
 };
 

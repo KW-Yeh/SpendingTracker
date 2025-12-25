@@ -1,17 +1,17 @@
 'use client';
 
+import { BarChartIcon } from '@/components/icons/BarChartIcon';
 import { CoinIcon } from '@/components/icons/CoinIcon';
-import { ListIcon } from '@/components/icons/ListIcon';
+import { ListTaskIcon } from '@/components/icons/ListTaskIcon';
 import Link from 'next/link';
 import { PlusIcon } from './icons/PlusIcon';
-import { EditIcon } from './icons/EditIcon';
 
 const NAVIGATION_CARDS = [
   {
     title: '帳目編輯',
     description: '詳細收支記錄',
     href: '/transactions',
-    icon: EditIcon,
+    icon: ListTaskIcon,
     gradient: 'from-purple-400 to-pink-300',
   },
   {
@@ -25,7 +25,7 @@ const NAVIGATION_CARDS = [
     title: '帳目分析',
     description: '查看消費統計圖表',
     href: '/analysis',
-    icon: ListIcon,
+    icon: BarChartIcon,
     gradient: 'from-blue-400 to-indigo-500',
   },
   {

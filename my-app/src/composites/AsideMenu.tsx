@@ -1,10 +1,10 @@
 'use client';
 
+import { BarChartIcon } from '@/components/icons/BarChartIcon';
+import { BookIcon } from '@/components/icons/BookIcon';
 import { CoinIcon } from '@/components/icons/CoinIcon';
-import { EditIcon } from '@/components/icons/EditIcon';
 import { HomeIcon } from '@/components/icons/HomeIcon';
-import { ListIcon } from '@/components/icons/ListIcon';
-import { PeopleIcon } from '@/components/icons/PeopleIcon';
+import { ListTaskIcon } from '@/components/icons/ListTaskIcon';
 import { SettingIcon } from '@/components/icons/SettingIcon';
 import { UserAvatar } from '@/components/UserAvatar';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
@@ -133,10 +133,10 @@ export const AsideMenu = (props: Props) => {
 
 const ROUTE_ICON: Record<string, ReactNode> = {
   '/': <HomeIcon className="mr-3 size-4 sm:mr-4" />,
-  '/transactions': <EditIcon className="mr-3 size-4 sm:mr-4" />,
-  '/analysis': <ListIcon className="mr-3 size-4 sm:mr-4" />,
+  '/transactions': <ListTaskIcon className="mr-3 size-4 sm:mr-4" />,
+  '/analysis': <BarChartIcon className="mr-3 size-4 sm:mr-4" />,
   '/budget': <CoinIcon className="mr-3 size-4 sm:mr-4" />,
-  '/group': <PeopleIcon className="mr-3 size-4 sm:mr-4" />,
+  '/group': <BookIcon className="mr-3 size-4 sm:mr-4" />,
 };
 
 const MenuButton = ({

@@ -20,8 +20,46 @@ function BudgetContent() {
 
   if (loading) {
     return (
-      <div className="flex w-full flex-1 items-center justify-center">
-        <div className="animate-spin text-4xl">⏳</div>
+      <div className="content-wrapper space-y-6">
+        {/* Annual Budget Skeleton */}
+        <div className="bg-background w-full rounded-xl p-6 shadow">
+          <div className="flex items-center justify-between">
+            <div className="h-7 w-32 animate-pulse rounded bg-gray-200" />
+            <div className="h-6 w-12 animate-pulse rounded bg-gray-200" />
+          </div>
+          <div className="mt-4">
+            <div className="h-9 w-40 animate-pulse rounded bg-gray-200" />
+            <div className="mt-2 h-2 w-full animate-pulse rounded-full bg-gray-200" />
+            <div className="mt-2 h-5 w-48 animate-pulse rounded bg-gray-200" />
+          </div>
+        </div>
+
+        {/* Monthly Budget Skeleton */}
+        <div className="bg-background w-full rounded-xl p-6 shadow">
+          <div className="h-7 w-32 animate-pulse rounded bg-gray-200" />
+          <div className="mt-4">
+            <div className="h-9 w-40 animate-pulse rounded bg-gray-200" />
+            <div className="mt-1 h-4 w-48 animate-pulse rounded bg-gray-200" />
+            <div className="mt-2 h-2 w-full animate-pulse rounded-full bg-gray-200" />
+            <div className="mt-2 h-5 w-48 animate-pulse rounded bg-gray-200" />
+          </div>
+        </div>
+
+        {/* Monthly Items Skeleton */}
+        <div className="bg-background w-full rounded-xl p-6 shadow">
+          <div className="flex items-center justify-between">
+            <div className="h-7 w-40 animate-pulse rounded bg-gray-200" />
+            <div className="h-10 w-28 animate-pulse rounded-lg bg-gray-200" />
+          </div>
+          <div className="mt-4 space-y-2">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="h-20 w-full animate-pulse rounded-lg bg-gray-100"
+              />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
