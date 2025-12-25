@@ -22,25 +22,44 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   callbacks: {
     async jwt({ token, user }) {
+      // 首次登入時，user 物件存在
       if (user) {
-        // get user from db with the email
-        // if there is no user with the email, create new user
-        // else set the user data to token
+        token.email = user.email;
+        token.name = user.name;
       }
-
       return token;
     },
 
     async session({ session, token }) {
-      if (token) {
-        // set the token data to session
+      // 將 token 資料傳遞給 session
+      if (token && session.user) {
+        session.user.email = token.email as string;
+        session.user.name = token.name as string;
       }
-
       return session;
     },
 
-    redirect() {
-      return '/login';
+    async redirect({ url, baseUrl }) {
+      console.log('[NextAuth Redirect] url:', url);
+      console.log('[NextAuth Redirect] baseUrl:', baseUrl);
+
+      // 如果 URL 包含 callbackUrl 參數，使用它進行重定向
+      if (url.startsWith(baseUrl)) {
+        console.log('[NextAuth Redirect] ✅ URL starts with baseUrl, returning:', url);
+        return url;
+      }
+
+      // 檢查是否有 callbackUrl 查詢參數
+      const urlObj = new URL(url, baseUrl);
+      const callbackUrl = urlObj.searchParams.get('callbackUrl');
+      if (callbackUrl) {
+        const redirectUrl = `${baseUrl}${callbackUrl}`;
+        console.log('[NextAuth Redirect] ✅ Found callbackUrl, redirecting to:', redirectUrl);
+        return redirectUrl;
+      }
+
+      console.log('[NextAuth Redirect] ⚠️ No callback, returning baseUrl:', baseUrl);
+      return baseUrl;
     },
   },
 });

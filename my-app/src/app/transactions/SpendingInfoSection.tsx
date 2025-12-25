@@ -7,7 +7,6 @@ import { YearMonthFilter } from '@/app/analysis/YearMonthFilter';
 import { SearchIcon } from '@/components/icons/SearchIcon';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
-import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { useScrollToTop } from '@/hooks/useScrollToTop';
 import { useYearMonth } from '@/hooks/useYearMonth';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
@@ -22,7 +21,6 @@ import { CategoricalChartState } from 'recharts/types/chart/types';
 
 export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
   useScrollToTop();
-  const { config: userData } = useUserConfigCtx();
   const { syncData, data, loading } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
   const [isProcessing, setIsProcessing] = useState(true);
@@ -31,20 +29,17 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
   const searchRef = useRef<HTMLInputElement>(null);
   const dateHook = useYearMonth(new Date());
 
-  const refreshData = useCallback(
-    (_groupId?: string) => {
-      const { startDate, endDate } = getStartEndOfMonth(
-        new Date(Number(dateHook.year), Number(dateHook.month) - 1),
-      );
-      syncData(
-        _groupId || undefined,
-        userData?.email,
-        startDate.toISOString(),
-        endDate.toISOString(),
-      );
-    },
-    [syncData, userData?.email, dateHook.year, dateHook.month],
-  );
+  const refreshData = useCallback(() => {
+    const { startDate, endDate } = getStartEndOfMonth(
+      new Date(Number(dateHook.year), Number(dateHook.month) - 1),
+    );
+    syncData(
+      currentGroup?.account_id ? String(currentGroup.account_id) : undefined,
+      undefined, // 不傳 email，查詢帳本所有交易
+      startDate.toISOString(),
+      endDate.toISOString(),
+    );
+  }, [syncData, dateHook.year, dateHook.month, currentGroup?.account_id]);
 
   const getNewData = useCallback(
     (_groupId: string | undefined, year: string, month: string) => {
@@ -53,12 +48,12 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
       );
       syncData(
         _groupId || undefined,
-        userData?.email,
+        undefined, // 不傳 email，查詢帳本所有交易
         startDate.toISOString(),
         endDate.toISOString(),
       );
     },
-    [syncData, userData?.email],
+    [syncData],
   );
 
   const handleSelectDataPoint = (state: CategoricalChartState) => {
@@ -76,16 +71,14 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
 
   useEffect(() => {
     startTransition(() => {
-      if (loading || !userData?.email) return;
-      const dataFilterByUser = [...data].filter((_data) =>
-        checkUser(_data, userData.email),
-      );
-      setMonthlyData(dataFilterByUser);
+      if (loading) return;
+      // 不過濾用戶，顯示帳本內所有交易
+      setMonthlyData([...data]);
       startTransition(() => {
         setIsProcessing(false);
       });
     });
-  }, [data, userData?.email, loading]);
+  }, [data, loading]);
 
   useEffect(() => {
     const elem = searchRef.current;
@@ -102,7 +95,7 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
     );
     syncData(
       currentGroup?.account_id ? String(currentGroup.account_id) : undefined,
-      userData?.email,
+      undefined, // 不傳 email，查詢帳本所有交易
       startDate.toISOString(),
       endDate.toISOString(),
     );
@@ -111,7 +104,6 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
     dateHook.month,
     dateHook.year,
     syncData,
-    userData?.email,
   ]);
 
   return (
@@ -148,7 +140,3 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
     </div>
   );
 };
-
-function checkUser(_data: SpendingRecord, email?: string) {
-  return email === '' || _data['user-token'] === email;
-}

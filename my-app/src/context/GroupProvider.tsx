@@ -1,13 +1,11 @@
 'use client';
 
 import { getGroups } from '@/services/groupServices';
-import { getCookie } from '@/utils/handleCookie';
 import {
   createContext,
   ReactNode,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -63,10 +61,6 @@ export const GroupProvider = ({ children }: { children: ReactNode }) => {
     }),
     [currentGroup, groups, loading, queryGroup, handleState],
   );
-
-  useEffect(() => {
-    const currentGroupId = getCookie('currentGroupId');
-  }, []);
 
   return <Ctx.Provider value={ctxVal}>{children}</Ctx.Provider>;
 };

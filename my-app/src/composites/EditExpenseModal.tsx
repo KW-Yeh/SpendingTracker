@@ -6,12 +6,12 @@ import { NumberKeyboard } from '@/components/NumberKeyboard';
 import { Select } from '@/components/Select';
 import { Switch } from '@/components/Switch';
 import { useDateCtx } from '@/context/DateProvider';
+import { useFavoriteCategoriesCtx } from '@/context/FavoriteCategoriesProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { putItem } from '@/services/getRecords';
 import {
-  DEFAULT_DESC,
   INCOME_TYPE_MAP,
   Necessity,
   OUTCOME_TYPE_MAP,
@@ -36,6 +36,12 @@ export const EditExpenseModal = (props: Props) => {
   const { syncData } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
   const { date } = useDateCtx();
+  const {
+    getCategoryDescriptions,
+    addCategoryDescription,
+    removeCategoryDescription,
+    syncFavorites,
+  } = useFavoriteCategoriesCtx();
   const [spendingType, setSpendingType] = useState<string>(data.type);
   const [necessity, setNecessity] = useState<string>(data.necessity);
   const [selectedCategory, setSelectedCategory] = useState(data.category);
@@ -58,8 +64,8 @@ export const EditExpenseModal = (props: Props) => {
   );
 
   const descriptionList = useMemo(
-    () => DEFAULT_DESC[selectedCategory],
-    [selectedCategory],
+    () => getCategoryDescriptions(selectedCategory),
+    [selectedCategory, getCategoryDescriptions],
   );
 
   const isNewDesc = useMemo(
@@ -75,12 +81,46 @@ export const EditExpenseModal = (props: Props) => {
   };
 
   const handleSetCommonDesc = useCallback(
-    (isNew: boolean) => {
-      // Feature disabled: custom description storage removed from User schema
-      console.log('handleSetCommonDesc called but feature is disabled');
+    async (isNew: boolean) => {
+      if (!userData?.user_id || description === '') return;
+
+      setUpdatingCategory(true);
+      try {
+        if (isNew) {
+          await addCategoryDescription(
+            selectedCategory,
+            description,
+            userData.user_id,
+          );
+        } else {
+          await removeCategoryDescription(
+            selectedCategory,
+            description,
+            userData.user_id,
+          );
+        }
+      } catch (error) {
+        console.error('更新常用描述失敗:', error);
+        alert('更新失敗，請稍後再試');
+      } finally {
+        setUpdatingCategory(false);
+      }
     },
-    [],
+    [
+      userData?.user_id,
+      description,
+      selectedCategory,
+      addCategoryDescription,
+      removeCategoryDescription,
+    ],
   );
+
+  // Sync favorites on mount
+  useEffect(() => {
+    if (userData?.user_id) {
+      syncFavorites(userData.user_id);
+    }
+  }, [userData?.user_id, syncFavorites]);
 
   const cancel = useCallback(() => {
     if (onClose) onClose();
@@ -242,7 +282,7 @@ export const EditExpenseModal = (props: Props) => {
                 className="h-10 w-10 justify-center rounded-md rounded-l-none border border-l-0 border-solid border-gray-300 px-3 py-1 transition-colors group-hover:border-gray-500 group-active:border-gray-500"
                 menuStyle="min-w-24"
               >
-                {descriptionList.map((commonDesc) => (
+                {descriptionList.map((commonDesc: string) => (
                   <Select.Item
                     key={commonDesc}
                     value={commonDesc}

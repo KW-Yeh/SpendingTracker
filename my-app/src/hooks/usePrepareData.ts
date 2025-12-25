@@ -27,14 +27,14 @@ export const usePrepareData = () => {
       currentGroup,
     });
     if (groups.length > 0 && !currentGroup) {
-      const currentGroupId = getCookie('currentGroupId');
-      const defaultGroup = currentGroupId
-        ? groups.find((group) => String(group.account_id) === currentGroupId)
-        : groups.sort(
-            (a, b) =>
-              (a.created_at ? new Date(a.created_at).getTime() : 0) -
-              (b.created_at ? new Date(b.created_at).getTime() : 0),
-          )[0];
+      const currentGroupId = getCookie('currentGroupId') || '';
+      const defaultGroup =
+        groups.find((group) => String(group.account_id) === currentGroupId) ??
+        groups.sort(
+          (a, b) =>
+            (a.created_at ? new Date(a.created_at).getTime() : 0) -
+            (b.created_at ? new Date(b.created_at).getTime() : 0),
+        )[0];
       console.log('Setting default current group', defaultGroup);
       setCurrentGroup(defaultGroup);
     }
@@ -43,13 +43,24 @@ export const usePrepareData = () => {
   useEffect(() => {
     if (!loading && groups.length === 0 && userData?.user_id) {
       // If no groups exist, create a default group
+      console.log(
+        '[usePrepareData] Creating default group for user:',
+        userData.user_id,
+      );
       const newGroup = {
+        account_id: Date.now(),
         name: `${userData.name} 的個人帳本`,
         owner_id: userData.user_id,
       };
       createGroup(newGroup).then((res) => {
         if (res.status) {
+          console.log('[usePrepareData] ✅ Default group created successfully');
           syncGroup(userData.user_id);
+        } else {
+          console.error(
+            '[usePrepareData] ❌ Failed to create default group:',
+            res.message,
+          );
         }
       });
     }
@@ -60,11 +71,12 @@ export const usePrepareData = () => {
       email: userData?.email,
       group: currentGroup?.account_id,
     });
-    if (userData?.email && currentGroup?.account_id) {
+    if (currentGroup?.account_id) {
       const { startDate, endDate } = getStartEndOfMonth(new Date());
+      // 使用 groupId 查詢，這樣帳本內所有成員都可以看到所有交易
       syncData(
         String(currentGroup.account_id),
-        userData.email,
+        undefined, // 不傳 email，讓所有成員都能看到帳本的所有交易
         startDate.toISOString(),
         endDate.toISOString(),
       );

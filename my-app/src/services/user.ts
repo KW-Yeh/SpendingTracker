@@ -8,10 +8,11 @@ export async function getUser(email: string): Promise<User | null> {
     throw new Error('缺少 Email 資訊');
   }
 
+  console.log('[DB getUser] Querying user with email:', email);
   const db = await getDb();
 
   const query = `
-    SELECT 
+    SELECT
       user_id,
       email,
       name,
@@ -21,11 +22,14 @@ export async function getUser(email: string): Promise<User | null> {
   `;
 
   const result = await db.query(query, [email]);
+  console.log('[DB getUser] Query result rows:', result.rows.length);
 
   if (result.rows.length === 0) {
+    console.log('[DB getUser] ⚠️ No user found for email:', email);
     return null;
   }
 
+  console.log('[DB getUser] ✅ User found:', result.rows[0]);
   return result.rows[0];
 }
 
@@ -34,6 +38,8 @@ export async function getUser(email: string): Promise<User | null> {
  */
 export async function createUser(data: User): Promise<User> {
   const { user_id, email, name } = data;
+
+  console.log('[DB createUser] Creating user with data:', { user_id, email, name });
 
   if (!user_id || !email) {
     throw new Error('缺少必要欄位');
@@ -48,12 +54,16 @@ export async function createUser(data: User): Promise<User> {
     RETURNING user_id, email, name, created_at
   `;
 
+  console.log('[DB createUser] Executing INSERT query...');
   const result = await db.query(query, [user_id, email, name]);
+  console.log('[DB createUser] Query result rows:', result.rows.length);
 
   if (result.rows.length === 0) {
+    console.log('[DB createUser] ❌ User ID already exists:', user_id);
     throw new Error('使用者 ID 已存在');
   }
 
+  console.log('[DB createUser] ✅ User created successfully:', result.rows[0]);
   return result.rows[0];
 }
 

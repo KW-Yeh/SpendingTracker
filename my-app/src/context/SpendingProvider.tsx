@@ -99,8 +99,8 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const controller = (controllerRef.current = new AbortController());
-    if (IDB) {
-      const groupId = getCookie('currentGroupId');
+    const groupId = getCookie('currentGroupId');
+    if (IDB && groupId) {
       getDataFromIDB(IDB, Number(groupId), controller.signal)
         .then((res) => {
           if (res && res.length === 1) {

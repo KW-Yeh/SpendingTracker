@@ -3,14 +3,22 @@
 import { ActionMenu } from '@/components/ActionMenu';
 import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { EditIcon } from '@/components/icons/EditIcon';
+import { LeaveIcon } from '@/components/icons/LeaveIcon';
 import { LinkIcon } from '@/components/icons/LinkIcon';
 import { PlusIcon } from '@/components/icons/PlusIcon';
 import { RefreshIcon } from '@/components/icons/RefreshIcon';
+import { SendIcon } from '@/components/icons/SendIcon';
 import { Modal } from '@/components/Modal';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { createGroup } from '@/services/groupServices';
-import { useCallback, useRef, useState } from 'react';
+import {
+  createGroup,
+  putGroup,
+  deleteGroup as deleteGroupService,
+  removeGroupMember,
+  getGroupMembers,
+} from '@/services/groupServices';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import QRCode from 'react-qr-code';
 
 export const Dashboard = () => {
@@ -42,21 +50,10 @@ export const Dashboard = () => {
         <button
           type="button"
           onClick={handleCreateGroup}
-          className="gradient-r-from-purple-to-blue flex items-center rounded-md px-4 py-2"
+          className="bg-text text-background flex items-center rounded-lg px-4 py-2 text-sm font-bold transition-colors hover:bg-gray-800 active:bg-gray-800"
         >
           <PlusIcon className="mr-2 size-4" />
-          <span>建立群組</span>
-        </button>
-        <button
-          type="button"
-          onClick={refresh}
-          disabled={loading}
-          className="flex items-center rounded-md px-4 py-2 text-gray-500 transition-colors hover:text-gray-700 active:text-gray-700"
-        >
-          <RefreshIcon
-            className={`mr-2 size-4 ${loading ? 'animate-spin' : ''}`}
-          />
-          <span>刷新</span>
+          <span>建立新帳本</span>
         </button>
       </div>
       <div className="flex w-full flex-col gap-4 sm:flex-row sm:flex-wrap">
@@ -75,9 +72,36 @@ const GroupCard = ({
   group: Group;
   refresh: () => void;
 }) => {
+  const { config: userData } = useUserConfigCtx();
   const [loading, setLoading] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [membersModalOpen, setMembersModalOpen] = useState(false);
+  const [newGroupName, setNewGroupName] = useState(group.name);
+  const [members, setMembers] = useState<GroupMember[]>([]);
+  const [loadingMembers, setLoadingMembers] = useState(false);
   const inviteLink = `${location.origin}/group/invite/${group.account_id}`;
   const modalRef = useRef<ModalRef>(null);
+
+  const isOwner = userData?.user_id === group.owner_id;
+
+  const fetchMembers = useCallback(async () => {
+    if (!group.account_id) return;
+    setLoadingMembers(true);
+    try {
+      const result = await getGroupMembers(group.account_id);
+      if (result.status) {
+        setMembers(result.data);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingMembers(false);
+    }
+  }, [group.account_id]);
+
+  useEffect(() => {
+    fetchMembers();
+  }, [fetchMembers]);
 
   const handleCopyInviteLink = () => {
     navigator.clipboard.writeText(inviteLink).then(() => {
@@ -86,26 +110,132 @@ const GroupCard = ({
     });
   };
 
+  const handleEditGroupName = async () => {
+    if (!newGroupName.trim()) {
+      alert('群組名稱不能為空');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await putGroup({
+        account_id: group.account_id,
+        name: newGroupName,
+        owner_id: group.owner_id,
+      });
+      alert('群組名稱已更新');
+      setEditModalOpen(false);
+      refresh();
+    } catch (error) {
+      console.error(error);
+      alert('更新失敗，請稍後再試');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRemoveMember = async (userId: number, userName: string) => {
+    if (!group.account_id) return;
+
+    const confirmRemove = window.confirm(
+      `確定要移除成員「${userName}」嗎？`,
+    );
+    if (!confirmRemove) return;
+
+    setLoading(true);
+    try {
+      const result = await removeGroupMember(group.account_id, userId);
+      if (result.status) {
+        alert('成員已移除');
+        await fetchMembers();
+        refresh();
+      } else {
+        alert(result.message || '移除失敗');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('移除失敗，請稍後再試');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAction = async (action: string) => {
     switch (action) {
       case 'invite':
         modalRef.current?.open();
         break;
+
       case 'edit':
-        alert('尚無編輯功能');
-        refresh();
+        if (!isOwner) {
+          alert('只有群組擁有者可以編輯群組名稱');
+          return;
+        }
+        setNewGroupName(group.name);
+        setEditModalOpen(true);
         break;
+
       case 'delete':
-        alert('尚無編輯功能');
-        refresh();
+        if (!isOwner) {
+          alert('只有群組擁有者可以刪除群組');
+          return;
+        }
+        const confirmDelete = window.confirm(
+          `確定要刪除群組「${group.name}」嗎？此操作無法復原。`,
+        );
+        if (confirmDelete) {
+          setLoading(true);
+          try {
+            await deleteGroupService(String(group.account_id));
+            alert('群組已刪除');
+            refresh();
+          } catch (error) {
+            console.error(error);
+            alert('刪除失敗，請稍後再試');
+          } finally {
+            setLoading(false);
+          }
+        }
         break;
+
+      case 'leave':
+        if (isOwner) {
+          alert('群組擁有者不能直接離開群組。請先轉移擁有權或刪除群組。');
+          return;
+        }
+        const confirmLeave = window.confirm(
+          `確定要離開群組「${group.name}」嗎？`,
+        );
+        if (confirmLeave && userData) {
+          setLoading(true);
+          try {
+            await removeGroupMember(group.account_id!, userData.user_id);
+            alert('已離開群組');
+            refresh();
+          } catch (error) {
+            console.error(error);
+            alert('離開失敗，請稍後再試');
+          } finally {
+            setLoading(false);
+          }
+        }
+        break;
+
+      case 'transfer':
+        if (!isOwner) {
+          alert('只有群組擁有者可以轉移擁有權');
+          return;
+        }
+        alert('轉移擁有權功能尚未實作。需要先實作成員列表選擇功能。');
+        break;
+
       default:
         break;
     }
   };
 
   return (
-    <div className="bg-background relative grid w-full max-w-[350px] grid-cols-12 gap-4 rounded-xl p-4 shadow-md">
+    <div className="bg-background relative grid w-full max-w-87.5 grid-cols-12 gap-4 rounded-xl p-4 shadow-md">
       <div
         className={`absolute top-0 right-0 bottom-0 left-0 animate-pulse rounded-xl border border-solid border-transparent bg-gray-500/50 ${loading ? 'visible' : 'invisible'}`}
       ></div>
@@ -114,7 +244,21 @@ const GroupCard = ({
           {group.name}
         </h3>
         <div className="flex flex-wrap items-center gap-2">
-          <span>成員:</span>
+          <span className="text-sm text-gray-600">成員:</span>
+          {loadingMembers ? (
+            <span className="text-xs text-gray-400">載入中...</span>
+          ) : (
+            <>
+              <span className="text-sm font-medium">{members.length} 人</span>
+              <button
+                type="button"
+                onClick={() => setMembersModalOpen(true)}
+                className="text-xs text-blue-500 underline hover:text-blue-600"
+              >
+                查看詳情
+              </button>
+            </>
+          )}
         </div>
       </div>
       <div className="col-span-2 flex flex-col items-end justify-between gap-4">
@@ -135,19 +279,51 @@ const GroupCard = ({
               label: (
                 <>
                   <EditIcon className="size-4" />
-                  <span>編輯</span>
+                  <span>編輯名稱</span>
                 </>
               ),
             },
-            {
-              value: 'delete',
-              label: (
-                <>
-                  <DeleteIcon className="size-4" />
-                  <span>刪除</span>
-                </>
-              ),
-            },
+            ...(!isOwner
+              ? [
+                  {
+                    value: 'leave',
+                    label: (
+                      <>
+                        <LeaveIcon className="size-4" />
+                        <span>離開群組</span>
+                      </>
+                    ),
+                    className: 'text-orange-500',
+                  },
+                ]
+              : []),
+            ...(isOwner
+              ? [
+                  {
+                    value: 'transfer',
+                    label: (
+                      <>
+                        <SendIcon className="size-4" />
+                        <span>轉移擁有權</span>
+                      </>
+                    ),
+                  },
+                ]
+              : []),
+            ...(isOwner
+              ? [
+                  {
+                    value: 'delete',
+                    label: (
+                      <>
+                        <DeleteIcon className="size-4" />
+                        <span>刪除群組</span>
+                      </>
+                    ),
+                    className: 'text-red-500',
+                  },
+                ]
+              : []),
           ]}
         />
       </div>
@@ -177,6 +353,96 @@ const GroupCard = ({
           </div>
         </div>
       </Modal>
+      {editModalOpen && (
+        <Modal
+          defaultOpen={true}
+          onClose={() => setEditModalOpen(false)}
+          className="flex w-full flex-col self-end sm:max-w-96 sm:self-center sm:rounded-xl"
+          title="編輯群組名稱"
+        >
+          <div className="flex w-full flex-col gap-4">
+            <input
+              type="text"
+              className="w-full rounded-md border border-solid border-gray-300 px-3 py-2"
+              value={newGroupName}
+              onChange={(e) => setNewGroupName(e.target.value)}
+              placeholder="群組名稱"
+            />
+            <div className="flex w-full justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setEditModalOpen(false)}
+                className="rounded-lg border border-solid border-gray-300 px-4 py-2 text-gray-500"
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                onClick={handleEditGroupName}
+                disabled={loading}
+                className="bg-text text-background rounded-lg px-4 py-2 font-bold transition-colors hover:bg-gray-800 active:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+              >
+                {loading ? '更新中...' : '確定'}
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
+      {membersModalOpen && (
+        <Modal
+          defaultOpen={true}
+          onClose={() => setMembersModalOpen(false)}
+          className="flex w-full flex-col self-end sm:max-w-lg sm:self-center sm:rounded-xl"
+          title={`群組成員 (${members.length})`}
+        >
+          <div className="flex w-full flex-col gap-2">
+            {loadingMembers ? (
+              <div className="py-8 text-center text-gray-400">載入中...</div>
+            ) : members.length === 0 ? (
+              <div className="py-8 text-center text-gray-400">暫無成員</div>
+            ) : (
+              members.map((member) => {
+                const isMemberOwner = member.user_id === group.owner_id;
+                const isCurrentUser = member.user_id === userData?.user_id;
+                return (
+                  <div
+                    key={member.user_id}
+                    className="flex items-center justify-between rounded-lg border border-solid border-gray-200 p-3"
+                  >
+                    <div className="flex-1">
+                      <p className="font-medium">
+                        {member.name || member.email}
+                        {isCurrentUser && (
+                          <span className="ml-2 text-xs text-gray-500">(我)</span>
+                        )}
+                      </p>
+                      <p className="text-xs text-gray-400">{member.email}</p>
+                      <p className="text-xs text-gray-500">
+                        角色: {member.role}
+                        {isMemberOwner && ' (擁有者)'}
+                      </p>
+                    </div>
+                    {isOwner && !isMemberOwner && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleRemoveMember(
+                            member.user_id,
+                            member.name || member.email || '未知用戶',
+                          )
+                        }
+                        className="rounded p-2 text-red-500 transition-colors hover:bg-red-50 active:bg-red-50"
+                      >
+                        <DeleteIcon className="size-4" />
+                      </button>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

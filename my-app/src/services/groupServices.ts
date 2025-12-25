@@ -59,3 +59,45 @@ export const getGroups = async (
     return { status: false, data: [], message: '發生不預期的錯誤' };
   }
 };
+
+export const removeGroupMember = async (
+  accountId: number,
+  userId: number,
+): Promise<{
+  status: boolean;
+  message: string;
+}> => {
+  try {
+    await fetch(
+      `/api/aurora/group/member?account_id=${accountId}&user_id=${userId}`,
+      {
+        method: 'DELETE',
+      },
+    );
+    return { status: true, message: 'success' };
+  } catch (error) {
+    console.error(error);
+    return { status: false, message: '發生不預期的錯誤' };
+  }
+};
+
+export const getGroupMembers = async (
+  accountId: number,
+): Promise<{
+  status: boolean;
+  data: GroupMember[];
+  message: string;
+}> => {
+  try {
+    if (!accountId) {
+      return { status: false, data: [], message: '缺少帳本 ID' };
+    }
+    const data = await fetch(`/api/aurora/group/members?account_id=${accountId}`).then(
+      (res) => res.json(),
+    );
+    return { status: true, data, message: 'success' };
+  } catch (error) {
+    console.error(error);
+    return { status: false, data: [], message: '發生不預期的錯誤' };
+  }
+};

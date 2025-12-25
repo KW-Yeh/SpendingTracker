@@ -13,11 +13,22 @@ import { YearMonthFilter } from './analysis/YearMonthFilter';
 import { useYearMonth } from '@/hooks/useYearMonth';
 
 export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
-  const { config: userData, budgetData } = useUserConfigCtx();
+  const { budgetData } = useUserConfigCtx();
   const { syncData, data, loading } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
   const [monthlyData, setMonthlyData] = useState<SpendingRecord[]>([]);
   const dateHook = useYearMonth(new Date());
+
+  const refreshData = useCallback(() => {
+    const now = new Date();
+    const { startDate, endDate } = getStartEndOfMonth(now);
+    syncData(
+      currentGroup?.account_id ? String(currentGroup.account_id) : undefined,
+      undefined, // 不傳 email，查詢帳本所有交易
+      startDate.toISOString(),
+      endDate.toISOString(),
+    );
+  }, [currentGroup?.account_id, syncData]);
 
   const getNewData = useCallback(
     (_groupId: string | undefined, year: string, month: string) => {
@@ -26,37 +37,26 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
       );
       syncData(
         _groupId || undefined,
-        userData?.email,
+        undefined, // 不傳 email，查詢帳本所有交易
         startDate.toISOString(),
         endDate.toISOString(),
       );
     },
-    [syncData, userData?.email],
+    [syncData],
   );
 
   // Auto-sync current month data
   useEffect(() => {
-    const now = new Date();
-    const { startDate, endDate } = getStartEndOfMonth(now);
-    syncData(
-      currentGroup?.account_id ? String(currentGroup.account_id) : undefined,
-      userData?.email,
-      startDate.toISOString(),
-      endDate.toISOString(),
-    );
-  }, [currentGroup?.account_id, userData?.email, syncData]);
+    refreshData();
+  }, [refreshData]);
 
-  // Filter data by user
+  // 不過濾用戶，顯示帳本內所有交易
   useEffect(() => {
     startTransition(() => {
-      if (loading || !userData?.email) return;
-      const dataFilterByUser = data.filter(
-        (_data) =>
-          userData.email === '' || _data['user-token'] === userData.email,
-      );
-      setMonthlyData(dataFilterByUser);
+      if (loading) return;
+      setMonthlyData([...data]);
     });
-  }, [data, userData?.email, loading]);
+  }, [data, loading]);
 
   return (
     <div className="content-wrapper">
@@ -83,7 +83,7 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
 
       <div className="flex w-full flex-col gap-3 md:w-auto md:flex-row md:gap-5">
         <QuickNavigationCards isMobile={isMobile} />
-        <RecentTransactionsList data={monthlyData} loading={loading} />
+        <RecentTransactionsList data={monthlyData} loading={loading} refreshData={refreshData} />
       </div>
     </div>
   );

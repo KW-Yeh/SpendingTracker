@@ -13,10 +13,11 @@ export async function getGroupById(
   const db = await getDb();
 
   const query = `
-    SELECT 
+    SELECT
       a.account_id,
       a.name,
       a.owner_id,
+      a.members,
       a.created_at,
       u.email as owner_email,
       u.name as owner_name,
@@ -25,7 +26,7 @@ export async function getGroupById(
     JOIN users u ON a.owner_id = u.user_id
     LEFT JOIN account_members am ON a.account_id = am.account_id
     WHERE a.account_id = $1
-    GROUP BY a.account_id, a.name, a.owner_id, a.created_at, u.email, u.name
+    GROUP BY a.account_id, a.name, a.owner_id, a.members, a.created_at, u.email, u.name
   `;
 
   const result = await db.query(query, [groupId]);
@@ -34,7 +35,15 @@ export async function getGroupById(
     return null;
   }
 
-  return result.rows[0];
+  const group = result.rows[0];
+  // Parse members JSON string to array
+  return {
+    ...group,
+    members:
+      typeof group.members === 'string' && group.members
+        ? JSON.parse(group.members)
+        : group.members || [],
+  };
 }
 
 /**
@@ -48,10 +57,11 @@ export async function getUserGroups(userId: number): Promise<Group[]> {
   const db = await getDb();
 
   const query = `
-    SELECT 
+    SELECT
       a.account_id,
       a.name,
       a.owner_id,
+      a.members,
       a.created_at,
       u.email as owner_email,
       u.name as owner_name,
@@ -62,12 +72,19 @@ export async function getUserGroups(userId: number): Promise<Group[]> {
     JOIN users u ON a.owner_id = u.user_id
     LEFT JOIN account_members am2 ON a.account_id = am2.account_id
     WHERE am.user_id = $1
-    GROUP BY a.account_id, a.name, a.owner_id, a.created_at, u.email, u.name, am.role
+    GROUP BY a.account_id, a.name, a.owner_id, a.members, a.created_at, u.email, u.name, am.role
     ORDER BY a.created_at DESC
   `;
 
   const result = await db.query(query, [userId]);
-  return result.rows;
+  // Parse members JSON string to array for each group
+  return result.rows.map((group) => ({
+    ...group,
+    members:
+      typeof group.members === 'string' && group.members
+        ? JSON.parse(group.members)
+        : group.members || [],
+  }));
 }
 
 /**
@@ -81,10 +98,11 @@ export async function getUserOwnedGroups(userId: number): Promise<Group[]> {
   const db = await getDb();
 
   const query = `
-    SELECT 
+    SELECT
       a.account_id,
       a.name,
       a.owner_id,
+      a.members,
       a.created_at,
       u.email as owner_email,
       u.name as owner_name,
@@ -93,12 +111,19 @@ export async function getUserOwnedGroups(userId: number): Promise<Group[]> {
     JOIN users u ON a.owner_id = u.user_id
     LEFT JOIN account_members am ON a.account_id = am.account_id
     WHERE a.owner_id = $1
-    GROUP BY a.account_id, a.name, a.owner_id, a.created_at, u.email, u.name
+    GROUP BY a.account_id, a.name, a.owner_id, a.members, a.created_at, u.email, u.name
     ORDER BY a.created_at DESC
   `;
 
   const result = await db.query(query, [userId]);
-  return result.rows;
+  // Parse members JSON string to array for each group
+  return result.rows.map((group) => ({
+    ...group,
+    members:
+      typeof group.members === 'string' && group.members
+        ? JSON.parse(group.members)
+        : group.members || [],
+  }));
 }
 
 /**
@@ -123,17 +148,25 @@ export async function createGroup(data: {
 
     // 建立群組
     const createQuery = `
-      INSERT INTO accounts (account_id, name, owner_id)
-      VALUES ($1, $2, $3)
-      RETURNING account_id, name, owner_id, created_at
+      INSERT INTO accounts (account_id, name, owner_id, members)
+      VALUES ($1, $2, $3, $4)
+      RETURNING account_id, name, owner_id, members, created_at
     `;
 
     const accountResult = await db.query(createQuery, [
       account_id,
       name,
       owner_id,
+      JSON.stringify([owner_id]),
     ]);
     const account = accountResult.rows[0];
+
+    // Parse members JSON string to array
+    if (account.members) {
+      account.members = typeof account.members === 'string'
+        ? JSON.parse(account.members)
+        : account.members;
+    }
 
     // 自動將擁有者加入成員
     const memberQuery = `
@@ -194,7 +227,7 @@ export async function updateGroup(
     UPDATE accounts
     SET ${updates.join(', ')}
     WHERE account_id = $${paramIndex}
-    RETURNING account_id, name, owner_id, created_at
+    RETURNING account_id, name, owner_id, members, created_at
   `;
 
   const result = await db.query(query, values);
@@ -203,7 +236,15 @@ export async function updateGroup(
     throw new Error('找不到該群組');
   }
 
-  return result.rows[0];
+  const group = result.rows[0];
+  // Parse members JSON string to array
+  return {
+    ...group,
+    members:
+      typeof group.members === 'string' && group.members
+        ? JSON.parse(group.members)
+        : group.members || [],
+  };
 }
 
 /**

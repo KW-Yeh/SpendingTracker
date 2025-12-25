@@ -137,11 +137,20 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [status, handleLogin]);
 
+  // 當 session 狀態變為 authenticated 且有 email 時，觸發 syncUser
   useEffect(() => {
-    if (!session?.user?.email) {
-      syncUser();
+    console.log('[UserConfigProvider] Session status:', status);
+    console.log('[UserConfigProvider] Session email:', session?.user?.email);
+    console.log('[UserConfigProvider] Config exists:', !!config);
+
+    if (status === 'authenticated' && session?.user?.email && !config) {
+      console.log('[UserConfigProvider] ✅ Conditions met! Syncing user...');
+      setLoading(true);
+      queryUser(session.user.email);
+    } else {
+      console.log('[UserConfigProvider] ❌ Conditions not met for sync');
     }
-  }, [session?.user?.email, syncUser]);
+  }, [status, session?.user?.email, config, queryUser]);
 
   useEffect(() => {
     const controller = (controllerRef.current = new AbortController());

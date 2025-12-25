@@ -14,6 +14,7 @@ interface Group {
   account_id?: number;
   name: string;
   owner_id: number;
+  members?: number[]; // 新增：成員 user_id 陣列
   created_at?: string;
   // 擴充資訊
   owner_email?: string;
@@ -111,3 +112,56 @@ interface PieChartDataItem extends PieChartDataBase {
   necessary: number;
   unnecessary: number;
 }
+
+// New Budget Schema Types
+interface Budget {
+  budget_id: number;
+  account_id: number;
+  annual_budget: number;
+  monthly_budget: number;
+  monthly_items: MonthlyBudgetItem[];
+  created_at?: string;
+  updated_at?: string;
+}
+
+interface MonthlyBudgetItem {
+  name: string;
+  description?: string;
+  months: {
+    [key: string]: number; // month: amount (e.g., "1": 5000, "2": 5500)
+  };
+}
+
+interface FavoriteCategories {
+  category_id: number;
+  owner_id: number;
+  food?: string;
+  clothing?: string;
+  housing?: string;
+  transportation?: string;
+  education?: string;
+  entertainment?: string;
+  daily?: string;
+  medical?: string;
+  investment?: string;
+  other?: string;
+  salary?: string;
+  bonus?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Helper type for category keys
+type CategoryKey =
+  | 'food'
+  | 'clothing'
+  | 'housing'
+  | 'transportation'
+  | 'education'
+  | 'entertainment'
+  | 'daily'
+  | 'medical'
+  | 'investment'
+  | 'other'
+  | 'salary'
+  | 'bonus';

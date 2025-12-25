@@ -10,16 +10,16 @@ export enum Route {
 
 export const MENU_CONFIG: Record<string, string> = {
   [Route.Base]: '首頁',
-  [Route.Insert]: '記帳',
-  [Route.Group]: '群組',
+  [Route.Insert]: '帳目',
+  [Route.Group]: '帳本',
   [Route.List]: '分析',
   [Route.Budget]: '預算',
 };
 
 export const PAGE_TITLE: Record<string, string> = {
   [Route.Base]: '首頁',
-  [Route.Insert]: '快速記帳',
-  [Route.Group]: '群組管理',
+  [Route.Insert]: '帳目瀏覽',
+  [Route.Group]: '帳本管理',
   [Route.List]: '消費分析',
   [Route.Budget]: '預算規劃',
   [Route.Login]: '會員登入',

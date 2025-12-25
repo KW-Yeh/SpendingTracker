@@ -8,9 +8,10 @@ import { useMemo } from 'react';
 interface Props {
   data: SpendingRecord[];
   loading: boolean;
+  refreshData?: () => void;
 }
 
-export const RecentTransactionsList = ({ data, loading }: Props) => {
+export const RecentTransactionsList = ({ data, loading, refreshData }: Props) => {
   const recentData = useMemo(() => {
     return [...data]
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -54,7 +55,7 @@ export const RecentTransactionsList = ({ data, loading }: Props) => {
             <SpendingItem
               key={`${spending.id}-${index}`}
               spending={spending}
-              refreshData={() => {}}
+              refreshData={refreshData || (() => {})}
             />
           ))
         )}

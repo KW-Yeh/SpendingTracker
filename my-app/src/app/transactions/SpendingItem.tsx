@@ -3,6 +3,7 @@
 import { ActionMenu } from '@/components/ActionMenu';
 import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { EditIcon } from '@/components/icons/EditIcon';
+import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { deleteItem } from '@/services/getRecords';
 import {
   CATEGORY_WORDING_MAP,
@@ -23,8 +24,14 @@ interface Props {
 
 export const SpendingItem = (props: Props) => {
   const { spending, refreshData } = props;
+  const { config: userData } = useUserConfigCtx();
   const [deleting, setDeleting] = useState(false);
   const router = useRouter();
+
+  // 檢查當前用戶是否為此交易的創建者
+  const canEdit = useMemo(() => {
+    return userData?.email === spending['user-token'];
+  }, [userData?.email, spending]);
 
   const categories = useMemo(
     () => getSpendingCategoryMap(spending.type),
@@ -96,32 +103,34 @@ export const SpendingItem = (props: Props) => {
       >
         ${normalizeNumber(Number(spending.amount))}
       </div>
-      <ActionMenu
-        onClick={handleAction}
-        options={[
-          {
-            value: 'edit',
-            label: (
-              <Link
-                href={`/edit?id=${spending.id}`}
-                className="text-text group-hover:text-primary-500 group-active:text-primary-500 flex items-center gap-3 rounded px-2 py-1 transition-colors"
-              >
-                <EditIcon className="size-3.5 transition-colors sm:size-4" />
-                <span>編輯</span>
-              </Link>
-            ),
-          },
-          {
-            value: 'delete',
-            label: (
-              <span className="group text-text flex items-center gap-3 rounded px-2 py-1 transition-colors group-hover:text-red-500 group-active:text-red-500">
-                <DeleteIcon className="size-3.5 transition-colors sm:size-4" />
-                <span>刪除</span>
-              </span>
-            ),
-          },
-        ]}
-      />
+      {canEdit && (
+        <ActionMenu
+          onClick={handleAction}
+          options={[
+            {
+              value: 'edit',
+              label: (
+                <Link
+                  href={`/edit?id=${spending.id}`}
+                  className="text-text group-hover:text-primary-500 group-active:text-primary-500 flex items-center gap-3 rounded px-2 py-1 transition-colors"
+                >
+                  <EditIcon className="size-3.5 transition-colors sm:size-4" />
+                  <span>編輯</span>
+                </Link>
+              ),
+            },
+            {
+              value: 'delete',
+              label: (
+                <span className="group text-text flex items-center gap-3 rounded px-2 py-1 transition-colors group-hover:text-red-500 group-active:text-red-500">
+                  <DeleteIcon className="size-3.5 transition-colors sm:size-4" />
+                  <span>刪除</span>
+                </span>
+              ),
+            },
+          ]}
+        />
+      )}
     </div>
   );
 };

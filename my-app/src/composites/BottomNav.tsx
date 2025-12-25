@@ -23,7 +23,7 @@ export const BottomNav = () => {
 
   return (
     <nav
-      className="fixed right-4 bottom-5 left-4 z-50 rounded-full bg-white/50 shadow-[0_-2px_16px_rgba(0,0,0,0.1)] backdrop-blur-md md:hidden"
+      className="fixed right-4 bottom-5 left-4 z-40 rounded-full bg-white/50 shadow-[0_-2px_16px_rgba(0,0,0,0.1)] backdrop-blur-md md:hidden"
       aria-label="Mobile navigation"
     >
       <div className="safe-area-inset-bottom flex items-center justify-around px-2 py-2">
