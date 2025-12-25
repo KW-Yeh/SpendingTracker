@@ -3,7 +3,7 @@
 import { PageTitle } from '@/components/PageTitle';
 import { AnnualBudgetSection } from '@/app/budget/AnnualBudgetSection';
 import { MonthlyBudgetSection } from '@/app/budget/MonthlyBudgetSection';
-import { MonthlyItemsList } from '@/app/budget/MonthlyItemsList';
+import { MonthlyBudgetBlocks } from '@/app/budget/MonthlyBudgetBlocks';
 import { BudgetProvider, useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useEffect } from 'react';
@@ -25,7 +25,7 @@ function BudgetContent() {
         <div className="bg-background w-full rounded-xl p-6 shadow">
           <div className="flex items-center justify-between">
             <div className="h-7 w-32 animate-pulse rounded bg-gray-200" />
-            <div className="h-6 w-12 animate-pulse rounded bg-gray-200" />
+            <div className="h-4 w-20 animate-pulse rounded bg-gray-200" />
           </div>
           <div className="mt-4">
             <div className="h-9 w-40 animate-pulse rounded bg-gray-200" />
@@ -45,20 +45,21 @@ function BudgetContent() {
           </div>
         </div>
 
-        {/* Monthly Items Skeleton */}
-        <div className="bg-background w-full rounded-xl p-6 shadow">
-          <div className="flex items-center justify-between">
-            <div className="h-7 w-40 animate-pulse rounded bg-gray-200" />
-            <div className="h-10 w-28 animate-pulse rounded-lg bg-gray-200" />
-          </div>
-          <div className="mt-4 space-y-2">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="h-20 w-full animate-pulse rounded-lg bg-gray-100"
-              />
-            ))}
-          </div>
+        {/* Monthly Blocks Skeleton */}
+        <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((i) => (
+            <div key={i} className="bg-background rounded-xl p-4 shadow">
+              <div className="flex items-center justify-between">
+                <div className="h-6 w-16 animate-pulse rounded bg-gray-200" />
+                <div className="h-5 w-12 animate-pulse rounded bg-gray-200" />
+              </div>
+              <div className="mt-2 h-8 w-32 animate-pulse rounded bg-gray-200" />
+              <div className="mt-3 space-y-2">
+                <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100" />
+                <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100" />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -76,7 +77,7 @@ function BudgetContent() {
     <div className="content-wrapper space-y-6">
       <AnnualBudgetSection />
       <MonthlyBudgetSection />
-      <MonthlyItemsList />
+      <MonthlyBudgetBlocks />
     </div>
   );
 }

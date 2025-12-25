@@ -132,6 +132,19 @@ interface MonthlyBudgetItem {
   };
 }
 
+// New simplified structure for month-based budget items
+interface MonthBudgetItem {
+  item_id?: string;
+  name: string;
+  amount: number;
+}
+
+interface MonthBudget {
+  month: number; // 1-12
+  items: MonthBudgetItem[];
+  total: number; // auto-calculated from items
+}
+
 interface FavoriteCategories {
   category_id: number;
   owner_id: number;
