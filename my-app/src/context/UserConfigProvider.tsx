@@ -18,18 +18,23 @@ import {
 const INIT_CTX_VAL: {
   loading: boolean;
   config?: User;
+  budgetData: UserBudgetData;
   syncUser: () => void;
   setter: (value: User) => Promise<void>;
+  setBudgetData: (value: UserBudgetData) => Promise<void>;
 } = {
   loading: true,
   config: undefined,
+  budgetData: { budget: [] },
   syncUser: () => {},
   setter: async () => {},
+  setBudgetData: async () => {},
 };
 
 export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
   const [config, setConfig] = useState<User>();
   const [loading, setLoading] = useState(true);
+  const [budgetData, setBudgetDataState] = useState<UserBudgetData>({ budget: [] });
   const { data: session, status } = useSession();
   const { db: IDB, getUserData, setUserData } = useIDB();
   const controllerRef = useRef<AbortController | null>(null);
@@ -46,6 +51,15 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
     setConfig(value);
   }, []);
 
+  const handleUpdateBudgetData = useCallback(
+    async (value: UserBudgetData) => {
+      // Budget data is stored client-side only, no server sync needed
+      setBudgetDataState(value);
+      // TODO: Store budget data in IndexedDB separately if needed
+    },
+    [],
+  );
+
   const handleNewUser = useCallback(
     async (email: string) => {
       if (session?.user) {
@@ -53,9 +67,6 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
           user_id: Date.now(),
           name: session.user.name || '匿名',
           email: email,
-          image: session.user.image || '',
-          groups: [],
-          budget: [],
         });
       }
     },
@@ -106,10 +117,12 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
     () => ({
       loading,
       config,
+      budgetData,
       syncUser,
       setter: handleUpdateUser,
+      setBudgetData: handleUpdateBudgetData,
     }),
-    [loading, config, syncUser, handleUpdateUser],
+    [loading, config, budgetData, syncUser, handleUpdateUser, handleUpdateBudgetData],
   );
 
   const handleLogin = useCallback(() => {

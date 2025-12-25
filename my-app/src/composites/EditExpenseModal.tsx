@@ -58,8 +58,8 @@ export const EditExpenseModal = (props: Props) => {
   );
 
   const descriptionList = useMemo(
-    () => ({ ...DEFAULT_DESC, ...(userData?.desc ?? {}) })[selectedCategory],
-    [selectedCategory, userData?.desc],
+    () => DEFAULT_DESC[selectedCategory],
+    [selectedCategory],
   );
 
   const isNewDesc = useMemo(
@@ -76,32 +76,10 @@ export const EditExpenseModal = (props: Props) => {
 
   const handleSetCommonDesc = useCallback(
     (isNew: boolean) => {
-      if (!userData) return;
-      setUpdatingCategory(true);
-      const commonDescMap = { ...userData.desc };
-      if (isNew) {
-        const newCategories = commonDescMap[selectedCategory] ?? [];
-        if (!newCategories.includes(description)) {
-          newCategories.push(description);
-        }
-        commonDescMap[selectedCategory] = newCategories;
-      } else {
-        const newCategories = commonDescMap[selectedCategory] ?? [];
-        const index = newCategories.findIndex((item) => item === description);
-        if (index !== -1) {
-          newCategories.splice(index, 1);
-        }
-        commonDescMap[selectedCategory] = newCategories;
-      }
-      updateUser({
-        ...userData,
-        desc: commonDescMap,
-      }).then(() => {
-        syncUser();
-        setUpdatingCategory(false);
-      });
+      // Feature disabled: custom description storage removed from User schema
+      console.log('handleSetCommonDesc called but feature is disabled');
     },
-    [description, selectedCategory, syncUser, updateUser, userData],
+    [],
   );
 
   const cancel = useCallback(() => {

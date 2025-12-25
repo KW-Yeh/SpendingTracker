@@ -4,7 +4,7 @@ import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { useCallback, useState } from 'react';
 
 export const useBudget = (budgetName?: string) => {
-  const { config: userData, setter, syncUser } = useUserConfigCtx();
+  const { config: userData, budgetData, setBudgetData } = useUserConfigCtx();
   const [openModal, setOpenModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -12,7 +12,7 @@ export const useBudget = (budgetName?: string) => {
     (item: BudgetItem, isNew: boolean) => {
       if (!userData) return;
       setLoading(true);
-      const newBudget = [...(userData?.budget ?? [])];
+      const newBudget = [...(budgetData.budget ?? [])];
       if (isNew) {
         newBudget.push(item);
       } else {
@@ -23,32 +23,27 @@ export const useBudget = (budgetName?: string) => {
           newBudget[index] = item;
         }
       }
-      setter({
-        ...userData,
+      setBudgetData({
         budget: newBudget,
       }).then(() => {
-        syncUser();
         setLoading(false);
         setOpenModal(false);
       });
     },
-    [setter, syncUser, userData],
+    [setBudgetData, budgetData, userData],
   );
 
   const handleDelete = useCallback(() => {
     if (!userData) return;
-    setter({
-      ...userData,
-      budget: userData?.budget?.filter(
+    setBudgetData({
+      budget: budgetData.budget?.filter(
         (budgetItem) => budgetItem.name !== budgetName,
       ),
-    }).then(() => {
-      syncUser();
     });
-  }, [budgetName, setter, syncUser, userData]);
+  }, [budgetName, setBudgetData, budgetData, userData]);
 
   return {
-    budgets: userData?.budget ?? [],
+    budgets: budgetData.budget ?? [],
     openModal,
     setOpenModal,
     loading,

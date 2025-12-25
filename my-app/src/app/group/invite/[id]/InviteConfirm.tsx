@@ -3,8 +3,7 @@
 import { Loading } from '@/components/icons/Loading';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { getGroups, putGroup } from '@/services/groupServices';
-import { putUser } from '@/services/userServices';
+import { getGroups } from '@/services/groupServices';
 import { useSession } from 'next-auth/react';
 import { redirect, useParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
@@ -12,33 +11,55 @@ import { useCallback, useEffect, useState } from 'react';
 export const InviteConfirm = () => {
   const { id } = useParams();
   const { status } = useSession();
-  const { syncUser, config, loading: loadingUserData } = useUserConfigCtx();
-  const { syncGroup } = useGroupCtx();
+  const { config, loading: loadingUserData } = useUserConfigCtx();
+  const { syncGroup, groups } = useGroupCtx();
   const [matchedGroup, setMatchedGroup] = useState<Group>();
 
-  const handleUpdateUser = useCallback(async (config: User, id: string) => {
-    const userGroups = new Set(config.groups);
-    if (userGroups.has(id)) {
+  const handleJoinGroup = useCallback(async () => {
+    if (!config?.user_id || !matchedGroup?.account_id) {
+      alert('無法加入群組，缺少必要資訊');
+      return;
+    }
+
+    // Check if already a member
+    const isAlreadyMember = groups.some(
+      (group) => group.account_id === matchedGroup.account_id
+    );
+
+    if (isAlreadyMember) {
       alert('已加入該群組');
       redirect('/group');
+      return;
     }
-    userGroups.add(id);
-    await putUser({
-      ...config,
-      groups: Array.from(userGroups),
-    });
-  }, []);
 
-  const handleUpdateGroup = useCallback(
-    async (group: Group, userInfo: User) => {
-      // 更新群組成員
-    },
-    [],
-  );
+    try {
+      // Add member to account_members table via API
+      const response = await fetch('/api/aurora/group/member', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          account_id: matchedGroup.account_id,
+          user_id: config.user_id,
+          role: 'Viewer',
+        }),
+      });
 
-  const handleJoinGroup = useCallback(async () => {
-    // 加入群組
-  }, []);
+      if (!response.ok) {
+        throw new Error('Failed to add group member');
+      }
+
+      // Refresh groups list
+      syncGroup(config.user_id);
+
+      alert('成功加入群組！');
+      redirect('/group');
+    } catch (error) {
+      console.error('加入群組失敗:', error);
+      alert('加入群組失敗，請稍後再試');
+    }
+  }, [config, matchedGroup, groups, syncGroup]);
 
   useEffect(() => {
     if (!loadingUserData && config?.user_id) {

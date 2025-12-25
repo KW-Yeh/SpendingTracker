@@ -43,20 +43,17 @@ interface GroupStats {
 type MemberType = {
   name: string;
   email: string;
-  image: string;
 };
 
 interface User {
   user_id: number;
   name: string;
   email: string;
-  image: string;
-  groups: string[];
-  budgetList?: number[];
-  allocation?: Allocation[];
-  monthlyPlan?: MonthlyPlan[];
-  desc?: Record<string, string[]>;
-  budget?: BudgetItem[];
+  created_at?: string;
+}
+
+interface UserBudgetData {
+  budget: BudgetItem[];
 }
 
 interface BudgetItem {

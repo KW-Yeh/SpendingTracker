@@ -13,7 +13,7 @@ import { YearMonthFilter } from './analysis/YearMonthFilter';
 import { useYearMonth } from '@/hooks/useYearMonth';
 
 export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
-  const { config: userData } = useUserConfigCtx();
+  const { config: userData, budgetData } = useUserConfigCtx();
   const { syncData, data, loading } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
   const [monthlyData, setMonthlyData] = useState<SpendingRecord[]>([]);
@@ -69,7 +69,7 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
 
       <div className="flex w-full flex-col gap-3 md:w-auto md:flex-row md:gap-5">
         <Overview
-          budgets={userData?.budget}
+          budgets={budgetData.budget}
           costList={monthlyData}
           isMobile={isMobile}
         />
