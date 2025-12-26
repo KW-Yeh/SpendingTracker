@@ -8,7 +8,7 @@ import { useState, useRef, ChangeEvent } from 'react';
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { config: user, setConfig: setUser } = useUserConfigCtx();
+  const { config: user, setter: setUser } = useUserConfigCtx();
   const [name, setName] = useState(user?.name || '');
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url || '');
   const [isUploading, setIsUploading] = useState(false);
@@ -59,24 +59,13 @@ export default function ProfilePage() {
     setIsSaving(true);
 
     try {
-      const response = await fetch('/api/aurora/user', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user_id: user.user_id,
-          name,
-          avatar_url: avatarUrl,
-        }),
-      });
+      const updatedUser = {
+        ...user,
+        name,
+        avatar_url: avatarUrl,
+      };
 
-      if (!response.ok) {
-        throw new Error('更新失敗');
-      }
-
-      const updatedUser = await response.json();
-      setUser(updatedUser);
+      await setUser(updatedUser);
       alert('更新成功');
       router.back();
     } catch (error) {
