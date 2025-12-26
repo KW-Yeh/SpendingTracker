@@ -83,7 +83,7 @@ export const MonthlyBudgetBlocks = () => {
     setSaving(true);
     try {
       // Check if item with same name exists
-      const existingItemIndex = budget?.monthly_items.findIndex(
+      const existingItemIndex = budget?.monthly_items?.findIndex(
         (item) => item.name === itemName,
       );
 
