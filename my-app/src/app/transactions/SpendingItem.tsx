@@ -72,6 +72,19 @@ export const SpendingItem = (props: Props) => {
     [handleOnDelete, router, spending.id],
   );
 
+  // Format time display
+  const timeInfo = useMemo(() => {
+    const date = new Date(spending.date);
+    const hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours % 12 || 12;
+    return {
+      period,
+      time: `${displayHours}:${minutes}`,
+    };
+  }, [spending.date]);
+
   return (
     <div
       className={`relative flex items-center gap-2 rounded-lg bg-gray-50 p-2 text-sm transition-all sm:text-base md:p-3 ${additionalStyle}`}
@@ -92,11 +105,19 @@ export const SpendingItem = (props: Props) => {
           )}
         </span>
       )}
-      <div
-        title={spending.description}
-        className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap sm:col-span-5 font-medium"
-      >
-        {spending.description}
+      <div className="flex flex-1 flex-col gap-0.5 overflow-hidden">
+        <div
+          title={spending.description}
+          className="overflow-hidden text-ellipsis whitespace-nowrap font-medium"
+        >
+          {spending.description}
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="rounded bg-gray-300 px-1.5 py-0.5 text-xs font-medium text-gray-600">
+            {timeInfo.period}
+          </span>
+          <span className="text-xs text-gray-400">{timeInfo.time}</span>
+        </div>
       </div>
       <div
         className={`w-fit text-end font-bold ${spending.type === SpendingType.Outcome ? 'text-red-500' : 'text-green-500'}`}
