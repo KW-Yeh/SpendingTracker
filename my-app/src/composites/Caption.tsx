@@ -27,11 +27,6 @@ export const Caption = ({ openAside }: { openAside: () => void }) => {
           </span>
         </Link>
 
-        {/* Center title - only visible on desktop */}
-        <h2 className="text-sm font-bold whitespace-nowrap md:mx-auto hidden md:block">
-          帳本
-        </h2>
-
         {/* Group Selector - moved to the right */}
         <div className="ml-auto">
           <GroupSelector className="max-w-80 font-bold" />
