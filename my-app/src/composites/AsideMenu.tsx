@@ -10,7 +10,6 @@ import { UserAvatar } from '@/components/UserAvatar';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import useFocusRef from '@/hooks/useFocusRef';
 import { MENU_CONFIG } from '@/utils/constants';
-import { signOut } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -71,23 +70,13 @@ export const AsideMenu = (props: Props) => {
       >
         <div className="gradient-r-from-purple-to-blue clip-profile-bg absolute h-30 w-full"></div>
         <div className="relative flex w-full flex-col items-center pt-17">
-          <div className="bg-background flex size-20 items-center justify-center rounded-full p-1">
+          <Link
+            href="/profile"
+            onClick={onClose}
+            className="bg-background flex size-20 items-center justify-center rounded-full p-1 transition-all hover:scale-105 active:scale-95"
+          >
             <UserAvatar user={user} />
-          </div>
-          {user && (
-            <button
-              type="button"
-              onClick={async () => {
-                if (confirm('確定要登出嗎？')) {
-                  await signOut();
-                  onClose();
-                }
-              }}
-              className="bg-background text-text absolute top-2 right-2 flex shrink-0 items-center justify-center rounded-md p-2 text-xs font-semibold transition-all hover:text-red-500 active:text-red-500"
-            >
-              <span className="text-xs">登出</span>
-            </button>
-          )}
+          </Link>
         </div>
         <div className="mt-4 flex w-full flex-col items-center px-4">
           <h3 className="max-w-70 overflow-hidden text-base font-bold text-ellipsis whitespace-nowrap">

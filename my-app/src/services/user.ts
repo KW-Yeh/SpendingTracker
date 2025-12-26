@@ -16,6 +16,7 @@ export async function getUser(email: string): Promise<User | null> {
       user_id,
       email,
       name,
+      avatar_url,
       created_at
     FROM users
     WHERE email = $1
@@ -51,7 +52,7 @@ export async function createUser(data: User): Promise<User> {
     INSERT INTO users (user_id, email, name)
     VALUES ($1, $2, $3)
     ON CONFLICT (user_id) DO NOTHING
-    RETURNING user_id, email, name, created_at
+    RETURNING user_id, email, name, avatar_url, created_at
   `;
 
   console.log('[DB createUser] Executing INSERT query...');
@@ -97,6 +98,12 @@ export async function putUser(
     paramIndex++;
   }
 
+  if (data.avatar_url !== undefined) {
+    updates.push(`avatar_url = $${paramIndex}`);
+    values.push(data.avatar_url);
+    paramIndex++;
+  }
+
   if (updates.length === 0) {
     throw new Error('沒有要更新的欄位');
   }
@@ -107,7 +114,7 @@ export async function putUser(
     UPDATE users
     SET ${updates.join(', ')}
     WHERE user_id = $${paramIndex}
-    RETURNING user_id, email, name, created_at
+    RETURNING user_id, email, name, avatar_url, created_at
   `;
 
   console.log('Executing query:', query);
