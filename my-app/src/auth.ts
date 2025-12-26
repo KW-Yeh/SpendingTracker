@@ -21,12 +21,31 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: '/login',
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       // 首次登入時，user 物件存在
       if (user) {
         token.email = user.email;
         token.name = user.name;
+
+        // Fetch user_id on first login and store in token
+        if (user.email) {
+          try {
+            const { getUser } = await import('@/services/userServices');
+            const response = await getUser(user.email);
+            if (response.status && response.data) {
+              token.userId = response.data.user_id;
+            }
+          } catch (error) {
+            console.error('[JWT] Error fetching user_id:', error);
+          }
+        }
       }
+
+      // Allow manual token updates
+      if (trigger === 'update' && token.userId) {
+        // Token already has userId, keep it
+      }
+
       return token;
     },
 
@@ -35,6 +54,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (token && session.user) {
         session.user.email = token.email as string;
         session.user.name = token.name as string;
+        // Add user_id to session
+        if (token.userId) {
+          (session.user as any).userId = token.userId;
+        }
       }
       return session;
     },

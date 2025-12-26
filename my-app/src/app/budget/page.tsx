@@ -7,97 +7,45 @@ import { MonthlyBudgetBlocks } from '@/app/budget/MonthlyBudgetBlocks';
 import { BudgetProvider, useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { getItems } from '@/services/getRecords';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, startTransition } from 'react';
 
 function BudgetContent() {
   const { currentGroup } = useGroupCtx();
-  const { syncBudget, loading } = useBudgetCtx();
+  const { syncBudget } = useBudgetCtx();
   const [yearlySpending, setYearlySpending] = useState<SpendingRecord[]>([]);
-  const [loadingSpending, setLoadingSpending] = useState(false);
 
+  // Parallel fetch: budget and spending data simultaneously
   useEffect(() => {
-    if (currentGroup?.account_id) {
-      syncBudget(currentGroup.account_id);
-    }
-  }, [currentGroup?.account_id, syncBudget]);
-
-  // Fetch year-to-date spending data
-  const fetchYearlySpending = useCallback(async () => {
     if (!currentGroup?.account_id) return;
 
-    setLoadingSpending(true);
-    try {
-      const now = new Date();
-      const startOfYear = new Date(now.getFullYear(), 0, 1);
-      const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
+    const accountId = currentGroup.account_id;
 
-      const response = await getItems(
-        String(currentGroup.account_id),
-        undefined,
-        startOfYear.toISOString(),
-        endOfYear.toISOString()
-      );
+    // Fetch both budget and spending data in parallel
+    Promise.all([
+      syncBudget(accountId),
+      (async () => {
+        const now = new Date();
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
 
-      if (response.status && response.data) {
-        setYearlySpending(response.data);
-      }
-    } catch (error) {
-      console.error('[BudgetPage] Error fetching spending data:', error);
-    } finally {
-      setLoadingSpending(false);
-    }
-  }, [currentGroup?.account_id]);
+        const response = await getItems(
+          String(accountId),
+          undefined,
+          startOfYear.toISOString(),
+          endOfYear.toISOString()
+        );
 
-  useEffect(() => {
-    fetchYearlySpending();
-  }, [fetchYearlySpending]);
-
-  if (loading) {
-    return (
-      <div className="content-wrapper space-y-3 md:space-y-5">
-        {/* Annual Budget Skeleton */}
-        <div className="bg-background w-full rounded-xl p-6 shadow">
-          <div className="flex items-center justify-between">
-            <div className="h-7 w-32 animate-pulse rounded bg-gray-200" />
-            <div className="h-4 w-20 animate-pulse rounded bg-gray-200" />
-          </div>
-          <div className="mt-4">
-            <div className="h-9 w-40 animate-pulse rounded bg-gray-200" />
-            <div className="mt-2 h-2 w-full animate-pulse rounded-full bg-gray-200" />
-            <div className="mt-2 h-5 w-48 animate-pulse rounded bg-gray-200" />
-          </div>
-        </div>
-
-        {/* Monthly Budget Skeleton */}
-        <div className="bg-background w-full rounded-xl p-6 shadow">
-          <div className="h-7 w-32 animate-pulse rounded bg-gray-200" />
-          <div className="mt-4">
-            <div className="h-9 w-40 animate-pulse rounded bg-gray-200" />
-            <div className="mt-1 h-4 w-48 animate-pulse rounded bg-gray-200" />
-            <div className="mt-2 h-2 w-full animate-pulse rounded-full bg-gray-200" />
-            <div className="mt-2 h-5 w-48 animate-pulse rounded bg-gray-200" />
-          </div>
-        </div>
-
-        {/* Monthly Blocks Skeleton */}
-        <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((i) => (
-            <div key={i} className="bg-background rounded-xl p-4 shadow">
-              <div className="flex items-center justify-between">
-                <div className="h-6 w-16 animate-pulse rounded bg-gray-200" />
-                <div className="h-5 w-12 animate-pulse rounded bg-gray-200" />
-              </div>
-              <div className="mt-2 h-8 w-32 animate-pulse rounded bg-gray-200" />
-              <div className="mt-3 space-y-2">
-                <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100" />
-                <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
+        if (response.status && response.data) {
+          // Use startTransition to make UI update non-blocking
+          startTransition(() => {
+            setYearlySpending(response.data);
+          });
+        }
+      })()
+    ]).catch((error) => {
+      console.error('[BudgetPage] Error fetching data:', error);
+    });
+  }, [currentGroup?.account_id, syncBudget]);
 
   if (!currentGroup) {
     return (
@@ -107,6 +55,7 @@ function BudgetContent() {
     );
   }
 
+  // Progressive rendering: Show UI immediately, data will populate when ready
   return (
     <div className="content-wrapper space-y-3 md:space-y-5">
       <div className="flex flex-col md:flex-row gap-3 md:gap-5">

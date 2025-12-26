@@ -63,13 +63,12 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
     refreshData();
   }, [refreshData]);
 
-  // 不過濾用戶，顯示帳本內所有交易
+  // 不過濾用戶，顯示帳本內所有交易 - Use startTransition for non-blocking updates
   useEffect(() => {
     startTransition(() => {
-      if (loading) return;
       setMonthlyData([...data]);
     });
-  }, [data, loading]);
+  }, [data]);
 
   // Calculate current month's budget total
   const currentMonthBudget = useMemo(() => {

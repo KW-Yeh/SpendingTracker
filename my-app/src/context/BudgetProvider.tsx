@@ -1,6 +1,7 @@
 'use client';
 
 import { getBudget, putBudget, deleteBudget } from '@/services/budgetServices';
+import { useIDB } from '@/hooks/useIDB';
 import {
   createContext,
   ReactNode,
@@ -8,6 +9,7 @@ import {
   useContext,
   useMemo,
   useState,
+  startTransition,
 } from 'react';
 
 const INIT_CTX_VAL: {
@@ -32,19 +34,61 @@ const INIT_CTX_VAL: {
 export const BudgetProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [budget, setBudget] = useState<Budget | null>(null);
+  const { db, getBudgetData, setBudgetData } = useIDB();
 
   const handleState = useCallback((data: Budget | null) => {
     setBudget(data);
     setLoading(false);
   }, []);
 
+  // Stale-While-Revalidate strategy for budget
   const syncBudget = useCallback(
-    (accountId: number) => {
-      setLoading(true);
+    async (accountId: number) => {
+      if (!db) {
+        // Fallback to direct API call
+        setLoading(true);
+        getBudget(accountId)
+          .then((res) => {
+            if (res.status) {
+              handleState(res.data);
+            } else {
+              handleState(null);
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            handleState(null);
+          });
+        return;
+      }
+
+      // Try cache first
+      try {
+        const cachedData = await getBudgetData(db, accountId);
+        if (cachedData) {
+          console.log('[BudgetProvider] Using cached budget data');
+          startTransition(() => {
+            setBudget(cachedData);
+            setLoading(false);
+          });
+        } else {
+          setLoading(true);
+        }
+      } catch (error) {
+        console.error('[BudgetProvider] Error reading cache:', error);
+        setLoading(true);
+      }
+
+      // Revalidate in background
       getBudget(accountId)
         .then((res) => {
           if (res.status) {
-            handleState(res.data);
+            startTransition(() => {
+              handleState(res.data);
+            });
+            if (res.data) {
+              setBudgetData(db, accountId, res.data).catch(console.error);
+            }
           } else {
             handleState(null);
           }
@@ -54,7 +98,7 @@ export const BudgetProvider = ({ children }: { children: ReactNode }) => {
           handleState(null);
         });
     },
-    [handleState],
+    [db, getBudgetData, setBudgetData, handleState],
   );
 
   const updateBudget = useCallback(
@@ -68,12 +112,16 @@ export const BudgetProvider = ({ children }: { children: ReactNode }) => {
       const res = await putBudget(data);
       if (res.status && res.data) {
         handleState(res.data);
+        // Update cache
+        if (db) {
+          setBudgetData(db, data.account_id, res.data).catch(console.error);
+        }
       } else {
         setLoading(false);
         throw new Error(res.message);
       }
     },
-    [handleState],
+    [db, setBudgetData, handleState],
   );
 
   const removeBudget = useCallback(

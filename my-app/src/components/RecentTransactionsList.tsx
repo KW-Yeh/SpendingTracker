@@ -18,7 +18,8 @@ export const RecentTransactionsList = ({ data, loading, refreshData }: Props) =>
       .slice(0, 5);
   }, [data]);
 
-  if (loading) {
+  // Only show loading skeleton if we have no data yet
+  if (loading && data.length === 0) {
     return (
       <div className="bg-background flex w-full flex-col rounded-2xl border border-gray-200 p-5 shadow-sm md:min-w-110">
         <h3 className="mb-4 text-lg font-bold">最近 5 筆交易</h3>

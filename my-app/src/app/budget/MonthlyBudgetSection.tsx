@@ -12,29 +12,33 @@ interface Props {
 export const MonthlyBudgetSection = ({ yearlySpending }: Props) => {
   const { budget } = useBudgetCtx();
 
-  // Calculate current month's budget
-  const currentMonth = new Date().getMonth() + 1;
-  const monthlyBudget = useMemo(() => {
-    if (!budget?.monthly_items) return 0;
-    let total = 0;
-    budget.monthly_items.forEach((item) => {
-      const monthAmount = item.months?.[currentMonth.toString()];
-      if (monthAmount) {
-        total += monthAmount;
-      }
-    });
-    return total;
-  }, [budget?.monthly_items, currentMonth]);
+  // Calculate current month's budget and spending
+  const { monthlyBudget, spent } = useMemo(() => {
+    const currentMonth = new Date().getMonth() + 1;
 
-  // Calculate spent from current month transactions
-  const spent = useMemo(() => {
+    // Calculate budget
+    let budgetTotal = 0;
+    if (budget?.monthly_items) {
+      budget.monthly_items.forEach((item) => {
+        const monthAmount = item.months?.[currentMonth.toString()];
+        if (monthAmount) {
+          budgetTotal += monthAmount;
+        }
+      });
+    }
+
+    // Calculate spent
     const currentMonthRecords = yearlySpending.filter((record) => {
       const recordDate = new Date(record.date);
       return recordDate.getMonth() + 1 === currentMonth;
     });
     const { totalOutcome } = getExpenseFromData(currentMonthRecords);
-    return totalOutcome;
-  }, [yearlySpending, currentMonth]);
+
+    return {
+      monthlyBudget: budgetTotal,
+      spent: totalOutcome
+    };
+  }, [budget?.monthly_items, yearlySpending]);
 
   const percentage = monthlyBudget ? (spent / monthlyBudget) * 100 : 0;
 

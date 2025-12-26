@@ -1,6 +1,7 @@
 'use client';
 
 import { getGroups } from '@/services/groupServices';
+import { useIDB } from '@/hooks/useIDB';
 import {
   createContext,
   ReactNode,
@@ -8,6 +9,7 @@ import {
   useContext,
   useMemo,
   useState,
+  startTransition,
 } from 'react';
 
 const INIT_CTX_VAL: {
@@ -30,24 +32,63 @@ export const GroupProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [groups, setGroups] = useState<Group[]>([]);
   const [currentGroup, setCurrentGroup] = useState<Group>();
+  const { db, getGroupData, setGroupData } = useIDB();
 
   const handleState = useCallback((res: Group[]) => {
     setGroups(res);
     setLoading(false);
   }, []);
 
+  // Stale-While-Revalidate strategy
   const queryGroup = useCallback(
-    (user_id: number) => {
-      setLoading(true);
+    async (user_id: number) => {
+      if (!db) {
+        // Fallback to direct API call if IndexedDB not ready
+        setLoading(true);
+        getGroups(user_id)
+          .then((res) => {
+            if (res.status) {
+              handleState(res.data);
+            }
+          })
+          .catch(console.error);
+        return;
+      }
+
+      // Try to get cached data first
+      try {
+        const cachedData = await getGroupData(db, user_id);
+        if (cachedData) {
+          // Show cached data immediately (stale)
+          console.log('[GroupProvider] Using cached group data');
+          startTransition(() => {
+            setGroups(cachedData);
+            setLoading(false);
+          });
+        } else {
+          // No cache, show loading
+          setLoading(true);
+        }
+      } catch (error) {
+        console.error('[GroupProvider] Error reading cache:', error);
+        setLoading(true);
+      }
+
+      // Always fetch fresh data in background (revalidate)
       getGroups(user_id)
         .then((res) => {
           if (res.status) {
-            handleState(res.data);
+            // Update UI with fresh data
+            startTransition(() => {
+              handleState(res.data);
+            });
+            // Update cache
+            setGroupData(db, user_id, res.data).catch(console.error);
           }
         })
         .catch(console.error);
     },
-    [handleState],
+    [db, getGroupData, setGroupData, handleState],
   );
 
   const ctxVal = useMemo(

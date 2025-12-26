@@ -6,11 +6,18 @@ import { useCallback, useEffect, useState } from 'react';
 enum StoreName {
   UserConfig = 'User Config',
   ExpenseRecord = 'Expense Record',
+  GroupData = 'Group Data',
+  BudgetData = 'Budget Data',
 }
 
 const DB_NAME = IDB_NAME;
 const DB_VERSION = IDB_VERSION;
-const STORE_NAME = [StoreName.UserConfig, StoreName.ExpenseRecord];
+const STORE_NAME = [
+  StoreName.UserConfig,
+  StoreName.ExpenseRecord,
+  StoreName.GroupData,
+  StoreName.BudgetData,
+];
 const STORE_CONFIG: Record<
   string,
   {
@@ -27,6 +34,14 @@ const STORE_CONFIG: Record<
     indexName: 'email',
     indexValue: ['email'],
   },
+  [StoreName.GroupData]: {
+    indexName: 'user_id',
+    indexValue: ['user_id'],
+  },
+  [StoreName.BudgetData]: {
+    indexName: 'account_id',
+    indexValue: ['account_id'],
+  },
 };
 
 // Generic DB record shapes used by the API below
@@ -42,6 +57,20 @@ interface SpendingDATA_IDB {
   year: number;
   month: number;
   data: string;
+}
+
+interface GroupDATA_IDB {
+  id?: number;
+  user_id: number;
+  data: string; // JSON stringified Group[]
+  timestamp: number; // For cache expiration
+}
+
+interface BudgetDATA_IDB {
+  id?: number;
+  account_id: number;
+  data: string; // JSON stringified Budget
+  timestamp: number; // For cache expiration
 }
 
 export const useIDB = () => {
@@ -292,5 +321,151 @@ export const useIDB = () => {
     [],
   );
 
-  return { db, setSpendingData, getSpendingData, setUserData, getUserData };
+  // Cache Group data
+  const setGroupData = useCallback(
+    (db: IDBDatabase | null, userId: number, groups: Group[]): Promise<void> => {
+      if (!db) return Promise.reject('Database not initialized');
+
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(STORE_NAME, 'readwrite');
+        const store = transaction.objectStore(StoreName.GroupData);
+
+        const newData: GroupDATA_IDB = {
+          user_id: userId,
+          data: JSON.stringify(groups),
+          timestamp: Date.now(),
+        };
+
+        const index = store.index(STORE_CONFIG[StoreName.GroupData].indexName);
+        const checkRequest = index.get([userId]);
+        checkRequest.onsuccess = () => {
+          const existingRecord = checkRequest.result;
+          if (existingRecord) {
+            newData.id = existingRecord.id;
+          }
+          const request = store.put(newData);
+          request.onsuccess = () => resolve();
+          request.onerror = () => reject(request.error);
+        };
+        checkRequest.onerror = () => reject(checkRequest.error);
+      });
+    },
+    [],
+  );
+
+  const getGroupData = useCallback(
+    (db: IDBDatabase | null, userId: number, maxAge: number = 5 * 60 * 1000): Promise<Group[] | null> => {
+      if (!db) return Promise.reject('Database not initialized');
+
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(STORE_NAME, 'readonly');
+        const store = transaction.objectStore(StoreName.GroupData);
+        const index = store.index(STORE_CONFIG[StoreName.GroupData].indexName);
+        const request = index.get([userId]);
+
+        request.onsuccess = () => {
+          const result = request.result as GroupDATA_IDB | undefined;
+          if (!result) {
+            resolve(null);
+            return;
+          }
+
+          // Check cache expiration
+          if (Date.now() - result.timestamp > maxAge) {
+            resolve(null); // Cache expired
+            return;
+          }
+
+          try {
+            const groups = JSON.parse(result.data) as Group[];
+            resolve(groups);
+          } catch (error) {
+            reject(error);
+          }
+        };
+        request.onerror = () => reject(request.error);
+      });
+    },
+    [],
+  );
+
+  // Cache Budget data
+  const setBudgetData = useCallback(
+    (db: IDBDatabase | null, accountId: number, budget: Budget): Promise<void> => {
+      if (!db) return Promise.reject('Database not initialized');
+
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(STORE_NAME, 'readwrite');
+        const store = transaction.objectStore(StoreName.BudgetData);
+
+        const newData: BudgetDATA_IDB = {
+          account_id: accountId,
+          data: JSON.stringify(budget),
+          timestamp: Date.now(),
+        };
+
+        const index = store.index(STORE_CONFIG[StoreName.BudgetData].indexName);
+        const checkRequest = index.get([accountId]);
+        checkRequest.onsuccess = () => {
+          const existingRecord = checkRequest.result;
+          if (existingRecord) {
+            newData.id = existingRecord.id;
+          }
+          const request = store.put(newData);
+          request.onsuccess = () => resolve();
+          request.onerror = () => reject(request.error);
+        };
+        checkRequest.onerror = () => reject(checkRequest.error);
+      });
+    },
+    [],
+  );
+
+  const getBudgetData = useCallback(
+    (db: IDBDatabase | null, accountId: number, maxAge: number = 5 * 60 * 1000): Promise<Budget | null> => {
+      if (!db) return Promise.reject('Database not initialized');
+
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(STORE_NAME, 'readonly');
+        const store = transaction.objectStore(StoreName.BudgetData);
+        const index = store.index(STORE_CONFIG[StoreName.BudgetData].indexName);
+        const request = index.get([accountId]);
+
+        request.onsuccess = () => {
+          const result = request.result as BudgetDATA_IDB | undefined;
+          if (!result) {
+            resolve(null);
+            return;
+          }
+
+          // Check cache expiration
+          if (Date.now() - result.timestamp > maxAge) {
+            resolve(null); // Cache expired
+            return;
+          }
+
+          try {
+            const budget = JSON.parse(result.data) as Budget;
+            resolve(budget);
+          } catch (error) {
+            reject(error);
+          }
+        };
+        request.onerror = () => reject(request.error);
+      });
+    },
+    [],
+  );
+
+  return {
+    db,
+    setSpendingData,
+    getSpendingData,
+    setUserData,
+    getUserData,
+    setGroupData,
+    getGroupData,
+    setBudgetData,
+    getBudgetData,
+  };
 };
