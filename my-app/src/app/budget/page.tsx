@@ -6,14 +6,14 @@ import { MonthlyBudgetSection } from '@/app/budget/MonthlyBudgetSection';
 import { MonthlyBudgetBlocks } from '@/app/budget/MonthlyBudgetBlocks';
 import { BudgetProvider, useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
-import { useGetSpendingCtx } from '@/context/SpendingProvider';
-import { useEffect, useState } from 'react';
+import { getItems } from '@/services/getRecords';
+import { useEffect, useState, useCallback } from 'react';
 
 function BudgetContent() {
   const { currentGroup } = useGroupCtx();
   const { syncBudget, loading } = useBudgetCtx();
-  const { syncData, data: spendingData } = useGetSpendingCtx();
   const [yearlySpending, setYearlySpending] = useState<SpendingRecord[]>([]);
+  const [loadingSpending, setLoadingSpending] = useState(false);
 
   useEffect(() => {
     if (currentGroup?.account_id) {
@@ -22,25 +22,35 @@ function BudgetContent() {
   }, [currentGroup?.account_id, syncBudget]);
 
   // Fetch year-to-date spending data
-  useEffect(() => {
-    if (currentGroup?.account_id) {
+  const fetchYearlySpending = useCallback(async () => {
+    if (!currentGroup?.account_id) return;
+
+    setLoadingSpending(true);
+    try {
       const now = new Date();
       const startOfYear = new Date(now.getFullYear(), 0, 1);
       const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
 
-      syncData(
+      const response = await getItems(
         String(currentGroup.account_id),
         undefined,
         startOfYear.toISOString(),
         endOfYear.toISOString()
       );
-    }
-  }, [currentGroup?.account_id, syncData]);
 
-  // Update yearly spending when data changes
+      if (response.status && response.data) {
+        setYearlySpending(response.data);
+      }
+    } catch (error) {
+      console.error('[BudgetPage] Error fetching spending data:', error);
+    } finally {
+      setLoadingSpending(false);
+    }
+  }, [currentGroup?.account_id]);
+
   useEffect(() => {
-    setYearlySpending(spendingData);
-  }, [spendingData]);
+    fetchYearlySpending();
+  }, [fetchYearlySpending]);
 
   if (loading) {
     return (
@@ -100,8 +110,8 @@ function BudgetContent() {
   return (
     <div className="content-wrapper space-y-3 md:space-y-5">
       <div className="flex flex-col md:flex-row gap-3 md:gap-5">
-        <AnnualBudgetSection />
-        <MonthlyBudgetSection />
+        <AnnualBudgetSection yearlySpending={yearlySpending} />
+        <MonthlyBudgetSection yearlySpending={yearlySpending} />
       </div>
       <MonthlyBudgetBlocks yearlySpending={yearlySpending} />
     </div>

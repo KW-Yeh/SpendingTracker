@@ -6,6 +6,7 @@ import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { normalizeNumber } from '@/utils/normalizeNumber';
+import { SpendingType } from '@/utils/constants';
 import { useState, useCallback, useMemo } from 'react';
 
 const MONTHS = [
@@ -63,10 +64,10 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
     });
 
     yearlySpending.forEach((record) => {
-      if (record.type === 'outcome') {
+      if (record.type === SpendingType.Outcome) {
         const recordDate = new Date(record.date);
         const month = recordDate.getMonth() + 1;
-        const amount = parseFloat(record.amount) || 0;
+        const amount = Number(record.amount);
         spending[month] = (spending[month] || 0) + amount;
       }
     });

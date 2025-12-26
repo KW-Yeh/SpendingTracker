@@ -2,9 +2,14 @@
 
 import { useBudgetCtx } from '@/context/BudgetProvider';
 import { normalizeNumber } from '@/utils/normalizeNumber';
+import { getExpenseFromData } from '@/utils/getExpenseFromData';
 import { useMemo } from 'react';
 
-export const AnnualBudgetSection = () => {
+interface Props {
+  yearlySpending: SpendingRecord[];
+}
+
+export const AnnualBudgetSection = ({ yearlySpending }: Props) => {
   const { budget } = useBudgetCtx();
 
   // Calculate annual budget from all monthly items
@@ -20,12 +25,16 @@ export const AnnualBudgetSection = () => {
     return total;
   }, [budget?.monthly_items]);
 
-  // TODO: Calculate spent from transactions
-  const spent = 0;
+  // Calculate spent from transactions
+  const spent = useMemo(() => {
+    const { totalOutcome } = getExpenseFromData(yearlySpending);
+    return totalOutcome;
+  }, [yearlySpending]);
+
   const percentage = annualBudget ? (spent / annualBudget) * 100 : 0;
 
   return (
-    <div className="bg-background w-full md:w-110 rounded-xl p-6 shadow">
+    <div className="bg-background w-full md:flex-1 md:max-w-110 rounded-xl p-6 shadow">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">年度預算</h2>
         <span className="text-xs text-gray-500">(自動計算)</span>

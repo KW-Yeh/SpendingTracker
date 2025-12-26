@@ -2,17 +2,44 @@
 
 import { useBudgetCtx } from '@/context/BudgetProvider';
 import { normalizeNumber } from '@/utils/normalizeNumber';
+import { getExpenseFromData } from '@/utils/getExpenseFromData';
+import { useMemo } from 'react';
 
-export const MonthlyBudgetSection = () => {
+interface Props {
+  yearlySpending: SpendingRecord[];
+}
+
+export const MonthlyBudgetSection = ({ yearlySpending }: Props) => {
   const { budget } = useBudgetCtx();
 
-  const monthlyBudget = budget?.monthly_budget || 0;
-  // TODO: Calculate spent from current month transactions
-  const spent = 0;
+  // Calculate current month's budget
+  const currentMonth = new Date().getMonth() + 1;
+  const monthlyBudget = useMemo(() => {
+    if (!budget?.monthly_items) return 0;
+    let total = 0;
+    budget.monthly_items.forEach((item) => {
+      const monthAmount = item.months?.[currentMonth.toString()];
+      if (monthAmount) {
+        total += monthAmount;
+      }
+    });
+    return total;
+  }, [budget?.monthly_items, currentMonth]);
+
+  // Calculate spent from current month transactions
+  const spent = useMemo(() => {
+    const currentMonthRecords = yearlySpending.filter((record) => {
+      const recordDate = new Date(record.date);
+      return recordDate.getMonth() + 1 === currentMonth;
+    });
+    const { totalOutcome } = getExpenseFromData(currentMonthRecords);
+    return totalOutcome;
+  }, [yearlySpending, currentMonth]);
+
   const percentage = monthlyBudget ? (spent / monthlyBudget) * 100 : 0;
 
   return (
-    <div className="bg-background w-full md:w-110 rounded-xl p-6 shadow">
+    <div className="bg-background w-full md:flex-1 md:max-w-110 rounded-xl p-6 shadow">
       <h2 className="text-xl font-bold">本月預算</h2>
 
       <div className="mt-4">
