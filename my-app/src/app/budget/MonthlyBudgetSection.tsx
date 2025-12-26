@@ -12,7 +12,7 @@ export const MonthlyBudgetSection = () => {
   const percentage = monthlyBudget ? (spent / monthlyBudget) * 100 : 0;
 
   return (
-    <div className="bg-background w-full rounded-xl p-6 shadow">
+    <div className="bg-background w-full md:max-w-110 rounded-xl p-6 shadow">
       <h2 className="text-xl font-bold">本月預算</h2>
 
       <div className="mt-4">

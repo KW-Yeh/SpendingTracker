@@ -169,7 +169,7 @@ export const MonthlyBudgetBlocks = () => {
 
   return (
     <>
-      <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 md:max-w-250">
         {MONTHS.map((month) => {
           const monthItems = getMonthItems(month.value);
           const monthTotal = monthlyTotals[month.value];

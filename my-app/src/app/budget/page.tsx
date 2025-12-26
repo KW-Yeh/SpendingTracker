@@ -20,7 +20,7 @@ function BudgetContent() {
 
   if (loading) {
     return (
-      <div className="content-wrapper space-y-6">
+      <div className="content-wrapper space-y-3 md:space-y-5">
         {/* Annual Budget Skeleton */}
         <div className="bg-background w-full rounded-xl p-6 shadow">
           <div className="flex items-center justify-between">
@@ -74,9 +74,11 @@ function BudgetContent() {
   }
 
   return (
-    <div className="content-wrapper space-y-6">
-      <AnnualBudgetSection />
-      <MonthlyBudgetSection />
+    <div className="content-wrapper space-y-3 md:space-y-5">
+      <div className="flex flex-col md:flex-row gap-3 md:gap-5">
+        <AnnualBudgetSection />
+        <MonthlyBudgetSection />
+      </div>
       <MonthlyBudgetBlocks />
     </div>
   );
