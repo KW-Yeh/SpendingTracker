@@ -24,12 +24,12 @@ export default function OverView(props: Props) {
       <div className="flex h-full min-h-35 flex-col md:min-h-50">
         <div className="mb-2">
           <h3 className="mb-1 text-sm font-medium text-gray-500">
-            結餘 (總收入: ${normalizeNumber(totalIncome)})
+            結餘 ${normalizeNumber(totalIncome - totalOutcome)}
           </h3>
           <span className="flex items-center gap-2">
             <MdOutlineWallet className="text-primary-400 size-6" />
             <span className="text-primary-500 text-xl leading-12 font-bold sm:text-3xl">
-              {`$${normalizeNumber(totalIncome - totalOutcome)}`}
+              {`$${normalizeNumber(monthlyBudget - totalOutcome)}`}
             </span>
           </span>
         </div>
@@ -68,7 +68,7 @@ export default function OverView(props: Props) {
         </AddExpenseBtn>
       </div>
       <UsagePieChart
-        totalIncome={totalIncome}
+        totalIncome={monthlyBudget}
         totalOutcome={totalOutcome}
         isMobile={isMobile}
       />

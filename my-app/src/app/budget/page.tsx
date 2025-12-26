@@ -32,7 +32,7 @@ function BudgetContent() {
           String(accountId),
           undefined,
           startOfYear.toISOString(),
-          endOfYear.toISOString()
+          endOfYear.toISOString(),
         );
 
         if (response.status && response.data) {
@@ -41,7 +41,7 @@ function BudgetContent() {
             setYearlySpending(response.data);
           });
         }
-      })()
+      })(),
     ]).catch((error) => {
       console.error('[BudgetPage] Error fetching data:', error);
     });
@@ -58,7 +58,7 @@ function BudgetContent() {
   // Progressive rendering: Show UI immediately, data will populate when ready
   return (
     <div className="content-wrapper space-y-3 md:space-y-5">
-      <div className="flex flex-col md:flex-row gap-3 md:gap-5">
+      <div className="grid w-full grid-cols-1 gap-3 md:max-w-250 md:grid-cols-2 md:gap-5">
         <AnnualBudgetSection yearlySpending={yearlySpending} />
         <MonthlyBudgetSection yearlySpending={yearlySpending} />
       </div>

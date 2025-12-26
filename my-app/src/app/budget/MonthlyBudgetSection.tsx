@@ -36,18 +36,20 @@ export const MonthlyBudgetSection = ({ yearlySpending }: Props) => {
 
     return {
       monthlyBudget: budgetTotal,
-      spent: totalOutcome
+      spent: totalOutcome,
     };
   }, [budget?.monthly_items, yearlySpending]);
 
   const percentage = monthlyBudget ? (spent / monthlyBudget) * 100 : 0;
 
   return (
-    <div className="bg-background w-full md:flex-1 md:max-w-110 rounded-xl p-6 shadow">
+    <div className="bg-background w-full rounded-xl p-6 shadow">
       <h2 className="text-xl font-bold">本月預算</h2>
 
       <div className="mt-4">
-        <p className="text-3xl font-bold">{normalizeNumber(monthlyBudget)} 元</p>
+        <p className="text-3xl font-bold">
+          {normalizeNumber(monthlyBudget)} 元
+        </p>
         <p className="text-sm text-gray-500">(由月度項目自動計算)</p>
 
         <div className="mt-2 h-2 w-full rounded-full bg-gray-200">
