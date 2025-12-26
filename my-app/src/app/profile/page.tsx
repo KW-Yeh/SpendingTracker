@@ -1,6 +1,7 @@
 'use client';
 
 import { UserAvatar } from '@/components/UserAvatar';
+import { ImageCropper } from '@/components/ImageCropper';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -11,6 +12,7 @@ export default function ProfilePage() {
   const { config: user, setter: setUser } = useUserConfigCtx();
   const [name, setName] = useState(user?.name || '');
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar_url || '');
+  const [tempImageUrl, setTempImageUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -25,20 +27,20 @@ export default function ProfilePage() {
       return;
     }
 
-    // 驗證檔案大小 (限制 2MB)
-    if (file.size > 2 * 1024 * 1024) {
-      alert('圖片檔案不可超過 2MB');
+    // 驗證檔案大小 (限制 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('圖片檔案不可超過 5MB');
       return;
     }
 
     setIsUploading(true);
 
     try {
-      // 將圖片轉換為 base64
+      // 將圖片轉換為 base64 並開啟裁剪器
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
-        setAvatarUrl(base64String);
+        setTempImageUrl(base64String);
         setIsUploading(false);
       };
       reader.onerror = () => {
@@ -51,6 +53,15 @@ export default function ProfilePage() {
       alert('圖片上傳失敗');
       setIsUploading(false);
     }
+  };
+
+  const handleCropComplete = (croppedImage: string) => {
+    setAvatarUrl(croppedImage);
+    setTempImageUrl(null);
+  };
+
+  const handleCropCancel = () => {
+    setTempImageUrl(null);
   };
 
   const handleSave = async () => {
@@ -91,9 +102,19 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      {/* Header */}
-      <div className="bg-white shadow-sm">
+    <>
+      {/* Image Cropper Modal */}
+      {tempImageUrl && (
+        <ImageCropper
+          image={tempImageUrl}
+          onCropComplete={handleCropComplete}
+          onCancel={handleCropCancel}
+        />
+      )}
+
+      <div className="min-h-screen bg-gray-50 pb-20">
+        {/* Header */}
+        <div className="bg-white shadow-sm">
         <div className="mx-auto max-w-2xl px-4 py-4">
           <div className="flex items-center justify-between">
             <button
@@ -209,6 +230,7 @@ export default function ProfilePage() {
           </button>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
