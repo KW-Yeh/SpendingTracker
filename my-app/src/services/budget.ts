@@ -68,36 +68,54 @@ export async function putBudget(data: {
   }, 0);
 
   const db = await getDb();
+  const monthlyItemsJson = JSON.stringify(monthly_items);
 
-  const query = `
-    INSERT INTO budgets (
-      budget_id,
+  // Check if budget exists for this account
+  const checkQuery = `SELECT budget_id FROM budgets WHERE account_id = $1`;
+  const existingBudget = await db.query(checkQuery, [account_id]);
+
+  let result;
+
+  if (existingBudget.rows.length > 0) {
+    // Update existing budget
+    const updateQuery = `
+      UPDATE budgets
+      SET annual_budget = $1,
+          monthly_budget = $2,
+          monthly_items = $3,
+          updated_at = NOW()
+      WHERE account_id = $4
+      RETURNING budget_id, account_id, annual_budget, monthly_budget, monthly_items, created_at, updated_at
+    `;
+    result = await db.query(updateQuery, [
+      annual_budget,
+      monthly_budget,
+      monthlyItemsJson,
+      account_id,
+    ]);
+  } else {
+    // Insert new budget
+    const budgetId = budget_id || Date.now();
+    const insertQuery = `
+      INSERT INTO budgets (
+        budget_id,
+        account_id,
+        annual_budget,
+        monthly_budget,
+        monthly_items,
+        created_at,
+        updated_at
+      ) VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+      RETURNING budget_id, account_id, annual_budget, monthly_budget, monthly_items, created_at, updated_at
+    `;
+    result = await db.query(insertQuery, [
+      budgetId,
       account_id,
       annual_budget,
       monthly_budget,
-      monthly_items,
-      created_at,
-      updated_at
-    ) VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
-    ON CONFLICT (account_id)
-    DO UPDATE SET
-      annual_budget = EXCLUDED.annual_budget,
-      monthly_budget = EXCLUDED.monthly_budget,
-      monthly_items = EXCLUDED.monthly_items,
-      updated_at = NOW()
-    RETURNING budget_id, account_id, annual_budget, monthly_budget, monthly_items, created_at, updated_at
-  `;
-
-  const budgetId = budget_id || Date.now();
-  const monthlyItemsJson = JSON.stringify(monthly_items);
-
-  const result = await db.query(query, [
-    budgetId,
-    account_id,
-    annual_budget,
-    monthly_budget,
-    monthlyItemsJson,
-  ]);
+      monthlyItemsJson,
+    ]);
+  }
 
   const budget = result.rows[0];
   return {
