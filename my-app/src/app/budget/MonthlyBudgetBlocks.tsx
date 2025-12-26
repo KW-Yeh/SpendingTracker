@@ -23,7 +23,11 @@ const MONTHS = [
   { value: 12, label: '十二月' },
 ];
 
-export const MonthlyBudgetBlocks = () => {
+interface Props {
+  yearlySpending: SpendingRecord[];
+}
+
+export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
   const { budget, updateBudget } = useBudgetCtx();
   const { currentGroup } = useGroupCtx();
   const [modalOpen, setModalOpen] = useState(false);
@@ -50,6 +54,25 @@ export const MonthlyBudgetBlocks = () => {
 
     return totals;
   }, [budget?.monthly_items]);
+
+  // Calculate actual spending for each month
+  const monthlySpending = useMemo(() => {
+    const spending: { [key: number]: number } = {};
+    MONTHS.forEach((month) => {
+      spending[month.value] = 0;
+    });
+
+    yearlySpending.forEach((record) => {
+      if (record.type === 'outcome') {
+        const recordDate = new Date(record.date);
+        const month = recordDate.getMonth() + 1;
+        const amount = parseFloat(record.amount) || 0;
+        spending[month] = (spending[month] || 0) + amount;
+      }
+    });
+
+    return spending;
+  }, [yearlySpending]);
 
   // Get items for a specific month
   const getMonthItems = useCallback(
@@ -173,7 +196,10 @@ export const MonthlyBudgetBlocks = () => {
         {MONTHS.map((month) => {
           const monthItems = getMonthItems(month.value);
           const monthTotal = monthlyTotals[month.value];
+          const monthSpent = monthlySpending[month.value];
+          const usagePercentage = monthTotal > 0 ? (monthSpent / monthTotal) * 100 : 0;
           const isCurrentMonth = month.value === currentMonth;
+          const isOverBudget = monthSpent > monthTotal;
 
           return (
             <div
@@ -198,9 +224,33 @@ export const MonthlyBudgetBlocks = () => {
                 </button>
               </div>
 
-              <p className="mt-2 text-2xl font-bold">
-                {normalizeNumber(monthTotal)} 元
-              </p>
+              <div className="mt-2">
+                <p className="text-2xl font-bold">
+                  {normalizeNumber(monthTotal)} 元
+                </p>
+                <p className="text-sm text-gray-500">
+                  已使用 {normalizeNumber(monthSpent)} 元
+                  {monthTotal > 0 && (
+                    <span className={`ml-1 font-medium ${isOverBudget ? 'text-red-600' : 'text-green-600'}`}>
+                      ({usagePercentage.toFixed(1)}%)
+                    </span>
+                  )}
+                </p>
+              </div>
+
+              {/* Progress Bar */}
+              {monthTotal > 0 && (
+                <div className="mt-2">
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                    <div
+                      className={`h-full transition-all ${
+                        isOverBudget ? 'bg-red-500' : 'bg-green-500'
+                      }`}
+                      style={{ width: `${Math.min(usagePercentage, 100)}%` }}
+                    />
+                  </div>
+                </div>
+              )}
 
               <div className="mt-3 space-y-2">
                 {monthItems.length > 0 ? (

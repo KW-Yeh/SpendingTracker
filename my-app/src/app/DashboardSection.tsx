@@ -6,17 +6,17 @@ import { QuickNavigationCards } from '@/components/QuickNavigationCards';
 import { RecentTransactionsList } from '@/components/RecentTransactionsList';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
-import { useUserConfigCtx } from '@/context/UserConfigProvider';
+import { getBudget } from '@/services/budgetServices';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
-import { startTransition, useCallback, useEffect, useState } from 'react';
+import { startTransition, useCallback, useEffect, useState, useMemo } from 'react';
 import { YearMonthFilter } from './analysis/YearMonthFilter';
 import { useYearMonth } from '@/hooks/useYearMonth';
 
 export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
-  const { budgetData } = useUserConfigCtx();
   const { syncData, data, loading } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
   const [monthlyData, setMonthlyData] = useState<SpendingRecord[]>([]);
+  const [budget, setBudget] = useState<Budget | null>(null);
   const dateHook = useYearMonth(new Date());
 
   const refreshData = useCallback(() => {
@@ -45,6 +45,19 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
     [syncData],
   );
 
+  // Fetch budget data
+  useEffect(() => {
+    if (currentGroup?.account_id) {
+      getBudget(currentGroup.account_id)
+        .then((res) => {
+          if (res.status && res.data) {
+            setBudget(res.data);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [currentGroup?.account_id]);
+
   // Auto-sync current month data
   useEffect(() => {
     refreshData();
@@ -58,6 +71,23 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
     });
   }, [data, loading]);
 
+  // Calculate current month's budget total
+  const currentMonthBudget = useMemo(() => {
+    if (!budget?.monthly_items) return 0;
+
+    const currentMonth = new Date().getMonth() + 1;
+    let total = 0;
+
+    budget.monthly_items.forEach((item) => {
+      const monthAmount = item.months?.[currentMonth.toString()];
+      if (monthAmount) {
+        total += monthAmount;
+      }
+    });
+
+    return total;
+  }, [budget]);
+
   return (
     <div className="content-wrapper">
       <YearMonthFilter
@@ -69,7 +99,7 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
 
       <div className="flex w-full flex-col gap-3 md:w-auto md:flex-row md:gap-5">
         <Overview
-          budgets={budgetData.budget}
+          monthlyBudget={currentMonthBudget}
           costList={monthlyData}
           isMobile={isMobile}
         />

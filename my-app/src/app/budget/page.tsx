@@ -6,17 +6,41 @@ import { MonthlyBudgetSection } from '@/app/budget/MonthlyBudgetSection';
 import { MonthlyBudgetBlocks } from '@/app/budget/MonthlyBudgetBlocks';
 import { BudgetProvider, useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
-import { useEffect } from 'react';
+import { useGetSpendingCtx } from '@/context/SpendingProvider';
+import { useEffect, useState } from 'react';
 
 function BudgetContent() {
   const { currentGroup } = useGroupCtx();
   const { syncBudget, loading } = useBudgetCtx();
+  const { syncData, data: spendingData } = useGetSpendingCtx();
+  const [yearlySpending, setYearlySpending] = useState<SpendingRecord[]>([]);
 
   useEffect(() => {
     if (currentGroup?.account_id) {
       syncBudget(currentGroup.account_id);
     }
   }, [currentGroup?.account_id, syncBudget]);
+
+  // Fetch year-to-date spending data
+  useEffect(() => {
+    if (currentGroup?.account_id) {
+      const now = new Date();
+      const startOfYear = new Date(now.getFullYear(), 0, 1);
+      const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
+
+      syncData(
+        String(currentGroup.account_id),
+        undefined,
+        startOfYear.toISOString(),
+        endOfYear.toISOString()
+      );
+    }
+  }, [currentGroup?.account_id, syncData]);
+
+  // Update yearly spending when data changes
+  useEffect(() => {
+    setYearlySpending(spendingData);
+  }, [spendingData]);
 
   if (loading) {
     return (
@@ -79,7 +103,7 @@ function BudgetContent() {
         <AnnualBudgetSection />
         <MonthlyBudgetSection />
       </div>
-      <MonthlyBudgetBlocks />
+      <MonthlyBudgetBlocks yearlySpending={yearlySpending} />
     </div>
   );
 }
