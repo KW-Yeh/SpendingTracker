@@ -11,12 +11,12 @@
 -- Output: JSON with groups and recent transactions
 
 CREATE OR REPLACE FUNCTION get_user_dashboard_data(p_user_id INT)
-RETURNS json
+RETURNS jsonb
 LANGUAGE plpgsql
 STABLE
 AS $$
 DECLARE
-  result json;
+  result jsonb;
 BEGIN
   SELECT json_build_object(
     'user', (
@@ -93,12 +93,12 @@ CREATE OR REPLACE FUNCTION get_budget_page_data(
   p_account_id INT,
   p_year INT DEFAULT EXTRACT(YEAR FROM CURRENT_DATE)::INT
 )
-RETURNS json
+RETURNS jsonb
 LANGUAGE plpgsql
 STABLE
 AS $$
 DECLARE
-  result json;
+  result jsonb;
   year_start DATE;
   year_end DATE;
 BEGIN
@@ -190,12 +190,12 @@ CREATE OR REPLACE FUNCTION get_account_transactions(
   p_start_date DATE DEFAULT NULL,
   p_end_date DATE DEFAULT NULL
 )
-RETURNS json
+RETURNS jsonb
 LANGUAGE plpgsql
 STABLE
 AS $$
 DECLARE
-  result json;
+  result jsonb;
 BEGIN
   SELECT COALESCE(json_agg(
     json_build_object(
@@ -234,12 +234,12 @@ COMMENT ON FUNCTION get_account_transactions(INT, DATE, DATE) IS
 -- Output: JSON array of groups with permission flags
 
 CREATE OR REPLACE FUNCTION get_user_groups_with_permissions(p_user_id INT)
-RETURNS json
+RETURNS jsonb
 LANGUAGE plpgsql
 STABLE
 AS $$
 DECLARE
-  result json;
+  result jsonb;
 BEGIN
   SELECT COALESCE(json_agg(
     json_build_object(
