@@ -144,20 +144,30 @@ BEGIN
         AND s.date <= year_end
     ),
     'monthly_statistics', (
-      SELECT json_object_agg(
-        month_num::TEXT,
-        json_build_object(
-          'total_outcome', COALESCE(SUM(s.amount::NUMERIC) FILTER (WHERE s.type = 'Outcome'), 0),
-          'total_income', COALESCE(SUM(s.amount::NUMERIC) FILTER (WHERE s.type = 'Income'), 0),
-          'transaction_count', COUNT(s.spending_id)
-        )
+      SELECT COALESCE(
+        json_object_agg(
+          month_num::TEXT,
+          json_build_object(
+            'total_outcome', COALESCE(total_outcome, 0),
+            'total_income', COALESCE(total_income, 0),
+            'transaction_count', COALESCE(transaction_count, 0)
+          )
+        ),
+        '{}'::json
       )
-      FROM generate_series(1, 12) AS month_num
-      LEFT JOIN transactions s ON
-        s.account_id = p_account_id
-        AND EXTRACT(YEAR FROM s.date)::INT = p_year
-        AND EXTRACT(MONTH FROM s.date)::INT = month_num
-      GROUP BY month_num
+      FROM (
+        SELECT
+          month_num,
+          SUM(CASE WHEN s.type = 'Outcome' THEN s.amount::NUMERIC ELSE 0 END) as total_outcome,
+          SUM(CASE WHEN s.type = 'Income' THEN s.amount::NUMERIC ELSE 0 END) as total_income,
+          COUNT(s.spending_id) as transaction_count
+        FROM generate_series(1, 12) AS month_num
+        LEFT JOIN transactions s ON
+          s.account_id = p_account_id
+          AND EXTRACT(YEAR FROM s.date)::INT = p_year
+          AND EXTRACT(MONTH FROM s.date)::INT = month_num
+        GROUP BY month_num
+      ) monthly_data
     )
   ) INTO result;
 
