@@ -42,8 +42,8 @@ BEGIN
         )
         ORDER BY g.created_at DESC
       ), '[]'::json)
-      FROM group_members gm
-      JOIN groups g ON gm.account_id = g.account_id
+      FROM account_members gm
+      JOIN accounts g ON gm.account_id = g.account_id
       WHERE gm.user_id = p_user_id
     ),
     'recent_transactions', (
@@ -63,10 +63,10 @@ BEGIN
         )
         ORDER BY s.date DESC, s.created_at DESC
       ), '[]'::json)
-      FROM spendings s
+      FROM transactions s
       WHERE s.account_id IN (
         SELECT gm.account_id
-        FROM group_members gm
+        FROM account_members gm
         WHERE gm.user_id = p_user_id
       )
       AND s.date >= CURRENT_DATE - INTERVAL '30 days'
@@ -138,7 +138,7 @@ BEGIN
         )
         ORDER BY s.date DESC
       ), '[]'::json)
-      FROM spendings s
+      FROM transactions s
       WHERE s.account_id = p_account_id
         AND s.date >= year_start
         AND s.date <= year_end
@@ -153,7 +153,7 @@ BEGIN
         )
       )
       FROM generate_series(1, 12) AS month_num
-      LEFT JOIN spendings s ON
+      LEFT JOIN transactions s ON
         s.account_id = p_account_id
         AND EXTRACT(YEAR FROM s.date)::INT = p_year
         AND EXTRACT(MONTH FROM s.date)::INT = month_num
@@ -206,7 +206,7 @@ BEGIN
     ORDER BY s.date DESC, s.created_at DESC
   ), '[]'::json)
   INTO result
-  FROM spendings s
+  FROM transactions s
   WHERE s.account_id = p_account_id
     AND (p_start_date IS NULL OR s.date >= p_start_date)
     AND (p_end_date IS NULL OR s.date <= p_end_date);
@@ -245,7 +245,7 @@ BEGIN
       'is_owner', (g.owner_id = p_user_id),
       'member_count', (
         SELECT COUNT(*)
-        FROM group_members gm2
+        FROM account_members gm2
         WHERE gm2.account_id = g.account_id
       ),
       'created_at', g.created_at
@@ -253,8 +253,8 @@ BEGIN
     ORDER BY g.created_at DESC
   ), '[]'::json)
   INTO result
-  FROM group_members gm
-  JOIN groups g ON gm.account_id = g.account_id
+  FROM account_members gm
+  JOIN accounts g ON gm.account_id = g.account_id
   WHERE gm.user_id = p_user_id;
 
   RETURN result;

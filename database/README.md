@@ -104,11 +104,11 @@ SELECT
   indexdef
 FROM pg_indexes
 WHERE indexname IN (
-  'idx_group_members_user_account',
-  'idx_spendings_account_date_type',
-  'idx_spendings_outcome_only',
+  'idx_account_members_user_account',
+  'idx_transactions_account_date_type',
+  'idx_transactions_outcome_only',
   'idx_budgets_account',
-  'idx_spendings_year_month',
+  'idx_transactions_year_month',
   'idx_users_email'
 )
 ORDER BY tablename, indexname;
@@ -122,13 +122,13 @@ ORDER BY tablename, indexname;
 -- 測試帳本查詢 (應該使用索引)
 EXPLAIN ANALYZE
 SELECT gm.account_id, g.name
-FROM group_members gm
-JOIN groups g ON gm.account_id = g.account_id
+FROM account_members gm
+JOIN accounts g ON gm.account_id = g.account_id
 WHERE gm.user_id = 1;
 ```
 
 **預期結果**:
-- 查詢計畫中應該出現 "Index Scan using idx_group_members_user_account"
+- 查詢計畫中應該出現 "Index Scan using idx_account_members_user_account"
 - 執行時間應該顯著減少
 
 ### 3. 監控索引使用情況
@@ -158,11 +158,11 @@ ORDER BY idx_scan DESC;
 
 ```sql
 -- 移除所有效能優化索引
-DROP INDEX IF EXISTS idx_group_members_user_account;
-DROP INDEX IF EXISTS idx_spendings_account_date_type;
-DROP INDEX IF EXISTS idx_spendings_outcome_only;
+DROP INDEX IF EXISTS idx_account_members_user_account;
+DROP INDEX IF EXISTS idx_transactions_account_date_type;
+DROP INDEX IF EXISTS idx_transactions_outcome_only;
 DROP INDEX IF EXISTS idx_budgets_account;
-DROP INDEX IF EXISTS idx_spendings_year_month;
+DROP INDEX IF EXISTS idx_transactions_year_month;
 DROP INDEX IF EXISTS idx_users_email;
 ```
 
@@ -288,8 +288,8 @@ runMigration();
 **解決**:
 ```sql
 -- 更新表統計資訊
-ANALYZE spendings;
-ANALYZE group_members;
+ANALYZE transactions;
+ANALYZE account_members;
 ANALYZE budgets;
 ```
 

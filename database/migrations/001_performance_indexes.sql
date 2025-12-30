@@ -7,11 +7,11 @@
 -- =============================================================================
 -- Use case: 查詢使用者的所有帳本
 -- Impact: GroupProvider.queryGroup()
-CREATE INDEX IF NOT EXISTS idx_group_members_user_account
-ON group_members(user_id, account_id);
+CREATE INDEX IF NOT EXISTS idx_account_members_user_account
+ON account_members(user_id, account_id);
 
-COMMENT ON INDEX idx_group_members_user_account IS
-'Accelerate user to groups lookup. Used by GroupProvider when fetching user groups.';
+COMMENT ON INDEX idx_account_members_user_account IS
+'Accelerate user to accounts lookup. Used by GroupProvider when fetching user accounts.';
 
 
 -- =============================================================================
@@ -19,11 +19,11 @@ COMMENT ON INDEX idx_group_members_user_account IS
 -- =============================================================================
 -- Use case: 查詢特定帳本在特定日期範圍的交易
 -- Impact: getItems() API, Dashboard, Budget page
-CREATE INDEX IF NOT EXISTS idx_spendings_account_date_type
-ON spendings(account_id, date DESC, type)
+CREATE INDEX IF NOT EXISTS idx_transactions_account_date_type
+ON transactions(account_id, date DESC, type)
 INCLUDE (amount, category, description, necessity);
 
-COMMENT ON INDEX idx_spendings_account_date_type IS
+COMMENT ON INDEX idx_transactions_account_date_type IS
 'Accelerate transaction queries by account and date range. Includes commonly needed columns.';
 
 
@@ -32,11 +32,11 @@ COMMENT ON INDEX idx_spendings_account_date_type IS
 -- =============================================================================
 -- Use case: 預算頁面只需要查詢支出類型的交易
 -- Impact: Budget page spending calculations
-CREATE INDEX IF NOT EXISTS idx_spendings_outcome_only
-ON spendings(account_id, date DESC)
+CREATE INDEX IF NOT EXISTS idx_transactions_outcome_only
+ON transactions(account_id, date DESC)
 WHERE type = 'Outcome';
 
-COMMENT ON INDEX idx_spendings_outcome_only IS
+COMMENT ON INDEX idx_transactions_outcome_only IS
 'Partial index for outcome transactions only. Used by budget page for spending calculations.';
 
 
@@ -57,15 +57,15 @@ COMMENT ON INDEX idx_budgets_account IS
 -- =============================================================================
 -- Use case: 統計每月支出、查詢特定月份的交易
 -- Impact: Monthly statistics, MonthlyBudgetBlocks
-CREATE INDEX IF NOT EXISTS idx_spendings_year_month
-ON spendings(
+CREATE INDEX IF NOT EXISTS idx_transactions_year_month
+ON transactions(
   account_id,
   EXTRACT(YEAR FROM date)::INT,
   EXTRACT(MONTH FROM date)::INT
 )
 INCLUDE (amount, type);
 
-COMMENT ON INDEX idx_spendings_year_month IS
+COMMENT ON INDEX idx_transactions_year_month IS
 'Expression index for year-month based queries. Used for monthly spending calculations.';
 
 
@@ -92,11 +92,11 @@ SELECT
   indexdef
 FROM pg_indexes
 WHERE indexname IN (
-  'idx_group_members_user_account',
-  'idx_spendings_account_date_type',
-  'idx_spendings_outcome_only',
+  'idx_account_members_user_account',
+  'idx_transactions_account_date_type',
+  'idx_transactions_outcome_only',
   'idx_budgets_account',
-  'idx_spendings_year_month',
+  'idx_transactions_year_month',
   'idx_users_email'
 )
 ORDER BY tablename, indexname;
@@ -106,37 +106,37 @@ ORDER BY tablename, indexname;
 -- 效能測試查詢
 -- =============================================================================
 
--- Test 1: 使用者帳本查詢 (應該使用 idx_group_members_user_account)
+-- Test 1: 使用者帳本查詢 (應該使用 idx_account_members_user_account)
 -- EXPLAIN ANALYZE
 -- SELECT gm.account_id, g.name
--- FROM group_members gm
--- JOIN groups g ON gm.account_id = g.account_id
+-- FROM account_members gm
+-- JOIN accounts g ON gm.account_id = g.account_id
 -- WHERE gm.user_id = 1;
 
--- Test 2: 日期範圍交易查詢 (應該使用 idx_spendings_account_date_type)
+-- Test 2: 日期範圍交易查詢 (應該使用 idx_transactions_account_date_type)
 -- EXPLAIN ANALYZE
 -- SELECT *
--- FROM spendings
+-- FROM transactions
 -- WHERE account_id = 1
 --   AND date >= '2025-01-01'
 --   AND date <= '2025-12-31'
 -- ORDER BY date DESC;
 
--- Test 3: 支出交易查詢 (應該使用 idx_spendings_outcome_only)
+-- Test 3: 支出交易查詢 (應該使用 idx_transactions_outcome_only)
 -- EXPLAIN ANALYZE
 -- SELECT account_id, date, amount
--- FROM spendings
+-- FROM transactions
 -- WHERE account_id = 1
 --   AND type = 'Outcome'
 -- ORDER BY date DESC;
 
--- Test 4: 年月統計查詢 (應該使用 idx_spendings_year_month)
+-- Test 4: 年月統計查詢 (應該使用 idx_transactions_year_month)
 -- EXPLAIN ANALYZE
 -- SELECT
 --   EXTRACT(YEAR FROM date)::INT as year,
 --   EXTRACT(MONTH FROM date)::INT as month,
 --   SUM(amount::NUMERIC) as total
--- FROM spendings
+-- FROM transactions
 -- WHERE account_id = 1
 -- GROUP BY year, month
 -- ORDER BY year, month;
