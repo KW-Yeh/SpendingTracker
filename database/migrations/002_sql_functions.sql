@@ -24,8 +24,8 @@ BEGIN
         'user_id', u.user_id,
         'name', u.name,
         'email', u.email,
-        'avatar', u.avatar,
-        'default_group', u.default_group
+        'avatar_url', u.avatar_url,
+        'created_at', u.created_at
       )
       FROM users u
       WHERE u.user_id = p_user_id
@@ -35,10 +35,11 @@ BEGIN
         json_build_object(
           'account_id', g.account_id,
           'name', g.name,
-          'icon', g.icon,
-          'currency', g.currency,
+          'owner_id', g.owner_id,
+          'members', g.members,
           'created_at', g.created_at,
-          'is_owner', (gm.user_id = g.owner_id)
+          'is_owner', (g.owner_id = p_user_id),
+          'role', gm.role
         )
         ORDER BY g.created_at DESC
       ), '[]'::json)
@@ -49,19 +50,17 @@ BEGIN
     'recent_transactions', (
       SELECT COALESCE(json_agg(
         json_build_object(
-          'spending_id', s.spending_id,
+          'transaction_id', s.transaction_id,
           'account_id', s.account_id,
-          'user_id', s.user_id,
+          'recorded_by_user_id', s.recorded_by_user_id,
           'amount', s.amount,
           'type', s.type,
           'category', s.category,
           'description', s.description,
           'date', s.date,
-          'necessity', s.necessity,
-          'created_at', s.created_at,
-          'updated_at', s.updated_at
+          'necessity', s.necessity
         )
-        ORDER BY s.date DESC, s.created_at DESC
+        ORDER BY s.date DESC
       ), '[]'::json)
       FROM transactions s
       WHERE s.account_id IN (
@@ -113,6 +112,7 @@ BEGIN
         'budget_id', b.budget_id,
         'account_id', b.account_id,
         'annual_budget', b.annual_budget,
+        'monthly_budget', b.monthly_budget,
         'monthly_items', b.monthly_items,
         'created_at', b.created_at,
         'updated_at', b.updated_at
@@ -124,17 +124,15 @@ BEGIN
     'yearly_transactions', (
       SELECT COALESCE(json_agg(
         json_build_object(
-          'spending_id', s.spending_id,
+          'transaction_id', s.transaction_id,
           'account_id', s.account_id,
-          'user_id', s.user_id,
+          'recorded_by_user_id', s.recorded_by_user_id,
           'amount', s.amount,
           'type', s.type,
           'category', s.category,
           'description', s.description,
           'date', s.date,
-          'necessity', s.necessity,
-          'created_at', s.created_at,
-          'updated_at', s.updated_at
+          'necessity', s.necessity
         )
         ORDER BY s.date DESC
       ), '[]'::json)
@@ -160,7 +158,7 @@ BEGIN
           month_num,
           SUM(CASE WHEN s.type = 'Outcome' THEN s.amount::NUMERIC ELSE 0 END) as total_outcome,
           SUM(CASE WHEN s.type = 'Income' THEN s.amount::NUMERIC ELSE 0 END) as total_income,
-          COUNT(s.spending_id) as transaction_count
+          COUNT(s.transaction_id) as transaction_count
         FROM generate_series(1, 12) AS month_num
         LEFT JOIN transactions s ON
           s.account_id = p_account_id
@@ -183,7 +181,7 @@ COMMENT ON FUNCTION get_budget_page_data(INT, INT) IS
 -- Function 3: get_account_transactions
 -- =============================================================================
 -- Purpose: Optimized transaction retrieval with date range
--- Replaces: Direct spendings queries with better performance
+-- Replaces: Direct transactions queries with better performance
 -- Input: account_id, start_date, end_date (optional)
 -- Output: JSON array of transactions
 
@@ -201,19 +199,17 @@ DECLARE
 BEGIN
   SELECT COALESCE(json_agg(
     json_build_object(
-      'spending_id', s.spending_id,
+      'transaction_id', s.transaction_id,
       'account_id', s.account_id,
-      'user_id', s.user_id,
+      'recorded_by_user_id', s.recorded_by_user_id,
       'amount', s.amount,
       'type', s.type,
       'category', s.category,
       'description', s.description,
       'date', s.date,
-      'necessity', s.necessity,
-      'created_at', s.created_at,
-      'updated_at', s.updated_at
+      'necessity', s.necessity
     )
-    ORDER BY s.date DESC, s.created_at DESC
+    ORDER BY s.date DESC
   ), '[]'::json)
   INTO result
   FROM transactions s
@@ -233,7 +229,7 @@ COMMENT ON FUNCTION get_account_transactions(INT, DATE, DATE) IS
 -- Function 4: get_user_groups_with_permissions
 -- =============================================================================
 -- Purpose: Get all groups for a user with permission information
--- Replaces: groups + group_members join queries
+-- Replaces: groups + account_members join queries
 -- Input: user_id
 -- Output: JSON array of groups with permission flags
 
@@ -249,10 +245,10 @@ BEGIN
     json_build_object(
       'account_id', g.account_id,
       'name', g.name,
-      'icon', g.icon,
-      'currency', g.currency,
       'owner_id', g.owner_id,
+      'members', g.members,
       'is_owner', (g.owner_id = p_user_id),
+      'role', gm.role,
       'member_count', (
         SELECT COUNT(*)
         FROM account_members gm2

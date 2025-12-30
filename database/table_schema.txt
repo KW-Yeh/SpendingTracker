@@ -1,0 +1,57 @@
+1. account_members	
+- account_id: bigint
+- user_id: bigint
+- role: character varying
+- joined_at: timestamp without time zone
+
+2. accounts
+- account_id: bigint
+- name: character varying
+- owner_id: bigint
+- created_at: timestamp without time zone
+- members: text
+
+3. budgets
+- budget_id: bigint
+- account_id: bigint
+- annual_budget: numeric
+- monthly_budget: numeric
+- monthly_items: text
+- created_at: timestamp without time zone
+- updated_at: timestamp without time zone
+
+4. transactions
+- transaction_id: character
+- account_id: bigint
+- recorded_by_user_id: bigint
+- amount: numeric
+- type: character varying
+- category: character varying
+- description: character varying
+- date: timestamp without time zone
+- necessity: character varying
+
+5. users
+- user_id: bigint
+- name: character varying
+- email: character varying
+- avatar_url: text
+- created_at: timestamp without time zone
+
+6. favorite_categories
+- category_id: bigint
+- owner_id: bigint
+- food: text
+- clothing: text
+- housing: text
+- transportation: text
+- education: text
+- entertainment: text
+- daily: text
+- medical: text
+- investments: text
+- other: text
+- salary: text
+- bonus: text
+- created_at: timestamp without time zone
+- updated_at: timestamp without time zone
