@@ -1,4 +1,4 @@
-import { getDb } from '@/utils/getAurora';
+import { getPool } from '@/utils/getAurora';
 import { NextResponse } from 'next/server';
 import { FEATURE_FLAGS } from '@/config/features';
 import { getBudget } from '@/services/budget';
@@ -49,14 +49,14 @@ export async function GET(req: Request) {
  * Optimized implementation using SQL function
  */
 async function getOptimizedBudgetData(accountId: number, year?: number) {
-  const db = await getDb();
+  const pool = await getPool();
 
   const result = year
-    ? await db.query(
+    ? await pool.query(
         'SELECT get_budget_page_data($1, $2) as data',
         [accountId, year]
       )
-    : await db.query(
+    : await pool.query(
         'SELECT get_budget_page_data($1) as data',
         [accountId]
       );

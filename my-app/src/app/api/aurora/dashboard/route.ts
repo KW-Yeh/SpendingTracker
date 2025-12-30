@@ -1,4 +1,4 @@
-import { getDb } from '@/utils/getAurora';
+import { getPool } from '@/utils/getAurora';
 import { NextResponse } from 'next/server';
 import { FEATURE_FLAGS } from '@/config/features';
 import { getUser } from '@/services/user';
@@ -49,9 +49,9 @@ export async function GET(req: Request) {
  * Optimized implementation using SQL function
  */
 async function getOptimizedDashboardData(userId: number) {
-  const db = await getDb();
+  const pool = await getPool();
 
-  const result = await db.query(
+  const result = await pool.query(
     'SELECT get_user_dashboard_data($1) as data',
     [userId]
   );
