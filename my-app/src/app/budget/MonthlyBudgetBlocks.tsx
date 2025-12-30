@@ -4,6 +4,7 @@ import { Modal } from '@/components/Modal';
 import { Select } from '@/components/Select';
 import { Loading } from '@/components/icons/Loading';
 import { DeleteIcon } from '@/components/icons/DeleteIcon';
+import { EditIcon } from '@/components/icons/EditIcon';
 import { useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { normalizeNumber } from '@/utils/normalizeNumber';
@@ -37,6 +38,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
   const { currentGroup } = useGroupCtx();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [itemCategory, setItemCategory] = useState('');
   const [itemDescription, setItemDescription] = useState('');
   const [itemAmount, setItemAmount] = useState<number>(0);
@@ -104,47 +106,77 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
 
   const handleOpenAddModal = (month: number) => {
     setSelectedMonth(month);
+    setEditingIndex(null);
     setItemCategory('');
     setItemDescription('');
     setItemAmount(0);
     setModalOpen(true);
   };
 
+  const handleOpenEditModal = (month: number, itemIndex: number) => {
+    const item = budget?.monthly_items?.[itemIndex];
+    if (!item) return;
+
+    setSelectedMonth(month);
+    setEditingIndex(itemIndex);
+    setItemCategory(item.category);
+    setItemDescription(item.description);
+    setItemAmount(item.months?.[month.toString()] || 0);
+    setModalOpen(true);
+  };
+
   const handleSaveItem = useCallback(async () => {
-    if (!currentGroup?.account_id || !itemCategory.trim() || !itemDescription.trim() || selectedMonth === null) {
-      alert('請填寫類別、描述與金額');
+    if (!currentGroup?.account_id || !itemCategory.trim() || selectedMonth === null) {
+      alert('請填寫類別與金額');
       return;
     }
 
     setSaving(true);
     try {
-      // Check if item with same category + description exists
-      const existingItemIndex = budget?.monthly_items?.findIndex(
-        (item) => item.category === itemCategory && item.description === itemDescription,
-      );
+      // Use category label as description if description is empty
+      const finalDescription = itemDescription.trim() || selectedCategoryLabel;
 
       let newItems: MonthlyBudgetItem[];
 
-      if (existingItemIndex !== undefined && existingItemIndex >= 0) {
-        // Update existing item
+      if (editingIndex !== null) {
+        // Editing existing item
         newItems = [...(budget?.monthly_items || [])];
-        newItems[existingItemIndex] = {
-          ...newItems[existingItemIndex],
+        newItems[editingIndex] = {
+          ...newItems[editingIndex],
+          category: itemCategory,
+          description: finalDescription,
           months: {
-            ...newItems[existingItemIndex].months,
+            ...newItems[editingIndex].months,
             [selectedMonth.toString()]: itemAmount,
           },
         };
       } else {
-        // Create new item
-        const newItem: MonthlyBudgetItem = {
-          category: itemCategory,
-          description: itemDescription,
-          months: {
-            [selectedMonth.toString()]: itemAmount,
-          },
-        };
-        newItems = [...(budget?.monthly_items || []), newItem];
+        // Adding new item - check if item with same category + description exists
+        const existingItemIndex = budget?.monthly_items?.findIndex(
+          (item) => item.category === itemCategory && item.description === finalDescription,
+        );
+
+        if (existingItemIndex !== undefined && existingItemIndex >= 0) {
+          // Update existing item
+          newItems = [...(budget?.monthly_items || [])];
+          newItems[existingItemIndex] = {
+            ...newItems[existingItemIndex],
+            months: {
+              ...newItems[existingItemIndex].months,
+              [selectedMonth.toString()]: itemAmount,
+            },
+          };
+        } else {
+          // Create new item
+          const newItem: MonthlyBudgetItem = {
+            category: itemCategory,
+            description: finalDescription,
+            months: {
+              [selectedMonth.toString()]: itemAmount,
+            },
+          };
+          newItems = [...(budget?.monthly_items || []), newItem];
+        }
       }
 
       await updateBudget({
@@ -161,7 +193,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
     } finally {
       setSaving(false);
     }
-  }, [currentGroup, budget, itemCategory, itemDescription, itemAmount, selectedMonth, updateBudget]);
+  }, [currentGroup, budget, itemCategory, itemDescription, itemAmount, selectedMonth, selectedCategoryLabel, editingIndex, updateBudget]);
 
   const handleDeleteItem = useCallback(
     async (month: number, itemIndex: number) => {
@@ -281,13 +313,22 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                           {normalizeNumber(item.amount)} 元
                         </p>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteItem(month.value, item.index)}
-                        className="rounded p-1 text-red-500 transition-colors hover:bg-red-50 active:bg-red-50"
-                      >
-                        <DeleteIcon className="size-4" />
-                      </button>
+                      <div className="flex gap-1">
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEditModal(month.value, item.index)}
+                          className="rounded p-1 text-blue-500 transition-colors hover:bg-blue-50 active:bg-blue-50"
+                        >
+                          <EditIcon className="size-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteItem(month.value, item.index)}
+                          className="rounded p-1 text-red-500 transition-colors hover:bg-red-50 active:bg-red-50"
+                        >
+                          <DeleteIcon className="size-4" />
+                        </button>
+                      </div>
                     </div>
                   ))
                 ) : (
@@ -306,7 +347,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
           defaultOpen={true}
           onClose={() => setModalOpen(false)}
           className="flex w-full flex-col self-end sm:max-w-96 sm:self-center sm:rounded-xl"
-          title={`新增 ${MONTHS[selectedMonth - 1].label} 預算項目`}
+          title={editingIndex !== null ? `編輯 ${MONTHS[selectedMonth - 1].label} 預算項目` : `新增 ${MONTHS[selectedMonth - 1].label} 預算項目`}
         >
           <div className="flex w-full flex-col gap-4">
             <fieldset>
@@ -339,13 +380,13 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
             </fieldset>
 
             <fieldset>
-              <legend className="mb-2">描述</legend>
+              <legend className="mb-2">描述（選填，未填寫則使用類別名稱）</legend>
               <input
                 type="text"
                 className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1"
                 value={itemDescription}
                 onChange={(e) => setItemDescription(e.target.value)}
-                placeholder="例如：房租、午餐、薪水"
+                placeholder={`例如：房租、午餐、薪水（預設：${selectedCategoryLabel}）`}
               />
             </fieldset>
 
@@ -375,7 +416,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                 disabled={saving}
                 className="bg-text text-background flex items-center justify-center rounded-lg px-6 py-2 font-bold transition-colors hover:bg-gray-800 active:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
               >
-                {saving ? <Loading className="size-5 animate-spin" /> : '新增'}
+                {saving ? <Loading className="size-5 animate-spin" /> : editingIndex !== null ? '更新' : '新增'}
               </button>
             </div>
           </div>

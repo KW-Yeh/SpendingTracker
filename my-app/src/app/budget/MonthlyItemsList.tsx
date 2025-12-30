@@ -63,16 +63,19 @@ export const MonthlyItemsList = () => {
   };
 
   const handleSaveItem = useCallback(async () => {
-    if (!currentGroup?.account_id || !itemCategory.trim() || !itemDescription.trim()) {
-      alert('請填寫類別與描述');
+    if (!currentGroup?.account_id || !itemCategory.trim()) {
+      alert('請填寫類別');
       return;
     }
 
     setSaving(true);
     try {
+      // Use category label as description if description is empty
+      const finalDescription = itemDescription.trim() || selectedCategoryLabel;
+
       const newItem: MonthlyBudgetItem = {
         category: itemCategory,
-        description: itemDescription,
+        description: finalDescription,
         months: monthlyAmounts,
       };
 
@@ -107,6 +110,7 @@ export const MonthlyItemsList = () => {
     itemDescription,
     monthlyAmounts,
     editingIndex,
+    selectedCategoryLabel,
     updateBudget,
   ]);
 
@@ -237,13 +241,13 @@ export const MonthlyItemsList = () => {
             </fieldset>
 
             <fieldset>
-              <legend className="mb-2">描述</legend>
+              <legend className="mb-2">描述（選填，未填寫則使用類別名稱）</legend>
               <input
                 type="text"
                 className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1"
                 value={itemDescription}
                 onChange={(e) => setItemDescription(e.target.value)}
-                placeholder="例如：房租、午餐、薪水"
+                placeholder={`例如：房租、午餐、薪水（預設：${selectedCategoryLabel}）`}
               />
             </fieldset>
 

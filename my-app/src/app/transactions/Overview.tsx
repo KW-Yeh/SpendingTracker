@@ -1,9 +1,10 @@
-import AddExpenseBtn from '@/app/transactions/AddExpenseBtn';
 import { getExpenseFromData } from '@/utils/getExpenseFromData';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import { useMemo } from 'react';
 import { MdOutlineWallet } from 'react-icons/md';
+import { IoMdAdd } from 'react-icons/io';
 import { SpendingType } from '@/utils/constants';
+import Link from 'next/link';
 
 interface Props {
   costList: SpendingRecord[];
@@ -143,7 +144,7 @@ export default function OverView(props: Props) {
       {currentMonthBudgetItems.length > 0 && (
         <div className="flex flex-col gap-3">
           <h4 className="text-sm font-medium text-gray-700">預算使用狀況</h4>
-          <div className="flex flex-col gap-2.5">
+          <div className="flex max-h-80 flex-col gap-2.5 overflow-y-auto pr-1 md:max-h-96">
             {currentMonthBudgetItems.map((item) => {
               const usagePercent = item.budgeted > 0 ? (item.spent / item.budgeted) * 100 : 0;
               const isOver = item.spent > item.budgeted;
@@ -184,9 +185,14 @@ export default function OverView(props: Props) {
       )}
 
       {/* Action button */}
-      <AddExpenseBtn className="w-full text-sm sm:text-base">
-        立即新增帳目
-      </AddExpenseBtn>
+      <Link
+        href="/edit"
+        className="bg-text text-background flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-800 active:bg-gray-800 sm:text-base"
+        scroll={false}
+      >
+        <IoMdAdd className="size-5" />
+        <span>立即新增帳目</span>
+      </Link>
     </div>
   );
 }

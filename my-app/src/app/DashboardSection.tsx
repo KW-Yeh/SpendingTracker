@@ -106,7 +106,7 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
         className="flex justify-center rounded-lg border border-gray-200 bg-white p-2 text-base shadow-sm"
       />
 
-      <div className="flex w-full flex-col gap-3 md:w-auto md:flex-row md:gap-5">
+      <div className="flex w-full flex-col gap-3 md:w-auto md:flex-row md:items-start md:gap-5">
         <Overview
           monthlyBudget={currentMonthBudget}
           budget={budget}
