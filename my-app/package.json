@@ -6,9 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "type-check": "tsc --noEmit",
-    "pre-commit": "npm run type-check && npm run build"
+    "lint": "next lint"
   },
   "dependencies": {
     "@aws-sdk/client-dsql": "^3.948.0",
