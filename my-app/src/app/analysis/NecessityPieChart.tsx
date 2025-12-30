@@ -2,6 +2,7 @@
 
 import { Cell, Label, Pie, PieChart, Tooltip } from 'recharts';
 import { customPieLabel } from './customPieLabel';
+import { CHART_COLORS } from '@/styles/colors';
 
 interface Props {
   totalNecessity: number;
@@ -30,11 +31,11 @@ const NecessityPieChart = (props: Props) => {
       >
         <Cell
           className="transition-colors hover:fill-yellow-300 hover:outline-0 active:outline-0"
-          fill="#fdba74"
+          fill={CHART_COLORS.OUTCOME_NECESSARY}
         />
         <Cell
           className="transition-colors hover:fill-yellow-300 hover:outline-0 active:outline-0"
-          fill="#d1d5db"
+          fill={CHART_COLORS.NEUTRAL}
         />
       </Pie>
 

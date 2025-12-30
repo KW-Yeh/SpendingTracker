@@ -45,7 +45,7 @@ export const SpendingItem = (props: Props) => {
 
   const additionalStyle = useMemo(() => {
     if (deleting) {
-      return 'shadow-[0_0_0_2px_#fca5a5]';
+      return 'shadow-[0_0_0_2px_hsl(20,80%,70%)]';
     }
     return 'active:bg-gray-100 hover:bg-gray-100';
   }, [deleting]);

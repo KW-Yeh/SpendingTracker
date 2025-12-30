@@ -4,6 +4,7 @@ import {
   OUTCOME_TYPE_MAP,
   SpendingType,
 } from '@/utils/constants';
+import { CHART_COLORS } from '@/styles/colors';
 
 export const calSpending2Chart = (data: SpendingRecord[]): PieChartData => {
   const {
@@ -24,9 +25,9 @@ export const calSpending2Chart = (data: SpendingRecord[]): PieChartData => {
   } = getPieChartData(
     INCOME_TYPE_MAP,
     incomeResult,
-    '#82ca9d',
-    '#fdba74',
-    '#d1d5db',
+    CHART_COLORS.INCOME_PRIMARY,
+    CHART_COLORS.INCOME_NECESSARY,
+    CHART_COLORS.NEUTRAL,
   );
   const {
     results: outcomeList,
@@ -35,9 +36,9 @@ export const calSpending2Chart = (data: SpendingRecord[]): PieChartData => {
   } = getPieChartData(
     OUTCOME_TYPE_MAP,
     outcomeResult,
-    '#faa5a5',
-    '#fdba74',
-    '#d1d5db',
+    CHART_COLORS.OUTCOME_PRIMARY,
+    CHART_COLORS.OUTCOME_NECESSARY,
+    CHART_COLORS.NEUTRAL,
   );
 
   return {

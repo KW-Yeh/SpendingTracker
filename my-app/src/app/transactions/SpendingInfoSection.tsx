@@ -63,9 +63,9 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
     const element = document.getElementById(`spending-list-${selectedLabel}`);
     if (!element) return;
     element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    element.style.borderColor = '#fff085';
+    element.classList.add('highlight-pulse');
     setTimeout(() => {
-      element.style.borderColor = 'transparent';
+      element.classList.remove('highlight-pulse');
     }, 2000);
   };
 

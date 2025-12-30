@@ -3,6 +3,7 @@
 import { Cell, Label, Pie, PieChart, Tooltip } from 'recharts';
 import { customPieLabel } from './customPieLabel';
 import { normalizeNumber } from '@/utils/normalizeNumber';
+import { CHART_COLORS } from '@/styles/colors';
 
 interface Props {
   totalIncome: number;
@@ -27,11 +28,11 @@ const ExpensePieChart = (props: Props) => {
       >
         <Cell
           className="transition-colors hover:fill-yellow-300 hover:outline-0 active:outline-0"
-          fill="#faa5a5"
+          fill={CHART_COLORS.OUTCOME_PRIMARY}
         />
         <Cell
           className="transition-colors hover:fill-yellow-300 hover:outline-0 active:outline-0"
-          fill="#82ca9d"
+          fill={CHART_COLORS.INCOME_PRIMARY}
         />
       </Pie>
 
