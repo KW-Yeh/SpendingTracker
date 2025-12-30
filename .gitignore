@@ -4,6 +4,9 @@
 !.git/
 !.github/
 
+# Next.js build output
+my-app/.next/
+
 # OS files
 .DS_Store
 Thumbs.db

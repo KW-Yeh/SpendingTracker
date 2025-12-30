@@ -1,1 +1,0 @@
-self.__INTERCEPTION_ROUTE_REWRITE_MANIFEST="[{\"source\":\"/edit\",\"destination\":\"/(.)edit\",\"has\":[{\"type\":\"header\",\"key\":\"next-url\",\"value\":\"/.*\"}],\"internal\":true,\"regex\":\"^\\\\/edit$\"}]";

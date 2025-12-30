@@ -1,1 +1,0 @@
-(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,10063,e=>{"use strict";var r=e.i(43476),i=e.i(61500);e.s(["UserLayer",0,()=>{let{config:e}=(0,i.useUserConfigCtx)();return e?(0,r.jsx)("div",{className:"flex w-80 flex-col divide-y divide-gray-300 rounded-3xl border border-solid border-gray-300 p-4"}):null}])}]);
