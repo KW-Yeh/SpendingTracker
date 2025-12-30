@@ -1,11 +1,13 @@
 'use client';
 
 import { Modal } from '@/components/Modal';
+import { Select } from '@/components/Select';
 import { Loading } from '@/components/icons/Loading';
 import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { normalizeNumber } from '@/utils/normalizeNumber';
+import { getCategoryIcon } from '@/utils/getCategoryIcon';
 import { SpendingType, INCOME_TYPE_MAP, OUTCOME_TYPE_MAP } from '@/utils/constants';
 import { useState, useCallback, useMemo } from 'react';
 
@@ -39,6 +41,11 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
   const [itemDescription, setItemDescription] = useState('');
   const [itemAmount, setItemAmount] = useState<number>(0);
   const [saving, setSaving] = useState(false);
+
+  const selectedCategoryLabel = useMemo(
+    () => ALL_CATEGORIES.find((cat) => cat.value === itemCategory)?.label || '',
+    [itemCategory],
+  );
 
   // Calculate total budget for each month
   const monthlyTotals = useMemo(() => {
@@ -304,18 +311,31 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
           <div className="flex w-full flex-col gap-4">
             <fieldset>
               <legend className="mb-2">類別</legend>
-              <select
-                className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1"
+              <Select
+                name="category"
                 value={itemCategory}
-                onChange={(e) => setItemCategory(e.target.value)}
+                label={
+                  itemCategory ? (
+                    <span className="flex items-center gap-2">
+                      {getCategoryIcon(itemCategory)}
+                      <span>{selectedCategoryLabel}</span>
+                    </span>
+                  ) : (
+                    <span className="text-gray-400">請選擇類別</span>
+                  )
+                }
+                onChange={setItemCategory}
+                className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1 transition-colors hover:border-gray-500 active:border-gray-500"
               >
-                <option value="">請選擇類別</option>
-                {ALL_CATEGORIES.map((cat) => (
-                  <option key={cat.value} value={cat.value}>
-                    {cat.value} {cat.label}
-                  </option>
+                {ALL_CATEGORIES.map((category) => (
+                  <Select.Item key={category.value} value={category.value}>
+                    <span className="flex items-center gap-2">
+                      {getCategoryIcon(category.value)}
+                      <span>{category.label}</span>
+                    </span>
+                  </Select.Item>
                 ))}
-              </select>
+              </Select>
             </fieldset>
 
             <fieldset>
