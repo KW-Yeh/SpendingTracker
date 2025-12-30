@@ -6,8 +6,10 @@ import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { normalizeNumber } from '@/utils/normalizeNumber';
-import { SpendingType } from '@/utils/constants';
+import { SpendingType, INCOME_TYPE_MAP, OUTCOME_TYPE_MAP } from '@/utils/constants';
 import { useState, useCallback, useMemo } from 'react';
+
+const ALL_CATEGORIES = [...INCOME_TYPE_MAP, ...OUTCOME_TYPE_MAP];
 
 const MONTHS = [
   { value: 1, label: '一月' },
@@ -33,7 +35,8 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
   const { currentGroup } = useGroupCtx();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
-  const [itemName, setItemName] = useState('');
+  const [itemCategory, setItemCategory] = useState('');
+  const [itemDescription, setItemDescription] = useState('');
   const [itemAmount, setItemAmount] = useState<number>(0);
   const [saving, setSaving] = useState(false);
 
@@ -83,7 +86,8 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
       return budget.monthly_items
         .map((item, index) => ({
           index,
-          name: item.name,
+          category: item.category,
+          description: item.description,
           amount: item.months?.[month.toString()] || 0,
         }))
         .filter((item) => item.amount > 0);
@@ -93,22 +97,23 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
 
   const handleOpenAddModal = (month: number) => {
     setSelectedMonth(month);
-    setItemName('');
+    setItemCategory('');
+    setItemDescription('');
     setItemAmount(0);
     setModalOpen(true);
   };
 
   const handleSaveItem = useCallback(async () => {
-    if (!currentGroup?.account_id || !itemName.trim() || selectedMonth === null) {
-      alert('請填寫項目名稱與金額');
+    if (!currentGroup?.account_id || !itemCategory.trim() || !itemDescription.trim() || selectedMonth === null) {
+      alert('請填寫類別、描述與金額');
       return;
     }
 
     setSaving(true);
     try {
-      // Check if item with same name exists
+      // Check if item with same category + description exists
       const existingItemIndex = budget?.monthly_items?.findIndex(
-        (item) => item.name === itemName,
+        (item) => item.category === itemCategory && item.description === itemDescription,
       );
 
       let newItems: MonthlyBudgetItem[];
@@ -126,7 +131,8 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
       } else {
         // Create new item
         const newItem: MonthlyBudgetItem = {
-          name: itemName,
+          category: itemCategory,
+          description: itemDescription,
           months: {
             [selectedMonth.toString()]: itemAmount,
           },
@@ -148,7 +154,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
     } finally {
       setSaving(false);
     }
-  }, [currentGroup, budget, itemName, itemAmount, selectedMonth, updateBudget]);
+  }, [currentGroup, budget, itemCategory, itemDescription, itemAmount, selectedMonth, updateBudget]);
 
   const handleDeleteItem = useCallback(
     async (month: number, itemIndex: number) => {
@@ -261,7 +267,9 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                       className="flex items-center justify-between rounded-lg bg-gray-50 p-2"
                     >
                       <div className="flex-1">
-                        <p className="text-sm font-medium">{item.name}</p>
+                        <p className="text-sm font-medium">
+                          {item.category} {item.description}
+                        </p>
                         <p className="text-xs text-gray-500">
                           {normalizeNumber(item.amount)} 元
                         </p>
@@ -295,13 +303,29 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
         >
           <div className="flex w-full flex-col gap-4">
             <fieldset>
-              <legend className="mb-2">項目名稱</legend>
+              <legend className="mb-2">類別</legend>
+              <select
+                className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1"
+                value={itemCategory}
+                onChange={(e) => setItemCategory(e.target.value)}
+              >
+                <option value="">請選擇類別</option>
+                {ALL_CATEGORIES.map((cat) => (
+                  <option key={cat.value} value={cat.value}>
+                    {cat.value} {cat.label}
+                  </option>
+                ))}
+              </select>
+            </fieldset>
+
+            <fieldset>
+              <legend className="mb-2">描述</legend>
               <input
                 type="text"
                 className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1"
-                value={itemName}
-                onChange={(e) => setItemName(e.target.value)}
-                placeholder="例如：房租、水電費"
+                value={itemDescription}
+                onChange={(e) => setItemDescription(e.target.value)}
+                placeholder="例如：房租、午餐、薪水"
               />
             </fieldset>
 

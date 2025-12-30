@@ -78,15 +78,37 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const syncData = useCallback(
-    (
+    async (
       groupId?: string,
       email?: string,
       startDate?: string,
       endDate?: string,
     ) => {
+      if (!groupId) {
+        queryItem(email, groupId, startDate, endDate);
+        return;
+      }
+
+      // Try to load from IndexedDB first (Stale-While-Revalidate)
+      if (IDB) {
+        try {
+          const cachedData = await getDataFromIDB(IDB, Number(groupId), new AbortController().signal);
+          if (cachedData && cachedData.length > 0) {
+            const _data = JSON.parse(cachedData[0].data) as SpendingRecord[];
+            if (_data.length > 0) {
+              console.log('[SpendingProvider] Using cached spending data');
+              handleSetState(_data);
+            }
+          }
+        } catch (error) {
+          console.error('[SpendingProvider] Error reading cache:', error);
+        }
+      }
+
+      // Revalidate in background
       queryItem(email, groupId, startDate, endDate);
     },
-    [queryItem],
+    [queryItem, IDB, getDataFromIDB, handleSetState],
   );
 
   const ctxVal = useMemo(

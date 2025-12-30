@@ -126,8 +126,8 @@ interface Budget {
 }
 
 interface MonthlyBudgetItem {
-  name: string;
-  description?: string;
+  category: string; // emoji category (e.g., '🍔', '🏠', '💰') - matches transaction categories
+  description: string; // descriptive text (e.g., '午餐', '房租', '薪水')
   months: {
     [key: string]: number; // month: amount (e.g., "1": 5000, "2": 5500)
   };

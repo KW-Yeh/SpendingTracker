@@ -1,28 +1,63 @@
 import AddExpenseBtn from '@/app/transactions/AddExpenseBtn';
 import { getExpenseFromData } from '@/utils/getExpenseFromData';
 import { normalizeNumber } from '@/utils/normalizeNumber';
-import dynamic from 'next/dynamic';
 import { useMemo } from 'react';
 import { MdOutlineWallet } from 'react-icons/md';
+import { SpendingType } from '@/utils/constants';
 
 interface Props {
   costList: SpendingRecord[];
   isMobile: boolean;
   monthlyBudget?: number;
+  budget?: Budget | null;
 }
 
-const UsagePieChart = dynamic(() => import('./UsagePieChart'), {
-  ssr: false,
-});
-
 export default function OverView(props: Props) {
-  const { monthlyBudget = 0, costList, isMobile } = props;
+  const { monthlyBudget = 0, budget, costList } = props;
 
   // Memoize expensive expense calculation
   const { totalIncome, totalOutcome } = useMemo(
     () => getExpenseFromData(costList),
     [costList]
   );
+
+  // Calculate spending by category for current month
+  const categorySpending = useMemo(() => {
+    const spending: Record<string, number> = {};
+
+    costList.forEach((record) => {
+      if (record.type === SpendingType.Outcome) {
+        const category = record.category;
+        spending[category] = (spending[category] || 0) + Number(record.amount);
+      }
+    });
+
+    return spending;
+  }, [costList]);
+
+  // Get budget items for current month
+  const currentMonthBudgetItems = useMemo(() => {
+    if (!budget?.monthly_items) return [];
+
+    const currentMonth = new Date().getMonth() + 1;
+    const items: Array<{ category: string; description: string; budgeted: number; spent: number }> = [];
+
+    budget.monthly_items.forEach((item) => {
+      const budgetAmount = item.months?.[currentMonth.toString()];
+      if (budgetAmount && budgetAmount > 0) {
+        const spentAmount = categorySpending[item.category] || 0;
+        items.push({
+          category: item.category,
+          description: item.description,
+          budgeted: budgetAmount,
+          spent: spentAmount,
+        });
+      }
+    });
+
+    // Sort by highest budget first
+    return items.sort((a, b) => b.budgeted - a.budgeted);
+  }, [budget, categorySpending]);
 
   const balance = monthlyBudget - totalOutcome;
   const usagePercentage = monthlyBudget > 0 ? (totalOutcome / monthlyBudget) * 100 : 0;
@@ -78,15 +113,6 @@ export default function OverView(props: Props) {
             )}
           </div>
         </div>
-
-        {/* Pie chart - smaller on mobile */}
-        {!isMobile && (
-          <UsagePieChart
-            totalIncome={monthlyBudget}
-            totalOutcome={totalOutcome}
-            isMobile={isMobile}
-          />
-        )}
       </div>
 
       {/* Financial breakdown grid */}
@@ -112,6 +138,50 @@ export default function OverView(props: Props) {
           </span>
         </div>
       </div>
+
+      {/* Category-based budget progress bars */}
+      {currentMonthBudgetItems.length > 0 && (
+        <div className="flex flex-col gap-3">
+          <h4 className="text-sm font-medium text-gray-700">預算使用狀況</h4>
+          <div className="flex flex-col gap-2.5">
+            {currentMonthBudgetItems.map((item) => {
+              const usagePercent = item.budgeted > 0 ? (item.spent / item.budgeted) * 100 : 0;
+              const isOver = item.spent > item.budgeted;
+              const isNearLimit = usagePercent >= 80 && !isOver;
+
+              return (
+                <div key={`${item.category}-${item.description}`} className="flex flex-col gap-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="flex items-center gap-1.5 font-medium">
+                      <span className="text-base">{item.category}</span>
+                      <span className="text-gray-700">{item.description}</span>
+                    </span>
+                    <span className={`font-semibold ${isOver ? 'text-red-600' : isNearLimit ? 'text-orange-600' : 'text-gray-600'}`}>
+                      ${normalizeNumber(item.spent)} / ${normalizeNumber(item.budgeted)}
+                    </span>
+                  </div>
+                  <div className="relative h-2 w-full overflow-hidden rounded-full bg-gray-100">
+                    <div
+                      className={`h-full rounded-full transition-all duration-300 ${
+                        isOver ? 'bg-red-500' : isNearLimit ? 'bg-orange-500' : 'bg-primary-400'
+                      }`}
+                      style={{ width: `${Math.min(usagePercent, 100)}%` }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-gray-500">
+                    <span>{usagePercent.toFixed(1)}% 使用</span>
+                    {isOver && (
+                      <span className="font-medium text-red-600">
+                        超支 ${normalizeNumber(item.spent - item.budgeted)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Action button */}
       <AddExpenseBtn className="w-full text-sm sm:text-base">

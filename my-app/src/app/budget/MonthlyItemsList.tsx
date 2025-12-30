@@ -7,7 +7,10 @@ import { EditIcon } from '@/components/icons/EditIcon';
 import { useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { normalizeNumber } from '@/utils/normalizeNumber';
+import { INCOME_TYPE_MAP, OUTCOME_TYPE_MAP } from '@/utils/constants';
 import { useState, useCallback } from 'react';
+
+const ALL_CATEGORIES = [...INCOME_TYPE_MAP, ...OUTCOME_TYPE_MAP];
 
 const MONTHS = [
   { value: '1', label: '一月' },
@@ -29,7 +32,7 @@ export const MonthlyItemsList = () => {
   const { currentGroup } = useGroupCtx();
   const [modalOpen, setModalOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [itemName, setItemName] = useState('');
+  const [itemCategory, setItemCategory] = useState('');
   const [itemDescription, setItemDescription] = useState('');
   const [monthlyAmounts, setMonthlyAmounts] = useState<{ [key: string]: number }>(
     {},
@@ -38,7 +41,7 @@ export const MonthlyItemsList = () => {
 
   const handleOpenAdd = () => {
     setEditingIndex(null);
-    setItemName('');
+    setItemCategory('');
     setItemDescription('');
     setMonthlyAmounts({});
     setModalOpen(true);
@@ -46,22 +49,22 @@ export const MonthlyItemsList = () => {
 
   const handleOpenEdit = (index: number, item: MonthlyBudgetItem) => {
     setEditingIndex(index);
-    setItemName(item.name);
-    setItemDescription(item.description || '');
+    setItemCategory(item.category);
+    setItemDescription(item.description);
     setMonthlyAmounts(item.months || {});
     setModalOpen(true);
   };
 
   const handleSaveItem = useCallback(async () => {
-    if (!currentGroup?.account_id || !itemName.trim()) {
-      alert('請填寫項目名稱');
+    if (!currentGroup?.account_id || !itemCategory.trim() || !itemDescription.trim()) {
+      alert('請填寫類別與描述');
       return;
     }
 
     setSaving(true);
     try {
       const newItem: MonthlyBudgetItem = {
-        name: itemName,
+        category: itemCategory,
         description: itemDescription,
         months: monthlyAmounts,
       };
@@ -93,7 +96,7 @@ export const MonthlyItemsList = () => {
   }, [
     currentGroup,
     budget,
-    itemName,
+    itemCategory,
     itemDescription,
     monthlyAmounts,
     editingIndex,
@@ -157,10 +160,10 @@ export const MonthlyItemsList = () => {
                 className="flex items-center justify-between rounded-lg border border-solid border-gray-200 p-3"
               >
                 <div className="flex-1">
-                  <p className="font-medium">{item.name}</p>
-                  {item.description && (
-                    <p className="text-xs text-gray-400">{item.description}</p>
-                  )}
+                  <p className="font-medium">
+                    <span className="text-xl mr-2">{item.category}</span>
+                    {item.description}
+                  </p>
                   <p className="text-sm text-gray-500">
                     本月: {normalizeNumber(currentMonthAmount)} 元
                   </p>
@@ -198,24 +201,29 @@ export const MonthlyItemsList = () => {
         >
           <div className="flex w-full flex-col gap-4">
             <fieldset>
-              <legend className="mb-2">項目名稱</legend>
-              <input
-                type="text"
+              <legend className="mb-2">類別</legend>
+              <select
                 className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1"
-                value={itemName}
-                onChange={(e) => setItemName(e.target.value)}
-                placeholder="例如：房租、水電費"
-              />
+                value={itemCategory}
+                onChange={(e) => setItemCategory(e.target.value)}
+              >
+                <option value="">請選擇類別</option>
+                {ALL_CATEGORIES.map((cat) => (
+                  <option key={cat.value} value={cat.value}>
+                    {cat.value} {cat.label}
+                  </option>
+                ))}
+              </select>
             </fieldset>
 
             <fieldset>
-              <legend className="mb-2">說明（選填）</legend>
+              <legend className="mb-2">描述</legend>
               <input
                 type="text"
                 className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1"
                 value={itemDescription}
                 onChange={(e) => setItemDescription(e.target.value)}
-                placeholder="例如：每月伙食費"
+                placeholder="例如：房租、午餐、薪水"
               />
             </fieldset>
 

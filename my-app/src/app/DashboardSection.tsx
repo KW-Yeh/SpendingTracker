@@ -109,6 +109,7 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
       <div className="flex w-full flex-col gap-3 md:w-auto md:flex-row md:gap-5">
         <Overview
           monthlyBudget={currentMonthBudget}
+          budget={budget}
           costList={monthlyData}
           isMobile={isMobile}
         />
