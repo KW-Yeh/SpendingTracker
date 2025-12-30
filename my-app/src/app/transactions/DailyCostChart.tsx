@@ -2,6 +2,7 @@ import { DoubleArrowIcon } from '@/components/icons/DoubleArrowIcon';
 import { SpendingType } from '@/utils/constants';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import { useMemo } from 'react';
 import { CategoricalChartState } from 'recharts/types/chart/types';
 
 interface Props {
@@ -22,17 +23,21 @@ export const DailyCostChart = (props: Props) => {
   const year = day.getFullYear();
   const month = day.getMonth();
   const days = new Date(year, month + 1, 0).getDate();
-  const dailyCost: number[] = new Array(days).fill(0);
-  let largestCost = 0;
 
-  costList.forEach((item) => {
-    if (item.type === SpendingType.Outcome) {
-      const date = new Date(item.date);
-      const dayIndex = date.getDate() - 1;
-      dailyCost[dayIndex] += Number(item.amount);
-      largestCost = Math.max(largestCost, Math.abs(dailyCost[dayIndex]));
-    }
-  });
+  // Memoize expensive calculation
+  const dailyCost = useMemo(() => {
+    const costs: number[] = new Array(days).fill(0);
+
+    costList.forEach((item) => {
+      if (item.type === SpendingType.Outcome) {
+        const date = new Date(item.date);
+        const dayIndex = date.getDate() - 1;
+        costs[dayIndex] += Number(item.amount);
+      }
+    });
+
+    return costs;
+  }, [costList, days]);
 
   // Get month name in Chinese
   const monthNames = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];

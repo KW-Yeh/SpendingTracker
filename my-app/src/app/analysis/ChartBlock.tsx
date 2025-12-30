@@ -10,7 +10,7 @@ import { useYearMonth } from '@/hooks/useYearMonth';
 import { calSpending2Chart } from '@/utils/calSpending2Chart';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
 import dynamic from 'next/dynamic';
-import { startTransition, useCallback, useEffect, useState } from 'react';
+import { startTransition, useCallback, useEffect, useMemo, useState } from 'react';
 import ExpenseCostTable from './ExpenseCostTable';
 import NecessityCostTable from './NecessityCostTable';
 
@@ -45,24 +45,6 @@ export const ChartBlock = () => {
   const { config: userData } = useUserConfigCtx();
   const { data, syncData } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
-  const [chartData, setChartData] = useState<PieChartData>({
-    income: {
-      list: [],
-      total: 100,
-      necessary: 50,
-      unnecessary: 50,
-      necessaryList: [],
-      unnecessaryList: [],
-    },
-    outcome: {
-      list: [],
-      total: 50,
-      necessary: 25,
-      unnecessary: 25,
-      necessaryList: [],
-      unnecessaryList: [],
-    },
-  });
   const today = new Date();
   const dateHook = useYearMonth(today);
 
@@ -81,15 +63,14 @@ export const ChartBlock = () => {
     [syncData, userData?.email],
   );
 
-  useEffect(() => {
-    startTransition(() => {
-      const filteredData = data.filter(
-        (record) =>
-          `${new Date(record.date).getFullYear()}` === dateHook.year &&
-          `${new Date(record.date).getMonth() + 1}` === dateHook.month,
-      );
-      setChartData(calSpending2Chart(filteredData));
-    });
+  // Memoize filtered data and chart calculation
+  const chartData = useMemo(() => {
+    const filteredData = data.filter(
+      (record) =>
+        `${new Date(record.date).getFullYear()}` === dateHook.year &&
+        `${new Date(record.date).getMonth() + 1}` === dateHook.month,
+    );
+    return calSpending2Chart(filteredData);
   }, [data, dateHook.year, dateHook.month]);
 
   return (

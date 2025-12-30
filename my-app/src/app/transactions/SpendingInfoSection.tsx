@@ -70,13 +70,11 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
   };
 
   useEffect(() => {
+    if (loading) return;
     startTransition(() => {
-      if (loading) return;
       // 不過濾用戶，顯示帳本內所有交易
       setMonthlyData([...data]);
-      startTransition(() => {
-        setIsProcessing(false);
-      });
+      setIsProcessing(false);
     });
   }, [data, loading]);
 

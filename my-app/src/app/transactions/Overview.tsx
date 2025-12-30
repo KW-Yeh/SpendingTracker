@@ -2,6 +2,7 @@ import AddExpenseBtn from '@/app/transactions/AddExpenseBtn';
 import { getExpenseFromData } from '@/utils/getExpenseFromData';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import dynamic from 'next/dynamic';
+import { useMemo } from 'react';
 import { MdOutlineWallet } from 'react-icons/md';
 
 interface Props {
@@ -16,7 +17,13 @@ const UsagePieChart = dynamic(() => import('./UsagePieChart'), {
 
 export default function OverView(props: Props) {
   const { monthlyBudget = 0, costList, isMobile } = props;
-  const { totalIncome, totalOutcome } = getExpenseFromData(costList);
+
+  // Memoize expensive expense calculation
+  const { totalIncome, totalOutcome } = useMemo(
+    () => getExpenseFromData(costList),
+    [costList]
+  );
+
   const balance = monthlyBudget - totalOutcome;
 
   return (

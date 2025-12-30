@@ -74,7 +74,10 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const queryUser = useCallback(
-    (email: string) => {
+    (email: string, retryCount = 0) => {
+      const MAX_RETRIES = 3;
+      const RETRY_DELAY = 3000;
+
       getUser(email)
         .then((res) => {
           console.log('Querying user response: ', res);
@@ -82,14 +85,18 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
             controllerRef.current.abort();
           }
           if (res.status && res.data === null) {
-            console.log('User not found, creating new user...');  
-            handleNewUser(email).then(() => {
-              setTimeout(() => {
-                queryUser(email);
-              }, 3000);
-            });
+            console.log('User not found, creating new user...');
+            if (retryCount < MAX_RETRIES) {
+              handleNewUser(email).then(() => {
+                setTimeout(() => {
+                  queryUser(email, retryCount + 1);
+                }, RETRY_DELAY);
+              });
+            } else {
+              console.error('Max retries reached for user creation');
+            }
           } else if (res.status && res.data !== null) {
-            console.log('User found, updating local state...'); 
+            console.log('User found, updating local state...');
             handleState(res.data);
             setUserData(IDB, res.data)
               .then(() => {

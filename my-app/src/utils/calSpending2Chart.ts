@@ -6,6 +6,14 @@ import {
 } from '@/utils/constants';
 import { CHART_COLORS } from '@/styles/colors';
 
+// Create lookup Maps for O(1) category access
+const INCOME_CATEGORY_MAP = new Map(
+  INCOME_TYPE_MAP.map((item) => [item.value, item.label])
+);
+const OUTCOME_CATEGORY_MAP = new Map(
+  OUTCOME_TYPE_MAP.map((item) => [item.value, item.label])
+);
+
 export const calSpending2Chart = (data: SpendingRecord[]): PieChartData => {
   const {
     incomeResult,
@@ -126,58 +134,56 @@ const parseData = (data: SpendingRecord[]) => {
   let totalOutcome = 0;
   let necessaryOutcome = 0;
   let unnecessaryOutcome = 0;
+
   data.forEach((record) => {
+    const amount = Number(record.amount);
+    const isNecessary = record.necessity === Necessity.Need;
+
     if (record.type === SpendingType.Income) {
-      const category = INCOME_TYPE_MAP.find((d) => d.value === record.category);
-      if (category) {
-        totalIncome += Number(record.amount);
-        let temp = incomeResult.get(category.label) ?? getEmptyResult();
-        if (record.necessity === Necessity.Need) {
-          necessaryIncome += Number(record.amount);
-          temp = {
-            ...temp,
-            necessary: temp.necessary + Number(record.amount),
-            necessaryList: [...temp.necessaryList, Number(record.amount)],
-          };
-        } else {
-          unnecessaryIncome += Number(record.amount);
-          temp = {
-            ...temp,
-            unnecessary: temp.unnecessary + Number(record.amount),
-            unnecessaryList: [...temp.unnecessaryList, Number(record.amount)],
-          };
+      const categoryLabel = INCOME_CATEGORY_MAP.get(record.category);
+      if (categoryLabel) {
+        totalIncome += amount;
+        let temp = incomeResult.get(categoryLabel);
+
+        if (!temp) {
+          temp = getEmptyResult();
+          incomeResult.set(categoryLabel, temp);
         }
-        incomeResult.set(category.label, {
-          ...temp,
-          total: temp.total + Number(record.amount),
-        });
+
+        temp.total += amount;
+
+        if (isNecessary) {
+          necessaryIncome += amount;
+          temp.necessary += amount;
+          temp.necessaryList.push(amount);
+        } else {
+          unnecessaryIncome += amount;
+          temp.unnecessary += amount;
+          temp.unnecessaryList.push(amount);
+        }
       }
     } else {
-      const category = OUTCOME_TYPE_MAP.find(
-        (d) => d.value === record.category,
-      );
-      if (category) {
-        totalOutcome += Number(record.amount);
-        let temp = outcomeResult.get(category.label) ?? getEmptyResult();
-        if (record.necessity === Necessity.Need) {
-          necessaryOutcome += Number(record.amount);
-          temp = {
-            ...temp,
-            necessary: temp.necessary + Number(record.amount),
-            necessaryList: [...temp.necessaryList, Number(record.amount)],
-          };
-        } else {
-          unnecessaryOutcome += Number(record.amount);
-          temp = {
-            ...temp,
-            unnecessary: temp.unnecessary + Number(record.amount),
-            unnecessaryList: [...temp.unnecessaryList, Number(record.amount)],
-          };
+      const categoryLabel = OUTCOME_CATEGORY_MAP.get(record.category);
+      if (categoryLabel) {
+        totalOutcome += amount;
+        let temp = outcomeResult.get(categoryLabel);
+
+        if (!temp) {
+          temp = getEmptyResult();
+          outcomeResult.set(categoryLabel, temp);
         }
-        outcomeResult.set(category.label, {
-          ...temp,
-          total: temp.total + Number(record.amount),
-        });
+
+        temp.total += amount;
+
+        if (isNecessary) {
+          necessaryOutcome += amount;
+          temp.necessary += amount;
+          temp.necessaryList.push(amount);
+        } else {
+          unnecessaryOutcome += amount;
+          temp.unnecessary += amount;
+          temp.unnecessaryList.push(amount);
+        }
       }
     }
   });
