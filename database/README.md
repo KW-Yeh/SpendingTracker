@@ -390,11 +390,31 @@ const data = await getBudgetPageDataServer(accountId, 2025);
 
 ```sql
 -- 移除所有 Functions
-DROP FUNCTION IF EXISTS get_user_dashboard_data(INT);
-DROP FUNCTION IF EXISTS get_budget_page_data(INT, INT);
-DROP FUNCTION IF EXISTS get_account_transactions(INT, DATE, DATE);
-DROP FUNCTION IF EXISTS get_user_groups_with_permissions(INT);
+DROP FUNCTION IF EXISTS get_user_dashboard_data(integer);
+DROP FUNCTION IF EXISTS get_budget_page_data(integer, integer);
+DROP FUNCTION IF EXISTS get_account_transactions(integer, date, date);
+DROP FUNCTION IF EXISTS get_user_groups_with_permissions(integer);
 ```
+
+### 如何切換優化模式
+
+修改 `my-app/src/config/features.ts` 中的 feature flags:
+
+```typescript
+export const FEATURE_FLAGS = {
+  // 設為 true 使用優化版本 (SQL Functions)
+  // 設為 false 回到原本的多查詢方式
+  USE_OPTIMIZED_DASHBOARD: true,
+  USE_OPTIMIZED_BUDGET: true,
+  USE_OPTIMIZED_TRANSACTIONS: true,
+} as const;
+```
+
+**優點**:
+- ✅ 隨時可切換回原本做法
+- ✅ 不需要修改前端程式碼
+- ✅ 只需改一個設定檔案
+- ✅ 無痛升級/降級
 
 ---
 

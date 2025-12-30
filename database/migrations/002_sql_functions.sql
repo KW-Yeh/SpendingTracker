@@ -10,14 +10,11 @@
 -- Input: user_id (from JWT token)
 -- Output: JSON with groups and recent transactions
 
-CREATE OR REPLACE FUNCTION get_user_dashboard_data(p_user_id INT)
-RETURNS jsonb
-LANGUAGE plpgsql
+CREATE OR REPLACE FUNCTION get_user_dashboard_data(p_user_id integer)
+RETURNS text
+LANGUAGE sql
 STABLE
 AS $$
-DECLARE
-  result jsonb;
-BEGIN
   SELECT json_build_object(
     'user', (
       SELECT json_build_object(
@@ -71,13 +68,10 @@ BEGIN
       AND s.date >= CURRENT_DATE - INTERVAL '30 days'
       LIMIT 50
     )
-  ) INTO result;
-
-  RETURN result;
-END;
+  )::text;
 $$;
 
-COMMENT ON FUNCTION get_user_dashboard_data(INT) IS
+COMMENT ON FUNCTION get_user_dashboard_data(integer) IS
 'Returns all dashboard data (user, groups, recent transactions) in a single query. Used by dashboard page.';
 
 
@@ -90,22 +84,13 @@ COMMENT ON FUNCTION get_user_dashboard_data(INT) IS
 -- Output: JSON with budget and yearly transactions
 
 CREATE OR REPLACE FUNCTION get_budget_page_data(
-  p_account_id INT,
-  p_year INT DEFAULT EXTRACT(YEAR FROM CURRENT_DATE)::INT
+  p_account_id integer,
+  p_year integer DEFAULT EXTRACT(YEAR FROM CURRENT_DATE)::integer
 )
-RETURNS jsonb
-LANGUAGE plpgsql
+RETURNS text
+LANGUAGE sql
 STABLE
 AS $$
-DECLARE
-  result jsonb;
-  year_start DATE;
-  year_end DATE;
-BEGIN
-  -- Calculate year boundaries
-  year_start := make_date(p_year, 1, 1);
-  year_end := make_date(p_year, 12, 31);
-
   SELECT json_build_object(
     'budget', (
       SELECT json_build_object(
@@ -138,8 +123,8 @@ BEGIN
       ), '[]'::json)
       FROM transactions s
       WHERE s.account_id = p_account_id
-        AND s.date >= year_start
-        AND s.date <= year_end
+        AND s.date >= make_date(p_year, 1, 1)
+        AND s.date <= make_date(p_year, 12, 31)
     ),
     'monthly_statistics', (
       SELECT COALESCE(
@@ -167,13 +152,10 @@ BEGIN
         GROUP BY month_num
       ) monthly_data
     )
-  ) INTO result;
-
-  RETURN result;
-END;
+  )::text;
 $$;
 
-COMMENT ON FUNCTION get_budget_page_data(INT, INT) IS
+COMMENT ON FUNCTION get_budget_page_data(integer, integer) IS
 'Returns all budget page data (budget, yearly transactions, monthly statistics) in a single query. Used by budget page.';
 
 
@@ -186,17 +168,14 @@ COMMENT ON FUNCTION get_budget_page_data(INT, INT) IS
 -- Output: JSON array of transactions
 
 CREATE OR REPLACE FUNCTION get_account_transactions(
-  p_account_id INT,
-  p_start_date DATE DEFAULT NULL,
-  p_end_date DATE DEFAULT NULL
+  p_account_id integer,
+  p_start_date date DEFAULT NULL,
+  p_end_date date DEFAULT NULL
 )
-RETURNS jsonb
-LANGUAGE plpgsql
+RETURNS text
+LANGUAGE sql
 STABLE
 AS $$
-DECLARE
-  result jsonb;
-BEGIN
   SELECT COALESCE(json_agg(
     json_build_object(
       'transaction_id', s.transaction_id,
@@ -210,18 +189,14 @@ BEGIN
       'necessity', s.necessity
     )
     ORDER BY s.date DESC
-  ), '[]'::json)
-  INTO result
+  ), '[]'::json)::text
   FROM transactions s
   WHERE s.account_id = p_account_id
     AND (p_start_date IS NULL OR s.date >= p_start_date)
     AND (p_end_date IS NULL OR s.date <= p_end_date);
-
-  RETURN result;
-END;
 $$;
 
-COMMENT ON FUNCTION get_account_transactions(INT, DATE, DATE) IS
+COMMENT ON FUNCTION get_account_transactions(integer, date, date) IS
 'Returns transactions for an account within optional date range. Optimized with indexes.';
 
 
@@ -233,14 +208,11 @@ COMMENT ON FUNCTION get_account_transactions(INT, DATE, DATE) IS
 -- Input: user_id
 -- Output: JSON array of groups with permission flags
 
-CREATE OR REPLACE FUNCTION get_user_groups_with_permissions(p_user_id INT)
-RETURNS jsonb
-LANGUAGE plpgsql
+CREATE OR REPLACE FUNCTION get_user_groups_with_permissions(p_user_id integer)
+RETURNS text
+LANGUAGE sql
 STABLE
 AS $$
-DECLARE
-  result jsonb;
-BEGIN
   SELECT COALESCE(json_agg(
     json_build_object(
       'account_id', g.account_id,
@@ -257,17 +229,13 @@ BEGIN
       'created_at', g.created_at
     )
     ORDER BY g.created_at DESC
-  ), '[]'::json)
-  INTO result
+  ), '[]'::json)::text
   FROM account_members gm
   JOIN accounts g ON gm.account_id = g.account_id
   WHERE gm.user_id = p_user_id;
-
-  RETURN result;
-END;
 $$;
 
-COMMENT ON FUNCTION get_user_groups_with_permissions(INT) IS
+COMMENT ON FUNCTION get_user_groups_with_permissions(integer) IS
 'Returns all groups for a user with ownership and permission information.';
 
 
@@ -311,7 +279,7 @@ ORDER BY proname;
 -- Rollback (if needed)
 -- =============================================================================
 
--- DROP FUNCTION IF EXISTS get_user_dashboard_data(INT);
--- DROP FUNCTION IF EXISTS get_budget_page_data(INT, INT);
--- DROP FUNCTION IF EXISTS get_account_transactions(INT, DATE, DATE);
--- DROP FUNCTION IF EXISTS get_user_groups_with_permissions(INT);
+-- DROP FUNCTION IF EXISTS get_user_dashboard_data(integer);
+-- DROP FUNCTION IF EXISTS get_budget_page_data(integer, integer);
+-- DROP FUNCTION IF EXISTS get_account_transactions(integer, date, date);
+-- DROP FUNCTION IF EXISTS get_user_groups_with_permissions(integer);
