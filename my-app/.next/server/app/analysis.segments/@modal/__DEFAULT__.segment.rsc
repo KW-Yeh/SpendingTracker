@@ -1,2 +1,2 @@
 1:"$Sreact.fragment"
-0:{"buildId":"wt1HY9l3G6ddsc3rzzZfn","rsc":["$","$1","c",{"children":[null,null,null]}],"loading":null,"isPartial":false}
+0:{"buildId":"xy4rpR9Z6GYCam5uuh840","rsc":["$","$1","c",{"children":[null,null,null]}],"loading":null,"isPartial":false}
