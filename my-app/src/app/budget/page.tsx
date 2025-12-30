@@ -4,6 +4,7 @@ import { PageTitle } from '@/components/PageTitle';
 import { AnnualBudgetSection } from '@/app/budget/AnnualBudgetSection';
 import { MonthlyBudgetSection } from '@/app/budget/MonthlyBudgetSection';
 import { MonthlyBudgetBlocks } from '@/app/budget/MonthlyBudgetBlocks';
+import { BudgetSkeleton } from '@/components/skeletons/BudgetSkeleton';
 import { BudgetProvider, useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { getItems } from '@/services/getRecords';
@@ -11,8 +12,9 @@ import { useEffect, useState, startTransition } from 'react';
 
 function BudgetContent() {
   const { currentGroup } = useGroupCtx();
-  const { syncBudget } = useBudgetCtx();
+  const { syncBudget, budget, loading } = useBudgetCtx();
   const [yearlySpending, setYearlySpending] = useState<SpendingRecord[]>([]);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   // Parallel fetch: budget and spending data simultaneously
   useEffect(() => {
@@ -39,13 +41,16 @@ function BudgetContent() {
           // Use startTransition to make UI update non-blocking
           startTransition(() => {
             setYearlySpending(response.data);
+            if (isInitialLoad) {
+              setIsInitialLoad(false);
+            }
           });
         }
       })(),
     ]).catch((error) => {
       console.error('[BudgetPage] Error fetching data:', error);
     });
-  }, [currentGroup?.account_id, syncBudget]);
+  }, [currentGroup?.account_id, syncBudget, isInitialLoad]);
 
   if (!currentGroup) {
     return (
@@ -53,6 +58,11 @@ function BudgetContent() {
         <p className="text-gray-400">請先選擇一個帳本</p>
       </div>
     );
+  }
+
+  // Show skeleton only on initial load
+  if (isInitialLoad && (loading || yearlySpending.length === 0)) {
+    return <BudgetSkeleton />;
   }
 
   // Progressive rendering: Show UI immediately, data will populate when ready

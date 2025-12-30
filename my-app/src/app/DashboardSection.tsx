@@ -4,6 +4,7 @@ import { MiniDailyCostChart } from '@/app/transactions/MiniDailyCostChart';
 import Overview from '@/app/transactions/Overview';
 import { QuickNavigationCards } from '@/components/QuickNavigationCards';
 import { RecentTransactionsList } from '@/components/RecentTransactionsList';
+import { DashboardSkeleton } from '@/components/skeletons/DashboardSkeleton';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { getBudget } from '@/services/budgetServices';
@@ -14,6 +15,7 @@ import { useYearMonth } from '@/hooks/useYearMonth';
 
 export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
   const { syncData, data, loading } = useGetSpendingCtx();
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const { currentGroup } = useGroupCtx();
   const [monthlyData, setMonthlyData] = useState<SpendingRecord[]>([]);
   const [budget, setBudget] = useState<Budget | null>(null);
@@ -67,8 +69,11 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
   useEffect(() => {
     startTransition(() => {
       setMonthlyData([...data]);
+      if (isInitialLoad && data.length > 0) {
+        setIsInitialLoad(false);
+      }
     });
-  }, [data]);
+  }, [data, isInitialLoad]);
 
   // Calculate current month's budget total
   const currentMonthBudget = useMemo(() => {
@@ -86,6 +91,11 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
 
     return total;
   }, [budget]);
+
+  // Show skeleton only on initial load
+  if (isInitialLoad && loading) {
+    return <DashboardSkeleton />;
+  }
 
   return (
     <div className="content-wrapper">

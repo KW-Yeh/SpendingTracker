@@ -2,6 +2,7 @@
 
 import { ChartContainer } from '@/app/analysis/ChartContainer';
 import { YearMonthFilter } from '@/app/analysis/YearMonthFilter';
+import { AnalysisSkeleton } from '@/components/skeletons/AnalysisSkeleton';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
@@ -43,8 +44,9 @@ const NecessityPieChart = dynamic(() => import('./NecessityPieChart'), {
 export const ChartBlock = () => {
   useScrollToTop();
   const { config: userData } = useUserConfigCtx();
-  const { data, syncData } = useGetSpendingCtx();
+  const { data, syncData, loading } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const today = new Date();
   const dateHook = useYearMonth(today);
 
@@ -70,8 +72,18 @@ export const ChartBlock = () => {
         `${new Date(record.date).getFullYear()}` === dateHook.year &&
         `${new Date(record.date).getMonth() + 1}` === dateHook.month,
     );
+
+    if (isInitialLoad && filteredData.length > 0) {
+      setIsInitialLoad(false);
+    }
+
     return calSpending2Chart(filteredData);
-  }, [data, dateHook.year, dateHook.month]);
+  }, [data, dateHook.year, dateHook.month, isInitialLoad]);
+
+  // Show skeleton only on initial load
+  if (isInitialLoad && loading) {
+    return <AnalysisSkeleton />;
+  }
 
   return (
     <div className="content-wrapper">

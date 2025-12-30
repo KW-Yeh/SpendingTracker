@@ -5,6 +5,7 @@ import OverView from '@/app/transactions/Overview';
 import { SpendingList } from '@/app/transactions/SpendingList';
 import { YearMonthFilter } from '@/app/analysis/YearMonthFilter';
 import { SearchIcon } from '@/components/icons/SearchIcon';
+import { TransactionsSkeleton } from '@/components/skeletons/TransactionsSkeleton';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useScrollToTop } from '@/hooks/useScrollToTop';
@@ -23,6 +24,7 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
   useScrollToTop();
   const { syncData, data, loading } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [isProcessing, setIsProcessing] = useState(true);
   const [monthlyData, setMonthlyData] = useState<SpendingRecord[]>([]);
   const [filterStr, setFilterStr] = useState('');
@@ -75,8 +77,11 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
       // 不過濾用戶，顯示帳本內所有交易
       setMonthlyData([...data]);
       setIsProcessing(false);
+      if (isInitialLoad && data.length > 0) {
+        setIsInitialLoad(false);
+      }
     });
-  }, [data, loading]);
+  }, [data, loading, isInitialLoad]);
 
   useEffect(() => {
     const elem = searchRef.current;
@@ -103,6 +108,11 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
     dateHook.year,
     syncData,
   ]);
+
+  // Show skeleton only on initial load
+  if (isInitialLoad && loading) {
+    return <TransactionsSkeleton />;
+  }
 
   return (
     <div className="content-wrapper">
