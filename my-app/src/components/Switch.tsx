@@ -1,5 +1,6 @@
 'use client';
 
+import { GRAY_COLORS } from '@/styles/colors';
 import {
   ReactNode,
   startTransition,
@@ -53,12 +54,12 @@ export const Switch = (props: Props) => {
           block.style.left = `${leftLeft}px`;
           block.style.width = `${leftWidth}px`;
           leftButton.style.color = 'white';
-          rightButton.style.color = 'hsl(0, 0%, 50%)';
+          rightButton.style.color = GRAY_COLORS[500];
         } else {
           block.style.left = `${rightLeft}px`;
           block.style.width = `${rightWidth}px`;
           rightButton.style.color = 'white';
-          leftButton.style.color = 'hsl(0, 0%, 50%)';
+          leftButton.style.color = GRAY_COLORS[500];
         }
       }
     });

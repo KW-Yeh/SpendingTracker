@@ -1,6 +1,7 @@
 'use client';
 
 import { normalizeNumber } from '@/utils/normalizeNumber';
+import { PRIMARY_COLORS } from '@/styles/colors';
 import { startTransition, useEffect, useState } from 'react';
 import {
   Area,
@@ -42,18 +43,18 @@ const UsageLineChart = (props: Props) => {
           <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
             <stop
               offset="5%"
-              stopColor="hsl(256, 60%, 70%)"
+              stopColor={PRIMARY_COLORS[400]}
               stopOpacity={0.8}
             />
-            <stop offset="95%" stopColor="hsl(256, 60%, 70%)" stopOpacity={0} />
+            <stop offset="95%" stopColor={PRIMARY_COLORS[400]} stopOpacity={0} />
           </linearGradient>
         </defs>
         <Area
           dataKey="cumulation"
-          stroke="hsl(256, 60%, 70%)"
+          stroke={PRIMARY_COLORS[400]}
           fill="url(#colorUv)"
           type="monotone"
-          dot={{ stroke: 'hsl(256, 60%, 70%)', r: 1 }}
+          dot={{ stroke: PRIMARY_COLORS[400], r: 1 }}
         />
         <Tooltip content={CustomToolTip} />
       </AreaChart>

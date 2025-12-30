@@ -1,6 +1,7 @@
 'use client';
 
 import { normalizeNumber } from '@/utils/normalizeNumber';
+import { PRIMARY_COLORS } from '@/styles/colors';
 import { startTransition, useEffect, useState } from 'react';
 import {
   Bar,
@@ -48,7 +49,7 @@ const UsageBarChart = (props: Props) => {
         <XAxis dataKey="date" />
         <YAxis yAxisId="left" orientation="left" tick={false} width={4} />
         <Tooltip content={CustomToolTip} />
-        <Bar yAxisId="left" dataKey="cost" fill="hsl(256, 60%, 70%)" />
+        <Bar yAxisId="left" dataKey="cost" fill={PRIMARY_COLORS[400]} />
       </BarChart>
     </ResponsiveContainer>
   );

@@ -1,6 +1,7 @@
 'use client';
 
 import { normalizeNumber } from '@/utils/normalizeNumber';
+import { PRIMARY_COLORS } from '@/styles/colors';
 import {
   DefaultTooltipContentProps,
   Pie,
@@ -32,11 +33,11 @@ const UsagePieChart = (props: Props) => {
         <Pie
           dataKey="value"
           data={[
-            { name: '使用', value: totalOutcome, fill: 'hsl(256, 60%, 70%)' },
+            { name: '使用', value: totalOutcome, fill: PRIMARY_COLORS[400] },
             {
               name: '剩餘',
               value: isOverSpent ? 0 : totalIncome - totalOutcome,
-              fill: 'hsl(256, 60%, 90%)',
+              fill: PRIMARY_COLORS[100],
             },
           ]}
           isAnimationActive={false}
@@ -47,7 +48,7 @@ const UsagePieChart = (props: Props) => {
         <text
           x="50%"
           y="50%"
-          fill="hsl(256, 60%, 30%)"
+          fill={PRIMARY_COLORS[700]}
           textAnchor="middle"
           dominantBaseline="central"
         >

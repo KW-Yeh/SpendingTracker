@@ -27,7 +27,7 @@ export const CHART_COLORS = {
   OUTCOME_UNNECESSARY: 'hsl(20, 60%, 85%)',  // 非必要支出（更淺）
 
   // 通用
-  NEUTRAL: 'hsl(0, 0%, 80%)',                // --color-gray-200
+  NEUTRAL: 'hsl(0, 0%, 80%)',                // GRAY_COLORS[200]
 } as const;
 
 /**
@@ -88,6 +88,21 @@ export const ACCENT_COLORS = {
 } as const;
 
 /**
+ * 灰階顏色
+ */
+export const GRAY_COLORS = {
+  100: 'hsl(0, 0%, 95%)',
+  200: 'hsl(0, 0%, 80%)',
+  300: 'hsl(0, 0%, 70%)',
+  400: 'hsl(0, 0%, 60%)',
+  500: 'hsl(0, 0%, 50%)',
+  600: 'hsl(0, 0%, 40%)',
+  700: 'hsl(0, 0%, 30%)',
+  800: 'hsl(0, 0%, 20%)',
+  900: 'hsl(0, 0%, 10%)',
+} as const;
+
+/**
  * 語義化顏色
  */
 export const SEMANTIC_COLORS = {
@@ -104,8 +119,8 @@ export const SEMANTIC_COLORS = {
   infoLight: PRIMARY_COLORS[100],
 
   // 中性
-  neutral: 'hsl(0, 0%, 80%)',
-  neutralLight: 'hsl(0, 0%, 95%)',
+  neutral: GRAY_COLORS[200],
+  neutralLight: GRAY_COLORS[100],
 } as const;
 
 // ============================================================================
