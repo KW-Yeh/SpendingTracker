@@ -1,10 +1,11 @@
 import { getExpenseFromData } from '@/utils/getExpenseFromData';
 import { normalizeNumber } from '@/utils/normalizeNumber';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { MdOutlineWallet } from 'react-icons/md';
 import { IoMdAdd } from 'react-icons/io';
 import { CATEGORY_WORDING_MAP, SpendingType } from '@/utils/constants';
 import Link from 'next/link';
+import { IoChevronDown, IoChevronUp } from 'react-icons/io5';
 
 interface Props {
   costList: SpendingRecord[];
@@ -15,6 +16,7 @@ interface Props {
 
 export default function OverView(props: Props) {
   const { monthlyBudget = 0, budget, costList } = props;
+  const [isBudgetExpanded, setIsBudgetExpanded] = useState(false);
 
   // Memoize expensive expense calculation
   const { totalIncome, totalOutcome } = useMemo(
@@ -144,91 +146,105 @@ export default function OverView(props: Props) {
         </div>
       </div>
 
-      {/* Category-based budget cards */}
+      {/* Category-based budget cards - Accordion */}
       {currentMonthBudgetItems.length > 0 && (
-        <div className="flex flex-col gap-3">
-          <h4 className="text-sm font-medium text-gray-700">預算使用狀況</h4>
-          <div className="grid max-h-80 grid-cols-2 gap-3 overflow-y-auto pr-1 md:max-h-96">
-            {currentMonthBudgetItems.map((item) => {
-              const usagePercent = item.budgeted > 0 ? (item.spent / item.budgeted) * 100 : 0;
-              const isOver = item.spent > item.budgeted;
-              const isNearLimit = usagePercent >= 80 && !isOver;
+        <div className="flex flex-col">
+          <button
+            type="button"
+            onClick={() => setIsBudgetExpanded(!isBudgetExpanded)}
+            className="flex items-center justify-between rounded-lg px-2 py-2 transition-colors hover:bg-gray-50"
+          >
+            <h4 className="text-xs font-medium text-gray-600">預算使用狀況</h4>
+            {isBudgetExpanded ? (
+              <IoChevronUp className="size-4 text-gray-500" />
+            ) : (
+              <IoChevronDown className="size-4 text-gray-500" />
+            )}
+          </button>
 
-              return (
-                <div
-                  key={item.category}
-                  className={`flex flex-col gap-2 rounded-xl border-2 p-4 transition-all duration-200 ${
-                    isOver
-                      ? 'border-red-200 bg-red-50'
-                      : isNearLimit
-                        ? 'border-orange-200 bg-orange-50'
-                        : 'border-primary-200 bg-primary-50'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-semibold text-gray-700">
-                      {CATEGORY_WORDING_MAP[item.category]}
-                    </span>
-                    <span
-                      className={`text-xs font-bold ${
-                        isOver
-                          ? 'text-red-600'
-                          : isNearLimit
-                            ? 'text-orange-600'
-                            : 'text-primary-600'
-                      }`}
-                    >
-                      {usagePercent.toFixed(0)}%
-                    </span>
-                  </div>
+          {isBudgetExpanded && (
+            <div className="mt-2 grid max-h-80 grid-cols-2 gap-2 overflow-y-auto pr-1 md:max-h-96">
+              {currentMonthBudgetItems.map((item) => {
+                const usagePercent = item.budgeted > 0 ? (item.spent / item.budgeted) * 100 : 0;
+                const isOver = item.spent > item.budgeted;
+                const isNearLimit = usagePercent >= 80 && !isOver;
 
-                  <div className="flex flex-col gap-1">
-                    <div className="flex items-baseline justify-between">
-                      <span className="text-xs text-gray-500">已使用</span>
+                return (
+                  <div
+                    key={item.category}
+                    className={`flex flex-col gap-1.5 rounded-lg border p-2.5 transition-all duration-200 ${
+                      isOver
+                        ? 'border-red-200 bg-red-50'
+                        : isNearLimit
+                          ? 'border-orange-200 bg-orange-50'
+                          : 'border-primary-200 bg-primary-50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-gray-700">
+                        {CATEGORY_WORDING_MAP[item.category]}
+                      </span>
                       <span
-                        className={`text-lg font-bold ${
+                        className={`text-xs font-bold ${
                           isOver
                             ? 'text-red-600'
                             : isNearLimit
                               ? 'text-orange-600'
-                              : 'text-gray-700'
+                              : 'text-primary-600'
                         }`}
                       >
-                        ${normalizeNumber(item.spent)}
+                        {usagePercent.toFixed(0)}%
                       </span>
                     </div>
-                    <div className="flex items-baseline justify-between">
-                      <span className="text-xs text-gray-500">預算</span>
-                      <span className="text-sm font-medium text-gray-600">
-                        ${normalizeNumber(item.budgeted)}
-                      </span>
-                    </div>
-                  </div>
 
-                  <div className="relative h-2 w-full overflow-hidden rounded-full bg-white">
-                    <div
-                      className={`h-full rounded-full transition-all duration-300 ${
-                        isOver
-                          ? 'bg-red-500'
-                          : isNearLimit
-                            ? 'bg-orange-500'
-                            : 'bg-primary-400'
-                      }`}
-                      style={{ width: `${Math.min(usagePercent, 100)}%` }}
-                    />
-                  </div>
-
-                  {isOver && (
-                    <div className="mt-1 rounded-lg bg-red-100 px-2 py-1">
-                      <span className="text-xs font-medium text-red-700">
-                        超支 ${normalizeNumber(item.spent - item.budgeted)}
-                      </span>
+                    <div className="flex flex-col gap-0.5">
+                      <div className="flex items-baseline justify-between">
+                        <span className="text-[10px] text-gray-500">已使用</span>
+                        <span
+                          className={`text-sm font-bold ${
+                            isOver
+                              ? 'text-red-600'
+                              : isNearLimit
+                                ? 'text-orange-600'
+                                : 'text-gray-700'
+                          }`}
+                        >
+                          ${normalizeNumber(item.spent)}
+                        </span>
+                      </div>
+                      <div className="flex items-baseline justify-between">
+                        <span className="text-[10px] text-gray-500">預算</span>
+                        <span className="text-xs font-medium text-gray-600">
+                          ${normalizeNumber(item.budgeted)}
+                        </span>
+                      </div>
                     </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+
+                    <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-white">
+                      <div
+                        className={`h-full rounded-full transition-all duration-300 ${
+                          isOver
+                            ? 'bg-red-500'
+                            : isNearLimit
+                              ? 'bg-orange-500'
+                              : 'bg-primary-400'
+                        }`}
+                        style={{ width: `${Math.min(usagePercent, 100)}%` }}
+                      />
+                    </div>
+
+                    {isOver && (
+                      <div className="mt-0.5 rounded-md bg-red-100 px-1.5 py-0.5">
+                        <span className="text-[10px] font-medium text-red-700">
+                          超支 ${normalizeNumber(item.spent - item.budgeted)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 

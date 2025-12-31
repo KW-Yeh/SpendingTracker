@@ -53,20 +53,20 @@ export const DatePicker = (props: Props) => {
   };
 
   return (
-    <div className={`relative flex items-center ${className}`}>
+    <div className={`relative ${className}`}>
       <input
         ref={inputRef}
         type="date"
-        className="absolute top-0 right-0 bottom-0 left-0 opacity-0"
+        className="absolute inset-0 size-full cursor-pointer opacity-0"
         onChange={handleOnChangeDate}
       />
       <button
         type="button"
-        className={`z-20 flex w-full items-center justify-between gap-4 ${labelClassName}`}
+        className={`relative z-10 flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-all duration-200 hover:border-primary-400 hover:bg-gray-50 active:scale-[0.98] ${labelClassName}`}
         onClick={showPicker}
       >
-        <span>{wording}</span>
-        <CalendarIcon className="size-4" />
+        <CalendarIcon className="size-4 text-gray-500" />
+        <span className="text-center">{wording}</span>
       </button>
     </div>
   );
