@@ -36,28 +36,32 @@ export default function OverView(props: Props) {
     return spending;
   }, [costList]);
 
-  // Get budget items for current month
+  // Get budget items for current month, aggregated by category
   const currentMonthBudgetItems = useMemo(() => {
     if (!budget?.monthly_items) return [];
 
     const currentMonth = new Date().getMonth() + 1;
-    const items: Array<{ category: string; description: string; budgeted: number; spent: number }> = [];
+    const categoryMap: Record<string, { category: string; budgeted: number; spent: number }> = {};
 
     budget.monthly_items.forEach((item) => {
       const budgetAmount = item.months?.[currentMonth.toString()];
       if (budgetAmount && budgetAmount > 0) {
-        const spentAmount = categorySpending[item.category] || 0;
-        items.push({
-          category: item.category,
-          description: item.description,
-          budgeted: budgetAmount,
-          spent: spentAmount,
-        });
+        const category = item.category;
+
+        if (!categoryMap[category]) {
+          categoryMap[category] = {
+            category,
+            budgeted: 0,
+            spent: categorySpending[category] || 0,
+          };
+        }
+
+        categoryMap[category].budgeted += budgetAmount;
       }
     });
 
-    // Sort by highest budget first
-    return items.sort((a, b) => b.budgeted - a.budgeted);
+    // Convert to array and sort by highest budget first
+    return Object.values(categoryMap).sort((a, b) => b.budgeted - a.budgeted);
   }, [budget, categorySpending]);
 
   const balance = monthlyBudget - totalOutcome;
@@ -151,11 +155,10 @@ export default function OverView(props: Props) {
               const isNearLimit = usagePercent >= 80 && !isOver;
 
               return (
-                <div key={`${item.category}-${item.description}`} className="flex flex-col gap-1">
+                <div key={item.category} className="flex flex-col gap-1">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="flex items-center gap-1.5 font-medium">
-                      <span className="text-base">{item.category}</span>
-                      <span className="text-gray-700">{item.description}</span>
+                    <span className="text-base font-medium">
+                      {item.category}
                     </span>
                     <span className={`font-semibold ${isOver ? 'text-red-600' : isNearLimit ? 'text-orange-600' : 'text-gray-600'}`}>
                       ${normalizeNumber(item.spent)} / ${normalizeNumber(item.budgeted)}
