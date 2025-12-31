@@ -112,7 +112,7 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
         refreshData={getNewData}
         group={currentGroup}
         dateOptions={dateHook}
-        className="flex justify-center rounded-lg border border-gray-200 bg-white p-2 text-base shadow-sm"
+        className="self-center text-base"
       />
 
       <div className="flex w-full flex-col gap-3 md:w-auto md:flex-row md:items-start md:gap-5">

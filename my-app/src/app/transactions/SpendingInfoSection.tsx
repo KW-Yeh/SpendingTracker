@@ -112,7 +112,7 @@ export const SpendingInfoSection = () => {
         refreshData={getNewData}
         group={currentGroup}
         dateOptions={dateHook}
-        className="flex self-center rounded-lg border border-gray-200 bg-white p-2 text-base shadow-sm"
+        className="self-center text-base"
       />
 
       <div className="ml-auto flex items-center gap-3">

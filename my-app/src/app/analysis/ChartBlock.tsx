@@ -189,7 +189,7 @@ export const ChartBlock = () => {
         refreshData={refreshData}
         group={currentGroup}
         dateOptions={dateHook}
-        className="flex self-center rounded-lg border border-gray-200 bg-white p-2 text-base shadow-sm"
+        className="self-center text-base"
       />
 
       <div className="flex w-full flex-col items-center gap-8 md:flex-row md:items-start">
