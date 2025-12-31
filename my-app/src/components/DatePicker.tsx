@@ -62,7 +62,7 @@ export const DatePicker = (props: Props) => {
       />
       <button
         type="button"
-        className={`relative z-10 flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-all duration-200 hover:border-primary-400 hover:bg-gray-50 active:scale-[0.98] ${labelClassName}`}
+        className={`relative z-10 flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-50 ${labelClassName}`}
         onClick={showPicker}
       >
         <CalendarIcon className="size-4 text-gray-500" />
