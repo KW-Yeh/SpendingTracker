@@ -3,7 +3,7 @@ import { normalizeNumber } from '@/utils/normalizeNumber';
 import { useMemo } from 'react';
 import { MdOutlineWallet } from 'react-icons/md';
 import { IoMdAdd } from 'react-icons/io';
-import { SpendingType } from '@/utils/constants';
+import { CATEGORY_WORDING_MAP, SpendingType } from '@/utils/constants';
 import Link from 'next/link';
 
 interface Props {
@@ -158,7 +158,7 @@ export default function OverView(props: Props) {
                 <div key={item.category} className="flex flex-col gap-1">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-base font-medium">
-                      {item.category}
+                      {CATEGORY_WORDING_MAP[item.category]}
                     </span>
                     <span className={`font-semibold ${isOver ? 'text-red-600' : isNearLimit ? 'text-orange-600' : 'text-gray-600'}`}>
                       ${normalizeNumber(item.spent)} / ${normalizeNumber(item.budgeted)}
