@@ -3,17 +3,19 @@
 import { SpendingItem } from '@/app/transactions/SpendingItem';
 import { SearchIcon } from '@/components/icons/SearchIcon';
 import { formatDate } from '@/utils/formatDate';
+import { CATEGORY_WORDING_MAP, SpendingType } from '@/utils/constants';
 import { useMemo } from 'react';
 
 interface Props {
   data: SpendingRecord[];
   filterStr: string;
+  sortBy: string;
   loading: boolean;
   refreshData: () => void;
 }
 
 export const SpendingList = (props: Props) => {
-  const { refreshData, data, filterStr, loading } = props;
+  const { refreshData, data, filterStr, sortBy, loading } = props;
 
   const filteredBySearch = useMemo(
     () =>
@@ -21,15 +23,27 @@ export const SpendingList = (props: Props) => {
     [data, filterStr],
   );
 
-  const sortedByDay = useMemo(() => {
+  const sortedData = useMemo(() => {
     const result: Record<string, SpendingRecord[]> = {};
+
     filteredBySearch.forEach((d: SpendingRecord) => {
-      const date = formatDate(d.date);
-      if (!result[date]) result[date] = [];
-      result[date].push(d);
+      let key: string;
+
+      if (sortBy === 'category') {
+        key = CATEGORY_WORDING_MAP[d.category] || d.category;
+      } else if (sortBy === 'type') {
+        key = d.type === SpendingType.Income ? '收入' : '支出';
+      } else {
+        // 預設按日期排序
+        key = formatDate(d.date);
+      }
+
+      if (!result[key]) result[key] = [];
+      result[key].push(d);
     });
+
     return result;
-  }, [filteredBySearch]);
+  }, [filteredBySearch, sortBy]);
 
   if (loading) {
     return (
@@ -55,14 +69,14 @@ export const SpendingList = (props: Props) => {
 
   return (
     <div className="flex w-full flex-col gap-2 text-xs sm:text-sm">
-      {Object.keys(sortedByDay).map((dateStr, index) => (
-        <div key={dateStr}>
-          <span className="text-gray-500">{dateStr}</span>
+      {Object.keys(sortedData).map((groupKey, index) => (
+        <div key={groupKey}>
+          <span className="text-gray-500">{groupKey}</span>
           <div
             className="flex flex-col gap-1 rounded border-2 border-solid border-transparent p-1 transition-all"
-            id={`spending-list-${dateStr}`}
+            id={`spending-list-${groupKey}`}
           >
-            {sortedByDay[dateStr].map((spending, index) => (
+            {sortedData[groupKey].map((spending, index) => (
               <SpendingItem
                 key={`${spending.id}-${index.toString()}`}
                 spending={spending}

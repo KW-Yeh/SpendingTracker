@@ -12,6 +12,7 @@ import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
 import { startTransition, useCallback, useEffect, useState, useMemo } from 'react';
 import { YearMonthFilter } from './analysis/YearMonthFilter';
 import { useYearMonth } from '@/hooks/useYearMonth';
+import { CategoricalChartState } from 'recharts/types/chart/types';
 
 export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
   const { syncData, data, loading } = useGetSpendingCtx();
@@ -19,6 +20,7 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
   const { currentGroup } = useGroupCtx();
   const [monthlyData, setMonthlyData] = useState<SpendingRecord[]>([]);
   const [budget, setBudget] = useState<Budget | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const dateHook = useYearMonth(new Date());
 
   const refreshData = useCallback(() => {
@@ -92,6 +94,13 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
     return total;
   }, [budget]);
 
+  const handleChartClick = useCallback((state: CategoricalChartState) => {
+    if (!state.activePayload || !state.activePayload[0]) return;
+    const clickedDate = state.activePayload[0].payload.date;
+    if (!clickedDate) return;
+    setSelectedDate(prevDate => prevDate === clickedDate ? null : clickedDate);
+  }, []);
+
   // Show skeleton only on initial load
   if (isInitialLoad && loading) {
     return <DashboardSkeleton />;
@@ -118,6 +127,8 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
           dateStr={new Date().toISOString()}
           costList={monthlyData}
           isMobile={isMobile}
+          onChartClick={handleChartClick}
+          selectedDate={selectedDate}
         />
       </div>
 

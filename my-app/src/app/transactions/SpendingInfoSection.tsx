@@ -1,10 +1,9 @@
 'use client';
 
-import { DailyCostChart } from '@/app/transactions/DailyCostChart';
-import OverView from '@/app/transactions/Overview';
 import { SpendingList } from '@/app/transactions/SpendingList';
 import { YearMonthFilter } from '@/app/analysis/YearMonthFilter';
 import { SearchIcon } from '@/components/icons/SearchIcon';
+import { Select } from '@/components/Select';
 import { TransactionsSkeleton } from '@/components/skeletons/TransactionsSkeleton';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
@@ -18,9 +17,14 @@ import {
   useRef,
   useState,
 } from 'react';
-import { CategoricalChartState } from 'recharts/types/chart/types';
 
-export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
+const SORT_BY: Record<string, string> = {
+  date: "日期",
+  category: "類別",
+  type: "收支",
+}
+
+export const SpendingInfoSection = () => {
   useScrollToTop();
   const { syncData, data, loading } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
@@ -28,6 +32,7 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
   const [isProcessing, setIsProcessing] = useState(true);
   const [monthlyData, setMonthlyData] = useState<SpendingRecord[]>([]);
   const [filterStr, setFilterStr] = useState('');
+  const [sortBy, setSortBy] = useState('date');
   const searchRef = useRef<HTMLInputElement>(null);
   const dateHook = useYearMonth(new Date());
 
@@ -57,19 +62,6 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
     },
     [syncData],
   );
-
-  const handleSelectDataPoint = (state: CategoricalChartState) => {
-    if (!state.activePayload || !state.activePayload[0]) return;
-    const selectedLabel = state.activePayload[0].payload.date;
-    if (!selectedLabel) return;
-    const element = document.getElementById(`spending-list-${selectedLabel}`);
-    if (!element) return;
-    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    element.classList.add('highlight-pulse');
-    setTimeout(() => {
-      element.classList.remove('highlight-pulse');
-    }, 2000);
-  };
 
   useEffect(() => {
     if (loading) return;
@@ -123,27 +115,36 @@ export const SpendingInfoSection = ({ isMobile }: { isMobile: boolean }) => {
         className="flex self-center rounded-lg border border-gray-200 bg-white p-2 text-base shadow-sm"
       />
 
-      <div className="flex w-full flex-col items-center gap-5 md:flex-row md:items-start">
-        <div className="bg-background flex w-full flex-col rounded-2xl border border-solid border-gray-200 p-5 shadow-sm transition-shadow duration-200 hover:shadow">
-          <div className="mb-5 flex items-center gap-4">
-            <h3 className="text-lg font-bold">帳目</h3>
-            <div className="group hover:border-primary-400 focus-within:border-primary-500 relative ml-auto flex items-center gap-2 rounded-lg border border-solid border-gray-300 px-3 py-1.5 transition-all focus-within:shadow-sm">
-              <SearchIcon className="group-hover:text-primary-500 group-focus-within:text-primary-500 text-gray-500 transition-colors" />
-              <input
-                ref={searchRef}
-                type="text"
-                placeholder="搜尋帳目..."
-                className="w-32 bg-transparent py-0.5 text-sm font-medium focus:outline-0"
-              />
-            </div>
-          </div>
-          <SpendingList
-            data={monthlyData}
-            filterStr={filterStr}
-            loading={isProcessing}
-            refreshData={refreshData}
+      <div className="ml-auto flex items-center gap-3">
+        <Select
+          value={SORT_BY[sortBy]}
+          name="sortBy"
+          onChange={setSortBy}
+          className="bg-background rounded-lg border border-solid border-gray-300 px-3 py-1.5 text-sm font-medium transition-all hover:border-primary-400"
+        >
+          <Select.Item value="date">日期</Select.Item>
+          <Select.Item value="category">類別</Select.Item>
+          <Select.Item value="type">收支</Select.Item>
+        </Select>
+        <div className="group hover:border-primary-400 focus-within:border-primary-500 relative flex items-center gap-2 rounded-lg border border-solid border-gray-300 px-3 py-1.5 transition-all focus-within:shadow-sm bg-background">
+          <SearchIcon className="group-hover:text-primary-500 group-focus-within:text-primary-500 text-gray-500 transition-colors" />
+          <input
+            ref={searchRef}
+            type="text"
+            placeholder="搜尋帳目..."
+            className="w-32 bg-transparent py-0.5 text-sm font-medium focus:outline-0"
           />
         </div>
+      </div>
+
+      <div className="bg-background w-full rounded-2xl border border-solid border-gray-200 p-5 shadow-sm transition-shadow duration-200 hover:shadow">
+        <SpendingList
+          data={monthlyData}
+          filterStr={filterStr}
+          sortBy={sortBy}
+          loading={isProcessing}
+          refreshData={refreshData}
+        />
       </div>
     </div>
   );
