@@ -29,11 +29,22 @@ const INIT_CTX_VAL: {
   syncData: () => {},
 };
 
+type Action =
+  | { type: 'SET_DATA'; payload: SpendingRecord[] }
+  | { type: 'SET_LOADING'; payload: boolean };
+
 const reducer = (
-  _: { data: SpendingRecord[]; loading: boolean },
-  action: SpendingRecord[],
+  state: { data: SpendingRecord[]; loading: boolean },
+  action: Action,
 ) => {
-  return { data: action, loading: false };
+  switch (action.type) {
+    case 'SET_DATA':
+      return { ...state, data: action.payload, loading: false };
+    case 'SET_LOADING':
+      return { ...state, loading: action.payload };
+    default:
+      return state;
+  }
 };
 
 export const SpendingProvider = ({ children }: { children: ReactNode }) => {
@@ -46,7 +57,7 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
   const controllerRef = useRef<AbortController | null>(null);
 
   const handleSetState = useCallback((_data: SpendingRecord[]) => {
-    dispatch(_data);
+    dispatch({ type: 'SET_DATA', payload: _data });
   }, []);
 
   const queryItem = useCallback(
@@ -84,12 +95,16 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       startDate?: string,
       endDate?: string,
     ) => {
+      // Set loading to true when starting sync
+      dispatch({ type: 'SET_LOADING', payload: true });
+
       if (!groupId) {
         queryItem(email, groupId, startDate, endDate);
         return;
       }
 
       // Try to load from IndexedDB first (Stale-While-Revalidate)
+      let cacheHit = false;
       if (IDB) {
         try {
           const cachedData = await getDataFromIDB(IDB, Number(groupId), new AbortController().signal);
@@ -98,11 +113,17 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
             if (_data.length > 0) {
               console.log('[SpendingProvider] Using cached spending data');
               handleSetState(_data);
+              cacheHit = true;
             }
           }
         } catch (error) {
           console.error('[SpendingProvider] Error reading cache:', error);
         }
+      }
+
+      // If no cache hit, keep loading state true until API returns
+      if (!cacheHit) {
+        dispatch({ type: 'SET_LOADING', payload: true });
       }
 
       // Revalidate in background
