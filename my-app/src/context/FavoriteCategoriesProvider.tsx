@@ -8,6 +8,7 @@ import {
   getCategoryFavorites,
   updateCategoryFavorites,
 } from '@/utils/categoryHelpers';
+import { useIDB } from '@/hooks/useIDB';
 import {
   createContext,
   ReactNode,
@@ -15,6 +16,7 @@ import {
   useContext,
   useMemo,
   useState,
+  startTransition,
 } from 'react';
 
 const INIT_CTX_VAL: {
@@ -52,19 +54,60 @@ export const FavoriteCategoriesProvider = ({
 }) => {
   const [loading, setLoading] = useState(true);
   const [favorites, setFavorites] = useState<FavoriteCategories | null>(null);
+  const { db, getFavoriteCategoriesData, setFavoriteCategoriesData } = useIDB();
 
   const handleState = useCallback((data: FavoriteCategories | null) => {
     setFavorites(data);
     setLoading(false);
   }, []);
 
+  // Stale-While-Revalidate strategy for favorite categories
   const syncFavorites = useCallback(
-    (ownerId: number) => {
-      setLoading(true);
+    async (ownerId: number) => {
+      if (!db) {
+        // Fallback to direct API call
+        setLoading(true);
+        getFavoriteCategories(ownerId)
+          .then((res) => {
+            if (res.status) {
+              handleState(res.data);
+            } else {
+              handleState(null);
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            handleState(null);
+          });
+        return;
+      }
+
+      // Try cache first
+      try {
+        const cachedData = await getFavoriteCategoriesData(db, ownerId);
+        if (cachedData) {
+          console.log('[FavoriteCategoriesProvider] Using cached favorite categories data');
+          startTransition(() => {
+            setFavorites(cachedData);
+            setLoading(false);
+          });
+        } else {
+          setLoading(true);
+        }
+      } catch (error) {
+        console.error('[FavoriteCategoriesProvider] Error reading cache:', error);
+        setLoading(true);
+      }
+
+      // Revalidate in background
       getFavoriteCategories(ownerId)
         .then((res) => {
-          if (res.status) {
-            handleState(res.data);
+          if (res.status && res.data) {
+            startTransition(() => {
+              handleState(res.data);
+            });
+            // Update cache
+            setFavoriteCategoriesData(db, ownerId, res.data).catch(console.error);
           } else {
             handleState(null);
           }
@@ -74,7 +117,7 @@ export const FavoriteCategoriesProvider = ({
           handleState(null);
         });
     },
-    [handleState],
+    [db, getFavoriteCategoriesData, setFavoriteCategoriesData, handleState],
   );
 
   const updateFavorites = useCallback(
@@ -83,11 +126,15 @@ export const FavoriteCategoriesProvider = ({
       const res = await putFavoriteCategories(data);
       if (res.status && res.data) {
         handleState(res.data);
+        // Update cache
+        if (db) {
+          setFavoriteCategoriesData(db, data.owner_id, res.data).catch(console.error);
+        }
       } else {
         setLoading(false);
       }
     },
-    [handleState],
+    [db, setFavoriteCategoriesData, handleState],
   );
 
   const getCategoryDescriptions = useCallback(

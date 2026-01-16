@@ -8,6 +8,7 @@ enum StoreName {
   ExpenseRecord = 'Expense Record',
   GroupData = 'Group Data',
   BudgetData = 'Budget Data',
+  FavoriteCategoriesData = 'Favorite Categories Data',
 }
 
 const DB_NAME = IDB_NAME;
@@ -17,6 +18,7 @@ const STORE_NAME = [
   StoreName.ExpenseRecord,
   StoreName.GroupData,
   StoreName.BudgetData,
+  StoreName.FavoriteCategoriesData,
 ];
 const STORE_CONFIG: Record<
   string,
@@ -42,6 +44,10 @@ const STORE_CONFIG: Record<
     indexName: 'account_id',
     indexValue: ['account_id'],
   },
+  [StoreName.FavoriteCategoriesData]: {
+    indexName: 'owner_id',
+    indexValue: ['owner_id'],
+  },
 };
 
 // Generic DB record shapes used by the API below
@@ -63,14 +69,18 @@ interface GroupDATA_IDB {
   id?: number;
   user_id: number;
   data: string; // JSON stringified Group[]
-  timestamp: number; // For cache expiration
 }
 
 interface BudgetDATA_IDB {
   id?: number;
   account_id: number;
   data: string; // JSON stringified Budget
-  timestamp: number; // For cache expiration
+}
+
+interface FavoriteCategoriesDATA_IDB {
+  id?: number;
+  owner_id: number;
+  data: string; // JSON stringified FavoriteCategories
 }
 
 export const useIDB = () => {
@@ -333,7 +343,6 @@ export const useIDB = () => {
         const newData: GroupDATA_IDB = {
           user_id: userId,
           data: JSON.stringify(groups),
-          timestamp: Date.now(),
         };
 
         const index = store.index(STORE_CONFIG[StoreName.GroupData].indexName);
@@ -354,7 +363,7 @@ export const useIDB = () => {
   );
 
   const getGroupData = useCallback(
-    (db: IDBDatabase | null, userId: number, maxAge: number = 5 * 60 * 1000): Promise<Group[] | null> => {
+    (db: IDBDatabase | null, userId: number): Promise<Group[] | null> => {
       if (!db) return Promise.reject('Database not initialized');
 
       return new Promise((resolve, reject) => {
@@ -367,12 +376,6 @@ export const useIDB = () => {
           const result = request.result as GroupDATA_IDB | undefined;
           if (!result) {
             resolve(null);
-            return;
-          }
-
-          // Check cache expiration
-          if (Date.now() - result.timestamp > maxAge) {
-            resolve(null); // Cache expired
             return;
           }
 
@@ -401,7 +404,6 @@ export const useIDB = () => {
         const newData: BudgetDATA_IDB = {
           account_id: accountId,
           data: JSON.stringify(budget),
-          timestamp: Date.now(),
         };
 
         const index = store.index(STORE_CONFIG[StoreName.BudgetData].indexName);
@@ -422,7 +424,7 @@ export const useIDB = () => {
   );
 
   const getBudgetData = useCallback(
-    (db: IDBDatabase | null, accountId: number, maxAge: number = 5 * 60 * 1000): Promise<Budget | null> => {
+    (db: IDBDatabase | null, accountId: number): Promise<Budget | null> => {
       if (!db) return Promise.reject('Database not initialized');
 
       return new Promise((resolve, reject) => {
@@ -438,15 +440,70 @@ export const useIDB = () => {
             return;
           }
 
-          // Check cache expiration
-          if (Date.now() - result.timestamp > maxAge) {
-            resolve(null); // Cache expired
+          try {
+            const budget = JSON.parse(result.data) as Budget;
+            resolve(budget);
+          } catch (error) {
+            reject(error);
+          }
+        };
+        request.onerror = () => reject(request.error);
+      });
+    },
+    [],
+  );
+
+  // Cache FavoriteCategories data
+  const setFavoriteCategoriesData = useCallback(
+    (db: IDBDatabase | null, ownerId: number, favoriteCategories: FavoriteCategories): Promise<void> => {
+      if (!db) return Promise.reject('Database not initialized');
+
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(STORE_NAME, 'readwrite');
+        const store = transaction.objectStore(StoreName.FavoriteCategoriesData);
+
+        const newData: FavoriteCategoriesDATA_IDB = {
+          owner_id: ownerId,
+          data: JSON.stringify(favoriteCategories),
+        };
+
+        const index = store.index(STORE_CONFIG[StoreName.FavoriteCategoriesData].indexName);
+        const checkRequest = index.get([ownerId]);
+        checkRequest.onsuccess = () => {
+          const existingRecord = checkRequest.result;
+          if (existingRecord) {
+            newData.id = existingRecord.id;
+          }
+          const request = store.put(newData);
+          request.onsuccess = () => resolve();
+          request.onerror = () => reject(request.error);
+        };
+        checkRequest.onerror = () => reject(checkRequest.error);
+      });
+    },
+    [],
+  );
+
+  const getFavoriteCategoriesData = useCallback(
+    (db: IDBDatabase | null, ownerId: number): Promise<FavoriteCategories | null> => {
+      if (!db) return Promise.reject('Database not initialized');
+
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(STORE_NAME, 'readonly');
+        const store = transaction.objectStore(StoreName.FavoriteCategoriesData);
+        const index = store.index(STORE_CONFIG[StoreName.FavoriteCategoriesData].indexName);
+        const request = index.get([ownerId]);
+
+        request.onsuccess = () => {
+          const result = request.result as FavoriteCategoriesDATA_IDB | undefined;
+          if (!result) {
+            resolve(null);
             return;
           }
 
           try {
-            const budget = JSON.parse(result.data) as Budget;
-            resolve(budget);
+            const favoriteCategories = JSON.parse(result.data) as FavoriteCategories;
+            resolve(favoriteCategories);
           } catch (error) {
             reject(error);
           }
@@ -467,5 +524,7 @@ export const useIDB = () => {
     getGroupData,
     setBudgetData,
     getBudgetData,
+    setFavoriteCategoriesData,
+    getFavoriteCategoriesData,
   };
 };
