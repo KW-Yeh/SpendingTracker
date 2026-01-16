@@ -9,7 +9,11 @@ import { useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import { getCategoryIcon } from '@/utils/getCategoryIcon';
-import { SpendingType, INCOME_TYPE_MAP, OUTCOME_TYPE_MAP } from '@/utils/constants';
+import {
+  SpendingType,
+  INCOME_TYPE_MAP,
+  OUTCOME_TYPE_MAP,
+} from '@/utils/constants';
 import { useState, useCallback, useMemo } from 'react';
 
 const ALL_CATEGORIES = [...INCOME_TYPE_MAP, ...OUTCOME_TYPE_MAP];
@@ -126,7 +130,11 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
   };
 
   const handleSaveItem = useCallback(async () => {
-    if (!currentGroup?.account_id || !itemCategory.trim() || selectedMonth === null) {
+    if (
+      !currentGroup?.account_id ||
+      !itemCategory.trim() ||
+      selectedMonth === null
+    ) {
       alert('請填寫類別與金額');
       return;
     }
@@ -153,7 +161,9 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
       } else {
         // Adding new item - check if item with same category + description exists
         const existingItemIndex = budget?.monthly_items?.findIndex(
-          (item) => item.category === itemCategory && item.description === finalDescription,
+          (item) =>
+            item.category === itemCategory &&
+            item.description === finalDescription,
         );
 
         if (existingItemIndex !== undefined && existingItemIndex >= 0) {
@@ -193,7 +203,17 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
     } finally {
       setSaving(false);
     }
-  }, [currentGroup, budget, itemCategory, itemDescription, itemAmount, selectedMonth, selectedCategoryLabel, editingIndex, updateBudget]);
+  }, [
+    currentGroup,
+    budget,
+    itemCategory,
+    itemDescription,
+    itemAmount,
+    selectedMonth,
+    selectedCategoryLabel,
+    editingIndex,
+    updateBudget,
+  ]);
 
   const handleDeleteItem = useCallback(
     async (month: number, itemIndex: number) => {
@@ -238,12 +258,13 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
 
   return (
     <>
-      <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 md:max-w-250">
+      <div className="grid w-full grid-cols-1 gap-4 md:max-w-250 md:grid-cols-2 lg:grid-cols-3">
         {MONTHS.map((month) => {
           const monthItems = getMonthItems(month.value);
           const monthTotal = monthlyTotals[month.value];
           const monthSpent = monthlySpending[month.value];
-          const usagePercentage = monthTotal > 0 ? (monthSpent / monthTotal) * 100 : 0;
+          const usagePercentage =
+            monthTotal > 0 ? (monthSpent / monthTotal) * 100 : 0;
           const isCurrentMonth = month.value === currentMonth;
           const isOverBudget = monthSpent > monthTotal;
 
@@ -251,7 +272,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
             <div
               key={month.value}
               className={`card ${
-                isCurrentMonth ? 'ring-2 ring-primary-400 shadow-warm' : ''
+                isCurrentMonth ? 'ring-primary-400 shadow-warm ring-2' : ''
               }`}
             >
               <div className="flex items-center justify-between">
@@ -261,13 +282,15 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                 >
                   {month.label}
                   {isCurrentMonth && (
-                    <span className="text-primary-600 ml-2 text-xs font-semibold">(本月)</span>
+                    <span className="text-primary-600 ml-2 text-xs font-semibold">
+                      (本月)
+                    </span>
                   )}
                 </h3>
                 <button
                   type="button"
                   onClick={() => handleOpenAddModal(month.value)}
-                  className="text-primary-500 hover:text-primary-600 text-sm font-semibold transition-colors cursor-pointer"
+                  className="text-primary-500 hover:text-primary-600 cursor-pointer text-sm font-semibold transition-colors"
                 >
                   + 新增
                 </button>
@@ -280,7 +303,9 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                 <p className="text-sm text-gray-300">
                   已使用 {normalizeNumber(monthSpent)} 元
                   {monthTotal > 0 && (
-                    <span className={`ml-1 font-semibold ${isOverBudget ? 'text-secondary-600' : 'text-income-600'}`}>
+                    <span
+                      className={`ml-1 font-semibold ${isOverBudget ? 'text-secondary-600' : 'text-income-600'}`}
+                    >
                       ({usagePercentage.toFixed(1)}%)
                     </span>
                   )}
@@ -292,8 +317,10 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                 <div className="mt-3">
                   <div className="h-3 w-full overflow-hidden rounded-full bg-gray-100">
                     <div
-                      className={`h-full transition-all duration-300 shadow-warm ${
-                        isOverBudget ? 'bg-secondary-500' : 'bg-linear-to-r from-primary-500 to-accent-500'
+                      className={`shadow-warm h-full transition-all duration-300 ${
+                        isOverBudget
+                          ? 'bg-secondary-500'
+                          : 'from-primary-500 to-accent-500 bg-linear-to-r'
                       }`}
                       style={{ width: `${Math.min(usagePercentage, 100)}%` }}
                     />
@@ -306,28 +333,32 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                   monthItems.map((item) => (
                     <div
                       key={`${month.value}-${item.index}`}
-                      className="flex items-center justify-between rounded-xl bg-gray-50 border border-gray-100 p-2.5 transition-all hover:bg-primary-50 hover:border-primary-200"
+                      className="hover:bg-primary-50 hover:border-primary-200 flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 p-2.5 transition-all"
                     >
                       <div className="flex-1">
                         <p className="text-sm font-semibold text-gray-800">
                           {item.category} {item.description}
                         </p>
-                        <p className="text-xs text-gray-300 font-medium">
+                        <p className="text-xs font-medium text-gray-300">
                           {normalizeNumber(item.amount)} 元
                         </p>
                       </div>
                       <div className="flex gap-1">
                         <button
                           type="button"
-                          onClick={() => handleOpenEditModal(month.value, item.index)}
-                          className="rounded-lg p-2 text-primary-600 transition-all hover:bg-primary-100 active:bg-primary-100 min-w-[32px] min-h-[32px]"
+                          onClick={() =>
+                            handleOpenEditModal(month.value, item.index)
+                          }
+                          className="text-primary-600 hover:bg-primary-100 active:bg-primary-100 min-h-[32px] min-w-[32px] rounded-lg p-2 transition-all"
                         >
                           <EditIcon className="size-4" />
                         </button>
                         <button
                           type="button"
-                          onClick={() => handleDeleteItem(month.value, item.index)}
-                          className="rounded-lg p-2 text-secondary-600 transition-all hover:bg-secondary-100 active:bg-secondary-100 min-w-[32px] min-h-[32px]"
+                          onClick={() =>
+                            handleDeleteItem(month.value, item.index)
+                          }
+                          className="text-secondary-600 hover:bg-secondary-100 active:bg-secondary-100 min-h-[32px] min-w-[32px] rounded-lg p-2 transition-all"
                         >
                           <DeleteIcon className="size-4" />
                         </button>
@@ -350,7 +381,11 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
           defaultOpen={true}
           onClose={() => setModalOpen(false)}
           className="flex w-full flex-col self-end sm:max-w-96 sm:self-center sm:rounded-xl"
-          title={editingIndex !== null ? `編輯 ${MONTHS[selectedMonth - 1].label} 預算項目` : `新增 ${MONTHS[selectedMonth - 1].label} 預算項目`}
+          title={
+            editingIndex !== null
+              ? `編輯 ${MONTHS[selectedMonth - 1].label} 預算項目`
+              : `新增 ${MONTHS[selectedMonth - 1].label} 預算項目`
+          }
         >
           <div className="flex w-full flex-col gap-4">
             <fieldset>
@@ -383,7 +418,9 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
             </fieldset>
 
             <fieldset>
-              <legend className="mb-2">描述（選填，未填寫則使用類別名稱）</legend>
+              <legend className="mb-2">
+                描述（選填，未填寫則使用類別名稱）
+              </legend>
               <input
                 type="text"
                 className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1"
@@ -417,9 +454,15 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                 type="button"
                 onClick={handleSaveItem}
                 disabled={saving}
-                className="btn-primary flex items-center justify-center px-6 min-h-[44px] disabled:cursor-not-allowed disabled:opacity-50"
+                className="btn-primary flex min-h-[44px] items-center justify-center px-6 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {saving ? <Loading className="size-5 animate-spin" /> : editingIndex !== null ? '更新' : '新增'}
+                {saving ? (
+                  <Loading className="size-5 animate-spin" />
+                ) : editingIndex !== null ? (
+                  '更新'
+                ) : (
+                  '新增'
+                )}
               </button>
             </div>
           </div>

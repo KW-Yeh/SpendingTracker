@@ -59,10 +59,10 @@ export const MonthlyBudgetSection = ({ yearlySpending }: Props) => {
 
         <div className="mt-3 h-3 w-full rounded-full bg-gray-100">
           <div
-            className={`h-full rounded-full shadow-warm transition-all duration-300 ${
+            className={`shadow-warm h-full rounded-full transition-all duration-300 ${
               percentage > 100
                 ? 'bg-secondary-500'
-                : 'bg-linear-to-r from-primary-500 to-accent-500'
+                : 'from-primary-500 to-accent-500 bg-linear-to-r'
             }`}
             style={{ width: `${Math.min(percentage, 100)}%` }}
           />

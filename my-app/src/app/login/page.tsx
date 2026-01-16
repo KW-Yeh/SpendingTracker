@@ -20,7 +20,7 @@ export default async function Home() {
   if (session?.user) redirect('/');
 
   return (
-    <div className="bg-radial flex w-full flex-1 items-center justify-center p-4">
+    <div className="flex w-full flex-1 items-center justify-center bg-radial p-4">
       <div className="flex w-full max-w-130 flex-col items-center justify-start gap-6 rounded-2xl bg-white/50 p-6 shadow-lg">
         <h1 className="text-2xl leading-18 font-black">Login</h1>
         <p className="text-gray-300">

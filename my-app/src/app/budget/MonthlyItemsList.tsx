@@ -36,9 +36,9 @@ export const MonthlyItemsList = () => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [itemCategory, setItemCategory] = useState('');
   const [itemDescription, setItemDescription] = useState('');
-  const [monthlyAmounts, setMonthlyAmounts] = useState<{ [key: string]: number }>(
-    {},
-  );
+  const [monthlyAmounts, setMonthlyAmounts] = useState<{
+    [key: string]: number;
+  }>({});
   const [saving, setSaving] = useState(false);
 
   const selectedCategoryLabel = useMemo(
@@ -121,7 +121,8 @@ export const MonthlyItemsList = () => {
       const confirmDelete = window.confirm('確定要刪除此項目嗎？');
       if (!confirmDelete) return;
 
-      const newItems = budget?.monthly_items.filter((_, i) => i !== index) || [];
+      const newItems =
+        budget?.monthly_items.filter((_, i) => i !== index) || [];
 
       try {
         await updateBudget({
@@ -164,7 +165,8 @@ export const MonthlyItemsList = () => {
       <div className="mt-4 space-y-2">
         {budget?.monthly_items && budget.monthly_items.length > 0 ? (
           budget.monthly_items.map((item, index) => {
-            const currentMonthAmount = item.months?.[currentMonth.toString()] || 0;
+            const currentMonthAmount =
+              item.months?.[currentMonth.toString()] || 0;
             return (
               <div
                 key={index}
@@ -172,7 +174,7 @@ export const MonthlyItemsList = () => {
               >
                 <div className="flex-1">
                   <p className="font-medium">
-                    <span className="text-xl mr-2">{item.category}</span>
+                    <span className="mr-2 text-xl">{item.category}</span>
                     {item.description}
                   </p>
                   <p className="text-sm text-gray-300">
@@ -208,7 +210,9 @@ export const MonthlyItemsList = () => {
           defaultOpen={true}
           onClose={() => setModalOpen(false)}
           className="flex w-full flex-col self-end sm:max-w-2xl sm:self-center sm:rounded-xl"
-          title={editingIndex !== null ? '編輯月度預算項目' : '新增月度預算項目'}
+          title={
+            editingIndex !== null ? '編輯月度預算項目' : '新增月度預算項目'
+          }
         >
           <div className="flex w-full flex-col gap-4">
             <fieldset>
@@ -241,7 +245,9 @@ export const MonthlyItemsList = () => {
             </fieldset>
 
             <fieldset>
-              <legend className="mb-2">描述（選填，未填寫則使用類別名稱）</legend>
+              <legend className="mb-2">
+                描述（選填，未填寫則使用類別名稱）
+              </legend>
               <input
                 type="text"
                 className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1"

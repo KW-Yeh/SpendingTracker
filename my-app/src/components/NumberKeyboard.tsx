@@ -92,7 +92,7 @@ const Key = (
   return (
     <button
       type="button"
-      className={`${props.className} bg-white flex items-center justify-center rounded-xl border-2 border-solid border-gray-200 min-w-[56px] min-h-[56px] sm:min-w-[64px] sm:min-h-[64px] px-6 py-4 text-gray-800 font-semibold transition-all duration-200 hover:bg-primary-50 hover:border-primary-300 hover:text-primary-700 hover:brightness-110 active:bg-primary-100 active:brightness-100 select-none cursor-pointer shadow-sm`}
+      className={`${props.className} hover:bg-primary-50 hover:border-primary-300 hover:text-primary-700 active:bg-primary-100 flex min-h-[56px] min-w-[56px] cursor-pointer items-center justify-center rounded-xl border-2 border-solid border-gray-200 bg-white px-6 py-4 font-semibold text-gray-800 shadow-sm transition-all duration-200 select-none hover:brightness-110 active:brightness-100 sm:min-h-[64px] sm:min-w-[64px]`}
       onClick={() => props.onClick(props.value)}
     >
       <span>{props.children}</span>

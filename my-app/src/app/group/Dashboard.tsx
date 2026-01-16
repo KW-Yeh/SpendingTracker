@@ -50,7 +50,7 @@ export const Dashboard = () => {
         <button
           type="button"
           onClick={handleCreateGroup}
-          className="btn-primary flex items-center text-sm min-h-[44px]"
+          className="btn-primary flex min-h-[44px] items-center text-sm"
         >
           <PlusIcon className="mr-2 size-4" />
           <span>建立新帳本</span>
@@ -137,9 +137,7 @@ const GroupCard = ({
   const handleRemoveMember = async (userId: number, userName: string) => {
     if (!group.account_id) return;
 
-    const confirmRemove = window.confirm(
-      `確定要移除成員「${userName}」嗎？`,
-    );
+    const confirmRemove = window.confirm(`確定要移除成員「${userName}」嗎？`);
     if (!confirmRemove) return;
 
     setLoading(true);
@@ -241,7 +239,7 @@ const GroupCard = ({
       ></div>
       <div className="col-span-10 flex flex-col justify-between gap-2">
         <h3
-          className="overflow-hidden text-base font-bold text-ellipsis whitespace-nowrap sm:text-lg text-gray-800"
+          className="overflow-hidden text-base font-bold text-ellipsis whitespace-nowrap text-gray-800 sm:text-lg"
           style={{ fontFamily: 'var(--font-heading)' }}
         >
           {group.name}
@@ -256,7 +254,7 @@ const GroupCard = ({
               <button
                 type="button"
                 onClick={() => setMembersModalOpen(true)}
-                className="text-xs text-primary-600 underline hover:text-primary-700 font-semibold transition-colors"
+                className="text-primary-600 hover:text-primary-700 text-xs font-semibold underline transition-colors"
               >
                 查看詳情
               </button>
@@ -348,7 +346,7 @@ const GroupCard = ({
           <div className="flex w-full items-center justify-end">
             <button
               type="button"
-              className="btn-primary w-full min-h-[44px]"
+              className="btn-primary min-h-[44px] w-full"
               onClick={handleCopyInviteLink}
             >
               複製
@@ -383,7 +381,7 @@ const GroupCard = ({
                 type="button"
                 onClick={handleEditGroupName}
                 disabled={loading}
-                className="btn-primary px-4 min-h-[44px] disabled:cursor-not-allowed disabled:opacity-50"
+                className="btn-primary min-h-[44px] px-4 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {loading ? '更新中...' : '確定'}
               </button>
@@ -410,17 +408,19 @@ const GroupCard = ({
                 return (
                   <div
                     key={member.user_id}
-                    className="flex items-center justify-between rounded-xl border border-solid border-gray-200 p-3 transition-all hover:bg-primary-50 hover:border-primary-200"
+                    className="hover:bg-primary-50 hover:border-primary-200 flex items-center justify-between rounded-xl border border-solid border-gray-200 p-3 transition-all"
                   >
                     <div className="flex-1">
                       <p className="font-semibold text-gray-800">
                         {member.name || member.email}
                         {isCurrentUser && (
-                          <span className="ml-2 text-xs text-primary-600 font-semibold">(我)</span>
+                          <span className="text-primary-600 ml-2 text-xs font-semibold">
+                            (我)
+                          </span>
                         )}
                       </p>
                       <p className="text-xs text-gray-300">{member.email}</p>
-                      <p className="text-xs text-gray-600 font-medium">
+                      <p className="text-xs font-medium text-gray-600">
                         角色: {member.role}
                         {isMemberOwner && ' (擁有者)'}
                       </p>
@@ -434,7 +434,7 @@ const GroupCard = ({
                             member.name || member.email || '未知用戶',
                           )
                         }
-                        className="rounded-lg p-2 min-w-[32px] min-h-[32px] text-secondary-600 transition-all hover:bg-secondary-100 active:bg-secondary-100"
+                        className="text-secondary-600 hover:bg-secondary-100 active:bg-secondary-100 min-h-[32px] min-w-[32px] rounded-lg p-2 transition-all"
                       >
                         <DeleteIcon className="size-4" />
                       </button>

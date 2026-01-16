@@ -18,7 +18,13 @@ interface Props {
 }
 
 const BudgetCostTable = (props: Props) => {
-  const { totalBudgeted, totalSpent, totalNecessary, totalUnnecessary, categoryBreakdown } = props;
+  const {
+    totalBudgeted,
+    totalSpent,
+    totalNecessary,
+    totalUnnecessary,
+    categoryBreakdown,
+  } = props;
 
   const overallUsagePercent = useMemo(
     () => (totalBudgeted > 0 ? (totalSpent / totalBudgeted) * 100 : 0),
@@ -84,7 +90,9 @@ const BudgetCostTable = (props: Props) => {
               <span className="text-base font-semibold text-orange-600">
                 ${normalizeNumber(totalNecessary)}
               </span>
-              <span className="text-xs text-gray-300">({necessaryPercent.toFixed(1)}%)</span>
+              <span className="text-xs text-gray-300">
+                ({necessaryPercent.toFixed(1)}%)
+              </span>
             </div>
           </div>
           <div className="flex items-center justify-between px-4 py-3">
@@ -93,7 +101,9 @@ const BudgetCostTable = (props: Props) => {
               <span className="text-base font-semibold text-gray-700">
                 ${normalizeNumber(totalUnnecessary)}
               </span>
-              <span className="text-xs text-gray-300">({unnecessaryPercent.toFixed(1)}%)</span>
+              <span className="text-xs text-gray-300">
+                ({unnecessaryPercent.toFixed(1)}%)
+              </span>
             </div>
           </div>
         </div>
@@ -103,17 +113,29 @@ const BudgetCostTable = (props: Props) => {
       {categoryBreakdown.length > 0 && (
         <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
           <div className="bg-blue-500/30 px-4 py-3">
-            <h3 className="text-sm font-bold text-gray-700">各類別預算使用情況</h3>
+            <h3 className="text-sm font-bold text-gray-700">
+              各類別預算使用情況
+            </h3>
           </div>
           <div className="max-h-80 overflow-y-auto">
             <table className="w-full text-sm">
               <thead className="sticky top-0 bg-gray-50">
                 <tr className="border-b border-gray-200">
-                  <th className="px-4 py-2 text-left font-semibold text-gray-700">類別</th>
-                  <th className="px-4 py-2 text-right font-semibold text-gray-700">預算</th>
-                  <th className="px-4 py-2 text-right font-semibold text-gray-700">已用</th>
-                  <th className="px-4 py-2 text-right font-semibold text-gray-700">必要</th>
-                  <th className="px-4 py-2 text-right font-semibold text-gray-700">額外</th>
+                  <th className="px-4 py-2 text-left font-semibold text-gray-700">
+                    類別
+                  </th>
+                  <th className="px-4 py-2 text-right font-semibold text-gray-700">
+                    預算
+                  </th>
+                  <th className="px-4 py-2 text-right font-semibold text-gray-700">
+                    已用
+                  </th>
+                  <th className="px-4 py-2 text-right font-semibold text-gray-700">
+                    必要
+                  </th>
+                  <th className="px-4 py-2 text-right font-semibold text-gray-700">
+                    額外
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -124,7 +146,9 @@ const BudgetCostTable = (props: Props) => {
 
                   return (
                     <tr key={item.category} className="hover:bg-gray-50">
-                      <td className="px-4 py-2 font-medium text-gray-700">{item.category}</td>
+                      <td className="px-4 py-2 font-medium text-gray-700">
+                        {item.category}
+                      </td>
                       <td className="px-4 py-2 text-right text-gray-600">
                         ${normalizeNumber(item.budgeted)}
                       </td>
@@ -134,7 +158,9 @@ const BudgetCostTable = (props: Props) => {
                         }`}
                       >
                         ${normalizeNumber(item.spent)}
-                        <span className="ml-1 text-xs">({usagePercent.toFixed(0)}%)</span>
+                        <span className="ml-1 text-xs">
+                          ({usagePercent.toFixed(0)}%)
+                        </span>
                       </td>
                       <td className="px-4 py-2 text-right text-orange-600">
                         ${normalizeNumber(item.necessary)}

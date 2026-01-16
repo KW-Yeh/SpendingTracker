@@ -45,11 +45,13 @@ export const AnnualBudgetSection = ({ yearlySpending }: Props) => {
       </div>
 
       <div className="mt-4">
-        <p className="text-3xl font-bold text-gray-900">{normalizeNumber(annualBudget)} 元</p>
+        <p className="text-3xl font-bold text-gray-900">
+          {normalizeNumber(annualBudget)} 元
+        </p>
         <p className="text-sm text-gray-300">(自動計算)</p>
         <div className="mt-3 h-3 w-full rounded-full bg-gray-100">
           <div
-            className="h-full rounded-full bg-linear-to-r from-primary-500 to-accent-500 shadow-warm transition-all duration-300"
+            className="from-primary-500 to-accent-500 shadow-warm h-full rounded-full bg-linear-to-r transition-all duration-300"
             style={{ width: `${Math.min(percentage, 100)}%` }}
           />
         </div>

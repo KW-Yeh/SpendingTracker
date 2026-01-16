@@ -57,7 +57,7 @@ export const InviteConfirm = () => {
 
     // 檢查是否已是成員
     const isAlreadyMember = groups.some(
-      (group) => group.account_id === invitedGroup.account_id
+      (group) => group.account_id === invitedGroup.account_id,
     );
 
     if (isAlreadyMember) {
@@ -110,8 +110,10 @@ export const InviteConfirm = () => {
   // 顯示錯誤
   if (error || !invitedGroup) {
     return (
-      <div className="card flex w-80 flex-col text-center border-2 border-secondary-300">
-        <p className="text-secondary-600 font-semibold">{error || '無法載入群組資訊'}</p>
+      <div className="card border-secondary-300 flex w-80 flex-col border-2 text-center">
+        <p className="text-secondary-600 font-semibold">
+          {error || '無法載入群組資訊'}
+        </p>
         <button
           type="button"
           onClick={() => router.push('/group')}
@@ -126,7 +128,7 @@ export const InviteConfirm = () => {
   // 用戶未登入，顯示登入提示
   if (!config?.user_id) {
     return (
-      <div className="card flex w-80 flex-col text-center border-2 border-primary-300">
+      <div className="card border-primary-300 flex w-80 flex-col border-2 text-center">
         <h2
           className="mb-4 text-lg font-bold text-gray-800"
           style={{ fontFamily: 'var(--font-heading)' }}
@@ -135,7 +137,7 @@ export const InviteConfirm = () => {
         </h2>
         <p className="mb-2 text-gray-600">
           您收到了加入帳本
-          <strong className="mx-1 text-primary-600">{invitedGroup.name}</strong>
+          <strong className="text-primary-600 mx-1">{invitedGroup.name}</strong>
           的邀請
         </p>
         <p className="mb-6 text-sm text-gray-300">請先登入以繼續加入帳本</p>
@@ -150,7 +152,7 @@ export const InviteConfirm = () => {
           <button
             type="button"
             onClick={() => router.push('/')}
-            className="text-sm text-gray-600 hover:text-primary-600 font-medium transition-colors"
+            className="hover:text-primary-600 text-sm font-medium text-gray-600 transition-colors"
           >
             返回首頁
           </button>
@@ -162,16 +164,18 @@ export const InviteConfirm = () => {
   return (
     <div className="card flex w-80 flex-col pt-5 pb-4">
       <h1
-        className="mb-6 w-full px-5 text-start text-lg sm:text-xl text-gray-800"
+        className="mb-6 w-full px-5 text-start text-lg text-gray-800 sm:text-xl"
         style={{ fontFamily: 'var(--font-heading)' }}
       >
         是否加入
-        <strong className="ml-2 font-bold text-primary-600">{invitedGroup.name}</strong>
+        <strong className="text-primary-600 ml-2 font-bold">
+          {invitedGroup.name}
+        </strong>
         帳本？
       </h1>
       <div className="px-5 pb-4">
-        <p className="mb-2 text-sm text-gray-600 font-semibold">帳本資訊：</p>
-        <div className="rounded-xl bg-primary-50 border border-primary-100 p-3 text-sm">
+        <p className="mb-2 text-sm font-semibold text-gray-600">帳本資訊：</p>
+        <div className="bg-primary-50 border-primary-100 rounded-xl border p-3 text-sm">
           <p className="text-gray-700">
             <span className="font-semibold">擁有者：</span>
             {invitedGroup.owner_name || invitedGroup.owner_email || '未知'}
@@ -182,7 +186,8 @@ export const InviteConfirm = () => {
           </p>
         </div>
         <p className="mt-3 text-xs text-gray-300">
-          加入後您將成為 <strong className="text-primary-600">Viewer</strong>（檢視者）角色
+          加入後您將成為 <strong className="text-primary-600">Viewer</strong>
+          （檢視者）角色
         </p>
       </div>
       <div className="flex items-center justify-between gap-4 border-t border-solid border-gray-200 px-4 pt-4">
@@ -197,7 +202,7 @@ export const InviteConfirm = () => {
           type="button"
           onClick={handleJoinGroup}
           disabled={loading}
-          className="rounded-xl bg-linear-to-r from-income-500 to-income-600 text-white px-6 min-h-[44px] font-semibold shadow-sm transition-all hover:shadow-md hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+          className="from-income-500 to-income-600 min-h-[44px] rounded-xl bg-linear-to-r px-6 font-semibold text-white shadow-sm transition-all hover:scale-105 hover:shadow-md active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? '加入中...' : '加入'}
         </button>
