@@ -115,121 +115,121 @@ export default function ProfilePage() {
       <div className="min-h-screen bg-gray-900 pb-20">
         {/* Header */}
         <div className="border-b border-gray-700 bg-gray-800/90 shadow-lg backdrop-blur-sm">
-        <div className="mx-auto max-w-2xl px-4 py-4">
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => router.back()}
-              className="text-gray-400 transition-colors hover:text-primary-400 active:text-primary-300"
-            >
-              <svg
-                className="size-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+          <div className="mx-auto max-w-2xl px-4 py-4">
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => router.back()}
+                className="hover:text-primary-400 active:text-primary-300 text-gray-400 transition-colors"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-            </button>
-            <h1 className="text-lg font-bold text-gray-100">個人資料</h1>
-            <div className="w-6"></div>
+                <svg
+                  className="size-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+              <h1 className="text-lg font-bold text-gray-100">個人資料</h1>
+              <div className="w-6"></div>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="mx-auto max-w-2xl px-4 py-6">
-        <div className="rounded-lg border border-gray-700 bg-gray-800/90 p-6 shadow-xl backdrop-blur-sm">
-          {/* Avatar Section */}
-          <div className="mb-6 flex flex-col items-center">
-            <div className="relative mb-4">
-              <div className="size-24 overflow-hidden rounded-full border-2 border-gray-600 shadow-lg">
-                {avatarUrl ? (
-                  <img
-                    src={avatarUrl}
-                    alt="Avatar"
-                    className="size-full object-cover"
-                  />
-                ) : (
-                  <div className="size-full">
-                    <UserAvatar user={{ ...user, avatar_url: avatarUrl }} />
+        {/* Content */}
+        <div className="mx-auto max-w-2xl px-4 py-6">
+          <div className="rounded-lg border border-gray-700 bg-gray-800/90 p-6 shadow-xl backdrop-blur-sm">
+            {/* Avatar Section */}
+            <div className="mb-6 flex flex-col items-center">
+              <div className="relative mb-4">
+                <div className="size-24 overflow-hidden rounded-full border-2 border-gray-600 shadow-lg">
+                  {avatarUrl ? (
+                    <img
+                      src={avatarUrl}
+                      alt="Avatar"
+                      className="size-full object-cover"
+                    />
+                  ) : (
+                    <div className="size-full">
+                      <UserAvatar user={{ ...user, avatar_url: avatarUrl }} />
+                    </div>
+                  )}
+                </div>
+                {isUploading && (
+                  <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
+                    <div className="size-6 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
                   </div>
                 )}
               </div>
-              {isUploading && (
-                <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
-                  <div className="size-6 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                </div>
-              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageSelect}
+                className="hidden"
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                className="text-primary-400 hover:text-primary-300 active:text-primary-200 rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-200 hover:shadow-[0_0_10px_rgba(6,182,212,0.2)] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isUploading ? '上傳中...' : '更換頭像'}
+              </button>
             </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleImageSelect}
-              className="hidden"
-            />
+
+            {/* Name Input */}
+            <div className="mb-6">
+              <label className="mb-2 block text-sm font-semibold text-gray-300">
+                名稱
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="focus:border-primary-400 w-full rounded-md border border-gray-600 bg-gray-700/50 px-4 py-2 text-gray-100 transition-all placeholder:text-gray-500 focus:shadow-[0_0_10px_rgba(6,182,212,0.2)] focus:outline-none"
+                placeholder="請輸入名稱"
+              />
+            </div>
+
+            {/* Email (Read-only) */}
+            <div className="mb-6">
+              <label className="mb-2 block text-sm font-semibold text-gray-300">
+                Email
+              </label>
+              <input
+                type="email"
+                value={user.email}
+                disabled
+                className="w-full cursor-not-allowed rounded-md border border-gray-700 bg-gray-800/70 px-4 py-2 text-gray-500"
+              />
+            </div>
+
+            {/* Save Button */}
             <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
-              className="text-primary-400 hover:text-primary-300 hover:shadow-[0_0_10px_rgba(6,182,212,0.2)] active:text-primary-200 rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={handleSave}
+              disabled={isSaving || isUploading}
+              className="from-primary-500 to-primary-600 mb-4 w-full rounded-md bg-linear-to-r py-3 font-semibold text-white shadow-sm transition-all hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] active:shadow-[0_0_10px_rgba(6,182,212,0.3)] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {isUploading ? '上傳中...' : '更換頭像'}
+              {isSaving ? '儲存中...' : '儲存變更'}
+            </button>
+
+            {/* Divider */}
+            <div className="my-6 border-t border-gray-700"></div>
+
+            {/* Sign Out Button */}
+            <button
+              onClick={handleSignOut}
+              className="border-secondary-500 text-secondary-400 hover:bg-secondary-500/10 active:bg-secondary-500/20 w-full rounded-md border-2 py-3 font-semibold transition-all hover:shadow-[0_0_15px_rgba(139,92,246,0.3)]"
+            >
+              登出
             </button>
           </div>
-
-          {/* Name Input */}
-          <div className="mb-6">
-            <label className="mb-2 block text-sm font-semibold text-gray-300">
-              名稱
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-md border border-gray-600 bg-gray-700/50 px-4 py-2 text-gray-100 placeholder:text-gray-500 transition-all focus:border-primary-400 focus:shadow-[0_0_10px_rgba(6,182,212,0.2)] focus:outline-none"
-              placeholder="請輸入名稱"
-            />
-          </div>
-
-          {/* Email (Read-only) */}
-          <div className="mb-6">
-            <label className="mb-2 block text-sm font-semibold text-gray-300">
-              Email
-            </label>
-            <input
-              type="email"
-              value={user.email}
-              disabled
-              className="w-full cursor-not-allowed rounded-md border border-gray-700 bg-gray-800/70 px-4 py-2 text-gray-500"
-            />
-          </div>
-
-          {/* Save Button */}
-          <button
-            onClick={handleSave}
-            disabled={isSaving || isUploading}
-            className="mb-4 w-full rounded-md bg-linear-to-r from-primary-500 to-primary-600 py-3 font-semibold text-white shadow-sm transition-all hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] active:shadow-[0_0_10px_rgba(6,182,212,0.3)] disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {isSaving ? '儲存中...' : '儲存變更'}
-          </button>
-
-          {/* Divider */}
-          <div className="my-6 border-t border-gray-700"></div>
-
-          {/* Sign Out Button */}
-          <button
-            onClick={handleSignOut}
-            className="w-full rounded-md border-2 border-secondary-500 py-3 font-semibold text-secondary-400 transition-all hover:bg-secondary-500/10 hover:shadow-[0_0_15px_rgba(139,92,246,0.3)] active:bg-secondary-500/20"
-          >
-            登出
-          </button>
         </div>
-      </div>
       </div>
     </>
   );
