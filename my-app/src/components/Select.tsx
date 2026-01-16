@@ -82,7 +82,7 @@ export const Select = (props: Props) => {
     >
       <div ref={ref} className="relative w-full">
         <button
-          className={`${className} flex min-h-11 items-center justify-between gap-2`}
+          className={`${className} flex min-h-10 items-center justify-between gap-2`}
           type="button"
           onClick={() => setOpenOptions((prevState) => !prevState)}
           aria-expanded={openOptions}

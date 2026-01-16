@@ -22,7 +22,7 @@ export const ActionMenu = (props: Props) => {
   });
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative z-40">
       <button
         type="button"
         onClick={() => {

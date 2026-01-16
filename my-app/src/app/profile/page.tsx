@@ -95,7 +95,7 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-gray-900">
         <p className="text-gray-300">載入中...</p>
       </div>
     );
@@ -112,14 +112,14 @@ export default function ProfilePage() {
         />
       )}
 
-      <div className="min-h-screen bg-gray-50 pb-20">
+      <div className="min-h-screen bg-gray-900 pb-20">
         {/* Header */}
-        <div className="bg-white shadow-sm">
+        <div className="border-b border-gray-700 bg-gray-800/90 shadow-lg backdrop-blur-sm">
         <div className="mx-auto max-w-2xl px-4 py-4">
           <div className="flex items-center justify-between">
             <button
               onClick={() => router.back()}
-              className="text-gray-600 hover:text-gray-900"
+              className="text-gray-400 transition-colors hover:text-primary-400 active:text-primary-300"
             >
               <svg
                 className="size-6"
@@ -135,7 +135,7 @@ export default function ProfilePage() {
                 />
               </svg>
             </button>
-            <h1 className="text-lg font-bold">個人資料</h1>
+            <h1 className="text-lg font-bold text-gray-100">個人資料</h1>
             <div className="w-6"></div>
           </div>
         </div>
@@ -143,11 +143,11 @@ export default function ProfilePage() {
 
       {/* Content */}
       <div className="mx-auto max-w-2xl px-4 py-6">
-        <div className="rounded-lg bg-white p-6 shadow-sm">
+        <div className="rounded-lg border border-gray-700 bg-gray-800/90 p-6 shadow-xl backdrop-blur-sm">
           {/* Avatar Section */}
           <div className="mb-6 flex flex-col items-center">
             <div className="relative mb-4">
-              <div className="size-24 overflow-hidden rounded-full">
+              <div className="size-24 overflow-hidden rounded-full border-2 border-gray-600 shadow-lg">
                 {avatarUrl ? (
                   <img
                     src={avatarUrl}
@@ -176,7 +176,7 @@ export default function ProfilePage() {
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
-              className="text-primary-500 hover:text-primary-600 text-sm font-semibold disabled:opacity-50"
+              className="text-primary-400 hover:text-primary-300 hover:shadow-[0_0_10px_rgba(6,182,212,0.2)] active:text-primary-200 rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isUploading ? '上傳中...' : '更換頭像'}
             </button>
@@ -184,28 +184,28 @@ export default function ProfilePage() {
 
           {/* Name Input */}
           <div className="mb-6">
-            <label className="mb-2 block text-sm font-semibold text-gray-700">
+            <label className="mb-2 block text-sm font-semibold text-gray-300">
               名稱
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-primary-500 focus:outline-none"
+              className="w-full rounded-md border border-gray-600 bg-gray-700/50 px-4 py-2 text-gray-100 placeholder:text-gray-500 transition-all focus:border-primary-400 focus:shadow-[0_0_10px_rgba(6,182,212,0.2)] focus:outline-none"
               placeholder="請輸入名稱"
             />
           </div>
 
           {/* Email (Read-only) */}
           <div className="mb-6">
-            <label className="mb-2 block text-sm font-semibold text-gray-700">
+            <label className="mb-2 block text-sm font-semibold text-gray-300">
               Email
             </label>
             <input
               type="email"
               value={user.email}
               disabled
-              className="w-full rounded-md border border-gray-300 bg-gray-100 px-4 py-2 text-gray-300"
+              className="w-full cursor-not-allowed rounded-md border border-gray-700 bg-gray-800/70 px-4 py-2 text-gray-500"
             />
           </div>
 
@@ -213,18 +213,18 @@ export default function ProfilePage() {
           <button
             onClick={handleSave}
             disabled={isSaving || isUploading}
-            className="bg-primary-500 hover:bg-primary-600 mb-4 w-full rounded-md py-3 font-semibold text-white transition-colors disabled:opacity-50"
+            className="mb-4 w-full rounded-md bg-linear-to-r from-primary-500 to-primary-600 py-3 font-semibold text-white shadow-sm transition-all hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] active:shadow-[0_0_10px_rgba(6,182,212,0.3)] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isSaving ? '儲存中...' : '儲存變更'}
           </button>
 
           {/* Divider */}
-          <div className="my-6 border-t border-gray-200"></div>
+          <div className="my-6 border-t border-gray-700"></div>
 
           {/* Sign Out Button */}
           <button
             onClick={handleSignOut}
-            className="w-full rounded-md border border-red-500 py-3 font-semibold text-red-500 transition-colors hover:bg-red-50"
+            className="w-full rounded-md border-2 border-secondary-500 py-3 font-semibold text-secondary-400 transition-all hover:bg-secondary-500/10 hover:shadow-[0_0_15px_rgba(139,92,246,0.3)] active:bg-secondary-500/20"
           >
             登出
           </button>
