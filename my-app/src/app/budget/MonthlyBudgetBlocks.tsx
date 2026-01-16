@@ -349,7 +349,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                           onClick={() =>
                             handleOpenEditModal(month.value, item.index)
                           }
-                          className="text-primary-400 hover:bg-primary-500/20 active:bg-primary-500/30 min-h-[32px] min-w-[32px] rounded-lg p-2 transition-all"
+                          className="text-primary-400 hover:bg-primary-500/20 active:bg-primary-500/30 min-h-8 min-w-8 rounded-lg p-2 transition-all"
                         >
                           <EditIcon className="size-4" />
                         </button>
@@ -358,7 +358,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                           onClick={() =>
                             handleDeleteItem(month.value, item.index)
                           }
-                          className="text-secondary-600 hover:bg-secondary-100 active:bg-secondary-100 min-h-[32px] min-w-[32px] rounded-lg p-2 transition-all"
+                          className="text-secondary-600 hover:bg-secondary-100 active:bg-secondary-100 min-h-8 min-w-8 rounded-lg p-2 transition-all"
                         >
                           <DeleteIcon className="size-4" />
                         </button>
@@ -446,7 +446,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                 type="button"
                 onClick={() => setModalOpen(false)}
                 disabled={saving}
-                className="btn-secondary min-h-[44px]"
+                className="btn-secondary min-h-11"
               >
                 取消
               </button>
@@ -454,7 +454,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                 type="button"
                 onClick={handleSaveItem}
                 disabled={saving}
-                className="btn-primary flex min-h-[44px] items-center justify-center px-6 disabled:cursor-not-allowed disabled:opacity-50"
+                className="btn-primary flex min-h-11 items-center justify-center px-6 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {saving ? (
                   <Loading className="size-5 animate-spin" />

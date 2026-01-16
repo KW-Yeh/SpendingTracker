@@ -82,7 +82,7 @@ export const Select = (props: Props) => {
     >
       <div ref={ref} className="relative w-full">
         <button
-          className={`${className} flex items-center justify-between gap-2 min-h-[44px]`}
+          className={`${className} flex min-h-11 items-center justify-between gap-2`}
           type="button"
           onClick={() => setOpenOptions((prevState) => !prevState)}
           aria-expanded={openOptions}
@@ -92,10 +92,12 @@ export const Select = (props: Props) => {
               {label ?? value}
             </span>
           )}
-          <CaretDown className={`size-3 shrink-0 transition-transform duration-200 ${openOptions ? 'rotate-180' : ''} ${caretStyle}`} />
+          <CaretDown
+            className={`size-3 shrink-0 transition-transform duration-200 ${openOptions ? 'rotate-180' : ''} ${caretStyle}`}
+          />
         </button>
         <div
-          className={`${openVerticalDirection === MenuOpenDirection.Down ? 'top-full mt-2' : 'bottom-full mb-2'} ${openHorizontalDirection === MenuOpenDirection.Left ? 'right-0' : 'left-0'} bg-white absolute z-40 w-fit overflow-hidden rounded-xl border-2 border-solid border-gray-200 py-1 shadow-xl transition-all duration-200 ${openOptions ? 'visible opacity-100 scale-100' : 'invisible opacity-0 scale-95'}`}
+          className={`${openVerticalDirection === MenuOpenDirection.Down ? 'top-full mt-2' : 'bottom-full mb-2'} ${openHorizontalDirection === MenuOpenDirection.Left ? 'right-0' : 'left-0'} absolute z-40 w-fit overflow-hidden rounded-xl border-2 border-solid border-gray-600 bg-gray-800 py-1 shadow-xl backdrop-blur-sm transition-all duration-200 ${openOptions ? 'visible scale-100 opacity-100' : 'invisible scale-95 opacity-0'}`}
           style={{
             minWidth: (ref.current?.clientWidth ?? 0) - 8 + 'px',
             maxHeight: menuMaxHeight + 'px',
@@ -143,9 +145,9 @@ const Item = ({
         onChange(value);
         close();
       }}
-      className={`flex w-full px-4 py-3 min-h-[44px] transition-all duration-200 cursor-pointer ${className} ${current === value ? 'bg-primary-100 text-primary-700 font-semibold' : 'hover:bg-primary-50 active:bg-primary-100'}`}
+      className={`flex min-h-11 w-full cursor-pointer px-4 py-3 transition-all duration-200 ${className} ${current === value ? 'bg-primary-500/20 text-primary-400 font-semibold shadow-[0_0_10px_rgba(6,182,212,0.2)]' : 'hover:text-primary-400 text-gray-300 hover:bg-gray-700/70 hover:shadow-[0_0_8px_rgba(6,182,212,0.15)] active:bg-gray-700'}`}
     >
-      <span className="overflow-hidden text-ellipsis whitespace-nowrap text-left">
+      <span className="overflow-hidden text-left text-ellipsis whitespace-nowrap">
         {children}
       </span>
     </button>

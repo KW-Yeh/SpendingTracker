@@ -148,7 +148,7 @@ const MenuButton = ({
       <Link
         href={href}
         onClick={onClick}
-        className={`flex min-h-[44px] w-full cursor-pointer items-center rounded-xl px-5 py-3 text-left text-sm font-semibold transition-all duration-200 sm:text-base ${pathName === href ? 'bg-primary-900/30 text-primary-400 shadow-primary-glow' : 'hover:text-primary-400 text-gray-300 hover:bg-gray-700 active:bg-gray-600'}`}
+        className={`flex min-h-11 w-full cursor-pointer items-center rounded-xl px-5 py-3 text-left text-sm font-semibold transition-all duration-200 sm:text-base ${pathName === href ? 'bg-primary-900/30 text-primary-400 shadow-primary-glow' : 'hover:text-primary-400 text-gray-300 hover:bg-gray-700 active:bg-gray-600'}`}
       >
         {icon ?? ROUTE_ICON[href]}
         {label}
@@ -158,7 +158,7 @@ const MenuButton = ({
   return (
     <button
       onClick={onClick}
-      className="hover:text-primary-400 flex min-h-[44px] w-full cursor-pointer items-center rounded-xl px-5 py-3 text-left text-sm font-semibold text-gray-300 transition-all duration-200 hover:bg-gray-700 active:bg-gray-600 sm:text-base"
+      className="hover:text-primary-400 flex min-h-11 w-full cursor-pointer items-center rounded-xl px-5 py-3 text-left text-sm font-semibold text-gray-300 transition-all duration-200 hover:bg-gray-700 active:bg-gray-600 sm:text-base"
     >
       {icon}
       {label}

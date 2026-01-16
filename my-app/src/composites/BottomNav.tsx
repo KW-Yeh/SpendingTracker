@@ -46,7 +46,7 @@ export const BottomNav = () => {
               <Link
                 key={route}
                 href={route}
-                className={`flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-0.5 rounded-xl transition-all duration-200 ${
+                className={`flex min-h-11 min-w-11 flex-col items-center justify-center gap-0.5 rounded-xl transition-all duration-200 ${
                   isActive
                     ? 'text-primary-400 bg-primary-900/30 shadow-primary-glow'
                     : 'hover:text-primary-400 active:text-primary-300 text-gray-400 hover:bg-gray-700'

@@ -117,7 +117,7 @@ export const InviteConfirm = () => {
         <button
           type="button"
           onClick={() => router.push('/group')}
-          className="btn-secondary mt-4 min-h-[44px]"
+          className="btn-secondary mt-4 min-h-11"
         >
           返回群組頁面
         </button>
@@ -145,7 +145,7 @@ export const InviteConfirm = () => {
           <button
             type="button"
             onClick={handleLogin}
-            className="btn-primary min-h-[44px]"
+            className="btn-primary min-h-11"
           >
             前往登入
           </button>
@@ -194,7 +194,7 @@ export const InviteConfirm = () => {
         <button
           type="button"
           onClick={() => router.push('/group')}
-          className="btn-secondary min-h-[44px] px-6"
+          className="btn-secondary min-h-11 px-6"
         >
           取消
         </button>
@@ -202,7 +202,7 @@ export const InviteConfirm = () => {
           type="button"
           onClick={handleJoinGroup}
           disabled={loading}
-          className="from-income-500 to-income-600 min-h-[44px] rounded-xl bg-linear-to-r px-6 font-semibold text-white shadow-sm transition-all hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] active:shadow-[0_0_10px_rgba(16,185,129,0.3)] disabled:cursor-not-allowed disabled:opacity-50"
+          className="from-income-500 to-income-600 min-h-11 rounded-xl bg-linear-to-r px-6 font-semibold text-white shadow-sm transition-all hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] active:shadow-[0_0_10px_rgba(16,185,129,0.3)] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? '加入中...' : '加入'}
         </button>

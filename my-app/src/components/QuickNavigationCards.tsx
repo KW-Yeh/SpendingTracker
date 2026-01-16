@@ -46,7 +46,7 @@ export const QuickNavigationCards = ({ isMobile }: { isMobile: boolean }) => {
           <Link
             key={card.href}
             href={card.href}
-            className="card group relative flex min-h-[120px] cursor-pointer flex-col items-center justify-center gap-3 p-5 transition-all duration-200 hover:shadow-[0_0_20px_rgba(6,182,212,0.25)]"
+            className="card group relative flex min-h-30 cursor-pointer flex-col items-center justify-center gap-3 p-5 transition-all duration-200 hover:shadow-[0_0_20px_rgba(6,182,212,0.25)]"
           >
             <div
               className={`flex items-center justify-center rounded-2xl bg-linear-to-r ${card.gradient} p-4 shadow-lg transition-all duration-200 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]`}

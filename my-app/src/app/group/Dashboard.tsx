@@ -50,7 +50,7 @@ export const Dashboard = () => {
         <button
           type="button"
           onClick={handleCreateGroup}
-          className="btn-primary flex min-h-[44px] items-center text-sm"
+          className="btn-primary flex min-h-11 items-center text-sm"
         >
           <PlusIcon className="mr-2 size-4" />
           <span>建立新帳本</span>
@@ -348,7 +348,7 @@ const GroupCard = ({
           <div className="flex w-full items-center justify-end">
             <button
               type="button"
-              className="btn-primary min-h-[44px] w-full"
+              className="btn-primary min-h-11 w-full"
               onClick={handleCopyInviteLink}
             >
               複製
@@ -375,7 +375,7 @@ const GroupCard = ({
               <button
                 type="button"
                 onClick={() => setEditModalOpen(false)}
-                className="btn-secondary min-h-[44px]"
+                className="btn-secondary min-h-11"
               >
                 取消
               </button>
@@ -383,7 +383,7 @@ const GroupCard = ({
                 type="button"
                 onClick={handleEditGroupName}
                 disabled={loading}
-                className="btn-primary min-h-[44px] px-4 disabled:cursor-not-allowed disabled:opacity-50"
+                className="btn-primary min-h-11 px-4 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {loading ? '更新中...' : '確定'}
               </button>
@@ -436,7 +436,7 @@ const GroupCard = ({
                             member.name || member.email || '未知用戶',
                           )
                         }
-                        className="text-secondary-400 hover:bg-secondary-500/20 active:bg-secondary-500/30 min-h-[32px] min-w-[32px] rounded-lg p-2 transition-all"
+                        className="text-secondary-400 hover:bg-secondary-500/20 active:bg-secondary-500/30 min-h-8 min-w-8 rounded-lg p-2 transition-all"
                       >
                         <DeleteIcon className="size-4" />
                       </button>

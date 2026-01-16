@@ -17,7 +17,7 @@ export const InputBox = (props: Props) => {
         type={type}
         name={name}
         {...legacy}
-        className={`min-h-[44px] w-full bg-transparent px-2 py-1 text-gray-900 placeholder:text-gray-300 focus:outline-0 ${className}`}
+        className={`min-h-11 w-full bg-transparent px-2 py-1 text-gray-900 placeholder:text-gray-300 focus:outline-0 ${className}`}
       />
     </fieldset>
   );

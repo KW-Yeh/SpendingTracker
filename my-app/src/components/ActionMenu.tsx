@@ -28,7 +28,7 @@ export const ActionMenu = (props: Props) => {
         onClick={() => {
           setOpen((prevState) => !prevState);
         }}
-        className={`min-h-[44px] min-w-[44px] rounded-full p-2 transition-all duration-200 ${open ? 'bg-primary-500/20 text-primary-400 shadow-[0_0_15px_rgba(6,182,212,0.3)]' : 'text-gray-400 hover:bg-gray-700/70 hover:shadow-[0_0_10px_rgba(6,182,212,0.2)] active:bg-gray-600/70'}`}
+        className={`flex min-h-11 min-w-11 items-center justify-center rounded-full p-2 transition-all duration-200 ${open ? 'bg-primary-500/20 text-primary-400 shadow-[0_0_15px_rgba(6,182,212,0.3)]' : 'text-gray-400 hover:bg-gray-700/70 hover:shadow-[0_0_10px_rgba(6,182,212,0.2)] active:bg-gray-600/70'}`}
         aria-label="Open action menu"
         aria-expanded={open}
       >
@@ -44,7 +44,7 @@ export const ActionMenu = (props: Props) => {
             onClick={() => {
               if (onClick) onClick(option.value);
             }}
-            className={`group hover:text-primary-400 flex min-h-[44px] cursor-pointer items-center gap-2 rounded-lg px-4 py-3 whitespace-nowrap transition-all duration-200 hover:bg-gray-700/70 hover:shadow-[0_0_10px_rgba(6,182,212,0.2)] active:bg-gray-600/70 ${option.className ?? ''}`}
+            className={`group hover:text-primary-400 flex min-h-11 cursor-pointer items-center gap-2 rounded-lg px-4 py-3 whitespace-nowrap transition-all duration-200 hover:bg-gray-700/70 hover:shadow-[0_0_10px_rgba(6,182,212,0.2)] active:bg-gray-600/70 ${option.className ?? ''}`}
           >
             {option.label}
           </button>
