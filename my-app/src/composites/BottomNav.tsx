@@ -24,14 +24,14 @@ export const BottomNav = () => {
 
   return (
     <nav
-      className="fixed right-4 bottom-5 left-4 z-40 rounded-2xl border border-gray-200/50 bg-white/90 shadow-xl backdrop-blur-xl md:hidden"
+      className="fixed right-4 bottom-5 left-4 z-40 rounded-2xl border border-gray-700/50 bg-gray-800/90 shadow-2xl backdrop-blur-xl md:hidden"
       aria-label="Mobile navigation"
     >
       <div className="safe-area-inset-bottom flex items-center justify-between px-3 py-2">
         {/* Add Transaction Button - Prominent with warm gradient */}
         <Link
           href="/edit"
-          className="from-primary-500 to-accent-500 shadow-warm-lg flex size-14 items-center justify-center rounded-full bg-linear-to-r text-white transition-all duration-200 hover:scale-105 hover:shadow-2xl active:scale-95"
+          className="from-primary-500 to-accent-500 shadow-primary-glow flex size-14 items-center justify-center rounded-full bg-linear-to-r text-white transition-all duration-200 hover:scale-105 hover:shadow-xl active:scale-95"
           aria-label="新增帳目"
           scroll={false}
         >
@@ -48,8 +48,8 @@ export const BottomNav = () => {
                 href={route}
                 className={`flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-0.5 rounded-xl transition-all duration-200 ${
                   isActive
-                    ? 'text-primary-600 bg-primary-50'
-                    : 'hover:text-primary-600 hover:bg-primary-50/50 active:text-primary-700 text-gray-300'
+                    ? 'text-primary-400 bg-primary-900/30 shadow-primary-glow'
+                    : 'hover:text-primary-400 active:text-primary-300 text-gray-400 hover:bg-gray-700'
                 }`}
                 aria-label={MENU_CONFIG[route]}
                 aria-current={isActive ? 'page' : undefined}
