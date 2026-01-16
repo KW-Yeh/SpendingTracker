@@ -202,7 +202,7 @@ export const InviteConfirm = () => {
           type="button"
           onClick={handleJoinGroup}
           disabled={loading}
-          className="from-income-500 to-income-600 min-h-[44px] rounded-xl bg-linear-to-r px-6 font-semibold text-white shadow-sm transition-all hover:scale-105 hover:shadow-md active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+          className="from-income-500 to-income-600 min-h-[44px] rounded-xl bg-linear-to-r px-6 font-semibold text-white shadow-sm transition-all hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] active:shadow-[0_0_10px_rgba(16,185,129,0.3)] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? '加入中...' : '加入'}
         </button>

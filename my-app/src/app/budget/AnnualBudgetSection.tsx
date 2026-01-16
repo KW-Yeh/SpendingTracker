@@ -37,7 +37,7 @@ export const AnnualBudgetSection = ({ yearlySpending }: Props) => {
     <div className="card w-full">
       <div className="flex items-center justify-between">
         <h2
-          className="text-xl font-bold text-gray-800"
+          className="text-xl font-bold text-gray-100"
           style={{ fontFamily: 'var(--font-heading)' }}
         >
           年度預算
@@ -45,17 +45,17 @@ export const AnnualBudgetSection = ({ yearlySpending }: Props) => {
       </div>
 
       <div className="mt-4">
-        <p className="text-3xl font-bold text-gray-900">
+        <p className="text-3xl font-bold text-gray-200">
           {normalizeNumber(annualBudget)} 元
         </p>
-        <p className="text-sm text-gray-300">(自動計算)</p>
-        <div className="mt-3 h-3 w-full rounded-full bg-gray-100">
+        <p className="text-sm text-gray-400">(自動計算)</p>
+        <div className="mt-3 h-3 w-full rounded-full bg-gray-700/50">
           <div
-            className="from-primary-500 to-accent-500 shadow-warm h-full rounded-full bg-linear-to-r transition-all duration-300"
+            className="from-primary-500 to-accent-500 h-full rounded-full bg-linear-to-r shadow-[0_0_8px_rgba(6,182,212,0.5)] transition-all duration-300"
             style={{ width: `${Math.min(percentage, 100)}%` }}
           />
         </div>
-        <p className="mt-2 text-sm text-gray-600">
+        <p className="mt-2 text-sm text-gray-400">
           已使用 {normalizeNumber(spent)} 元 ({percentage.toFixed(1)}%)
         </p>
       </div>

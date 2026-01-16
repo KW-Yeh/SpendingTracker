@@ -45,29 +45,29 @@ export const MonthlyBudgetSection = ({ yearlySpending }: Props) => {
   return (
     <div className="card w-full">
       <h2
-        className="text-xl font-bold text-gray-800"
+        className="text-xl font-bold text-gray-100"
         style={{ fontFamily: 'var(--font-heading)' }}
       >
         本月預算
       </h2>
 
       <div className="mt-4">
-        <p className="text-3xl font-bold text-gray-900">
+        <p className="text-3xl font-bold text-gray-200">
           {normalizeNumber(monthlyBudget)} 元
         </p>
-        <p className="text-sm text-gray-300">(由月度項目自動計算)</p>
+        <p className="text-sm text-gray-400">(由月度項目自動計算)</p>
 
-        <div className="mt-3 h-3 w-full rounded-full bg-gray-100">
+        <div className="mt-3 h-3 w-full rounded-full bg-gray-700/50">
           <div
-            className={`shadow-warm h-full rounded-full transition-all duration-300 ${
+            className={`h-full rounded-full transition-all duration-300 ${
               percentage > 100
-                ? 'bg-secondary-500'
-                : 'from-primary-500 to-accent-500 bg-linear-to-r'
+                ? 'bg-secondary-500 shadow-[0_0_8px_rgba(139,92,246,0.6)]'
+                : 'from-primary-500 to-accent-500 bg-linear-to-r shadow-[0_0_8px_rgba(6,182,212,0.5)]'
             }`}
             style={{ width: `${Math.min(percentage, 100)}%` }}
           />
         </div>
-        <p className="mt-2 text-sm text-gray-600">
+        <p className="mt-2 text-sm text-gray-400">
           已使用 {normalizeNumber(spent)} 元 ({percentage.toFixed(1)}%)
         </p>
       </div>

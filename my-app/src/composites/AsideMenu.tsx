@@ -73,7 +73,7 @@ export const AsideMenu = (props: Props) => {
           <Link
             href="/profile"
             onClick={onClose}
-            className="flex size-20 items-center justify-center rounded-full bg-gray-700 p-1 shadow-xl ring-4 ring-gray-600 transition-all hover:scale-105 hover:shadow-2xl active:scale-95"
+            className="hover:ring-primary-500 active:ring-primary-600 flex size-20 items-center justify-center rounded-full bg-gray-700 p-1 shadow-xl ring-4 ring-gray-600 transition-all hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]"
           >
             <UserAvatar user={user} />
           </Link>

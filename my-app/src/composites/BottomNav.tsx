@@ -31,7 +31,7 @@ export const BottomNav = () => {
         {/* Add Transaction Button - Prominent with warm gradient */}
         <Link
           href="/edit"
-          className="from-primary-500 to-accent-500 shadow-primary-glow flex size-14 items-center justify-center rounded-full bg-linear-to-r text-white transition-all duration-200 hover:scale-105 hover:shadow-xl active:scale-95"
+          className="from-primary-500 to-accent-500 shadow-primary-glow flex size-14 items-center justify-center rounded-full bg-linear-to-r text-white transition-all duration-200 hover:shadow-[0_0_25px_rgba(6,182,212,0.6)] active:shadow-[0_0_15px_rgba(6,182,212,0.4)]"
           aria-label="新增帳目"
           scroll={false}
         >

@@ -233,28 +233,30 @@ const GroupCard = ({
   };
 
   return (
-    <div className="card card-interactive relative grid w-full max-w-87.5 grid-cols-12 gap-4">
+    <div className="card relative grid w-full max-w-87.5 grid-cols-12 gap-4 transition-all duration-200 hover:shadow-[0_0_20px_rgba(6,182,212,0.2)]">
       <div
         className={`absolute top-0 right-0 bottom-0 left-0 animate-pulse rounded-xl border border-solid border-transparent bg-gray-500/50 ${loading ? 'visible' : 'invisible'}`}
       ></div>
       <div className="col-span-10 flex flex-col justify-between gap-2">
         <h3
-          className="overflow-hidden text-base font-bold text-ellipsis whitespace-nowrap text-gray-800 sm:text-lg"
+          className="overflow-hidden text-base font-bold text-ellipsis whitespace-nowrap text-gray-100 sm:text-lg"
           style={{ fontFamily: 'var(--font-heading)' }}
         >
           {group.name}
         </h3>
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm text-gray-600">成員:</span>
+          <span className="text-sm text-gray-400">成員:</span>
           {loadingMembers ? (
-            <span className="text-xs text-gray-300">載入中...</span>
+            <span className="text-xs text-gray-500">載入中...</span>
           ) : (
             <>
-              <span className="text-sm font-medium">{members.length} 人</span>
+              <span className="text-sm font-medium text-gray-200">
+                {members.length} 人
+              </span>
               <button
                 type="button"
                 onClick={() => setMembersModalOpen(true)}
-                className="text-primary-600 hover:text-primary-700 text-xs font-semibold underline transition-colors"
+                className="text-primary-400 hover:text-primary-300 text-xs font-semibold underline transition-colors"
               >
                 查看詳情
               </button>
@@ -408,19 +410,19 @@ const GroupCard = ({
                 return (
                   <div
                     key={member.user_id}
-                    className="hover:bg-primary-50 hover:border-primary-200 flex items-center justify-between rounded-xl border border-solid border-gray-200 p-3 transition-all"
+                    className="hover:border-primary-500/50 flex items-center justify-between rounded-xl border border-solid border-gray-600 p-3 transition-all hover:bg-gray-700/50 hover:shadow-[0_0_10px_rgba(6,182,212,0.15)]"
                   >
                     <div className="flex-1">
-                      <p className="font-semibold text-gray-800">
+                      <p className="font-semibold text-gray-100">
                         {member.name || member.email}
                         {isCurrentUser && (
-                          <span className="text-primary-600 ml-2 text-xs font-semibold">
+                          <span className="text-primary-400 ml-2 text-xs font-semibold">
                             (我)
                           </span>
                         )}
                       </p>
-                      <p className="text-xs text-gray-300">{member.email}</p>
-                      <p className="text-xs font-medium text-gray-600">
+                      <p className="text-xs text-gray-400">{member.email}</p>
+                      <p className="text-xs font-medium text-gray-300">
                         角色: {member.role}
                         {isMemberOwner && ' (擁有者)'}
                       </p>
@@ -434,7 +436,7 @@ const GroupCard = ({
                             member.name || member.email || '未知用戶',
                           )
                         }
-                        className="text-secondary-600 hover:bg-secondary-100 active:bg-secondary-100 min-h-[32px] min-w-[32px] rounded-lg p-2 transition-all"
+                        className="text-secondary-400 hover:bg-secondary-500/20 active:bg-secondary-500/30 min-h-[32px] min-w-[32px] rounded-lg p-2 transition-all"
                       >
                         <DeleteIcon className="size-4" />
                       </button>

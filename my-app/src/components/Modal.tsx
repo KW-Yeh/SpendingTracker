@@ -58,7 +58,7 @@ export const Modal = forwardRef<ModalRef, Props>((props, ref) => {
         <button
           type="button"
           onClick={handleCloseModal}
-          className="hover:text-primary-400 focus-visible:outline-primary-400 absolute top-4 right-4 z-10 size-10 rounded-full bg-gray-700/90 p-2 text-gray-400 backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-gray-600"
+          className="hover:text-primary-400 focus-visible:outline-primary-400 absolute top-4 right-4 z-10 size-10 rounded-full bg-gray-700/90 p-2 text-gray-400 backdrop-blur-sm transition-all duration-200 hover:bg-gray-600 hover:shadow-[0_0_15px_rgba(6,182,212,0.3)]"
           aria-label="Close modal"
         >
           <CloseIcon className="size-full" />

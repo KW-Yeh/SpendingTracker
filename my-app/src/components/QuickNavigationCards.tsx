@@ -46,16 +46,21 @@ export const QuickNavigationCards = ({ isMobile }: { isMobile: boolean }) => {
           <Link
             key={card.href}
             href={card.href}
-            className="card-interactive group relative flex flex-col items-center justify-center gap-3 p-5 min-h-[120px] cursor-pointer"
+            className="card group relative flex min-h-[120px] cursor-pointer flex-col items-center justify-center gap-3 p-5 transition-all duration-200 hover:shadow-[0_0_20px_rgba(6,182,212,0.25)]"
           >
             <div
-              className={`flex items-center justify-center rounded-2xl bg-linear-to-r ${card.gradient} p-4 shadow-lg transition-transform duration-200 group-hover:scale-110`}
+              className={`flex items-center justify-center rounded-2xl bg-linear-to-r ${card.gradient} p-4 shadow-lg transition-all duration-200 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]`}
             >
               <Icon className="size-7 text-white" />
             </div>
             <div className="flex flex-col items-center gap-1">
-              <h3 className="text-sm font-bold text-gray-800" style={{ fontFamily: 'var(--font-heading)' }}>{card.title}</h3>
-              <p className="text-center text-xs text-gray-600">
+              <h3
+                className="text-sm font-bold text-gray-100"
+                style={{ fontFamily: 'var(--font-heading)' }}
+              >
+                {card.title}
+              </h3>
+              <p className="text-center text-xs text-gray-400">
                 {card.description}
               </p>
             </div>

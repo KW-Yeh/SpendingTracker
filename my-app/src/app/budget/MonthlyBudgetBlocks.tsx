@@ -277,12 +277,12 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
             >
               <div className="flex items-center justify-between">
                 <h3
-                  className="text-lg font-bold text-gray-800"
+                  className="text-lg font-bold text-gray-100"
                   style={{ fontFamily: 'var(--font-heading)' }}
                 >
                   {month.label}
                   {isCurrentMonth && (
-                    <span className="text-primary-600 ml-2 text-xs font-semibold">
+                    <span className="text-primary-400 ml-2 text-xs font-semibold">
                       (本月)
                     </span>
                   )}
@@ -290,21 +290,21 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                 <button
                   type="button"
                   onClick={() => handleOpenAddModal(month.value)}
-                  className="text-primary-500 hover:text-primary-600 cursor-pointer text-sm font-semibold transition-colors"
+                  className="text-primary-400 hover:text-primary-300 cursor-pointer text-sm font-semibold transition-colors"
                 >
                   + 新增
                 </button>
               </div>
 
               <div className="mt-2">
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-2xl font-bold text-gray-200">
                   {normalizeNumber(monthTotal)} 元
                 </p>
-                <p className="text-sm text-gray-300">
+                <p className="text-sm text-gray-400">
                   已使用 {normalizeNumber(monthSpent)} 元
                   {monthTotal > 0 && (
                     <span
-                      className={`ml-1 font-semibold ${isOverBudget ? 'text-secondary-600' : 'text-income-600'}`}
+                      className={`ml-1 font-semibold ${isOverBudget ? 'text-secondary-400' : 'text-income-400'}`}
                     >
                       ({usagePercentage.toFixed(1)}%)
                     </span>
@@ -315,12 +315,12 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
               {/* Progress Bar */}
               {monthTotal > 0 && (
                 <div className="mt-3">
-                  <div className="h-3 w-full overflow-hidden rounded-full bg-gray-100">
+                  <div className="h-3 w-full overflow-hidden rounded-full bg-gray-700/50">
                     <div
-                      className={`shadow-warm h-full transition-all duration-300 ${
+                      className={`h-full transition-all duration-300 ${
                         isOverBudget
-                          ? 'bg-secondary-500'
-                          : 'from-primary-500 to-accent-500 bg-linear-to-r'
+                          ? 'bg-secondary-500 shadow-[0_0_8px_rgba(139,92,246,0.6)]'
+                          : 'from-primary-500 to-accent-500 bg-linear-to-r shadow-[0_0_8px_rgba(6,182,212,0.5)]'
                       }`}
                       style={{ width: `${Math.min(usagePercentage, 100)}%` }}
                     />
@@ -333,13 +333,13 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                   monthItems.map((item) => (
                     <div
                       key={`${month.value}-${item.index}`}
-                      className="hover:bg-primary-50 hover:border-primary-200 flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 p-2.5 transition-all"
+                      className="hover:border-primary-500/50 flex items-center justify-between rounded-xl border border-gray-600 bg-gray-700/30 p-2.5 transition-all hover:bg-gray-700/50 hover:shadow-[0_0_10px_rgba(6,182,212,0.15)]"
                     >
                       <div className="flex-1">
-                        <p className="text-sm font-semibold text-gray-800">
+                        <p className="text-sm font-semibold text-gray-200">
                           {item.category} {item.description}
                         </p>
-                        <p className="text-xs font-medium text-gray-300">
+                        <p className="text-xs font-medium text-gray-400">
                           {normalizeNumber(item.amount)} 元
                         </p>
                       </div>
@@ -349,7 +349,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                           onClick={() =>
                             handleOpenEditModal(month.value, item.index)
                           }
-                          className="text-primary-600 hover:bg-primary-100 active:bg-primary-100 min-h-[32px] min-w-[32px] rounded-lg p-2 transition-all"
+                          className="text-primary-400 hover:bg-primary-500/20 active:bg-primary-500/30 min-h-[32px] min-w-[32px] rounded-lg p-2 transition-all"
                         >
                           <EditIcon className="size-4" />
                         </button>

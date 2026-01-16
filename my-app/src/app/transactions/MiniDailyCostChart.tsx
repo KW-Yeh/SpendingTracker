@@ -57,8 +57,8 @@ export const MiniDailyCostChart = (props: Props) => {
   }, [selectedDayTransactions]);
 
   return (
-    <div className="bg-background relative flex w-full flex-col items-start rounded-2xl border border-solid border-gray-300 p-6 text-gray-700 shadow-sm transition-shadow duration-200 hover:shadow md:min-w-110">
-      <h3 className="mb-2 text-lg font-semibold">本月消費趨勢</h3>
+    <div className="relative flex w-full flex-col items-start rounded-2xl border border-solid border-gray-600 bg-gray-800/90 p-6 text-gray-300 shadow-sm backdrop-blur-sm transition-all duration-200 hover:shadow-[0_0_25px_rgba(6,182,212,0.2)] md:min-w-110">
+      <h3 className="mb-2 text-lg font-semibold text-gray-100">本月消費趨勢</h3>
 
       <div className="flex w-full items-end py-4 text-xs sm:text-sm">
         <UsageLineChart
@@ -74,17 +74,17 @@ export const MiniDailyCostChart = (props: Props) => {
         <div className="mt-4 w-full">
           <Accordion
             summary={(isOpen) => (
-              <div className="flex w-full items-center justify-between rounded-lg bg-gray-50 p-4 transition-colors hover:bg-gray-100">
+              <div className="flex w-full items-center justify-between rounded-lg bg-gray-700/70 p-4 transition-all duration-200 hover:bg-gray-700 hover:shadow-[0_0_15px_rgba(6,182,212,0.15)]">
                 <div className="flex flex-col gap-1">
-                  <span className="text-sm font-medium text-gray-600">
+                  <span className="text-sm font-medium text-gray-400">
                     {selectedDate} 的帳目
                   </span>
-                  <span className="text-lg font-bold text-red-600">
+                  <span className="text-secondary-400 text-lg font-bold">
                     ${normalizeNumber(selectedDayTotal)}
                   </span>
                 </div>
                 <svg
-                  className={`size-5 text-gray-600 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                  className={`size-5 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -101,19 +101,20 @@ export const MiniDailyCostChart = (props: Props) => {
             defaultOpen={true}
             className="w-full"
           >
-            <div className="mt-2 flex flex-col gap-2 rounded-lg border border-gray-200 bg-white p-3">
+            <div className="mt-2 flex flex-col gap-2 rounded-lg border border-gray-600 bg-gray-800/90 p-3">
               {selectedDayTransactions.map((item, index) => (
                 <div
                   key={`${item.id}-${index}`}
-                  className="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50 p-3 text-sm transition-colors hover:bg-gray-100"
+                  className="flex items-center justify-between rounded-lg border border-gray-700 bg-gray-700/50 p-3 text-sm transition-all duration-200 hover:bg-gray-700 hover:shadow-[0_0_10px_rgba(6,182,212,0.1)]"
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-xl">{item.category}</span>
                     <div className="flex flex-col gap-0.5">
-                      <span className="font-medium text-gray-700">
-                        {item.description || CATEGORY_WORDING_MAP[item.category]}
+                      <span className="font-medium text-gray-200">
+                        {item.description ||
+                          CATEGORY_WORDING_MAP[item.category]}
                       </span>
-                      <span className="text-xs text-gray-300">
+                      <span className="text-xs text-gray-400">
                         {CATEGORY_WORDING_MAP[item.category]}
                       </span>
                     </div>
@@ -121,8 +122,8 @@ export const MiniDailyCostChart = (props: Props) => {
                   <span
                     className={`font-semibold ${
                       item.type === SpendingType.Income
-                        ? 'text-green-600'
-                        : 'text-red-600'
+                        ? 'text-income-400'
+                        : 'text-secondary-400'
                     }`}
                   >
                     {item.type === SpendingType.Income ? '+' : '-'}$

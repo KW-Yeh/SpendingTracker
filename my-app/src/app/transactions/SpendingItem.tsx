@@ -47,7 +47,7 @@ export const SpendingItem = (props: Props) => {
     if (deleting) {
       return 'ring-2 ring-secondary-400';
     }
-    return 'hover:shadow-md hover:border-primary-200 cursor-pointer';
+    return 'hover:shadow-[0_0_20px_rgba(6,182,212,0.25)] hover:border-primary-400 cursor-pointer';
   }, [deleting]);
 
   const handleOnDelete = useCallback(() => {
@@ -87,40 +87,42 @@ export const SpendingItem = (props: Props) => {
 
   return (
     <div
-      className={`relative flex items-center gap-3 rounded-xl bg-white border border-gray-200 p-3 text-sm transition-all shadow-sm sm:text-base md:p-4 ${additionalStyle}`}
+      className={`relative flex items-center gap-3 rounded-xl border border-gray-600 bg-gray-800/90 p-3 text-sm shadow-sm backdrop-blur-sm transition-all sm:text-base md:p-4 ${additionalStyle}`}
     >
       {deleting && (
-        <span className="absolute top-0 left-2 -translate-y-1/2 rounded-full bg-secondary-500 px-3 py-1 text-xs font-bold text-white shadow-md">
+        <span className="bg-secondary-500 absolute top-0 left-2 -translate-y-1/2 rounded-full px-3 py-1 text-xs font-bold text-white shadow-md">
           刪除中
         </span>
       )}
       {category && (
         <span
           title={CATEGORY_WORDING_MAP[category.value]}
-          className="flex size-10 items-center justify-center rounded-xl bg-primary-50"
+          className="flex size-10 items-center justify-center rounded-xl bg-gray-700/70"
         >
           {getCategoryIcon(
             category.value,
-            `size-6 ${spending.necessity === Necessity.Need ? 'text-primary-600' : 'text-gray-300'}`,
+            `size-6 ${spending.necessity === Necessity.Need ? 'text-primary-400' : 'text-gray-400'}`,
           )}
         </span>
       )}
       <div className="flex flex-1 flex-col gap-1 overflow-hidden">
         <div
           title={spending.description}
-          className="overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-gray-800"
+          className="overflow-hidden font-semibold text-ellipsis whitespace-nowrap text-gray-100"
         >
           {spending.description}
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="rounded-md bg-primary-100 px-2 py-0.5 text-xs font-semibold text-primary-700">
+          <span className="bg-primary-500/20 text-primary-400 rounded-md px-2 py-0.5 text-xs font-semibold">
             {timeInfo.period}
           </span>
-          <span className="text-xs font-medium text-gray-300">{timeInfo.time}</span>
+          <span className="text-xs font-medium text-gray-400">
+            {timeInfo.time}
+          </span>
         </div>
       </div>
       <div
-        className={`w-fit text-end font-bold text-lg ${spending.type === SpendingType.Outcome ? 'text-secondary-600' : 'text-income-600'}`}
+        className={`w-fit text-end text-lg font-bold ${spending.type === SpendingType.Outcome ? 'text-secondary-600' : 'text-income-600'}`}
       >
         ${normalizeNumber(Number(spending.amount))}
       </div>
@@ -133,7 +135,7 @@ export const SpendingItem = (props: Props) => {
               label: (
                 <Link
                   href={`/edit?id=${spending.id}`}
-                  className="text-gray-700 group-hover:text-primary-600 group-active:text-primary-700 flex items-center gap-3 transition-colors"
+                  className="group-hover:text-primary-400 group-active:text-primary-300 flex items-center gap-3 text-gray-300 transition-colors"
                 >
                   <EditIcon className="size-4 transition-colors sm:size-4" />
                   <span className="font-medium">編輯</span>
@@ -143,7 +145,7 @@ export const SpendingItem = (props: Props) => {
             {
               value: 'delete',
               label: (
-                <span className="group text-gray-700 flex items-center gap-3 transition-colors group-hover:text-secondary-600 group-active:text-secondary-700">
+                <span className="group group-hover:text-secondary-400 group-active:text-secondary-300 flex items-center gap-3 text-gray-300 transition-colors">
                   <DeleteIcon className="size-4 transition-colors sm:size-4" />
                   <span className="font-medium">刪除</span>
                 </span>
