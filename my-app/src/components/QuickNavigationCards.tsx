@@ -12,28 +12,28 @@ const NAVIGATION_CARDS = [
     description: '詳細收支記錄',
     href: '/transactions',
     icon: ListTaskIcon,
-    gradient: 'from-purple-400 to-pink-300',
+    gradient: 'from-primary-400 to-secondary-400',
   },
   {
     title: '帳本管理',
     description: '管理帳本與成員',
     href: '/group',
     icon: BookIcon,
-    gradient: 'from-primary-400 to-primary-600',
+    gradient: 'from-secondary-400 to-secondary-600',
   },
   {
     title: '帳目分析',
     description: '查看消費統計圖表',
     href: '/analysis',
     icon: BarChartIcon,
-    gradient: 'from-blue-400 to-indigo-500',
+    gradient: 'from-accent-400 to-accent-600',
   },
   {
     title: '預算管理',
     description: '設定與管理預算',
     href: '/budget',
     icon: CoinIcon,
-    gradient: 'from-green-400 to-emerald-500',
+    gradient: 'from-income-400 to-income-600',
   },
 ];
 
@@ -46,17 +46,19 @@ export const QuickNavigationCards = ({ isMobile }: { isMobile: boolean }) => {
           <Link
             key={card.href}
             href={card.href}
-            className="bg-background group relative flex flex-col items-center justify-center gap-2 rounded-2xl border border-gray-200 p-4 shadow-sm transition-all duration-200 hover:scale-105 hover:shadow active:scale-100"
+            className="card-interactive group relative flex flex-col items-center justify-center gap-3 p-5 min-h-[120px] cursor-pointer"
           >
             <div
-              className={`flex items-center justify-center rounded-full bg-gradient-to-r ${card.gradient} p-3`}
+              className={`flex items-center justify-center rounded-2xl bg-linear-to-r ${card.gradient} p-4 shadow-lg transition-transform duration-200 group-hover:scale-110`}
             >
-              <Icon className="size-6 text-white" />
+              <Icon className="size-7 text-white" />
             </div>
-            <h3 className="text-sm font-bold text-gray-700">{card.title}</h3>
-            <p className="text-center text-xs text-gray-500">
-              {card.description}
-            </p>
+            <div className="flex flex-col items-center gap-1">
+              <h3 className="text-sm font-bold text-gray-800" style={{ fontFamily: 'var(--font-heading)' }}>{card.title}</h3>
+              <p className="text-center text-xs text-gray-600">
+                {card.description}
+              </p>
+            </div>
           </Link>
         );
       })}

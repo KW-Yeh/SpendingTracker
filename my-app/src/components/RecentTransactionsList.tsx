@@ -21,13 +21,13 @@ export const RecentTransactionsList = ({ data, loading, refreshData }: Props) =>
   // Only show loading skeleton if we have no data yet
   if (loading && data.length === 0) {
     return (
-      <div className="bg-background flex w-full flex-col rounded-2xl border border-gray-200 p-5 shadow-sm md:min-w-110">
-        <h3 className="mb-4 text-lg font-bold">最近 5 筆交易</h3>
+      <div className="card flex w-full flex-col md:min-w-110">
+        <h3 className="mb-4 text-lg font-bold" style={{ fontFamily: 'var(--font-heading)' }}>最近 5 筆交易</h3>
         <div className="flex flex-col gap-2">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-14 w-full animate-pulse rounded-lg bg-gray-100"
+              className="skeleton h-16 w-full rounded-xl"
             />
           ))}
         </div>
@@ -36,12 +36,12 @@ export const RecentTransactionsList = ({ data, loading, refreshData }: Props) =>
   }
 
   return (
-    <div className="bg-background flex w-full flex-col rounded-2xl border border-gray-200 p-5 shadow-sm md:min-w-110">
+    <div className="card flex w-full flex-col md:min-w-110">
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-lg font-bold">最近 5 筆交易</h3>
+        <h3 className="text-lg font-bold text-gray-800" style={{ fontFamily: 'var(--font-heading)' }}>最近 5 筆交易</h3>
         <Link
           href="/transactions"
-          className="text-primary-500 hover:text-primary-400 active:text-primary-600 flex items-center gap-1 text-xs font-bold transition-colors"
+          className="text-primary-600 hover:text-primary-700 active:text-primary-800 flex items-center gap-1 text-xs font-bold transition-colors"
         >
           查看更多
           <DoubleArrowIcon className="size-3" />
@@ -50,7 +50,7 @@ export const RecentTransactionsList = ({ data, loading, refreshData }: Props) =>
 
       <div className="flex flex-col gap-2">
         {recentData.length === 0 ? (
-          <p className="py-8 text-center text-sm text-gray-400">尚無交易記錄</p>
+          <p className="py-10 text-center text-sm text-gray-500">尚無交易記錄</p>
         ) : (
           recentData.map((spending, index) => (
             <SpendingItem

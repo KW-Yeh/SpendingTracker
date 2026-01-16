@@ -66,30 +66,30 @@ export const AsideMenu = (props: Props) => {
       ></div>
       <aside
         ref={asideRef}
-        className="bg-background fixed top-0 bottom-0 -left-72 z-50 flex max-md:hidden w-72 origin-right flex-col items-center justify-between shadow-[1px_0_16px_0px_black] transition-all"
+        className="bg-white fixed top-0 bottom-0 -left-72 z-50 flex max-md:hidden w-72 origin-right flex-col items-center justify-between shadow-2xl transition-all"
       >
-        <div className="gradient-r-from-purple-to-blue clip-profile-bg absolute h-30 w-full"></div>
+        <div className="gradient-warm clip-profile-bg absolute h-30 w-full"></div>
         <div className="relative flex w-full flex-col items-center pt-17">
           <Link
             href="/profile"
             onClick={onClose}
-            className="bg-background flex size-20 items-center justify-center rounded-full p-1 transition-all hover:scale-105 active:scale-95"
+            className="bg-white flex size-20 items-center justify-center rounded-full p-1 shadow-lg ring-4 ring-white transition-all hover:scale-105 hover:shadow-xl active:scale-95"
           >
             <UserAvatar user={user} />
           </Link>
         </div>
         <div className="mt-4 flex w-full flex-col items-center px-4">
-          <h3 className="max-w-70 overflow-hidden text-base font-bold text-ellipsis whitespace-nowrap">
+          <h3 className="max-w-70 overflow-hidden text-base font-bold text-ellipsis whitespace-nowrap text-gray-900" style={{ fontFamily: 'var(--font-heading)' }}>
             {user ? user.name : '尚未登入'}
           </h3>
-          <p className="max-w-70 overflow-hidden text-xs text-ellipsis whitespace-nowrap text-gray-500">
+          <p className="max-w-70 overflow-hidden text-xs text-ellipsis whitespace-nowrap text-gray-600">
             {user ? user.email : '尚未登入'}
           </p>
         </div>
         <div className="flex h-px w-full items-center px-4 py-5">
-          <span className="h-px w-full bg-gray-200"></span>
+          <span className="h-px w-full bg-linear-to-r from-transparent via-gray-300 to-transparent"></span>
         </div>
-        <div className="flex w-full flex-1 flex-col items-center gap-2 px-4">
+        <div className="flex w-full flex-1 flex-col items-center gap-1 px-4">
           {Object.keys(MENU_CONFIG).map((path) => (
             <MenuButton
               key={path}
@@ -99,12 +99,12 @@ export const AsideMenu = (props: Props) => {
             />
           ))}
         </div>
-        <div className="w-full border-t border-solid border-gray-300 px-4 py-2">
+        <div className="w-full border-t border-solid border-gray-200 px-4 py-2">
           <MenuButton
             href="/setting"
             onClick={onClose}
             label="設定"
-            icon={<SettingIcon className="mr-3 size-4 sm:mr-4" />}
+            icon={<SettingIcon className="mr-3 size-5 sm:mr-4" />}
           />
         </div>
       </aside>
@@ -145,7 +145,7 @@ const MenuButton = ({
       <Link
         href={href}
         onClick={onClick}
-        className={`flex w-full items-center rounded-md px-5 py-3 text-left text-sm font-semibold transition-all sm:text-base ${pathName === href ? 'bg-primary-100' : 'active:bg-primary-100 hover:bg-primary-100'}`}
+        className={`flex w-full items-center rounded-xl px-5 py-3 min-h-[44px] text-left text-sm font-semibold transition-all duration-200 cursor-pointer sm:text-base ${pathName === href ? 'bg-primary-100 text-primary-700 shadow-sm' : 'text-gray-700 hover:bg-primary-50 hover:text-primary-700 active:bg-primary-100'}`}
       >
         {icon ?? ROUTE_ICON[href]}
         {label}
@@ -155,7 +155,7 @@ const MenuButton = ({
   return (
     <button
       onClick={onClick}
-      className="active:bg-primary-100 hover:bg-primary-100 flex w-full items-center rounded-md px-5 py-3 text-left text-sm font-semibold transition-all sm:text-base"
+      className="flex w-full items-center rounded-xl px-5 py-3 min-h-[44px] text-left text-sm font-semibold transition-all duration-200 text-gray-700 hover:bg-primary-50 hover:text-primary-700 active:bg-primary-100 cursor-pointer sm:text-base"
     >
       {icon}
       {label}

@@ -71,11 +71,11 @@ export const YearMonthFilter = (props: Props) => {
 
   return (
     <div className={`relative w-full md:max-w-80 ${className}`}>
-      <div className="flex w-full items-center gap-1.5 overflow-hidden rounded-lg border border-gray-300 bg-white shadow-sm transition-all hover:border-primary-400 hover:shadow-md">
+      <div className="flex w-full items-center gap-1.5 overflow-hidden rounded-xl border border-gray-300 bg-white shadow-sm transition-all hover:border-primary-400 hover:shadow-warm">
         <button
           type="button"
           onClick={handlePreviousMonth}
-          className={`flex items-center justify-center border-r border-gray-200 p-2 text-gray-600 transition-all hover:bg-primary-50 hover:text-primary-600 active:bg-primary-100 ${styles.navButton}`}
+          className={`flex min-w-[44px] min-h-[44px] items-center justify-center border-r border-gray-200 text-gray-600 transition-all hover:bg-primary-50 hover:text-primary-600 active:bg-primary-100 ${styles.navButton}`}
           aria-label="上個月"
         >
           <BiChevronLeft className="size-5" />
@@ -84,11 +84,11 @@ export const YearMonthFilter = (props: Props) => {
         <button
           type="button"
           onClick={() => setOpen(!open)}
-          className={`flex flex-1 items-center justify-center gap-2 py-2 transition-all ${
+          className={`flex flex-1 items-center justify-center gap-2 py-2 min-h-[44px] transition-all ${
             open ? 'bg-primary-50' : 'hover:bg-gray-50'
           }`}
         >
-          <CalendarIcon className={`size-4 transition-colors ${open ? 'text-primary-600' : 'text-gray-500'}`} />
+          <CalendarIcon className={`size-5 transition-colors ${open ? 'text-primary-600' : 'text-gray-500'}`} />
           <div className="flex items-center gap-1.5">
             <span className={`text-base font-semibold transition-colors ${open ? 'text-primary-700' : 'text-gray-800'}`}>
               {year}
@@ -99,14 +99,14 @@ export const YearMonthFilter = (props: Props) => {
             </span>
           </div>
           {isCurrentMonth() && (
-            <span className="ml-1 size-1.5 rounded-full bg-primary-500"></span>
+            <span className="ml-1 size-2 rounded-full bg-primary-500 shadow-warm"></span>
           )}
         </button>
 
         <button
           type="button"
           onClick={handleNextMonth}
-          className={`flex items-center justify-center border-l border-gray-200 p-2 text-gray-600 transition-all hover:bg-primary-50 hover:text-primary-600 active:bg-primary-100 ${styles.navButton}`}
+          className={`flex min-w-[44px] min-h-[44px] items-center justify-center border-l border-gray-200 text-gray-600 transition-all hover:bg-primary-50 hover:text-primary-600 active:bg-primary-100 ${styles.navButton}`}
           aria-label="下個月"
         >
           <BiChevronRight className="size-5" />
@@ -116,14 +116,14 @@ export const YearMonthFilter = (props: Props) => {
       {/* Dropdown panel */}
       <div
         ref={ref}
-        className={`absolute top-full left-1/2 z-20 mt-2 w-80 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl transition-all ${
+        className={`absolute top-full left-1/2 z-20 mt-2 w-80 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-warm-lg transition-all ${
           open
             ? `${styles.dropdownAnimation} visible opacity-100`
             : 'invisible translate-y-1 opacity-0'
         }`}
       >
         {/* Year selector */}
-        <div className="border-b border-gray-100 bg-linear-to-r from-primary-50 to-primary-100 px-4 py-3">
+        <div className="border-b border-gray-100 bg-linear-to-r from-primary-50 to-accent-50 px-4 py-3">
           <div className="flex items-center justify-between">
             <button
               onClick={() => setYear((Number(year) - 1).toString())}
@@ -160,17 +160,17 @@ export const YearMonthFilter = (props: Props) => {
                     setMonth(MONTH_LABEL[monthLabel]);
                     setOpen(false);
                   }}
-                  className={`relative rounded-lg px-3 py-2.5 text-sm font-semibold transition-all ${styles.monthButton} ${
+                  className={`relative rounded-xl px-3 py-2.5 text-sm font-semibold transition-all ${styles.monthButton} ${
                     isSelected
-                      ? 'bg-primary-500 text-white shadow-md ring-2 ring-primary-200'
+                      ? 'bg-primary-500 text-white shadow-warm ring-2 ring-primary-200 scale-105'
                       : isCurrentYearMonth
-                        ? 'bg-primary-100 text-primary-700 hover:bg-primary-200'
-                        : 'text-gray-700 hover:bg-gray-100'
+                        ? 'bg-primary-100 text-primary-700 hover:bg-primary-200 hover:scale-105'
+                        : 'text-gray-700 hover:bg-gray-100 hover:scale-105'
                   }`}
                 >
                   {monthLabel}
                   {isCurrentYearMonth && !isSelected && (
-                    <span className="absolute right-1 top-1 size-1.5 rounded-full bg-primary-500"></span>
+                    <span className="absolute right-1 top-1 size-2 rounded-full bg-primary-500 shadow-warm"></span>
                   )}
                 </button>
               );
@@ -196,7 +196,7 @@ export const YearMonthFilter = (props: Props) => {
               setYear(today.getFullYear().toString());
               setOpen(false);
             }}
-            className="rounded-lg bg-primary-500 px-4 py-1.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-primary-600 hover:shadow active:scale-95"
+            className="rounded-xl bg-linear-to-r from-primary-500 to-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-warm transition-all hover:shadow-warm-lg hover:scale-105 active:scale-95"
           >
             回到本月
           </button>

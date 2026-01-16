@@ -50,7 +50,7 @@ export const Dashboard = () => {
         <button
           type="button"
           onClick={handleCreateGroup}
-          className="bg-text text-background flex items-center rounded-lg px-4 py-2 text-sm font-bold transition-colors hover:bg-gray-800 active:bg-gray-800"
+          className="btn-primary flex items-center text-sm min-h-[44px]"
         >
           <PlusIcon className="mr-2 size-4" />
           <span>建立新帳本</span>
@@ -235,12 +235,15 @@ const GroupCard = ({
   };
 
   return (
-    <div className="bg-background relative grid w-full max-w-87.5 grid-cols-12 gap-4 rounded-xl p-4 shadow-md">
+    <div className="card card-interactive relative grid w-full max-w-87.5 grid-cols-12 gap-4">
       <div
         className={`absolute top-0 right-0 bottom-0 left-0 animate-pulse rounded-xl border border-solid border-transparent bg-gray-500/50 ${loading ? 'visible' : 'invisible'}`}
       ></div>
       <div className="col-span-10 flex flex-col justify-between gap-2">
-        <h3 className="overflow-hidden text-base font-bold text-ellipsis whitespace-nowrap sm:text-lg">
+        <h3
+          className="overflow-hidden text-base font-bold text-ellipsis whitespace-nowrap sm:text-lg text-gray-800"
+          style={{ fontFamily: 'var(--font-heading)' }}
+        >
           {group.name}
         </h3>
         <div className="flex flex-wrap items-center gap-2">
@@ -253,7 +256,7 @@ const GroupCard = ({
               <button
                 type="button"
                 onClick={() => setMembersModalOpen(true)}
-                className="text-xs text-blue-500 underline hover:text-blue-600"
+                className="text-xs text-primary-600 underline hover:text-primary-700 font-semibold transition-colors"
               >
                 查看詳情
               </button>
@@ -345,7 +348,7 @@ const GroupCard = ({
           <div className="flex w-full items-center justify-end">
             <button
               type="button"
-              className="bg-text text-background w-full rounded-md p-2 font-bold transition-colors hover:bg-gray-600 active:bg-gray-600"
+              className="btn-primary w-full min-h-[44px]"
               onClick={handleCopyInviteLink}
             >
               複製
@@ -372,7 +375,7 @@ const GroupCard = ({
               <button
                 type="button"
                 onClick={() => setEditModalOpen(false)}
-                className="rounded-lg border border-solid border-gray-300 px-4 py-2 text-gray-500"
+                className="btn-secondary min-h-[44px]"
               >
                 取消
               </button>
@@ -380,7 +383,7 @@ const GroupCard = ({
                 type="button"
                 onClick={handleEditGroupName}
                 disabled={loading}
-                className="bg-text text-background rounded-lg px-4 py-2 font-bold transition-colors hover:bg-gray-800 active:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+                className="btn-primary px-4 min-h-[44px] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {loading ? '更新中...' : '確定'}
               </button>
@@ -407,17 +410,17 @@ const GroupCard = ({
                 return (
                   <div
                     key={member.user_id}
-                    className="flex items-center justify-between rounded-lg border border-solid border-gray-200 p-3"
+                    className="flex items-center justify-between rounded-xl border border-solid border-gray-200 p-3 transition-all hover:bg-primary-50 hover:border-primary-200"
                   >
                     <div className="flex-1">
-                      <p className="font-medium">
+                      <p className="font-semibold text-gray-800">
                         {member.name || member.email}
                         {isCurrentUser && (
-                          <span className="ml-2 text-xs text-gray-500">(我)</span>
+                          <span className="ml-2 text-xs text-primary-600 font-semibold">(我)</span>
                         )}
                       </p>
-                      <p className="text-xs text-gray-400">{member.email}</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-500">{member.email}</p>
+                      <p className="text-xs text-gray-600 font-medium">
                         角色: {member.role}
                         {isMemberOwner && ' (擁有者)'}
                       </p>
@@ -431,7 +434,7 @@ const GroupCard = ({
                             member.name || member.email || '未知用戶',
                           )
                         }
-                        className="rounded p-2 text-red-500 transition-colors hover:bg-red-50 active:bg-red-50"
+                        className="rounded-lg p-2 min-w-[32px] min-h-[32px] text-secondary-600 transition-all hover:bg-secondary-100 active:bg-secondary-100 hover:scale-110"
                       >
                         <DeleteIcon className="size-4" />
                       </button>

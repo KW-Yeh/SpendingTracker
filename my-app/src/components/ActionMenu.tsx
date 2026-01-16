@@ -28,12 +28,14 @@ export const ActionMenu = (props: Props) => {
         onClick={() => {
           setOpen((prevState) => !prevState);
         }}
-        className={`rounded-full p-2 transition-colors ${open ? 'bg-gray-300' : 'hover:bg-gray-300 active:bg-gray-300'}`}
+        className={`min-w-[44px] min-h-[44px] rounded-full p-2 transition-all duration-200 ${open ? 'bg-primary-100 text-primary-600' : 'hover:bg-gray-100 active:bg-gray-200'}`}
+        aria-label="Open action menu"
+        aria-expanded={open}
       >
-        <ActionMenuIcon className="size-4" />
+        <ActionMenuIcon className="size-5" />
       </button>
       <div
-        className={`bg-background absolute top-full right-3 z-30 flex w-fit flex-col rounded-lg p-2 shadow transition-all ${open ? 'opacity-100' : 'hidden opacity-0'}`}
+        className={`bg-white absolute top-full right-0 mt-2 z-30 flex w-fit flex-col rounded-xl p-2 shadow-lg border border-gray-200 transition-all duration-200 ${open ? 'opacity-100 scale-100' : 'hidden opacity-0 scale-95'}`}
       >
         {options.map((option) => (
           <button
@@ -42,7 +44,7 @@ export const ActionMenu = (props: Props) => {
             onClick={() => {
               if (onClick) onClick(option.value);
             }}
-            className={`group flex items-center gap-2 rounded px-4 py-2 whitespace-nowrap transition-colors hover:bg-gray-100 active:bg-gray-100 ${option.className ?? ''}`}
+            className={`group flex items-center gap-2 rounded-lg px-4 py-3 min-h-[44px] whitespace-nowrap transition-all duration-200 hover:bg-primary-50 hover:text-primary-700 active:bg-primary-100 cursor-pointer ${option.className ?? ''}`}
           >
             {option.label}
           </button>

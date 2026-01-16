@@ -82,19 +82,20 @@ export const Select = (props: Props) => {
     >
       <div ref={ref} className="relative w-full">
         <button
-          className={`${className} flex items-center justify-between gap-1`}
+          className={`${className} flex items-center justify-between gap-2 min-h-[44px]`}
           type="button"
           onClick={() => setOpenOptions((prevState) => !prevState)}
+          aria-expanded={openOptions}
         >
           {(label || value) && (
             <span className="overflow-hidden text-ellipsis whitespace-nowrap">
               {label ?? value}
             </span>
           )}
-          <CaretDown className={`size-2 shrink-0 ${caretStyle}`} />
+          <CaretDown className={`size-3 shrink-0 transition-transform duration-200 ${openOptions ? 'rotate-180' : ''} ${caretStyle}`} />
         </button>
         <div
-          className={`${openVerticalDirection === MenuOpenDirection.Down ? 'top-full mt-1' : 'bottom-full mb-1'} ${openHorizontalDirection === MenuOpenDirection.Left ? 'right-0' : 'left-0'} bg-background absolute z-40 w-fit overflow-hidden rounded-lg border border-solid border-gray-300 py-2 shadow transition-all ${openOptions ? 'visible opacity-100' : 'invisible opacity-0'}`}
+          className={`${openVerticalDirection === MenuOpenDirection.Down ? 'top-full mt-2' : 'bottom-full mb-2'} ${openHorizontalDirection === MenuOpenDirection.Left ? 'right-0' : 'left-0'} bg-white absolute z-40 w-fit overflow-hidden rounded-xl border-2 border-solid border-gray-200 py-1 shadow-xl transition-all duration-200 ${openOptions ? 'visible opacity-100 scale-100' : 'invisible opacity-0 scale-95'}`}
           style={{
             minWidth: (ref.current?.clientWidth ?? 0) - 8 + 'px',
             maxHeight: menuMaxHeight + 'px',
@@ -142,9 +143,9 @@ const Item = ({
         onChange(value);
         close();
       }}
-      className={`flex w-full px-4 py-2 transition-colors ${className} ${current === value ? 'bg-primary-100' : 'hover:bg-primary-100'}`}
+      className={`flex w-full px-4 py-3 min-h-[44px] transition-all duration-200 cursor-pointer ${className} ${current === value ? 'bg-primary-100 text-primary-700 font-semibold' : 'hover:bg-primary-50 active:bg-primary-100'}`}
     >
-      <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+      <span className="overflow-hidden text-ellipsis whitespace-nowrap text-left">
         {children}
       </span>
     </button>

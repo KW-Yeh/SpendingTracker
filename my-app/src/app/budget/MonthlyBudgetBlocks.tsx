@@ -250,34 +250,37 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
           return (
             <div
               key={month.value}
-              className={`bg-background rounded-xl p-4 shadow ${
-                isCurrentMonth ? 'ring-2 ring-primary-500' : ''
+              className={`card ${
+                isCurrentMonth ? 'ring-2 ring-primary-400 shadow-warm' : ''
               }`}
             >
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold">
+                <h3
+                  className="text-lg font-bold text-gray-800"
+                  style={{ fontFamily: 'var(--font-heading)' }}
+                >
                   {month.label}
                   {isCurrentMonth && (
-                    <span className="text-primary-500 ml-2 text-xs">(本月)</span>
+                    <span className="text-primary-600 ml-2 text-xs font-semibold">(本月)</span>
                   )}
                 </h3>
                 <button
                   type="button"
                   onClick={() => handleOpenAddModal(month.value)}
-                  className="text-primary-500 hover:text-primary-600 text-sm font-medium"
+                  className="text-primary-500 hover:text-primary-600 text-sm font-semibold transition-all hover:scale-105"
                 >
                   + 新增
                 </button>
               </div>
 
               <div className="mt-2">
-                <p className="text-2xl font-bold">
+                <p className="text-2xl font-bold text-gray-900">
                   {normalizeNumber(monthTotal)} 元
                 </p>
                 <p className="text-sm text-gray-500">
                   已使用 {normalizeNumber(monthSpent)} 元
                   {monthTotal > 0 && (
-                    <span className={`ml-1 font-medium ${isOverBudget ? 'text-red-600' : 'text-green-600'}`}>
+                    <span className={`ml-1 font-semibold ${isOverBudget ? 'text-secondary-600' : 'text-income-600'}`}>
                       ({usagePercentage.toFixed(1)}%)
                     </span>
                   )}
@@ -286,11 +289,11 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
 
               {/* Progress Bar */}
               {monthTotal > 0 && (
-                <div className="mt-2">
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                <div className="mt-3">
+                  <div className="h-3 w-full overflow-hidden rounded-full bg-gray-100">
                     <div
-                      className={`h-full transition-all ${
-                        isOverBudget ? 'bg-red-500' : 'bg-green-500'
+                      className={`h-full transition-all duration-300 shadow-warm ${
+                        isOverBudget ? 'bg-secondary-500' : 'bg-linear-to-r from-primary-500 to-accent-500'
                       }`}
                       style={{ width: `${Math.min(usagePercentage, 100)}%` }}
                     />
@@ -303,13 +306,13 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                   monthItems.map((item) => (
                     <div
                       key={`${month.value}-${item.index}`}
-                      className="flex items-center justify-between rounded-lg bg-gray-50 p-2"
+                      className="flex items-center justify-between rounded-xl bg-gray-50 border border-gray-100 p-2.5 transition-all hover:bg-primary-50 hover:border-primary-200"
                     >
                       <div className="flex-1">
-                        <p className="text-sm font-medium">
+                        <p className="text-sm font-semibold text-gray-800">
                           {item.category} {item.description}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 font-medium">
                           {normalizeNumber(item.amount)} 元
                         </p>
                       </div>
@@ -317,14 +320,14 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                         <button
                           type="button"
                           onClick={() => handleOpenEditModal(month.value, item.index)}
-                          className="rounded p-1 text-blue-500 transition-colors hover:bg-blue-50 active:bg-blue-50"
+                          className="rounded-lg p-2 text-primary-600 transition-all hover:bg-primary-100 active:bg-primary-100 hover:scale-110 min-w-[32px] min-h-[32px]"
                         >
                           <EditIcon className="size-4" />
                         </button>
                         <button
                           type="button"
                           onClick={() => handleDeleteItem(month.value, item.index)}
-                          className="rounded p-1 text-red-500 transition-colors hover:bg-red-50 active:bg-red-50"
+                          className="rounded-lg p-2 text-secondary-600 transition-all hover:bg-secondary-100 active:bg-secondary-100 hover:scale-110 min-w-[32px] min-h-[32px]"
                         >
                           <DeleteIcon className="size-4" />
                         </button>
@@ -406,7 +409,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                 type="button"
                 onClick={() => setModalOpen(false)}
                 disabled={saving}
-                className="rounded-lg border border-solid border-gray-300 px-4 py-2 text-gray-500"
+                className="btn-secondary min-h-[44px]"
               >
                 取消
               </button>
@@ -414,7 +417,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                 type="button"
                 onClick={handleSaveItem}
                 disabled={saving}
-                className="bg-text text-background flex items-center justify-center rounded-lg px-6 py-2 font-bold transition-colors hover:bg-gray-800 active:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+                className="btn-primary flex items-center justify-center px-6 min-h-[44px] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {saving ? <Loading className="size-5 animate-spin" /> : editingIndex !== null ? '更新' : '新增'}
               </button>

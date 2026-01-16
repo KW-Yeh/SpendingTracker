@@ -110,12 +110,12 @@ export const InviteConfirm = () => {
   // 顯示錯誤
   if (error || !invitedGroup) {
     return (
-      <div className="bg-background flex w-80 flex-col rounded-2xl border border-solid border-red-300 p-6 text-center shadow">
-        <p className="text-red-500">{error || '無法載入群組資訊'}</p>
+      <div className="card flex w-80 flex-col text-center border-2 border-secondary-300">
+        <p className="text-secondary-600 font-semibold">{error || '無法載入群組資訊'}</p>
         <button
           type="button"
           onClick={() => router.push('/group')}
-          className="mt-4 rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
+          className="btn-secondary mt-4 min-h-[44px]"
         >
           返回群組頁面
         </button>
@@ -126,11 +126,16 @@ export const InviteConfirm = () => {
   // 用戶未登入，顯示登入提示
   if (!config?.user_id) {
     return (
-      <div className="bg-background flex w-80 flex-col rounded-2xl border border-solid border-blue-300 p-6 text-center shadow">
-        <h2 className="mb-4 text-lg font-bold">需要登入</h2>
+      <div className="card flex w-80 flex-col text-center border-2 border-primary-300">
+        <h2
+          className="mb-4 text-lg font-bold text-gray-800"
+          style={{ fontFamily: 'var(--font-heading)' }}
+        >
+          需要登入
+        </h2>
         <p className="mb-2 text-gray-600">
           您收到了加入帳本
-          <strong className="mx-1 text-blue-600">{invitedGroup.name}</strong>
+          <strong className="mx-1 text-primary-600">{invitedGroup.name}</strong>
           的邀請
         </p>
         <p className="mb-6 text-sm text-gray-500">請先登入以繼續加入帳本</p>
@@ -138,14 +143,14 @@ export const InviteConfirm = () => {
           <button
             type="button"
             onClick={handleLogin}
-            className="rounded bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
+            className="btn-primary min-h-[44px]"
           >
             前往登入
           </button>
           <button
             type="button"
             onClick={() => router.push('/')}
-            className="text-sm text-gray-500 hover:text-gray-700"
+            className="text-sm text-gray-600 hover:text-primary-600 font-medium transition-colors"
           >
             返回首頁
           </button>
@@ -155,33 +160,36 @@ export const InviteConfirm = () => {
   }
 
   return (
-    <div className="bg-background flex w-80 flex-col rounded-2xl border border-solid border-gray-300 pt-5 pb-4 shadow">
-      <h1 className="mb-6 w-full px-5 text-start text-lg sm:text-xl">
+    <div className="card flex w-80 flex-col pt-5 pb-4">
+      <h1
+        className="mb-6 w-full px-5 text-start text-lg sm:text-xl text-gray-800"
+        style={{ fontFamily: 'var(--font-heading)' }}
+      >
         是否加入
-        <strong className="ml-2 font-bold">{invitedGroup.name}</strong>
+        <strong className="ml-2 font-bold text-primary-600">{invitedGroup.name}</strong>
         帳本？
       </h1>
       <div className="px-5 pb-4">
-        <p className="mb-2 text-sm text-gray-600">帳本資訊：</p>
-        <div className="rounded-lg bg-gray-50 p-3 text-sm">
-          <p>
-            <span className="font-medium">擁有者：</span>
+        <p className="mb-2 text-sm text-gray-600 font-semibold">帳本資訊：</p>
+        <div className="rounded-xl bg-primary-50 border border-primary-100 p-3 text-sm">
+          <p className="text-gray-700">
+            <span className="font-semibold">擁有者：</span>
             {invitedGroup.owner_name || invitedGroup.owner_email || '未知'}
           </p>
-          <p className="mt-1">
-            <span className="font-medium">成員數量：</span>
+          <p className="mt-1 text-gray-700">
+            <span className="font-semibold">成員數量：</span>
             {invitedGroup.member_count || 0} 人
           </p>
         </div>
         <p className="mt-3 text-xs text-gray-500">
-          加入後您將成為 <strong>Viewer</strong>（檢視者）角色
+          加入後您將成為 <strong className="text-primary-600">Viewer</strong>（檢視者）角色
         </p>
       </div>
-      <div className="flex items-center justify-between gap-4 border-t border-solid border-gray-300 px-4 pt-4">
+      <div className="flex items-center justify-between gap-4 border-t border-solid border-gray-200 px-4 pt-4">
         <button
           type="button"
           onClick={() => router.push('/group')}
-          className="active:text-background hover:text-background rounded border border-solid border-red-500 px-6 py-1 text-red-500 transition-colors hover:bg-red-500 active:bg-red-500"
+          className="btn-secondary min-h-[44px] px-6"
         >
           取消
         </button>
@@ -189,7 +197,7 @@ export const InviteConfirm = () => {
           type="button"
           onClick={handleJoinGroup}
           disabled={loading}
-          className="text-background rounded border border-solid border-green-500 bg-green-500 px-6 py-1 transition-colors hover:border-green-400 hover:bg-green-400 active:border-green-400 active:bg-green-400 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:border-gray-400"
+          className="rounded-xl bg-linear-to-r from-income-500 to-income-600 text-white px-6 min-h-[44px] font-semibold shadow-sm transition-all hover:shadow-md hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? '加入中...' : '加入'}
         </button>

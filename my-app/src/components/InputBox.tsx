@@ -9,13 +9,13 @@ interface Props extends HTMLAttributes<HTMLInputElement> {
 export const InputBox = (props: Props) => {
   const { className = "", type, name, label, ...legacy } = props;
   return (
-    <fieldset className="rounded-lg border pb-1 px-2 border-solid border-text bg-background">
-      <legend className="px-2 bg-background">{label}</legend>
+    <fieldset className="rounded-xl border-2 pb-2 px-3 border-solid border-gray-300 bg-white transition-all duration-200 hover:border-primary-300 focus-within:border-primary-500 focus-within:shadow-warm">
+      <legend className="px-2 text-sm font-medium text-gray-700">{label}</legend>
       <input
         type={type}
         name={name}
         {...legacy}
-        className={`bg-transparent px-2 focus:outline-0 w-full ${className}`}
+        className={`bg-transparent px-2 py-1 focus:outline-0 w-full text-gray-900 placeholder:text-gray-400 min-h-[44px] ${className}`}
       />
     </fieldset>
   );

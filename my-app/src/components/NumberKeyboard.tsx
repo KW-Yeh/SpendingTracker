@@ -52,7 +52,7 @@ export const NumberKeyboard = (props: Props) => {
   }, [amount, onChange]);
 
   return (
-    <div className="grid grid-cols-3 grid-rows-4 gap-1 text-sm sm:text-base">
+    <div className="grid grid-cols-3 grid-rows-4 gap-2 text-base sm:text-lg">
       {KEYS.map((key, index) => (
         <Key
           key={key}
@@ -61,13 +61,13 @@ export const NumberKeyboard = (props: Props) => {
           style={{ gridRow: Math.floor(index / 4) + 1 }}
           onClick={handleOnClick}
         >
-          {key === 'delete' && <BackspaceIcon className="size-4" />}
+          {key === 'delete' && <BackspaceIcon className="size-5" />}
           {key === 'clear' && 'C'}
           {key === '.' && (
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
+              width="20"
+              height="20"
               fill="currentColor"
               className="bi bi-dot"
               viewBox="0 0 16 16"
@@ -92,7 +92,7 @@ const Key = (
   return (
     <button
       type="button"
-      className={`${props.className} active:bg-background-gray hover:bg-background-gray bg-background flex items-center justify-center rounded-lg border border-solid border-gray-300 px-6 py-3 transition-colors select-none`}
+      className={`${props.className} bg-white flex items-center justify-center rounded-xl border-2 border-solid border-gray-200 min-w-[56px] min-h-[56px] sm:min-w-[64px] sm:min-h-[64px] px-6 py-4 text-gray-800 font-semibold transition-all duration-200 hover:bg-primary-50 hover:border-primary-300 hover:text-primary-700 hover:scale-105 active:bg-primary-100 active:scale-100 select-none cursor-pointer shadow-sm`}
       onClick={() => props.onClick(props.value)}
     >
       <span>{props.children}</span>

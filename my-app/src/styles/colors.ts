@@ -13,36 +13,36 @@
 
 /**
  * 圖表顏色配置
- * 對應紫色系配色方案
+ * 對應暖色系配色方案（橙色、紅色、金色為主）
  */
 export const CHART_COLORS = {
-  // 收入圖表（綠色系 - Mint）
-  INCOME_PRIMARY: 'hsl(150, 40%, 55%)',      // --color-accent-mint-500
-  INCOME_NECESSARY: 'hsl(150, 50%, 65%)',    // 必要收入（較淺）
-  INCOME_UNNECESSARY: 'hsl(150, 30%, 75%)',  // 非必要收入（更淺）
+  // 收入圖表（綠色系）
+  INCOME_PRIMARY: '#22C55E',      // --color-income-500
+  INCOME_NECESSARY: '#4ADE80',    // --color-income-400 必要收入（較淺）
+  INCOME_UNNECESSARY: '#86EFAC',  // --color-income-300 非必要收入（更淺）
 
-  // 支出圖表（桃色系 - Peach）
-  OUTCOME_PRIMARY: 'hsl(20, 80%, 70%)',      // --color-accent-peach-500
-  OUTCOME_NECESSARY: 'hsl(20, 70%, 75%)',    // 必要支出（較淺）
-  OUTCOME_UNNECESSARY: 'hsl(20, 60%, 85%)',  // 非必要支出（更淺）
+  // 支出圖表（暖紅色系）
+  OUTCOME_PRIMARY: '#EF4444',     // --color-secondary-500
+  OUTCOME_NECESSARY: '#F87171',   // --color-secondary-400 必要支出（較淺）
+  OUTCOME_UNNECESSARY: '#FCA5A5', // --color-secondary-300 非必要支出（更淺）
 
   // 通用
-  NEUTRAL: 'hsl(0, 0%, 80%)',                // GRAY_COLORS[200]
+  NEUTRAL: '#D6D3D1',             // --color-gray-300
 } as const;
 
 /**
  * 圖表顏色陣列（用於多系列圖表）
- * 按照推薦順序排列
+ * 按照推薦順序排列 - 暖色系
  */
 export const CHART_COLOR_PALETTE = [
-  'hsl(270, 50%, 40%)',   // Primary purple
-  'hsl(150, 40%, 55%)',   // Mint green
-  'hsl(20, 80%, 70%)',    // Peach
-  'hsl(300, 47%, 65%)',   // Orchid
-  'hsl(250, 60%, 70%)',   // Lavender
-  'hsl(270, 50%, 55%)',   // Lighter purple
-  'hsl(150, 40%, 70%)',   // Lighter mint
-  'hsl(20, 80%, 80%)',    // Lighter peach
+  '#F97316',   // Primary orange (主橙色)
+  '#EF4444',   // Secondary red (紅色)
+  '#F59E0B',   // Accent gold (金色)
+  '#EC4899',   // Pink (粉紅)
+  '#A855F7',   // Purple (紫)
+  '#3B82F6',   // Blue (藍)
+  '#22C55E',   // Green (綠)
+  '#14B8A6',   // Teal (青)
 ] as const;
 
 // ============================================================================
@@ -50,40 +50,44 @@ export const CHART_COLOR_PALETTE = [
 // ============================================================================
 
 /**
- * 主要品牌色
+ * 主要品牌色（暖橙色）
  */
 export const PRIMARY_COLORS = {
-  50: 'hsl(270, 50%, 98%)',
-  100: 'hsl(270, 50%, 95%)',
-  200: 'hsl(270, 50%, 85%)',
-  300: 'hsl(270, 50%, 70%)',
-  400: 'hsl(270, 50%, 55%)',
-  500: 'hsl(270, 50%, 40%)',  // #663399 主色
-  600: 'hsl(270, 50%, 32%)',
-  700: 'hsl(270, 50%, 24%)',
-  800: 'hsl(270, 50%, 16%)',
-  900: 'hsl(270, 50%, 10%)',
+  50: '#FFF7ED',
+  100: '#FFEDD5',
+  200: '#FED7AA',
+  300: '#FDBA74',
+  400: '#FB923C',
+  500: '#F97316',  // 主橙色
+  600: '#EA580C',
+  700: '#C2410C',
+  800: '#9A3412',
+  900: '#7C2D12',
 } as const;
 
 /**
- * 輔助色 - Accent Colors
+ * 輔助色 - Accent Colors（暖色系）
  */
 export const ACCENT_COLORS = {
-  lavender: {
-    100: 'hsl(250, 60%, 95%)',
-    500: 'hsl(250, 60%, 70%)',
+  // 金黃色
+  gold: {
+    100: '#FEF3C7',
+    500: '#F59E0B',
   },
-  orchid: {
-    100: 'hsl(300, 47%, 95%)',
-    500: 'hsl(300, 47%, 65%)',
+  // 暖紅色
+  red: {
+    100: '#FEE2E2',
+    500: '#EF4444',
   },
-  mint: {
-    100: 'hsl(150, 40%, 95%)',
-    500: 'hsl(150, 40%, 55%)',
+  // 收入綠色
+  green: {
+    100: '#DCFCE7',
+    500: '#22C55E',
   },
-  peach: {
-    100: 'hsl(20, 80%, 95%)',
-    500: 'hsl(20, 80%, 70%)',
+  // 粉紅色（圖表用）
+  pink: {
+    100: '#FCE7F3',
+    500: '#EC4899',
   },
 } as const;
 
@@ -107,14 +111,18 @@ export const GRAY_COLORS = {
  */
 export const SEMANTIC_COLORS = {
   // 成功（綠色）
-  success: ACCENT_COLORS.mint[500],
-  successLight: ACCENT_COLORS.mint[100],
+  success: ACCENT_COLORS.green[500],
+  successLight: ACCENT_COLORS.green[100],
 
-  // 警告（桃色）
-  warning: ACCENT_COLORS.peach[500],
-  warningLight: ACCENT_COLORS.peach[100],
+  // 警告（金黃色）
+  warning: ACCENT_COLORS.gold[500],
+  warningLight: ACCENT_COLORS.gold[100],
 
-  // 資訊（紫色）
+  // 錯誤（紅色）
+  error: ACCENT_COLORS.red[500],
+  errorLight: ACCENT_COLORS.red[100],
+
+  // 資訊（橙色）
   info: PRIMARY_COLORS[500],
   infoLight: PRIMARY_COLORS[100],
 

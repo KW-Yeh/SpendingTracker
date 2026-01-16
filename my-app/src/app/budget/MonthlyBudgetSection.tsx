@@ -43,21 +43,26 @@ export const MonthlyBudgetSection = ({ yearlySpending }: Props) => {
   const percentage = monthlyBudget ? (spent / monthlyBudget) * 100 : 0;
 
   return (
-    <div className="bg-background w-full rounded-xl p-6 shadow">
-      <h2 className="text-xl font-bold">本月預算</h2>
+    <div className="card w-full">
+      <h2
+        className="text-xl font-bold text-gray-800"
+        style={{ fontFamily: 'var(--font-heading)' }}
+      >
+        本月預算
+      </h2>
 
       <div className="mt-4">
-        <p className="text-3xl font-bold">
+        <p className="text-3xl font-bold text-gray-900">
           {normalizeNumber(monthlyBudget)} 元
         </p>
         <p className="text-sm text-gray-500">(由月度項目自動計算)</p>
 
-        <div className="mt-2 h-2 w-full rounded-full bg-gray-200">
+        <div className="mt-3 h-3 w-full rounded-full bg-gray-100">
           <div
-            className={`h-full rounded-full ${
+            className={`h-full rounded-full shadow-warm transition-all duration-300 ${
               percentage > 100
-                ? 'bg-red-500'
-                : 'bg-gradient-to-r from-purple-500 to-blue-500'
+                ? 'bg-secondary-500'
+                : 'bg-linear-to-r from-primary-500 to-accent-500'
             }`}
             style={{ width: `${Math.min(percentage, 100)}%` }}
           />

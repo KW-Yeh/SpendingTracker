@@ -45,9 +45,9 @@ export const SpendingItem = (props: Props) => {
 
   const additionalStyle = useMemo(() => {
     if (deleting) {
-      return 'shadow-[0_0_0_2px_hsl(20,80%,70%)]';
+      return 'ring-2 ring-secondary-400';
     }
-    return 'active:bg-gray-100 hover:bg-gray-100';
+    return 'hover:shadow-md hover:border-primary-200 cursor-pointer';
   }, [deleting]);
 
   const handleOnDelete = useCallback(() => {
@@ -87,40 +87,40 @@ export const SpendingItem = (props: Props) => {
 
   return (
     <div
-      className={`relative flex items-center gap-2 rounded-lg bg-gray-50 p-2 text-sm transition-all sm:text-base md:p-3 ${additionalStyle}`}
+      className={`relative flex items-center gap-3 rounded-xl bg-white border border-gray-200 p-3 text-sm transition-all shadow-sm sm:text-base md:p-4 ${additionalStyle}`}
     >
       {deleting && (
-        <span className="absolute top-0 left-1 -translate-y-1/2 rounded-full bg-red-300 px-2 py-0.5 text-xs font-bold text-white">
+        <span className="absolute top-0 left-2 -translate-y-1/2 rounded-full bg-secondary-500 px-3 py-1 text-xs font-bold text-white shadow-md">
           刪除中
         </span>
       )}
       {category && (
         <span
           title={CATEGORY_WORDING_MAP[category.value]}
-          className="flex size-6 items-center justify-center rounded-md"
+          className="flex size-10 items-center justify-center rounded-xl bg-primary-50"
         >
           {getCategoryIcon(
             category.value,
-            `size-5 ${spending.necessity === Necessity.Need ? 'text-primary-500' : 'text-gray-500'}`,
+            `size-6 ${spending.necessity === Necessity.Need ? 'text-primary-600' : 'text-gray-500'}`,
           )}
         </span>
       )}
-      <div className="flex flex-1 flex-col gap-0.5 overflow-hidden">
+      <div className="flex flex-1 flex-col gap-1 overflow-hidden">
         <div
           title={spending.description}
-          className="overflow-hidden text-ellipsis whitespace-nowrap font-medium"
+          className="overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-gray-800"
         >
           {spending.description}
         </div>
-        <div className="flex items-center gap-1">
-          <span className="rounded bg-gray-300 px-1.5 py-0.5 text-xs font-medium text-gray-600">
+        <div className="flex items-center gap-1.5">
+          <span className="rounded-md bg-primary-100 px-2 py-0.5 text-xs font-semibold text-primary-700">
             {timeInfo.period}
           </span>
-          <span className="text-xs text-gray-400">{timeInfo.time}</span>
+          <span className="text-xs font-medium text-gray-500">{timeInfo.time}</span>
         </div>
       </div>
       <div
-        className={`w-fit text-end font-bold ${spending.type === SpendingType.Outcome ? 'text-red-500' : 'text-green-500'}`}
+        className={`w-fit text-end font-bold text-lg ${spending.type === SpendingType.Outcome ? 'text-secondary-600' : 'text-income-600'}`}
       >
         ${normalizeNumber(Number(spending.amount))}
       </div>
@@ -133,19 +133,19 @@ export const SpendingItem = (props: Props) => {
               label: (
                 <Link
                   href={`/edit?id=${spending.id}`}
-                  className="text-text group-hover:text-primary-500 group-active:text-primary-500 flex items-center gap-3 rounded px-2 py-1 transition-colors"
+                  className="text-gray-700 group-hover:text-primary-600 group-active:text-primary-700 flex items-center gap-3 transition-colors"
                 >
-                  <EditIcon className="size-3.5 transition-colors sm:size-4" />
-                  <span>編輯</span>
+                  <EditIcon className="size-4 transition-colors sm:size-4" />
+                  <span className="font-medium">編輯</span>
                 </Link>
               ),
             },
             {
               value: 'delete',
               label: (
-                <span className="group text-text flex items-center gap-3 rounded px-2 py-1 transition-colors group-hover:text-red-500 group-active:text-red-500">
-                  <DeleteIcon className="size-3.5 transition-colors sm:size-4" />
-                  <span>刪除</span>
+                <span className="group text-gray-700 flex items-center gap-3 transition-colors group-hover:text-secondary-600 group-active:text-secondary-700">
+                  <DeleteIcon className="size-4 transition-colors sm:size-4" />
+                  <span className="font-medium">刪除</span>
                 </span>
               ),
             },

@@ -72,49 +72,50 @@ export default function OverView(props: Props) {
   const isWarning = usagePercentage >= 80 && !isOverBudget;
 
   return (
-    <div className="bg-background relative flex w-full flex-col gap-5 rounded-2xl border border-solid border-gray-300 p-6 text-gray-700 shadow-sm transition-shadow duration-200 hover:shadow md:min-w-110">
+    <div className="card card-interactive relative flex w-full flex-col gap-5 text-gray-700 md:min-w-110">
       {/* Header with primary metric */}
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
-          <div className="mb-1 flex items-center gap-2">
-            <MdOutlineWallet className="text-primary-400 size-5" />
-            <h3 className="text-sm font-medium text-gray-500">本月預算結餘</h3>
+          <div className="mb-2 flex items-center gap-2">
+            <MdOutlineWallet className="text-primary-500 size-6" />
+            <h3 className="text-sm font-semibold text-gray-600">本月預算結餘</h3>
           </div>
-          <div className="mb-2 flex items-baseline gap-2">
+          <div className="mb-3 flex items-baseline gap-2">
             <span
-              className={`text-3xl font-bold sm:text-4xl ${
+              className={`text-3xl font-extrabold sm:text-4xl ${
                 isOverBudget
-                  ? 'text-red-600'
+                  ? 'text-secondary-600'
                   : isWarning
-                    ? 'text-orange-600'
-                    : 'text-primary-500'
+                    ? 'text-primary-600'
+                    : 'text-primary-600'
               }`}
+              style={{ fontFamily: 'var(--font-heading)' }}
             >
               ${normalizeNumber(Math.abs(balance))}
             </span>
             {isOverBudget && (
-              <span className="text-sm font-medium text-red-600">超支</span>
+              <span className="text-sm font-semibold text-secondary-600">超支</span>
             )}
           </div>
           {/* Progress bar */}
-          <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-gray-100">
+          <div className="relative h-3 w-full overflow-hidden rounded-full bg-gray-100">
             <div
               className={`h-full rounded-full transition-all duration-300 ${
                 isOverBudget
-                  ? 'bg-red-500'
+                  ? 'bg-linear-to-r from-secondary-500 to-secondary-600'
                   : isWarning
-                    ? 'bg-orange-500'
-                    : 'bg-primary-400'
+                    ? 'bg-linear-to-r from-primary-500 to-accent-500'
+                    : 'bg-linear-to-r from-primary-400 to-primary-500'
               }`}
               style={{
                 width: `${Math.min(usagePercentage, 100)}%`,
               }}
             />
           </div>
-          <div className="mt-1 flex items-center justify-between text-xs text-gray-500">
+          <div className="mt-2 flex items-center justify-between text-xs font-medium text-gray-600">
             <span>已使用 {usagePercentage.toFixed(1)}%</span>
             {isOverBudget && (
-              <span className="font-medium text-red-600">
+              <span className="font-semibold text-secondary-600">
                 超出 {((usagePercentage - 100)).toFixed(1)}%
               </span>
             )}
@@ -124,23 +125,23 @@ export default function OverView(props: Props) {
 
       {/* Financial breakdown grid */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="flex flex-col gap-1 rounded-lg bg-gray-50 p-3">
-          <span className="text-xs text-gray-500">預算</span>
-          <span className="text-base font-semibold text-gray-700 sm:text-lg">
+        <div className="flex flex-col gap-1.5 rounded-xl bg-accent-50 p-3.5 border border-accent-200">
+          <span className="text-xs font-medium text-accent-700">預算</span>
+          <span className="text-base font-bold text-accent-700 sm:text-lg">
             ${normalizeNumber(monthlyBudget)}
           </span>
         </div>
 
-        <div className="flex flex-col gap-1 rounded-lg bg-red-50 p-3">
-          <span className="text-xs text-gray-500">支出</span>
-          <span className="text-base font-semibold text-red-600 sm:text-lg">
+        <div className="flex flex-col gap-1.5 rounded-xl bg-secondary-50 p-3.5 border border-secondary-200">
+          <span className="text-xs font-medium text-secondary-700">支出</span>
+          <span className="text-base font-bold text-secondary-700 sm:text-lg">
             ${normalizeNumber(totalOutcome)}
           </span>
         </div>
 
-        <div className="flex flex-col gap-1 rounded-lg bg-green-50 p-3">
-          <span className="text-xs text-gray-500">收入</span>
-          <span className="text-base font-semibold text-green-600 sm:text-lg">
+        <div className="flex flex-col gap-1.5 rounded-xl bg-income-50 p-3.5 border border-income-200">
+          <span className="text-xs font-medium text-income-700">收入</span>
+          <span className="text-base font-bold text-income-700 sm:text-lg">
             ${normalizeNumber(totalIncome)}
           </span>
         </div>
@@ -152,13 +153,13 @@ export default function OverView(props: Props) {
           <button
             type="button"
             onClick={() => setIsBudgetExpanded(!isBudgetExpanded)}
-            className="flex items-center justify-between rounded-lg px-2 py-2 transition-colors hover:bg-gray-50"
+            className="flex items-center justify-between rounded-xl px-3 py-2.5 transition-all duration-200 hover:bg-primary-50 cursor-pointer"
           >
-            <h4 className="text-xs font-medium text-gray-600">預算使用狀況</h4>
+            <h4 className="text-sm font-semibold text-gray-700">預算使用狀況</h4>
             {isBudgetExpanded ? (
-              <IoChevronUp className="size-4 text-gray-500" />
+              <IoChevronUp className="size-4 text-primary-600" />
             ) : (
-              <IoChevronDown className="size-4 text-gray-500" />
+              <IoChevronDown className="size-4 text-primary-600" />
             )}
           </button>
 
@@ -172,24 +173,24 @@ export default function OverView(props: Props) {
                 return (
                   <div
                     key={item.category}
-                    className={`flex flex-col gap-1.5 rounded-lg border p-2.5 transition-all duration-200 ${
+                    className={`flex flex-col gap-2 rounded-xl border-2 p-3 transition-all duration-200 shadow-sm ${
                       isOver
-                        ? 'border-red-200 bg-red-50'
+                        ? 'border-secondary-300 bg-secondary-50'
                         : isNearLimit
-                          ? 'border-orange-200 bg-orange-50'
-                          : 'border-primary-200 bg-primary-50'
+                          ? 'border-primary-300 bg-primary-50'
+                          : 'border-primary-200 bg-white'
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-gray-700">
+                      <span className="text-xs font-bold text-gray-800">
                         {CATEGORY_WORDING_MAP[item.category]}
                       </span>
                       <span
-                        className={`text-xs font-bold ${
+                        className={`text-xs font-extrabold ${
                           isOver
-                            ? 'text-red-600'
+                            ? 'text-secondary-600'
                             : isNearLimit
-                              ? 'text-orange-600'
+                              ? 'text-primary-600'
                               : 'text-primary-600'
                         }`}
                       >
@@ -197,45 +198,45 @@ export default function OverView(props: Props) {
                       </span>
                     </div>
 
-                    <div className="flex flex-col gap-0.5">
+                    <div className="flex flex-col gap-1">
                       <div className="flex items-baseline justify-between">
-                        <span className="text-[10px] text-gray-500">已使用</span>
+                        <span className="text-[10px] font-medium text-gray-600">已使用</span>
                         <span
                           className={`text-sm font-bold ${
                             isOver
-                              ? 'text-red-600'
+                              ? 'text-secondary-700'
                               : isNearLimit
-                                ? 'text-orange-600'
-                                : 'text-gray-700'
+                                ? 'text-primary-700'
+                                : 'text-gray-800'
                           }`}
                         >
                           ${normalizeNumber(item.spent)}
                         </span>
                       </div>
                       <div className="flex items-baseline justify-between">
-                        <span className="text-[10px] text-gray-500">預算</span>
-                        <span className="text-xs font-medium text-gray-600">
+                        <span className="text-[10px] font-medium text-gray-600">預算</span>
+                        <span className="text-xs font-semibold text-gray-700">
                           ${normalizeNumber(item.budgeted)}
                         </span>
                       </div>
                     </div>
 
-                    <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-white">
+                    <div className="relative h-2 w-full overflow-hidden rounded-full bg-gray-100">
                       <div
                         className={`h-full rounded-full transition-all duration-300 ${
                           isOver
-                            ? 'bg-red-500'
+                            ? 'bg-linear-to-r from-secondary-500 to-secondary-600'
                             : isNearLimit
-                              ? 'bg-orange-500'
-                              : 'bg-primary-400'
+                              ? 'bg-linear-to-r from-primary-500 to-accent-500'
+                              : 'bg-linear-to-r from-primary-400 to-primary-500'
                         }`}
                         style={{ width: `${Math.min(usagePercent, 100)}%` }}
                       />
                     </div>
 
                     {isOver && (
-                      <div className="mt-0.5 rounded-md bg-red-100 px-1.5 py-0.5">
-                        <span className="text-[10px] font-medium text-red-700">
+                      <div className="mt-0.5 rounded-lg bg-secondary-100 px-2 py-1 border border-secondary-200">
+                        <span className="text-[10px] font-bold text-secondary-700">
                           超支 ${normalizeNumber(item.spent - item.budgeted)}
                         </span>
                       </div>
@@ -251,7 +252,7 @@ export default function OverView(props: Props) {
       {/* Action button */}
       <Link
         href="/edit"
-        className="bg-text text-background flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-800 active:bg-gray-800 sm:text-base"
+        className="btn-primary flex w-full items-center justify-center gap-2 text-sm font-semibold sm:text-base"
         scroll={false}
       >
         <IoMdAdd className="size-5" />
