@@ -16,6 +16,7 @@ import {
 
 const INIT_CTX_VAL: {
   loading: boolean;
+  isInitialLoad: boolean;
   data: SpendingRecord[];
   syncData: (
     groupId?: string,
@@ -25,21 +26,31 @@ const INIT_CTX_VAL: {
   ) => void;
 } = {
   loading: true,
+  isInitialLoad: true,
   data: [],
   syncData: () => {},
+};
+
+type State = {
+  data: SpendingRecord[];
+  loading: boolean;
+  isInitialLoad: boolean;
 };
 
 type Action =
   | { type: 'SET_DATA'; payload: SpendingRecord[] }
   | { type: 'SET_LOADING'; payload: boolean };
 
-const reducer = (
-  state: { data: SpendingRecord[]; loading: boolean },
-  action: Action,
-) => {
+const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case 'SET_DATA':
-      return { ...state, data: action.payload, loading: false };
+      return {
+        ...state,
+        data: action.payload,
+        loading: false,
+        // Once we have data, isInitialLoad becomes false permanently
+        isInitialLoad: action.payload.length > 0 ? false : state.isInitialLoad,
+      };
     case 'SET_LOADING':
       return { ...state, loading: action.payload };
     default:
@@ -48,7 +59,11 @@ const reducer = (
 };
 
 export const SpendingProvider = ({ children }: { children: ReactNode }) => {
-  const [state, dispatch] = useReducer(reducer, { data: [], loading: true });
+  const [state, dispatch] = useReducer(reducer, {
+    data: [],
+    loading: true,
+    isInitialLoad: true,
+  });
   const {
     db: IDB,
     getSpendingData: getDataFromIDB,

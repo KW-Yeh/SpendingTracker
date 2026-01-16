@@ -15,8 +15,7 @@ import { useYearMonth } from '@/hooks/useYearMonth';
 import { CategoricalChartState } from 'recharts/types/chart/types';
 
 export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
-  const { syncData, data, loading } = useGetSpendingCtx();
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const { syncData, data, loading, isInitialLoad } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
   const [monthlyData, setMonthlyData] = useState<SpendingRecord[]>([]);
   const [budget, setBudget] = useState<Budget | null>(null);
@@ -71,11 +70,8 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
   useEffect(() => {
     startTransition(() => {
       setMonthlyData([...data]);
-      if (isInitialLoad && data.length > 0) {
-        setIsInitialLoad(false);
-      }
     });
-  }, [data, isInitialLoad]);
+  }, [data]);
 
   // Calculate current month's budget total
   const currentMonthBudget = useMemo(() => {

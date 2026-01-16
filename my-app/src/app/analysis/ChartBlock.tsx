@@ -13,7 +13,7 @@ import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
 import { getBudget } from '@/services/budgetServices';
 import { CATEGORY_WORDING_MAP, SpendingType, Necessity } from '@/utils/constants';
 import dynamic from 'next/dynamic';
-import { startTransition, useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import ExpenseCostTable from './ExpenseCostTable';
 import NecessityCostTable from './NecessityCostTable';
 import BudgetCostTable from './BudgetCostTable';
@@ -60,9 +60,8 @@ const BudgetPieChart = dynamic(() => import('./BudgetPieChart'), {
 export const ChartBlock = () => {
   useScrollToTop();
   const { config: userData } = useUserConfigCtx();
-  const { data, syncData, loading } = useGetSpendingCtx();
+  const { data, syncData, loading, isInitialLoad } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [budget, setBudget] = useState<Budget | null>(null);
   const today = new Date();
   const dateHook = useYearMonth(today);
@@ -103,12 +102,8 @@ export const ChartBlock = () => {
         `${new Date(record.date).getMonth() + 1}` === dateHook.month,
     );
 
-    if (isInitialLoad && filteredData.length > 0) {
-      setIsInitialLoad(false);
-    }
-
     return calSpending2Chart(filteredData);
-  }, [data, dateHook.year, dateHook.month, isInitialLoad]);
+  }, [data, dateHook.year, dateHook.month]);
 
   // Calculate budget analysis data
   const budgetAnalysis = useMemo(() => {

@@ -14,6 +14,7 @@ import {
 
 const INIT_CTX_VAL: {
   loading: boolean;
+  isInitialLoad: boolean;
   budget: Budget | null;
   syncBudget: (accountId: number) => void;
   updateBudget: (data: {
@@ -25,6 +26,7 @@ const INIT_CTX_VAL: {
   removeBudget: (accountId: number) => Promise<void>;
 } = {
   loading: true,
+  isInitialLoad: true,
   budget: null,
   syncBudget: () => {},
   updateBudget: async () => {},
@@ -33,12 +35,15 @@ const INIT_CTX_VAL: {
 
 export const BudgetProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [budget, setBudget] = useState<Budget | null>(null);
   const { db, getBudgetData, setBudgetData } = useIDB();
 
   const handleState = useCallback((data: Budget | null) => {
     setBudget(data);
     setLoading(false);
+    // Once we receive data (even null), initial load is complete
+    setIsInitialLoad(false);
   }, []);
 
   // Stale-While-Revalidate strategy for budget
@@ -141,12 +146,13 @@ export const BudgetProvider = ({ children }: { children: ReactNode }) => {
   const ctxVal = useMemo(
     () => ({
       loading,
+      isInitialLoad,
       budget,
       syncBudget,
       updateBudget,
       removeBudget,
     }),
-    [loading, budget, syncBudget, updateBudget, removeBudget],
+    [loading, isInitialLoad, budget, syncBudget, updateBudget, removeBudget],
   );
 
   return <Ctx.Provider value={ctxVal}>{children}</Ctx.Provider>;

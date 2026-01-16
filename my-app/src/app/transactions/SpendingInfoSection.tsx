@@ -26,9 +26,8 @@ const SORT_BY: Record<string, string> = {
 
 export const SpendingInfoSection = () => {
   useScrollToTop();
-  const { syncData, data, loading } = useGetSpendingCtx();
+  const { syncData, data, loading, isInitialLoad } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [isProcessing, setIsProcessing] = useState(true);
   const [monthlyData, setMonthlyData] = useState<SpendingRecord[]>([]);
   const [filterStr, setFilterStr] = useState('');
@@ -69,11 +68,8 @@ export const SpendingInfoSection = () => {
       // 不過濾用戶，顯示帳本內所有交易
       setMonthlyData([...data]);
       setIsProcessing(false);
-      if (isInitialLoad && data.length > 0) {
-        setIsInitialLoad(false);
-      }
     });
-  }, [data, loading, isInitialLoad]);
+  }, [data, loading]);
 
   useEffect(() => {
     const elem = searchRef.current;

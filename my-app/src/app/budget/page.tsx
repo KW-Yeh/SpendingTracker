@@ -12,45 +12,40 @@ import { useEffect, useState, startTransition } from 'react';
 
 function BudgetContent() {
   const { currentGroup } = useGroupCtx();
-  const { syncBudget, budget, loading } = useBudgetCtx();
+  const { syncBudget, loading, isInitialLoad } = useBudgetCtx();
   const [yearlySpending, setYearlySpending] = useState<SpendingRecord[]>([]);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  // Parallel fetch: budget and spending data simultaneously
+  // Fetch budget and spending data
   useEffect(() => {
     if (!currentGroup?.account_id) return;
 
     const accountId = currentGroup.account_id;
 
-    // Fetch both budget and spending data in parallel
-    Promise.all([
-      syncBudget(accountId),
-      (async () => {
-        const now = new Date();
-        const startOfYear = new Date(now.getFullYear(), 0, 1);
-        const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
+    // Sync budget data
+    syncBudget(accountId);
 
-        const response = await getItems(
-          String(accountId),
-          undefined,
-          startOfYear.toISOString(),
-          endOfYear.toISOString(),
-        );
+    // Fetch yearly spending data
+    const now = new Date();
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
 
+    getItems(
+      String(accountId),
+      undefined,
+      startOfYear.toISOString(),
+      endOfYear.toISOString(),
+    )
+      .then((response) => {
         if (response.status && response.data) {
-          // Use startTransition to make UI update non-blocking
           startTransition(() => {
             setYearlySpending(response.data);
-            if (isInitialLoad) {
-              setIsInitialLoad(false);
-            }
           });
         }
-      })(),
-    ]).catch((error) => {
-      console.error('[BudgetPage] Error fetching data:', error);
-    });
-  }, [currentGroup?.account_id, syncBudget, isInitialLoad]);
+      })
+      .catch((error) => {
+        console.error('[BudgetPage] Error fetching spending data:', error);
+      });
+  }, [currentGroup?.account_id, syncBudget]);
 
   if (!currentGroup) {
     return (

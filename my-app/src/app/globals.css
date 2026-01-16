@@ -359,10 +359,7 @@ input[type='number'] {
 }
 
 .gradient-r-from-orange-to-red {
-  color: var(--color-text-inverse);
   background: linear-gradient(to right, var(--color-primary-500), var(--color-secondary-500));
-  opacity: 1;
-  transition: all 0.2s;
 }
 
 /* Warm gradient backgrounds */
