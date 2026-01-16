@@ -1,117 +1,126 @@
 # Spending Tracker PWA - Design System
 
 ## 設計理念
-打造一個**活潑、有活力的記帳應用**，使用暖色系讓使用者感受到積極正向的理財體驗。設計重點在於移動優先（Mobile-First）、快速操作，同時保持桌面版的完整分析功能。
+打造一個**神秘、科技感的記帳應用**，靈感來自《獨自升級》（Solo Leveling）的視覺風格。採用深色背景搭配青藍色與紫色發光效果，營造沉浸式的使用體驗。設計重點在於移動優先（Mobile-First）、快速操作，同時保持桌面版的完整分析功能。
 
 ---
 
 ## 色彩系統 (Color Palette)
 
-### 主色系 - 暖橙調
-基於活力與活潑的需求，採用橙色為主色調，配合紅色與金色系統。
+### 主色系 - 青藍色 (Cyan)
+靈感來自獨自升級中的發光效果，青藍色代表力量與科技感。
 
 ```css
-/* Primary - 主要橙色 */
---color-primary-50: #FFF7ED;
---color-primary-100: #FFEDD5;
---color-primary-200: #FED7AA;
---color-primary-300: #FDBA74;
---color-primary-400: #FB923C;
---color-primary-500: #F97316;  /* 主色 */
---color-primary-600: #EA580C;
---color-primary-700: #C2410C;
---color-primary-800: #9A3412;
---color-primary-900: #7C2D12;
---color-primary-950: #431407;
+/* Primary - 青藍色 */
+--color-primary-50: #ECFEFF;
+--color-primary-100: #CFFAFE;
+--color-primary-200: #A5F3FC;
+--color-primary-300: #67E8F9;
+--color-primary-400: #22D3EE;
+--color-primary-500: #06B6D4;  /* 主色 */
+--color-primary-600: #0891B2;
+--color-primary-700: #0E7490;
+--color-primary-800: #155E75;
+--color-primary-900: #164E63;
+--color-primary-950: #083344;
 
-/* Secondary - 暖紅色（用於強調和收入） */
---color-secondary-50: #FEF2F2;
---color-secondary-100: #FEE2E2;
---color-secondary-200: #FECACA;
---color-secondary-300: #FCA5A5;
---color-secondary-400: #F87171;
---color-secondary-500: #EF4444;  /* 副色 */
---color-secondary-600: #DC2626;
---color-secondary-700: #B91C1C;
---color-secondary-800: #991B1B;
---color-secondary-900: #7F1D1D;
+/* Secondary - 紫色（神秘魔力感） */
+--color-secondary-50: #FAF5FF;
+--color-secondary-100: #F3E8FF;
+--color-secondary-200: #E9D5FF;
+--color-secondary-300: #D8B4FE;
+--color-secondary-400: #C084FC;
+--color-secondary-500: #A855F7;  /* 副色 */
+--color-secondary-600: #9333EA;
+--color-secondary-700: #7C3AED;
+--color-secondary-800: #6B21A8;
+--color-secondary-900: #581C87;
 
-/* Accent - 金黃色（用於成功、預算達成等正向反饋） */
---color-accent-50: #FFFBEB;
---color-accent-100: #FEF3C7;
---color-accent-200: #FDE68A;
---color-accent-300: #FCD34D;
---color-accent-400: #FBBF24;
---color-accent-500: #F59E0B;  /* 輔助色 */
---color-accent-600: #D97706;
---color-accent-700: #B45309;
---color-accent-800: #92400E;
---color-accent-900: #78350F;
+/* Accent - 電光藍 */
+--color-accent-50: #EFF6FF;
+--color-accent-100: #DBEAFE;
+--color-accent-200: #BFDBFE;
+--color-accent-300: #93C5FD;
+--color-accent-400: #60A5FA;
+--color-accent-500: #3B82F6;  /* 輔助色 */
+--color-accent-600: #2563EB;
+--color-accent-700: #1D4ED8;
+--color-accent-800: #1E40AF;
+--color-accent-900: #1E3A8A;
 
-/* 收入綠色（平衡暖色，用於收入顯示） */
---color-income-50: #F0FDF4;
---color-income-100: #DCFCE7;
---color-income-200: #BBF7D0;
---color-income-300: #86EFAC;
---color-income-400: #4ADE80;
---color-income-500: #22C55E;  /* 收入色 */
---color-income-600: #16A34A;
---color-income-700: #15803D;
---color-income-800: #166534;
---color-income-900: #14532D;
+/* 收入 - 翡翠綠 */
+--color-income-50: #ECFDF5;
+--color-income-100: #D1FAE5;
+--color-income-200: #A7F3D0;
+--color-income-300: #6EE7B7;
+--color-income-400: #34D399;
+--color-income-500: #10B981;  /* 收入色 */
+--color-income-600: #059669;
+--color-income-700: #047857;
+--color-income-800: #065F46;
+--color-income-900: #064E3B;
 ```
 
-### 中性色系 - 暖灰調
+### 中性色系 - 冷灰調 (Slate)
 ```css
-/* Warm Grays - 帶溫度的灰色 */
---color-gray-50: #FAFAF9;
---color-gray-100: #F5F5F4;
---color-gray-200: #E7E5E4;
---color-gray-300: #D6D3D1;
---color-gray-400: #A8A29E;
---color-gray-500: #78716C;
---color-gray-600: #57534E;
---color-gray-700: #44403C;
---color-gray-800: #292524;
---color-gray-900: #1C1917;
---color-gray-950: #0C0A09;
+/* Slate Grays - 冷色調灰色 */
+--color-gray-50: #F8FAFC;
+--color-gray-100: #F1F5F9;
+--color-gray-200: #E2E8F0;
+--color-gray-300: #CBD5E1;
+--color-gray-400: #94A3B8;
+--color-gray-500: #64748B;
+--color-gray-600: #475569;
+--color-gray-700: #334155;
+--color-gray-800: #1E293B;
+--color-gray-900: #0F172A;
+--color-gray-950: #020617;
 ```
 
 ### 語義化顏色
 ```css
 /* Semantic Colors */
---color-success: #22C55E;
---color-warning: #F59E0B;
---color-error: #EF4444;
---color-info: #3B82F6;
+--color-success: #34D399;
+--color-warning: #FBBF24;
+--color-error: #F87171;
+--color-info: #60A5FA;
 
-/* Background */
---color-bg-primary: #FFFBF5;      /* 極淺暖橙背景 */
---color-bg-secondary: #FFF7ED;    /* 淺橙背景 */
---color-bg-elevated: #FFFFFF;     /* 卡片背景 */
+/* Background - 深色主題 */
+--color-bg-primary: #0A0E1A;      /* 深邃夜空 */
+--color-bg-secondary: #111827;    /* 稍亮的深色 */
+--color-bg-elevated: #1E293B;     /* 卡片背景 */
 
-/* Text */
---color-text-primary: #1C1917;    /* 主要文字 */
---color-text-secondary: #57534E;  /* 次要文字 */
---color-text-tertiary: #A8A29E;   /* 提示文字 */
---color-text-inverse: #FFFFFF;    /* 反色文字 */
+/* Text - 深色主題 */
+--color-text-primary: #F1F5F9;    /* 主要文字 - 淺色 */
+--color-text-secondary: #94A3B8;  /* 次要文字 */
+--color-text-tertiary: #64748B;   /* 提示文字 */
+--color-text-inverse: #0F172A;    /* 反色文字 */
 
-/* Border */
---color-border-light: #E7E5E4;
---color-border-default: #D6D3D1;
---color-border-strong: #A8A29E;
+/* Border - 深色主題 */
+--color-border-light: #1E293B;
+--color-border-default: #334155;
+--color-border-strong: #475569;
 ```
 
-### 圖表專用色彩（保持高對比和易讀性）
+### 發光陰影效果
 ```css
---chart-color-1: #F97316;  /* 橙 */
---chart-color-2: #EF4444;  /* 紅 */
---chart-color-3: #F59E0B;  /* 金 */
---chart-color-4: #EC4899;  /* 粉紅 */
---chart-color-5: #A855F7;  /* 紫 */
---chart-color-6: #3B82F6;  /* 藍 */
---chart-color-7: #22C55E;  /* 綠 */
---chart-color-8: #14B8A6;  /* 青 */
+/* Glow Shadows - Solo Leveling 風格 */
+--shadow-glow: 0 0 20px 0 rgba(34, 211, 238, 0.15);
+--shadow-glow-lg: 0 0 40px 0 rgba(34, 211, 238, 0.25);
+--shadow-glow-purple: 0 0 30px 0 rgba(168, 85, 247, 0.2);
+--shadow-glow-intense: 0 0 60px 0 rgba(34, 211, 238, 0.35);
+```
+
+### 圖表專用色彩（深色背景優化）
+```css
+--chart-color-1: #06B6D4;  /* 青 */
+--chart-color-2: #A855F7;  /* 紫 */
+--chart-color-3: #3B82F6;  /* 藍 */
+--chart-color-4: #22D3EE;  /* 淺青 */
+--chart-color-5: #C084FC;  /* 淺紫 */
+--chart-color-6: #10B981;  /* 翡翠綠 */
+--chart-color-7: #60A5FA;  /* 淺藍 */
+--chart-color-8: #F472B6;  /* 粉紅 */
 ```
 
 ---

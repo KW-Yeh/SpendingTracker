@@ -1,10 +1,11 @@
 /**
- * Color System
+ * Color System - Solo Leveling Dark Theme
  *
  * 統一的顏色管理系統
  * 所有顏色都應該使用這裡定義的常數，而不是硬編碼
  *
  * 這些顏色對應 globals.css 中的 CSS 變數
+ * 配色靈感：獨自升級（Solo Leveling）- 冷色系深色主題
  */
 
 // ============================================================================
@@ -13,36 +14,36 @@
 
 /**
  * 圖表顏色配置
- * 對應暖色系配色方案（橙色、紅色、金色為主）
+ * 對應冷色系配色方案（青藍色、紫色、藍色為主）
  */
 export const CHART_COLORS = {
-  // 收入圖表（綠色系）
-  INCOME_PRIMARY: '#22C55E',      // --color-income-500
-  INCOME_NECESSARY: '#4ADE80',    // --color-income-400 必要收入（較淺）
-  INCOME_UNNECESSARY: '#86EFAC',  // --color-income-300 非必要收入（更淺）
+  // 收入圖表（翡翠綠系）
+  INCOME_PRIMARY: '#10B981',      // --color-income-500
+  INCOME_NECESSARY: '#34D399',    // --color-income-400 必要收入（較亮）
+  INCOME_UNNECESSARY: '#6EE7B7',  // --color-income-300 非必要收入（更亮）
 
-  // 支出圖表（暖紅色系）
-  OUTCOME_PRIMARY: '#EF4444',     // --color-secondary-500
-  OUTCOME_NECESSARY: '#F87171',   // --color-secondary-400 必要支出（較淺）
-  OUTCOME_UNNECESSARY: '#FCA5A5', // --color-secondary-300 非必要支出（更淺）
+  // 支出圖表（紫色系）
+  OUTCOME_PRIMARY: '#A855F7',     // --color-secondary-500
+  OUTCOME_NECESSARY: '#C084FC',   // --color-secondary-400 必要支出（較亮）
+  OUTCOME_UNNECESSARY: '#D8B4FE', // --color-secondary-300 非必要支出（更亮）
 
   // 通用
-  NEUTRAL: '#D6D3D1',             // --color-gray-300
+  NEUTRAL: '#475569',             // --color-gray-600
 } as const;
 
 /**
  * 圖表顏色陣列（用於多系列圖表）
- * 按照推薦順序排列 - 暖色系
+ * 按照推薦順序排列 - 冷色系 Solo Leveling 風格
  */
 export const CHART_COLOR_PALETTE = [
-  '#F97316',   // Primary orange (主橙色)
-  '#EF4444',   // Secondary red (紅色)
-  '#F59E0B',   // Accent gold (金色)
-  '#EC4899',   // Pink (粉紅)
-  '#A855F7',   // Purple (紫)
-  '#3B82F6',   // Blue (藍)
-  '#22C55E',   // Green (綠)
-  '#14B8A6',   // Teal (青)
+  '#06B6D4',   // Primary cyan (主青色)
+  '#A855F7',   // Secondary purple (紫色)
+  '#3B82F6',   // Accent blue (藍色)
+  '#22D3EE',   // Light cyan (淺青)
+  '#C084FC',   // Light purple (淺紫)
+  '#10B981',   // Emerald (翡翠綠)
+  '#60A5FA',   // Light blue (淺藍)
+  '#F472B6',   // Pink (粉紅)
 ] as const;
 
 // ============================================================================
@@ -50,39 +51,39 @@ export const CHART_COLOR_PALETTE = [
 // ============================================================================
 
 /**
- * 主要品牌色（暖橙色）
+ * 主要品牌色（青藍色）
  */
 export const PRIMARY_COLORS = {
-  50: '#FFF7ED',
-  100: '#FFEDD5',
-  200: '#FED7AA',
-  300: '#FDBA74',
-  400: '#FB923C',
-  500: '#F97316',  // 主橙色
-  600: '#EA580C',
-  700: '#C2410C',
-  800: '#9A3412',
-  900: '#7C2D12',
+  50: '#ECFEFF',
+  100: '#CFFAFE',
+  200: '#A5F3FC',
+  300: '#67E8F9',
+  400: '#22D3EE',
+  500: '#06B6D4',  // 主青色
+  600: '#0891B2',
+  700: '#0E7490',
+  800: '#155E75',
+  900: '#164E63',
 } as const;
 
 /**
- * 輔助色 - Accent Colors（暖色系）
+ * 輔助色 - Accent Colors（冷色系）
  */
 export const ACCENT_COLORS = {
-  // 金黃色
-  gold: {
-    100: '#FEF3C7',
-    500: '#F59E0B',
+  // 紫色（神秘魔力感）
+  purple: {
+    100: '#F3E8FF',
+    500: '#A855F7',
   },
-  // 暖紅色
-  red: {
-    100: '#FEE2E2',
-    500: '#EF4444',
+  // 電光藍
+  blue: {
+    100: '#DBEAFE',
+    500: '#3B82F6',
   },
-  // 收入綠色
+  // 翡翠綠（收入）
   green: {
-    100: '#DCFCE7',
-    500: '#22C55E',
+    100: '#D1FAE5',
+    500: '#10B981',
   },
   // 粉紅色（圖表用）
   pink: {
@@ -92,43 +93,45 @@ export const ACCENT_COLORS = {
 } as const;
 
 /**
- * 灰階顏色
+ * 灰階顏色（Slate 冷灰調）
  */
 export const GRAY_COLORS = {
-  100: 'hsl(0, 0%, 95%)',
-  200: 'hsl(0, 0%, 80%)',
-  300: 'hsl(0, 0%, 70%)',
-  400: 'hsl(0, 0%, 60%)',
-  500: 'hsl(0, 0%, 50%)',
-  600: 'hsl(0, 0%, 40%)',
-  700: 'hsl(0, 0%, 30%)',
-  800: 'hsl(0, 0%, 20%)',
-  900: 'hsl(0, 0%, 10%)',
+  50: '#F8FAFC',
+  100: '#F1F5F9',
+  200: '#E2E8F0',
+  300: '#CBD5E1',
+  400: '#94A3B8',
+  500: '#64748B',
+  600: '#475569',
+  700: '#334155',
+  800: '#1E293B',
+  900: '#0F172A',
+  950: '#020617',
 } as const;
 
 /**
  * 語義化顏色
  */
 export const SEMANTIC_COLORS = {
-  // 成功（綠色）
+  // 成功（翡翠綠）
   success: ACCENT_COLORS.green[500],
   successLight: ACCENT_COLORS.green[100],
 
   // 警告（金黃色）
-  warning: ACCENT_COLORS.gold[500],
-  warningLight: ACCENT_COLORS.gold[100],
+  warning: '#FBBF24',
+  warningLight: '#FEF3C7',
 
-  // 錯誤（紅色）
-  error: ACCENT_COLORS.red[500],
-  errorLight: ACCENT_COLORS.red[100],
+  // 錯誤（珊瑚紅）
+  error: '#F87171',
+  errorLight: '#FEE2E2',
 
-  // 資訊（橙色）
+  // 資訊（青藍色）
   info: PRIMARY_COLORS[500],
   infoLight: PRIMARY_COLORS[100],
 
   // 中性
-  neutral: GRAY_COLORS[200],
-  neutralLight: GRAY_COLORS[100],
+  neutral: GRAY_COLORS[600],
+  neutralLight: GRAY_COLORS[700],
 } as const;
 
 // ============================================================================
@@ -164,19 +167,19 @@ export const getChartColor = (index: number): string => {
 /**
  * @deprecated 使用 CHART_COLORS.INCOME_PRIMARY
  */
-export const LEGACY_INCOME_COLOR = '#82ca9d';
+export const LEGACY_INCOME_COLOR = '#10B981';
 
 /**
  * @deprecated 使用 CHART_COLORS.OUTCOME_PRIMARY
  */
-export const LEGACY_OUTCOME_COLOR = '#faa5a5';
+export const LEGACY_OUTCOME_COLOR = '#A855F7';
 
 /**
  * @deprecated 使用 CHART_COLORS.NEUTRAL
  */
-export const LEGACY_NEUTRAL_COLOR = '#d1d5db';
+export const LEGACY_NEUTRAL_COLOR = '#475569';
 
 /**
  * @deprecated 使用 CHART_COLORS.INCOME_NECESSARY / OUTCOME_NECESSARY
  */
-export const LEGACY_NECESSARY_COLOR = '#fdba74';
+export const LEGACY_NECESSARY_COLOR = '#22D3EE';
