@@ -101,7 +101,7 @@ export const SpendingItem = (props: Props) => {
         >
           {getCategoryIcon(
             category.value,
-            `size-6 ${spending.necessity === Necessity.Need ? 'text-primary-600' : 'text-gray-500'}`,
+            `size-6 ${spending.necessity === Necessity.Need ? 'text-primary-600' : 'text-gray-300'}`,
           )}
         </span>
       )}
@@ -116,7 +116,7 @@ export const SpendingItem = (props: Props) => {
           <span className="rounded-md bg-primary-100 px-2 py-0.5 text-xs font-semibold text-primary-700">
             {timeInfo.period}
           </span>
-          <span className="text-xs font-medium text-gray-500">{timeInfo.time}</span>
+          <span className="text-xs font-medium text-gray-300">{timeInfo.time}</span>
         </div>
       </div>
       <div

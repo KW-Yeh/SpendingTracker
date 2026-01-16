@@ -23,7 +23,7 @@ export default async function Home() {
     <div className="bg-radial flex w-full flex-1 items-center justify-center p-4">
       <div className="flex w-full max-w-130 flex-col items-center justify-start gap-6 rounded-2xl bg-white/50 p-6 shadow-lg">
         <h1 className="text-2xl leading-18 font-black">Login</h1>
-        <p className="text-gray-500">
+        <p className="text-gray-300">
           很抱歉，該系統暫時無法透過 Email 方式註冊並登入，請先用 Google 帳號或
           Line 帳號直接登入使用，感謝您的配合。
         </p>

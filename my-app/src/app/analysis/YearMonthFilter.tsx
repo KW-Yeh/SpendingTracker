@@ -88,12 +88,12 @@ export const YearMonthFilter = (props: Props) => {
             open ? 'bg-primary-50' : 'hover:bg-gray-50'
           }`}
         >
-          <CalendarIcon className={`size-5 transition-colors ${open ? 'text-primary-600' : 'text-gray-500'}`} />
+          <CalendarIcon className={`size-5 transition-colors ${open ? 'text-primary-600' : 'text-gray-300'}`} />
           <div className="flex items-center gap-1.5">
             <span className={`text-base font-semibold transition-colors ${open ? 'text-primary-700' : 'text-gray-800'}`}>
               {year}
             </span>
-            <span className="text-gray-400">/</span>
+            <span className="text-gray-300">/</span>
             <span className={`text-base font-semibold transition-colors ${open ? 'text-primary-700' : 'text-gray-800'}`}>
               {currentMonthName}
             </span>
@@ -127,7 +127,7 @@ export const YearMonthFilter = (props: Props) => {
           <div className="flex items-center justify-between">
             <button
               onClick={() => setYear((Number(year) - 1).toString())}
-              className="flex items-center justify-center rounded-lg p-1.5 text-primary-700 transition-all hover:bg-white/60 active:scale-95"
+              className="flex items-center justify-center rounded-lg p-1.5 text-primary-700 transition-all hover:bg-white/60 active:brightness-100"
             >
               <BiChevronLeft className="size-5" />
             </button>
@@ -136,7 +136,7 @@ export const YearMonthFilter = (props: Props) => {
 
             <button
               onClick={() => setYear((Number(year) + 1).toString())}
-              className="flex items-center justify-center rounded-lg p-1.5 text-primary-700 transition-all hover:bg-white/60 active:scale-95"
+              className="flex items-center justify-center rounded-lg p-1.5 text-primary-700 transition-all hover:bg-white/60 active:brightness-100"
             >
               <BiChevronRight className="size-5" />
             </button>
@@ -164,8 +164,8 @@ export const YearMonthFilter = (props: Props) => {
                     isSelected
                       ? 'bg-primary-500 text-white shadow-warm ring-2 ring-primary-200 scale-105'
                       : isCurrentYearMonth
-                        ? 'bg-primary-100 text-primary-700 hover:bg-primary-200 hover:scale-105'
-                        : 'text-gray-700 hover:bg-gray-100 hover:scale-105'
+                        ? 'bg-primary-100 text-primary-700 hover:bg-primary-200 hover:brightness-110'
+                        : 'text-gray-700 hover:bg-gray-100 hover:brightness-110'
                   }`}
                 >
                   {monthLabel}
@@ -196,7 +196,7 @@ export const YearMonthFilter = (props: Props) => {
               setYear(today.getFullYear().toString());
               setOpen(false);
             }}
-            className="rounded-xl bg-linear-to-r from-primary-500 to-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-warm transition-all hover:shadow-warm-lg hover:scale-105 active:scale-95"
+            className="rounded-xl bg-linear-to-r from-primary-500 to-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-warm transition-all hover:shadow-warm-lg hover:brightness-110 active:brightness-100"
           >
             回到本月
           </button>

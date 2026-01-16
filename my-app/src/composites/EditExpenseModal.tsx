@@ -302,7 +302,7 @@ export const EditExpenseModal = (props: Props) => {
           <button
             type="button"
             disabled={description === '' || updatingCategory}
-            className={`border-text bg-text text-background w-full rounded-lg border border-solid p-2 font-semibold transition-colors hover:bg-gray-800 active:bg-gray-800 disabled:!cursor-not-allowed disabled:border-gray-300 disabled:bg-gray-300 disabled:text-gray-500 ${description === '' ? 'hidden' : ''}`}
+            className={`border-text bg-text text-background w-full rounded-lg border border-solid p-2 font-semibold transition-colors hover:bg-gray-800 active:bg-gray-800 disabled:!cursor-not-allowed disabled:border-gray-300 disabled:bg-gray-300 disabled:text-gray-300 ${description === '' ? 'hidden' : ''}`}
             onClick={() => handleSetCommonDesc(isNewDesc)}
           >
             {updatingCategory
@@ -316,7 +316,7 @@ export const EditExpenseModal = (props: Props) => {
           <div
             className={`flex w-full items-center rounded-md border border-solid bg-white px-2 ${isNoAmount ? 'border-red-500' : 'border-gray-300'}`}
           >
-            <span className="text-sm text-gray-500">金額</span>
+            <span className="text-sm text-gray-300">金額</span>
             <input
               type="text"
               className="h-10 flex-1 bg-transparent py-1 text-end focus:outline-0 focus-visible:outline-0"
@@ -331,7 +331,7 @@ export const EditExpenseModal = (props: Props) => {
             disabled={loading}
             type="button"
             onClick={cancel}
-            className="bg-background flex w-24 items-center justify-center rounded-lg border border-solid border-gray-300 p-2 text-gray-300 transition-colors hover:border-gray-500 hover:text-gray-500 active:border-gray-500 active:text-gray-500"
+            className="bg-background flex w-24 items-center justify-center rounded-lg border border-solid border-gray-300 p-2 text-gray-300 transition-colors hover:border-gray-500 hover:text-gray-300 active:border-gray-500 active:text-gray-300"
           >
             <span>取消</span>
           </button>

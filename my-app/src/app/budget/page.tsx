@@ -50,7 +50,7 @@ function BudgetContent() {
   if (!currentGroup) {
     return (
       <div className="flex w-full flex-1 items-center justify-center">
-        <p className="text-gray-400">請先選擇一個帳本</p>
+        <p className="text-gray-300">請先選擇一個帳本</p>
       </div>
     );
   }

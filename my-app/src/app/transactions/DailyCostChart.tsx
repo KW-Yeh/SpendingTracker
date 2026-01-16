@@ -66,7 +66,7 @@ export const DailyCostChart = (props: Props) => {
         />
       </div>
       
-      <div className="w-full text-xs text-gray-500 mt-2">
+      <div className="w-full text-xs text-gray-300 mt-2">
         點擊圖表上的點可查看當日消費明細
       </div>
     </div>

@@ -55,7 +55,7 @@ export const MonthlyBudgetSection = ({ yearlySpending }: Props) => {
         <p className="text-3xl font-bold text-gray-900">
           {normalizeNumber(monthlyBudget)} 元
         </p>
-        <p className="text-sm text-gray-500">(由月度項目自動計算)</p>
+        <p className="text-sm text-gray-300">(由月度項目自動計算)</p>
 
         <div className="mt-3 h-3 w-full rounded-full bg-gray-100">
           <div

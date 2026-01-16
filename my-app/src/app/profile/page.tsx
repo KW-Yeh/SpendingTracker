@@ -96,7 +96,7 @@ export default function ProfilePage() {
   if (!user) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p className="text-gray-500">載入中...</p>
+        <p className="text-gray-300">載入中...</p>
       </div>
     );
   }
@@ -205,7 +205,7 @@ export default function ProfilePage() {
               type="email"
               value={user.email}
               disabled
-              className="w-full rounded-md border border-gray-300 bg-gray-100 px-4 py-2 text-gray-500"
+              className="w-full rounded-md border border-gray-300 bg-gray-100 px-4 py-2 text-gray-300"
             />
           </div>
 

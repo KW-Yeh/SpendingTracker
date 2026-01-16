@@ -249,7 +249,7 @@ const GroupCard = ({
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm text-gray-600">成員:</span>
           {loadingMembers ? (
-            <span className="text-xs text-gray-400">載入中...</span>
+            <span className="text-xs text-gray-300">載入中...</span>
           ) : (
             <>
               <span className="text-sm font-medium">{members.length} 人</span>
@@ -400,9 +400,9 @@ const GroupCard = ({
         >
           <div className="flex w-full flex-col gap-2">
             {loadingMembers ? (
-              <div className="py-8 text-center text-gray-400">載入中...</div>
+              <div className="py-8 text-center text-gray-300">載入中...</div>
             ) : members.length === 0 ? (
-              <div className="py-8 text-center text-gray-400">暫無成員</div>
+              <div className="py-8 text-center text-gray-300">暫無成員</div>
             ) : (
               members.map((member) => {
                 const isMemberOwner = member.user_id === group.owner_id;
@@ -419,7 +419,7 @@ const GroupCard = ({
                           <span className="ml-2 text-xs text-primary-600 font-semibold">(我)</span>
                         )}
                       </p>
-                      <p className="text-xs text-gray-500">{member.email}</p>
+                      <p className="text-xs text-gray-300">{member.email}</p>
                       <p className="text-xs text-gray-600 font-medium">
                         角色: {member.role}
                         {isMemberOwner && ' (擁有者)'}
@@ -434,7 +434,7 @@ const GroupCard = ({
                             member.name || member.email || '未知用戶',
                           )
                         }
-                        className="rounded-lg p-2 min-w-[32px] min-h-[32px] text-secondary-600 transition-all hover:bg-secondary-100 active:bg-secondary-100 hover:scale-110"
+                        className="rounded-lg p-2 min-w-[32px] min-h-[32px] text-secondary-600 transition-all hover:bg-secondary-100 active:bg-secondary-100"
                       >
                         <DeleteIcon className="size-4" />
                       </button>

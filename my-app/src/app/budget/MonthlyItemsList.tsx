@@ -175,7 +175,7 @@ export const MonthlyItemsList = () => {
                     <span className="text-xl mr-2">{item.category}</span>
                     {item.description}
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-300">
                     本月: {normalizeNumber(currentMonthAmount)} 元
                   </p>
                 </div>
@@ -199,7 +199,7 @@ export const MonthlyItemsList = () => {
             );
           })
         ) : (
-          <p className="py-8 text-center text-gray-400">尚未新增任何項目</p>
+          <p className="py-8 text-center text-gray-300">尚未新增任何項目</p>
         )}
       </div>
 
@@ -223,7 +223,7 @@ export const MonthlyItemsList = () => {
                       <span>{selectedCategoryLabel}</span>
                     </span>
                   ) : (
-                    <span className="text-gray-400">請選擇類別</span>
+                    <span className="text-gray-300">請選擇類別</span>
                   )
                 }
                 onChange={setItemCategory}
@@ -278,7 +278,7 @@ export const MonthlyItemsList = () => {
                 type="button"
                 onClick={() => setModalOpen(false)}
                 disabled={saving}
-                className="rounded-lg border border-solid border-gray-300 px-4 py-2 text-gray-500"
+                className="rounded-lg border border-solid border-gray-300 px-4 py-2 text-gray-300"
               >
                 取消
               </button>

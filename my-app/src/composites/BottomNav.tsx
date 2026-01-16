@@ -49,7 +49,7 @@ export const BottomNav = () => {
                 className={`flex min-w-[44px] min-h-[44px] flex-col items-center justify-center gap-0.5 rounded-xl transition-all duration-200 ${
                   isActive
                     ? 'text-primary-600 bg-primary-50'
-                    : 'text-gray-500 hover:text-primary-600 hover:bg-primary-50/50 active:text-primary-700'
+                    : 'text-gray-300 hover:text-primary-600 hover:bg-primary-50/50 active:text-primary-700'
                 }`}
                 aria-label={MENU_CONFIG[route]}
                 aria-current={isActive ? 'page' : undefined}

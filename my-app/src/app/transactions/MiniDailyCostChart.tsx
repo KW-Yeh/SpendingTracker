@@ -113,7 +113,7 @@ export const MiniDailyCostChart = (props: Props) => {
                       <span className="font-medium text-gray-700">
                         {item.description || CATEGORY_WORDING_MAP[item.category]}
                       </span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-gray-300">
                         {CATEGORY_WORDING_MAP[item.category]}
                       </span>
                     </div>

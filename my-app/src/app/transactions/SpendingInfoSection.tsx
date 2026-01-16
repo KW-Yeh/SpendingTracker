@@ -123,7 +123,7 @@ export const SpendingInfoSection = () => {
           <Select.Item value="type">收支</Select.Item>
         </Select>
         <div className="group hover:border-primary-400 focus-within:border-primary-500 relative flex items-center gap-2 rounded-lg border border-solid border-gray-300 px-3 py-1.5 transition-all focus-within:shadow-sm bg-background">
-          <SearchIcon className="group-hover:text-primary-500 group-focus-within:text-primary-500 text-gray-500 transition-colors" />
+          <SearchIcon className="group-hover:text-primary-500 group-focus-within:text-primary-500 text-gray-300 transition-colors" />
           <input
             ref={searchRef}
             type="text"

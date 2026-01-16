@@ -21,7 +21,7 @@ export const Account = (props: Props) => {
         <h3 className="max-w-36 overflow-hidden text-base font-bold text-ellipsis whitespace-nowrap">
           {user ? user.name : '尚未登入'}
         </h3>
-        <p className="max-w-36 overflow-hidden text-xs text-ellipsis whitespace-nowrap text-gray-500">
+        <p className="max-w-36 overflow-hidden text-xs text-ellipsis whitespace-nowrap text-gray-300">
           {user ? user.email : '尚未登入'}
         </p>
       </div>

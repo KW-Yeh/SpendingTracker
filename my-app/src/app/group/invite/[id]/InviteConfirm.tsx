@@ -138,7 +138,7 @@ export const InviteConfirm = () => {
           <strong className="mx-1 text-primary-600">{invitedGroup.name}</strong>
           的邀請
         </p>
-        <p className="mb-6 text-sm text-gray-500">請先登入以繼續加入帳本</p>
+        <p className="mb-6 text-sm text-gray-300">請先登入以繼續加入帳本</p>
         <div className="flex flex-col gap-3">
           <button
             type="button"
@@ -181,7 +181,7 @@ export const InviteConfirm = () => {
             {invitedGroup.member_count || 0} 人
           </p>
         </div>
-        <p className="mt-3 text-xs text-gray-500">
+        <p className="mt-3 text-xs text-gray-300">
           加入後您將成為 <strong className="text-primary-600">Viewer</strong>（檢視者）角色
         </p>
       </div>

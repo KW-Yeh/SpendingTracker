@@ -84,7 +84,7 @@ const BudgetCostTable = (props: Props) => {
               <span className="text-base font-semibold text-orange-600">
                 ${normalizeNumber(totalNecessary)}
               </span>
-              <span className="text-xs text-gray-500">({necessaryPercent.toFixed(1)}%)</span>
+              <span className="text-xs text-gray-300">({necessaryPercent.toFixed(1)}%)</span>
             </div>
           </div>
           <div className="flex items-center justify-between px-4 py-3">
@@ -93,7 +93,7 @@ const BudgetCostTable = (props: Props) => {
               <span className="text-base font-semibold text-gray-700">
                 ${normalizeNumber(totalUnnecessary)}
               </span>
-              <span className="text-xs text-gray-500">({unnecessaryPercent.toFixed(1)}%)</span>
+              <span className="text-xs text-gray-300">({unnecessaryPercent.toFixed(1)}%)</span>
             </div>
           </div>
         </div>

@@ -267,7 +267,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                 <button
                   type="button"
                   onClick={() => handleOpenAddModal(month.value)}
-                  className="text-primary-500 hover:text-primary-600 text-sm font-semibold transition-all hover:scale-105"
+                  className="text-primary-500 hover:text-primary-600 text-sm font-semibold transition-colors cursor-pointer"
                 >
                   + 新增
                 </button>
@@ -277,7 +277,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                 <p className="text-2xl font-bold text-gray-900">
                   {normalizeNumber(monthTotal)} 元
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-300">
                   已使用 {normalizeNumber(monthSpent)} 元
                   {monthTotal > 0 && (
                     <span className={`ml-1 font-semibold ${isOverBudget ? 'text-secondary-600' : 'text-income-600'}`}>
@@ -312,7 +312,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                         <p className="text-sm font-semibold text-gray-800">
                           {item.category} {item.description}
                         </p>
-                        <p className="text-xs text-gray-500 font-medium">
+                        <p className="text-xs text-gray-300 font-medium">
                           {normalizeNumber(item.amount)} 元
                         </p>
                       </div>
@@ -320,14 +320,14 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                         <button
                           type="button"
                           onClick={() => handleOpenEditModal(month.value, item.index)}
-                          className="rounded-lg p-2 text-primary-600 transition-all hover:bg-primary-100 active:bg-primary-100 hover:scale-110 min-w-[32px] min-h-[32px]"
+                          className="rounded-lg p-2 text-primary-600 transition-all hover:bg-primary-100 active:bg-primary-100 min-w-[32px] min-h-[32px]"
                         >
                           <EditIcon className="size-4" />
                         </button>
                         <button
                           type="button"
                           onClick={() => handleDeleteItem(month.value, item.index)}
-                          className="rounded-lg p-2 text-secondary-600 transition-all hover:bg-secondary-100 active:bg-secondary-100 hover:scale-110 min-w-[32px] min-h-[32px]"
+                          className="rounded-lg p-2 text-secondary-600 transition-all hover:bg-secondary-100 active:bg-secondary-100 min-w-[32px] min-h-[32px]"
                         >
                           <DeleteIcon className="size-4" />
                         </button>
@@ -335,7 +335,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                     </div>
                   ))
                 ) : (
-                  <p className="py-4 text-center text-xs text-gray-400">
+                  <p className="py-4 text-center text-xs text-gray-300">
                     尚未新增項目
                   </p>
                 )}
@@ -365,7 +365,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                       <span>{selectedCategoryLabel}</span>
                     </span>
                   ) : (
-                    <span className="text-gray-400">請選擇類別</span>
+                    <span className="text-gray-300">請選擇類別</span>
                   )
                 }
                 onChange={setItemCategory}

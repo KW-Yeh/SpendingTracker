@@ -50,7 +50,7 @@ export const RecentTransactionsList = ({ data, loading, refreshData }: Props) =>
 
       <div className="flex flex-col gap-2">
         {recentData.length === 0 ? (
-          <p className="py-10 text-center text-sm text-gray-500">尚無交易記錄</p>
+          <p className="py-10 text-center text-sm text-gray-300">尚無交易記錄</p>
         ) : (
           recentData.map((spending, index) => (
             <SpendingItem
