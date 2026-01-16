@@ -6,38 +6,46 @@
 :root {
   /* Spacing System (8px base) */
   --spacing-0: 0;
-  --spacing-1: 0.25rem;   /* 4px */
-  --spacing-2: 0.5rem;    /* 8px */
-  --spacing-3: 0.75rem;   /* 12px */
-  --spacing-4: 1rem;      /* 16px */
-  --spacing-5: 1.25rem;   /* 20px */
-  --spacing-6: 1.5rem;    /* 24px */
-  --spacing-8: 2rem;      /* 32px */
-  --spacing-10: 2.5rem;   /* 40px */
-  --spacing-12: 3rem;     /* 48px */
-  --spacing-16: 4rem;     /* 64px */
-  --spacing-20: 5rem;     /* 80px */
+  --spacing-1: 0.25rem; /* 4px */
+  --spacing-2: 0.5rem; /* 8px */
+  --spacing-3: 0.75rem; /* 12px */
+  --spacing-4: 1rem; /* 16px */
+  --spacing-5: 1.25rem; /* 20px */
+  --spacing-6: 1.5rem; /* 24px */
+  --spacing-8: 2rem; /* 32px */
+  --spacing-10: 2.5rem; /* 40px */
+  --spacing-12: 3rem; /* 48px */
+  --spacing-16: 4rem; /* 64px */
+  --spacing-20: 5rem; /* 80px */
 
   /* Border Radius */
-  --radius-sm: 0.375rem;   /* 6px */
-  --radius-md: 0.5rem;     /* 8px */
-  --radius-lg: 0.75rem;    /* 12px */
-  --radius-xl: 1rem;       /* 16px */
-  --radius-2xl: 1.5rem;    /* 24px */
+  --radius-sm: 0.375rem; /* 6px */
+  --radius-md: 0.5rem; /* 8px */
+  --radius-lg: 0.75rem; /* 12px */
+  --radius-xl: 1rem; /* 16px */
+  --radius-2xl: 1.5rem; /* 24px */
   --radius-full: 9999px;
 
   /* Shadows - Dark theme optimized */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+  --shadow-md:
+    0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg:
+    0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  --shadow-xl:
+    0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
   --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
 
-  /* Glow Shadows - Cyan/Blue tinted for "Solo Leveling" style */
+  /* Glow Shadows - Unified for all primary colors */
   --shadow-glow: 0 0 20px 0 rgba(34, 211, 238, 0.15);
   --shadow-glow-lg: 0 0 40px 0 rgba(34, 211, 238, 0.25);
-  --shadow-glow-purple: 0 0 30px 0 rgba(168, 85, 247, 0.2);
   --shadow-glow-intense: 0 0 60px 0 rgba(34, 211, 238, 0.35);
+
+  /* Color-specific glows for consistency */
+  --shadow-primary-glow: 0 0 20px 0 rgba(6, 182, 212, 0.25);
+  --shadow-secondary-glow: 0 0 20px 0 rgba(139, 92, 246, 0.25);
+  --shadow-accent-glow: 0 0 20px 0 rgba(59, 130, 246, 0.25);
+  --shadow-income-glow: 0 0 20px 0 rgba(16, 185, 129, 0.25);
 
   /* Transitions */
   --duration-fast: 150ms;
@@ -71,93 +79,94 @@
   --leading-loose: 2;
 
   /* Semantic Colors */
-  --color-success: #34D399;
-  --color-warning: #FBBF24;
-  --color-error: #F87171;
-  --color-info: #60A5FA;
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-error: #f87171;
+  --color-info: #60a5fa;
 
   /* Background Colors - Dark theme */
-  --color-bg-primary: #0A0E1A;      /* 深邃夜空 */
-  --color-bg-secondary: #111827;    /* 稍亮的深色 */
-  --color-bg-elevated: #1E293B;     /* 卡片背景 */
+  --color-bg-primary: #0a0e1a; /* 深邃夜空 */
+  --color-bg-secondary: #111827; /* 稍亮的深色 */
+  --color-bg-elevated: #1e293b; /* 卡片背景 */
 
   /* Text Colors - Dark theme (WCAG AA compliant) */
-  --color-text-primary: #F1F5F9;    /* 主要文字 - 16.5:1 on bg-primary */
-  --color-text-secondary: #CBD5E1;  /* 次要文字 - 10.5:1 on bg-primary, 5.5:1 on bg-elevated */
-  --color-text-tertiary: #94A3B8;   /* 提示文字 - 7.2:1 on bg-primary, 4.5:1 on bg-elevated */
-  --color-text-inverse: #0F172A;    /* 反色文字 */
+  --color-text-primary: #f1f5f9; /* 主要文字 - 16.5:1 on bg-primary */
+  --color-text-secondary: #cbd5e1; /* 次要文字 - 10.5:1 on bg-primary, 5.5:1 on bg-elevated */
+  --color-text-tertiary: #94a3b8; /* 提示文字 - 7.2:1 on bg-primary, 4.5:1 on bg-elevated */
+  --color-text-inverse: #0f172a; /* 反色文字 */
 
   /* Border Colors - Dark theme */
-  --color-border-light: #1E293B;
+  --color-border-light: #1e293b;
   --color-border-default: #334155;
   --color-border-strong: #475569;
 }
 
 @theme {
   /* Background and Text - Solo Leveling Dark Theme */
-  --color-background: #0A0E1A;
-  --color-text: #F1F5F9;
+  --color-background: #0a0e1a;
+  --color-text: #f1f5f9;
 
   /* Primary - Cyan/Teal (主色系 - 青藍色，類似獨自升級的發光效果) */
-  --color-primary-50: #ECFEFF;
-  --color-primary-100: #CFFAFE;
-  --color-primary-200: #A5F3FC;
-  --color-primary-300: #67E8F9;
-  --color-primary-400: #22D3EE;
-  --color-primary-500: #06B6D4;  /* Main Cyan */
-  --color-primary-600: #0891B2;
-  --color-primary-700: #0E7490;
-  --color-primary-800: #155E75;
-  --color-primary-900: #164E63;
+  --color-primary-50: #ecfeff;
+  --color-primary-100: #cffafe;
+  --color-primary-200: #a5f3fc;
+  --color-primary-300: #67e8f9;
+  --color-primary-400: #22d3ee;
+  --color-primary-500: #06b6d4; /* Main Cyan */
+  --color-primary-600: #0891b2;
+  --color-primary-700: #0e7490;
+  --color-primary-800: #155e75;
+  --color-primary-900: #164e63;
   --color-primary-950: #083344;
 
-  /* Secondary - Purple (副色系 - 紫色，神秘魔力感) */
-  --color-secondary-50: #FAF5FF;
-  --color-secondary-100: #F3E8FF;
-  --color-secondary-200: #E9D5FF;
-  --color-secondary-300: #D8B4FE;
-  --color-secondary-400: #C084FC;
-  --color-secondary-500: #A855F7;  /* Main Purple */
-  --color-secondary-600: #9333EA;
-  --color-secondary-700: #7C3AED;
-  --color-secondary-800: #6B21A8;
-  --color-secondary-900: #581C87;
+  /* Secondary - Violet (副色系 - 電光紫，更冷調，更協調) */
+  --color-secondary-50: #f5f3ff;
+  --color-secondary-100: #ede9fe;
+  --color-secondary-200: #ddd6fe;
+  --color-secondary-300: #c4b5fd;
+  --color-secondary-400: #a78bfa;
+  --color-secondary-500: #8b5cf6; /* Main Violet (統一冷色調) */
+  --color-secondary-600: #7c3aed;
+  --color-secondary-700: #6d28d9;
+  --color-secondary-800: #5b21b6;
+  --color-secondary-900: #4c1d95;
+  --color-secondary-950: #2e1065;
 
   /* Accent - Electric Blue (輔助色系 - 電光藍) */
-  --color-accent-50: #EFF6FF;
-  --color-accent-100: #DBEAFE;
-  --color-accent-200: #BFDBFE;
-  --color-accent-300: #93C5FD;
-  --color-accent-400: #60A5FA;
-  --color-accent-500: #3B82F6;  /* Main Blue */
-  --color-accent-600: #2563EB;
-  --color-accent-700: #1D4ED8;
-  --color-accent-800: #1E40AF;
-  --color-accent-900: #1E3A8A;
+  --color-accent-50: #eff6ff;
+  --color-accent-100: #dbeafe;
+  --color-accent-200: #bfdbfe;
+  --color-accent-300: #93c5fd;
+  --color-accent-400: #60a5fa;
+  --color-accent-500: #3b82f6; /* Main Blue */
+  --color-accent-600: #2563eb;
+  --color-accent-700: #1d4ed8;
+  --color-accent-800: #1e40af;
+  --color-accent-900: #1e3a8a;
 
   /* Income - Emerald Green (收入 - 翡翠綠) */
-  --color-income-50: #ECFDF5;
-  --color-income-100: #D1FAE5;
-  --color-income-200: #A7F3D0;
-  --color-income-300: #6EE7B7;
-  --color-income-400: #34D399;
-  --color-income-500: #10B981;  /* Main Emerald */
+  --color-income-50: #ecfdf5;
+  --color-income-100: #d1fae5;
+  --color-income-200: #a7f3d0;
+  --color-income-300: #6ee7b7;
+  --color-income-400: #34d399;
+  --color-income-500: #10b981; /* Main Emerald */
   --color-income-600: #059669;
   --color-income-700: #047857;
-  --color-income-800: #065F46;
-  --color-income-900: #064E3B;
+  --color-income-800: #065f46;
+  --color-income-900: #064e3b;
 
   /* Slate Grays - Cool toned for dark theme (WCAG optimized) */
-  --color-gray-50: #F8FAFC;
-  --color-gray-100: #F1F5F9;
-  --color-gray-200: #E2E8F0;
-  --color-gray-300: #CBD5E1;  /* Use for secondary text */
-  --color-gray-400: #94A3B8;  /* Use for tertiary/muted text */
-  --color-gray-500: #64748B;  /* Use sparingly - low contrast on dark */
+  --color-gray-50: #f8fafc;
+  --color-gray-100: #f1f5f9;
+  --color-gray-200: #e2e8f0;
+  --color-gray-300: #cbd5e1; /* Use for secondary text */
+  --color-gray-400: #94a3b8; /* Use for tertiary/muted text */
+  --color-gray-500: #64748b; /* Use sparingly - low contrast on dark */
   --color-gray-600: #475569;
   --color-gray-700: #334155;
-  --color-gray-800: #1E293B;  /* Card/elevated background */
-  --color-gray-900: #0F172A;
+  --color-gray-800: #1e293b; /* Card/elevated background */
+  --color-gray-900: #0f172a;
   --color-gray-950: #020617;
 
   /* Legacy accent colors for compatibility */
@@ -172,7 +181,7 @@
 
   /* Scrollbar - Dark theme */
   --color-scrollbar-thumb: #475569;
-  --color-scrollbar-thumb-hover: #64748B;
+  --color-scrollbar-thumb-hover: #64748b;
 
   /* Special Shadows - Glow effects */
   --shadow-primary:
@@ -204,23 +213,46 @@ body {
   }
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-heading);
   font-weight: var(--font-semibold);
   line-height: var(--leading-tight);
 }
 
 /* Headings responsive sizes */
-h1 { font-size: 2.25rem; font-weight: var(--font-bold); }
-h2 { font-size: 1.875rem; font-weight: var(--font-semibold); }
-h3 { font-size: 1.5rem; }
-h4 { font-size: 1.25rem; }
-h5 { font-size: 1.125rem; }
-h6 { font-size: 1rem; }
+h1 {
+  font-size: 2.25rem;
+  font-weight: var(--font-bold);
+}
+h2 {
+  font-size: 1.875rem;
+  font-weight: var(--font-semibold);
+}
+h3 {
+  font-size: 1.5rem;
+}
+h4 {
+  font-size: 1.25rem;
+}
+h5 {
+  font-size: 1.125rem;
+}
+h6 {
+  font-size: 1rem;
+}
 
 @media (min-width: 768px) {
-  h1 { font-size: 2.5rem; }
-  h2 { font-size: 2rem; }
+  h1 {
+    font-size: 2.5rem;
+  }
+  h2 {
+    font-size: 2rem;
+  }
 }
 
 .bg-radial {
@@ -256,22 +288,22 @@ h6 { font-size: 1rem; }
     ),
     /* Purple glow bottom-right */
     radial-gradient(
-      ellipse at 100% 100%,
-      rgba(168, 85, 247, 0.12) 0%,
-      transparent 50%
-    ),
+        ellipse at 100% 100%,
+        rgba(168, 85, 247, 0.12) 0%,
+        transparent 50%
+      ),
     /* Blue accent top-right */
     radial-gradient(
-      ellipse at 100% 0%,
-      rgba(59, 130, 246, 0.08) 0%,
-      transparent 40%
-    ),
+        ellipse at 100% 0%,
+        rgba(59, 130, 246, 0.08) 0%,
+        transparent 40%
+      ),
     /* Subtle cyan bottom-left */
     radial-gradient(
-      ellipse at 0% 100%,
-      rgba(34, 211, 238, 0.06) 0%,
-      transparent 40%
-    );
+        ellipse at 0% 100%,
+        rgba(34, 211, 238, 0.06) 0%,
+        transparent 40%
+      );
   position: relative;
   overflow: hidden;
 }
@@ -364,7 +396,12 @@ input[type='number'] {
 
 /* Solo Leveling style gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, var(--color-primary-400), var(--color-secondary-500), var(--color-accent-400));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-400),
+    var(--color-secondary-500),
+    var(--color-accent-400)
+  );
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -373,16 +410,29 @@ input[type='number'] {
 
 /* Glow gradient backgrounds - Solo Leveling style */
 .gradient-glow {
-  background: linear-gradient(135deg, var(--color-primary-600) 0%, var(--color-secondary-600) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-600) 0%,
+    var(--color-secondary-600) 100%
+  );
 }
 
 .gradient-glow-soft {
-  background: linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(6, 182, 212, 0.1) 0%,
+    rgba(168, 85, 247, 0.1) 100%
+  );
 }
 
 /* Intense glow for CTAs */
 .gradient-intense {
-  background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-accent-500) 50%, var(--color-secondary-500) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-500) 0%,
+    var(--color-accent-500) 50%,
+    var(--color-secondary-500) 100%
+  );
 }
 
 /* Accessibility improvements */
@@ -422,13 +472,21 @@ input[type='number'] {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes slideInUp {
@@ -471,7 +529,8 @@ input[type='number'] {
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -539,7 +598,11 @@ input[type='number'] {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-600),
+    var(--color-secondary-600)
+  );
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 0.75rem;
@@ -550,7 +613,11 @@ input[type='number'] {
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, var(--color-primary-500), var(--color-secondary-500));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-500),
+    var(--color-secondary-500)
+  );
   box-shadow: var(--shadow-glow-lg);
   transform: translateY(-2px);
   border-color: rgba(6, 182, 212, 0.5);
@@ -592,7 +659,11 @@ input[type='number'] {
 }
 
 .submit-button {
-  background: linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-600),
+    var(--color-secondary-600)
+  );
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 0.75rem;
@@ -619,7 +690,11 @@ input[type='number'] {
 }
 
 .card-gradient {
-  background: linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(6, 182, 212, 0.1) 0%,
+    rgba(168, 85, 247, 0.1) 100%
+  );
   border: 1px solid rgba(6, 182, 212, 0.2);
 }
 
@@ -636,7 +711,11 @@ input[type='number'] {
 .card-interactive:hover {
   box-shadow: var(--shadow-glow-lg);
   border-color: var(--color-primary-500);
-  background: linear-gradient(135deg, rgba(6, 182, 212, 0.05) 0%, rgba(168, 85, 247, 0.05) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(6, 182, 212, 0.05) 0%,
+    rgba(168, 85, 247, 0.05) 100%
+  );
 }
 
 .animate-modal {
