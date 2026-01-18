@@ -2,7 +2,7 @@
 
 import { ActionMenuIcon } from '@/components/icons/ActionMenuIcon';
 import useFocusRef from '@/hooks/useFocusRef';
-import { ReactNode, useRef, useState } from 'react';
+import { ReactNode, useCallback, useRef, useState } from 'react';
 
 interface Props {
   options: {
@@ -11,10 +11,11 @@ interface Props {
     className?: string;
   }[];
   onClick?: (value: string) => void;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export const ActionMenu = (props: Props) => {
-  const { options, onClick } = props;
+  const { options, onClick, onOpenChange } = props;
 
   const [open, setOpen] = useState(false);
   const [openAbove, setOpenAbove] = useState(false);
@@ -22,17 +23,19 @@ export const ActionMenu = (props: Props) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const ref = useFocusRef<HTMLDivElement>(() => {
     setOpen(false);
+    onOpenChange?.(false);
   });
 
-  const handleToggle = () => {
+  const handleToggle = useCallback(() => {
     if (!open && buttonRef.current) {
       const buttonRect = buttonRef.current.getBoundingClientRect();
       const spaceBelow = window.innerHeight - buttonRect.bottom;
-      const menuHeight = menuRef.current?.offsetHeight ?? 200;
-      setOpenAbove(spaceBelow < menuHeight + 16);
+      setOpenAbove(spaceBelow < 200);
     }
-    setOpen((prev) => !prev);
-  };
+    const newOpen = !open;
+    setOpen(newOpen);
+    onOpenChange?.(newOpen);
+  }, [open, onOpenChange]);
 
   return (
     <div ref={ref} className={`relative ${open ? 'z-40' : ''}`}>

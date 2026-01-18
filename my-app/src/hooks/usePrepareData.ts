@@ -15,7 +15,7 @@ export const usePrepareData = () => {
   const { syncData } = useGetSpendingCtx();
 
   useEffect(() => {
-    console.log('Syncing groups for user', userData?.user_id);
+    // console.log('Syncing groups for user', userData?.user_id);
     if (userData?.user_id) {
       syncGroup(userData.user_id);
     }
@@ -35,7 +35,7 @@ export const usePrepareData = () => {
             (a.created_at ? new Date(a.created_at).getTime() : 0) -
             (b.created_at ? new Date(b.created_at).getTime() : 0),
         )[0];
-      console.log('Setting default current group', defaultGroup);
+      // console.log('Setting default current group', defaultGroup);
       setCurrentGroup(defaultGroup);
     }
   }, [groups, setCurrentGroup, currentGroup]);
@@ -43,10 +43,10 @@ export const usePrepareData = () => {
   useEffect(() => {
     if (!loading && groups.length === 0 && userData?.user_id) {
       // If no groups exist, create a default group
-      console.log(
-        '[usePrepareData] Creating default group for user:',
-        userData.user_id,
-      );
+      // console.log(
+      //   '[usePrepareData] Creating default group for user:',
+      //   userData.user_id,
+      // );
       const newGroup = {
         account_id: Date.now(),
         name: `${userData.name} 的個人帳本`,
@@ -67,10 +67,10 @@ export const usePrepareData = () => {
   }, [loading, groups.length, userData?.user_id, syncGroup, userData?.name]);
 
   useEffect(() => {
-    console.log('Preparing data for', {
-      email: userData?.email,
-      group: currentGroup?.account_id,
-    });
+    // console.log('Preparing data for', {
+    //   email: userData?.email,
+    //   group: currentGroup?.account_id,
+    // });
     if (currentGroup?.account_id) {
       const { startDate, endDate } = getStartEndOfMonth(new Date());
       // 使用 groupId 查詢，這樣帳本內所有成員都可以看到所有交易

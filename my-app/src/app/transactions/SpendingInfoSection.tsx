@@ -19,10 +19,10 @@ import {
 } from 'react';
 
 const SORT_BY: Record<string, string> = {
-  date: "日期",
-  category: "類別",
-  type: "收支",
-}
+  date: '日期',
+  category: '類別',
+  type: '收支',
+};
 
 export const SpendingInfoSection = () => {
   useScrollToTop();
@@ -90,12 +90,7 @@ export const SpendingInfoSection = () => {
       startDate.toISOString(),
       endDate.toISOString(),
     );
-  }, [
-    currentGroup?.account_id,
-    dateHook.month,
-    dateHook.year,
-    syncData,
-  ]);
+  }, [currentGroup?.account_id, dateHook.month, dateHook.year, syncData]);
 
   // Show skeleton only on initial load
   if (isInitialLoad && loading) {
@@ -111,18 +106,18 @@ export const SpendingInfoSection = () => {
         className="self-center text-base"
       />
 
-      <div className="ml-auto flex items-center gap-3">
+      <div className="mt-4 ml-auto flex items-center gap-3">
         <Select
           value={SORT_BY[sortBy]}
           name="sortBy"
           onChange={setSortBy}
-          className="bg-background rounded-lg border border-solid border-gray-300 px-3 py-1.5 text-sm font-medium transition-all hover:border-primary-400"
+          className="bg-background hover:border-primary-400 rounded-lg border border-solid border-gray-300 px-3 py-1.5 text-sm font-medium transition-all"
         >
           <Select.Item value="date">日期</Select.Item>
           <Select.Item value="category">類別</Select.Item>
           <Select.Item value="type">收支</Select.Item>
         </Select>
-        <div className="group hover:border-primary-400 focus-within:border-primary-500 relative flex items-center gap-2 rounded-lg border border-solid border-gray-300 px-3 py-1.5 transition-all focus-within:shadow-sm bg-background">
+        <div className="group hover:border-primary-400 focus-within:border-primary-500 bg-background relative flex items-center gap-2 rounded-lg border border-solid border-gray-300 px-3 py-1.5 transition-all focus-within:shadow-sm">
           <SearchIcon className="group-hover:text-primary-500 group-focus-within:text-primary-500 text-gray-300 transition-colors" />
           <input
             ref={searchRef}
@@ -133,15 +128,13 @@ export const SpendingInfoSection = () => {
         </div>
       </div>
 
-      <div className="bg-background w-full rounded-2xl border border-solid border-gray-200 p-5 shadow-sm transition-shadow duration-200 hover:shadow">
-        <SpendingList
-          data={monthlyData}
-          filterStr={filterStr}
-          sortBy={sortBy}
-          loading={isProcessing}
-          refreshData={refreshData}
-        />
-      </div>
+      <SpendingList
+        data={monthlyData}
+        filterStr={filterStr}
+        sortBy={sortBy}
+        loading={isProcessing}
+        refreshData={refreshData}
+      />
     </div>
   );
 };

@@ -58,7 +58,7 @@ const NecessityPieChart = (props: Props) => {
           value={`財務剛性 ${(props.totalNecessity / props.totalUnnecessity).toFixed(2)}`}
           offset={0}
           position="center"
-          className="text-sm font-bold"
+          className="fill-gray-200 text-sm font-bold"
         />
       </Pie>
 

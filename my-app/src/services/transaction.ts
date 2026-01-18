@@ -11,7 +11,7 @@ export async function getItems(params: {
 }): Promise<SpendingRecord[]> {
   const { groupId, email, startDate, endDate } = params;
 
-  console.log('[DB getItems] Query params:', { groupId, email, startDate, endDate });
+  // console.log('[DB getItems] Query params:', { groupId, email, startDate, endDate });
 
   if (!groupId && !email) {
     throw new Error('缺少群組 ID 或信箱資訊');
@@ -64,9 +64,9 @@ export async function getItems(params: {
   }
 
   query += ` ORDER BY t."date" DESC`;
-  console.log('[DB getItems] Executing query with params:', queryParams);
+  // console.log('[DB getItems] Executing query with params:', queryParams);
   const result = await db.query(query, queryParams);
-  console.log('[DB getItems] ✅ Found', result.rows.length, 'transactions');
+  // console.log('[DB getItems] ✅ Found', result.rows.length, 'transactions');
   return result.rows;
 }
 

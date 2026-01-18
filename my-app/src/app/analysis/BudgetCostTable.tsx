@@ -121,7 +121,7 @@ const BudgetCostTable = (props: Props) => {
               各類別預算使用情況
             </h3>
           </div>
-          <div className="max-h-80 overflow-y-auto">
+          <div className="max-h-80 overflow-auto">
             <table className="w-full text-sm">
               <thead className="sticky top-0 bg-gray-800/95 backdrop-blur-sm">
                 <tr className="border-b border-gray-600">
@@ -133,12 +133,6 @@ const BudgetCostTable = (props: Props) => {
                   </th>
                   <th className="px-4 py-2 text-right font-semibold text-gray-300">
                     已用
-                  </th>
-                  <th className="px-4 py-2 text-right font-semibold text-gray-300">
-                    必要
-                  </th>
-                  <th className="px-4 py-2 text-right font-semibold text-gray-300">
-                    額外
                   </th>
                 </tr>
               </thead>
@@ -168,12 +162,6 @@ const BudgetCostTable = (props: Props) => {
                         <span className="ml-1 text-xs">
                           ({usagePercent.toFixed(0)}%)
                         </span>
-                      </td>
-                      <td className="px-4 py-2 text-right text-orange-400">
-                        ${normalizeNumber(item.necessary)}
-                      </td>
-                      <td className="px-4 py-2 text-right text-gray-400">
-                        ${normalizeNumber(item.unnecessary)}
                       </td>
                     </tr>
                   );

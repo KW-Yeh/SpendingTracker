@@ -21,7 +21,7 @@ export const getItems = async (
     } else {
       return { status: false, data: [], message: '缺少群組 ID 或信箱資訊' };
     }
-    console.log(`Get Data from ${(startDate)} to ${endDate}`);
+    // console.log(`Get Data from ${(startDate)} to ${endDate}`);
     const data = await fetch(apiUrl).then((res) => res.json());
     return { status: true, data, message: 'success' };
   } catch (error) {

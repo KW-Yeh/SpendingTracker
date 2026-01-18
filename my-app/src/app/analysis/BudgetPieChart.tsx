@@ -17,9 +17,16 @@ interface Props {
 }
 
 const BudgetPieChart = (props: Props) => {
-  const { totalBudgeted, totalSpent, totalNecessary, totalUnnecessary, categoryList } = props;
+  const {
+    totalBudgeted,
+    totalSpent,
+    totalNecessary,
+    totalUnnecessary,
+    categoryList,
+  } = props;
   const remaining = Math.max(0, totalBudgeted - totalSpent);
-  const usagePercent = totalBudgeted > 0 ? ((totalSpent / totalBudgeted) * 100).toFixed(1) : '0.0';
+  const usagePercent =
+    totalBudgeted > 0 ? ((totalSpent / totalBudgeted) * 100).toFixed(1) : '0.0';
 
   return (
     <PieChart width={300} height={300}>
@@ -38,7 +45,11 @@ const BudgetPieChart = (props: Props) => {
       >
         <Cell
           className="transition-colors hover:fill-yellow-300 hover:outline-0 active:outline-0"
-          fill={totalSpent > totalBudgeted ? CHART_COLORS.OUTCOME_UNNECESSARY : CHART_COLORS.OUTCOME_NECESSARY}
+          fill={
+            totalSpent > totalBudgeted
+              ? CHART_COLORS.OUTCOME_UNNECESSARY
+              : CHART_COLORS.OUTCOME_NECESSARY
+          }
         />
         <Cell
           className="transition-colors hover:fill-yellow-300 hover:outline-0 active:outline-0"
@@ -70,7 +81,7 @@ const BudgetPieChart = (props: Props) => {
           value={`使用率 ${usagePercent}%`}
           offset={0}
           position="center"
-          className="text-sm font-bold"
+          className="fill-gray-200 text-sm font-bold"
         />
       </Pie>
 

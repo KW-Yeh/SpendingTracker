@@ -43,6 +43,7 @@ export const DatePicker = (props: Props) => {
   };
 
   const showPicker = () => {
+    // console.log('showPicker');
     if (!inputRef.current) return;
     inputRef.current.dispatchEvent(
       new MouseEvent('mousedown', { bubbles: true, cancelable: true }),
@@ -57,12 +58,13 @@ export const DatePicker = (props: Props) => {
       <input
         ref={inputRef}
         type="date"
+        name="date"
         className="absolute inset-0 size-full cursor-pointer opacity-0"
         onChange={handleOnChangeDate}
       />
       <button
         type="button"
-        className={`flex h-full w-full cursor-pointer items-center justify-center gap-2 text-sm font-semibold text-gray-700 transition-all duration-200 ${labelClassName}`}
+        className={`absolute flex size-full cursor-pointer items-center justify-center gap-2 text-sm font-semibold text-gray-200 transition-all duration-200 ${labelClassName}`}
         onClick={showPicker}
         aria-label="選擇日期"
       >

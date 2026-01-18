@@ -19,7 +19,7 @@ export const customPieLabel = (props: {
       fill="black"
       textAnchor={x > cx ? 'start' : 'end'}
       dominantBaseline="central"
-      className="rounded-md bg-background p-1 text-xs"
+      className="rounded-md fill-gray-200 p-1 text-xs"
     >
       {name}
     </text>

@@ -26,6 +26,7 @@ export const SpendingItem = (props: Props) => {
   const { spending, refreshData } = props;
   const { config: userData } = useUserConfigCtx();
   const [deleting, setDeleting] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
 
   // 檢查當前用戶是否為此交易的創建者
@@ -87,7 +88,7 @@ export const SpendingItem = (props: Props) => {
 
   return (
     <div
-      className={`relative flex items-center gap-3 rounded-xl border border-gray-600 bg-gray-800/90 p-3 text-sm shadow-sm backdrop-blur-sm transition-all sm:text-base md:p-4 ${additionalStyle}`}
+      className={`relative flex items-center gap-3 rounded-xl border border-gray-600 bg-gray-800/90 p-3 text-sm shadow-sm backdrop-blur-sm transition-all sm:text-base md:p-4 ${additionalStyle} ${menuOpen ? 'z-10' : ''}`}
     >
       {deleting && (
         <span className="bg-secondary-500 absolute top-0 left-2 -translate-y-1/2 rounded-full px-3 py-1 text-xs font-bold text-white shadow-md">
@@ -129,6 +130,7 @@ export const SpendingItem = (props: Props) => {
       {canEdit && (
         <ActionMenu
           onClick={handleAction}
+          onOpenChange={setMenuOpen}
           options={[
             {
               value: 'edit',

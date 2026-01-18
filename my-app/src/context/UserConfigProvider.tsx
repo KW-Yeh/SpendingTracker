@@ -80,7 +80,7 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
 
       getUser(email)
         .then((res) => {
-          console.log('Querying user response: ', res);
+          // console.log('Querying user response: ', res);
           if (controllerRef.current) {
             controllerRef.current.abort();
           }
@@ -115,7 +115,7 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
   const syncUser = useCallback(() => {
     setLoading(true);
     if (session?.user?.email) {
-      console.log('Syncing user: ', session.user.email);
+      // console.log('Syncing user: ', session.user.email);
       queryUser(session.user.email);
     }
   }, [queryUser, session?.user?.email]);
@@ -146,9 +146,9 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
 
   // 當 session 狀態變為 authenticated 且有 email 時，觸發 syncUser
   useEffect(() => {
-    console.log('[UserConfigProvider] Session status:', status);
-    console.log('[UserConfigProvider] Session email:', session?.user?.email);
-    console.log('[UserConfigProvider] Config exists:', !!config);
+    // console.log('[UserConfigProvider] Session status:', status);
+    // console.log('[UserConfigProvider] Session email:', session?.user?.email);
+    // console.log('[UserConfigProvider] Config exists:', !!config);
 
     if (status === 'authenticated' && session?.user?.email && !config) {
       console.log('[UserConfigProvider] ✅ Conditions met! Syncing user...');

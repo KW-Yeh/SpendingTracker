@@ -9,9 +9,9 @@ export const getUser = async (
 }> => {
   try {
     if (!id) return { status: false, data: null, message: '缺少 ID 資訊' };
-    console.log('[Client getUser] Fetching user with email:', id);
+    // console.log('[Client getUser] Fetching user with email:', id);
     const data: User | null = await fetch(`${URL}?id=${id}`).then((res) => res.json());
-    console.log('[Client getUser] Response data:', data);
+    // console.log('[Client getUser] Response data:', data);
     return { status: true, data, message: 'success' };
   } catch (error) {
     console.error('[Client getUser] Error:', error);
@@ -46,7 +46,7 @@ export const createUser = async (data: User) => {
       body: JSON.stringify(data),
     });
     const result = await response.json();
-    console.log('[Client createUser] Server response:', result);
+    // console.log('[Client createUser] Server response:', result);
     return { status: true, message: 'success' };
   } catch (error) {
     console.error('[Client createUser] Error:', error);

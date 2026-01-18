@@ -16,7 +16,7 @@ export const CostTable = ({
   }>;
 }) => {
   return (
-    <div className="flex w-full flex-col gap-2 whitespace-nowrap">
+    <div className="flex w-full flex-col gap-2">
       <h3 className="font-semibold">{title}</h3>
       <table className="w-full border-collapse text-sm">
         <thead>
