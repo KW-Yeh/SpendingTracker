@@ -312,14 +312,14 @@ export const EditExpenseModal = (props: Props) => {
                 : '+ 新增常用描述'}
           </button>
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-2">
           <div
             className={`flex w-full items-center rounded-md border border-solid px-2 ${isNoAmount ? 'border-red-500' : 'border-gray-300'}`}
           >
             <span className="text-sm text-gray-300">金額</span>
             <input
               type="text"
-              className="h-10 flex-1 bg-transparent py-1 text-end focus:outline-0 focus-visible:outline-0"
+              className="h-10 flex-1 bg-transparent py-1 text-end focus:outline-0 focus-visible:outline-0 active:outline-0"
               value={normalizeNumber(amount)}
               readOnly
             />
