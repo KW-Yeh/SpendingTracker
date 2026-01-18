@@ -78,13 +78,13 @@ export const Switch = (props: Props) => {
       ></div>
       <span
         ref={option1Ref}
-        className={`z-20 flex-1 bg-transparent px-2 py-1 text-center font-normal transition-colors`}
+        className={`z-20 flex-1 bg-transparent px-2 py-1 text-center font-normal whitespace-nowrap transition-colors`}
       >
         {option1.label}
       </span>
       <span
         ref={option2Ref}
-        className={`z-20 flex-1 bg-transparent px-2 py-1 text-center font-normal transition-colors`}
+        className={`z-20 flex-1 bg-transparent px-2 py-1 text-center font-normal whitespace-nowrap transition-colors`}
       >
         {option2.label}
       </span>

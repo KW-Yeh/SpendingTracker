@@ -195,7 +195,7 @@ export const EditExpenseModal = (props: Props) => {
         onSubmit={handleOnSubmit}
       >
         <div className="flex w-full flex-col gap-4">
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex w-full items-center justify-between gap-4">
             <Switch
               option1={{
                 label: '支出',
@@ -302,7 +302,7 @@ export const EditExpenseModal = (props: Props) => {
           <button
             type="button"
             disabled={description === '' || updatingCategory}
-            className={`border-text bg-text text-background w-full rounded-lg border border-solid p-2 font-semibold transition-colors hover:bg-gray-800 active:bg-gray-800 disabled:!cursor-not-allowed disabled:border-gray-300 disabled:bg-gray-300 disabled:text-gray-300 ${description === '' ? 'hidden' : ''}`}
+            className={`border-text bg-text text-background w-full rounded-lg border border-solid p-2 font-semibold transition-colors hover:bg-gray-800 active:bg-gray-800 disabled:cursor-not-allowed! disabled:border-gray-300 disabled:bg-gray-300 disabled:text-gray-300 ${description === '' ? 'hidden' : ''}`}
             onClick={() => handleSetCommonDesc(isNewDesc)}
           >
             {updatingCategory
@@ -314,7 +314,7 @@ export const EditExpenseModal = (props: Props) => {
         </div>
         <div className="flex flex-col gap-1">
           <div
-            className={`flex w-full items-center rounded-md border border-solid bg-white px-2 ${isNoAmount ? 'border-red-500' : 'border-gray-300'}`}
+            className={`flex w-full items-center rounded-md border border-solid px-2 ${isNoAmount ? 'border-red-500' : 'border-gray-300'}`}
           >
             <span className="text-sm text-gray-300">金額</span>
             <input

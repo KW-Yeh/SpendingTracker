@@ -62,7 +62,7 @@ export const DatePicker = (props: Props) => {
       />
       <button
         type="button"
-        className={`hover:bg-primary-50 hover:text-primary-700 active:bg-primary-100 relative z-10 flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-gray-700 transition-all duration-200 ${labelClassName}`}
+        className={`flex h-full w-full cursor-pointer items-center justify-center gap-2 text-sm font-semibold text-gray-700 transition-all duration-200 ${labelClassName}`}
         onClick={showPicker}
         aria-label="選擇日期"
       >
