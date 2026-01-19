@@ -53,7 +53,7 @@ export const Modal = forwardRef<ModalRef, Props>((props, ref) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm sm:p-4">
       <div
         ref={contentRef}
-        className={`animate-modal relative max-h-[90vh] w-full max-w-2xl self-end overflow-hidden rounded-2xl border border-gray-700 bg-gray-800 shadow-2xl sm:max-w-96 sm:self-center sm:rounded-xl ${props.className}`}
+        className={`animate-modal relative max-h-[90vh] w-full max-w-2xl self-end rounded-2xl border border-gray-700 bg-gray-800 shadow-2xl sm:max-w-96 sm:self-center sm:rounded-xl ${props.className}`}
       >
         <button
           type="button"
