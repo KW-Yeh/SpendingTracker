@@ -71,9 +71,7 @@ export const Modal = forwardRef<ModalRef, Props>((props, ref) => {
             {props.title}
           </h2>
         </div>
-        <div className="max-h-[calc(90vh-5rem)] overflow-y-auto p-6">
-          {props.children}
-        </div>
+        <div className="max-h-[calc(90vh-5rem)] p-6">{props.children}</div>
       </div>
     </div>
   );
