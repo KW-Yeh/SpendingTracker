@@ -97,7 +97,7 @@ export const Select = (props: Props) => {
           />
         </button>
         <div
-          className={`${openVerticalDirection === MenuOpenDirection.Down ? 'top-full mt-2' : 'bottom-full mb-2'} ${openHorizontalDirection === MenuOpenDirection.Left ? 'right-0' : 'left-0'} absolute z-40 w-fit overflow-hidden rounded-xl border-2 border-solid border-gray-600 bg-gray-800 py-1 shadow-xl backdrop-blur-sm transition-all duration-200 ${openOptions ? 'visible scale-100 opacity-100' : 'invisible scale-95 opacity-0'}`}
+          className={`${openVerticalDirection === MenuOpenDirection.Down ? 'top-full mt-2' : 'bottom-full mb-2'} ${openHorizontalDirection === MenuOpenDirection.Left ? 'right-0' : 'left-0'} absolute z-60 w-fit overflow-hidden rounded-xl border-2 border-solid border-gray-600 bg-gray-800 py-1 shadow-xl backdrop-blur-sm transition-all duration-200 ${openOptions ? 'visible scale-100 opacity-100' : 'invisible scale-95 opacity-0'}`}
           style={{
             minWidth: (ref.current?.clientWidth ?? 0) - 8 + 'px',
             maxHeight: menuMaxHeight + 'px',
