@@ -391,7 +391,7 @@ export async function GET(req: NextRequest) {
       user: AURORA_DSQL_USER,
       password: sourceToken,
       database: AURORA_DSQL_DB,
-      ssl: { rejectUnauthorized: true },
+      ssl: { rejectUnauthorized: false }, // Vercel doesn't have AWS RDS CA certificates
       port: 5432
     });
     await sourceClient.connect();
