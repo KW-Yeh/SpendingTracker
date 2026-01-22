@@ -87,16 +87,3 @@ CREATE TABLE favorite_categories (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
-
--- Migration Progress Table
--- Tracks batch migration progress for the admin/migrate endpoint
-CREATE TABLE IF NOT EXISTS migration_progress (
-    table_name VARCHAR(100) PRIMARY KEY,
-    total_rows INTEGER DEFAULT 0,
-    migrated_rows INTEGER DEFAULT 0,
-    last_offset INTEGER DEFAULT 0,
-    status VARCHAR(50) DEFAULT 'pending', -- 'pending', 'in_progress', 'completed', 'error'
-    started_at TIMESTAMP WITH TIME ZONE,
-    completed_at TIMESTAMP WITH TIME ZONE,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
