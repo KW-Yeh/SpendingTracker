@@ -1,9 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Client } from 'pg';
-import { getDb } from '@/utils/getAurora';
+import { DsqlSigner } from '@aws-sdk/dsql-signer';
 
 const MIGRATION_SECRET = process.env.MIGRATION_SECRET;
 const DEST_DB_URL = process.env.DEST_DB_URL;
+
+// DSQL source config (explicitly for migration, not shared with getDb which uses DATABASE_URL)
+const {
+  AURORA_DSQL_HOST,
+  AURORA_DSQL_REGION,
+  AURORA_DSQL_USER,
+  AURORA_DSQL_DB,
+  AWS_ACCESS_KEY_ID,
+  AWS_SECRET_ACCESS_KEY,
+} = process.env;
+
+// Get a client connected to DSQL source database
+async function getDsqlClient(): Promise<Client> {
+  if (!AURORA_DSQL_HOST || !AURORA_DSQL_REGION) {
+    throw new Error('Missing AURORA_DSQL_HOST or AURORA_DSQL_REGION');
+  }
+
+  const signer = new DsqlSigner({
+    hostname: AURORA_DSQL_HOST,
+    region: AURORA_DSQL_REGION,
+    credentials: {
+      accessKeyId: AWS_ACCESS_KEY_ID || '',
+      secretAccessKey: AWS_SECRET_ACCESS_KEY || ''
+    }
+  });
+
+  const token = await signer.getDbConnectAdminAuthToken();
+
+  const client = new Client({
+    host: AURORA_DSQL_HOST,
+    port: 5432,
+    user: AURORA_DSQL_USER,
+    password: token,
+    database: AURORA_DSQL_DB,
+    ssl: { rejectUnauthorized: false }
+  });
+
+  await client.connect();
+  return client;
+}
 
 export const maxDuration = 60; // Vercel hobby plan limit
 export const dynamic = 'force-dynamic';
@@ -358,8 +398,8 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(result);
     }
 
-    // Connect to source using shared utility (handles DSQL token generation)
-    sourceClient = await getDb();
+    // Connect to DSQL source database
+    sourceClient = await getDsqlClient();
 
     if (action === 'status') {
       const status = await getMigrationStatus(sourceClient, destClient);
