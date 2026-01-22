@@ -1,18 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Client } from 'pg';
-import { DsqlSigner } from '@aws-sdk/dsql-signer';
+import { getDb } from '@/utils/getAurora';
 
 const MIGRATION_SECRET = process.env.MIGRATION_SECRET;
 const DEST_DB_URL = process.env.DEST_DB_URL;
-
-const {
-  AURORA_DSQL_HOST,
-  AURORA_DSQL_REGION,
-  AURORA_DSQL_USER,
-  AURORA_DSQL_DB,
-  AWS_ACCESS_KEY_ID,
-  AWS_SECRET_ACCESS_KEY,
-} = process.env;
 
 export const maxDuration = 60; // Vercel hobby plan limit
 export const dynamic = 'force-dynamic';
@@ -46,23 +37,6 @@ const PRIMARY_KEYS: Record<TableName, string> = {
   transactions: 'transaction_id',
   favorite_categories: 'category_id'
 };
-
-async function getDsqlToken() {
-  if (!AURORA_DSQL_HOST || !AURORA_DSQL_REGION) {
-    throw new Error('Missing AURORA_DSQL_HOST or AURORA_DSQL_REGION');
-  }
-
-  const signer = new DsqlSigner({
-    hostname: AURORA_DSQL_HOST,
-    region: AURORA_DSQL_REGION,
-    credentials: {
-      accessKeyId: AWS_ACCESS_KEY_ID || '',
-      secretAccessKey: AWS_SECRET_ACCESS_KEY || ''
-    }
-  });
-
-  return await signer.getDbConnectAdminAuthToken();
-}
 
 async function initMigrationProgress(destClient: Client) {
   // Create table if not exists
@@ -384,17 +358,8 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(result);
     }
 
-    // Connect to source for status and migrate actions
-    const sourceToken = await getDsqlToken();
-    sourceClient = new Client({
-      host: AURORA_DSQL_HOST,
-      user: AURORA_DSQL_USER,
-      password: sourceToken,
-      database: AURORA_DSQL_DB,
-      ssl: { rejectUnauthorized: false }, // Vercel doesn't have AWS RDS CA certificates
-      port: 5432
-    });
-    await sourceClient.connect();
+    // Connect to source using shared utility (handles DSQL token generation)
+    sourceClient = await getDb();
 
     if (action === 'status') {
       const status = await getMigrationStatus(sourceClient, destClient);
