@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Client } from 'pg';
 import { DsqlSigner } from '@aws-sdk/dsql-signer';
+import { Agent } from 'https';
 
 const MIGRATION_SECRET = process.env.MIGRATION_SECRET;
 const DEST_DB_URL = process.env.DEST_DB_URL;
@@ -32,13 +33,20 @@ async function getDsqlClient(): Promise<Client> {
 
   const token = await signer.getDbConnectAdminAuthToken();
 
+  // Create custom SSL agent that doesn't verify certificates
+  const sslAgent = new Agent({ rejectUnauthorized: false });
+
   const client = new Client({
     host: AURORA_DSQL_HOST,
     port: 5432,
     user: AURORA_DSQL_USER,
     password: token,
     database: AURORA_DSQL_DB,
-    ssl: { rejectUnauthorized: false }
+    ssl: {
+      rejectUnauthorized: false,
+      // @ts-expect-error - pg accepts custom agent
+      agent: sslAgent
+    }
   });
 
   await client.connect();
@@ -385,12 +393,14 @@ export async function GET(req: NextRequest) {
   let destClient: Client | null = null;
 
   try {
-    // Connect to destination
+    // Connect to destination (RDS)
+    logs.push('Connecting to destination RDS...');
     destClient = new Client({
       connectionString: DEST_DB_URL,
       ssl: { rejectUnauthorized: false }
     });
     await destClient.connect();
+    logs.push('Connected to destination RDS');
 
     // Handle reset action (doesn't need source)
     if (action === 'reset') {
@@ -399,7 +409,9 @@ export async function GET(req: NextRequest) {
     }
 
     // Connect to DSQL source database
+    logs.push('Connecting to DSQL source...');
     sourceClient = await getDsqlClient();
+    logs.push('Connected to DSQL source');
 
     if (action === 'status') {
       const status = await getMigrationStatus(sourceClient, destClient);
