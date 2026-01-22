@@ -395,10 +395,14 @@ export async function GET(req: NextRequest) {
   try {
     // Connect to destination (RDS)
     logs.push('Connecting to destination RDS...');
-    destClient = new Client({
-      connectionString: DEST_DB_URL,
-      ssl: { rejectUnauthorized: false }
-    });
+
+    // Append sslmode=require if not present, and let pg handle SSL
+    let connectionString = DEST_DB_URL || '';
+    if (!connectionString.includes('sslmode=')) {
+      connectionString += (connectionString.includes('?') ? '&' : '?') + 'sslmode=no-verify';
+    }
+
+    destClient = new Client({ connectionString });
     await destClient.connect();
     logs.push('Connected to destination RDS');
 
