@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
     // 2. Fetch all groups the user belongs to
     const groupsResult = await db.query(
       `SELECT
-        a.account_id, a.name, a.owner_id, a.members,
+        a.account_id, a.name, a.owner_id,
         a.created_at, a.updated_at,
         u.email as owner_email, u.name as owner_name,
         am.role as user_role,
@@ -41,18 +41,12 @@ export async function GET(req: NextRequest) {
        JOIN users u ON a.owner_id = u.user_id
        LEFT JOIN account_members am2 ON a.account_id = am2.account_id
        WHERE am.user_id = $1
-       GROUP BY a.account_id, a.name, a.owner_id, a.members,
+       GROUP BY a.account_id, a.name, a.owner_id,
                 a.created_at, a.updated_at, u.email, u.name, am.role
        ORDER BY a.created_at DESC`,
       [userId],
     );
-    const groups: Group[] = groupsResult.rows.map((g) => ({
-      ...g,
-      members:
-        typeof g.members === 'string' && g.members
-          ? JSON.parse(g.members)
-          : g.members || [],
-    }));
+    const groups: Group[] = groupsResult.rows;
 
     const groupIds = groups.map((g) => g.account_id).filter(Boolean);
 
@@ -159,8 +153,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(response);
   } catch (error) {
     console.error('[Sync Pull] Error:', error);
+    const message = error instanceof Error ? error.message : '未知錯誤';
     return NextResponse.json(
-      { error: '同步拉取失敗' },
+      { error: '同步拉取失敗', detail: message },
       { status: 500 },
     );
   }
@@ -371,8 +366,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, results });
   } catch (error) {
     console.error('[Sync Push] Error:', error);
+    const message = error instanceof Error ? error.message : '未知錯誤';
     return NextResponse.json(
-      { error: '同步推送失敗' },
+      { error: '同步推送失敗', detail: message },
       { status: 500 },
     );
   }
