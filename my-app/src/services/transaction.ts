@@ -30,7 +30,8 @@ export async function getItems(params: {
       t.description,
       t.type,
       t.account_id as "groupId",
-      u.email as "user-token"
+      u.email as "user-token",
+      t.updated_at
     FROM transactions t
     JOIN users u ON t.recorded_by_user_id = u.user_id
     WHERE 1=1
@@ -116,17 +117,19 @@ export async function putItem(data: SpendingRecord): Promise<{ id: string }> {
       category,
       amount,
       description,
-      type
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-    ON CONFLICT (transaction_id) 
+      type,
+      updated_at
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())
+    ON CONFLICT (transaction_id)
     DO UPDATE SET
       necessity = EXCLUDED.necessity,
       "date" = EXCLUDED."date",
       category = EXCLUDED.category,
       amount = EXCLUDED.amount,
       description = EXCLUDED.description,
-      type = EXCLUDED.type
-    RETURNING transaction_id as id
+      type = EXCLUDED.type,
+      updated_at = NOW()
+    RETURNING transaction_id as id, updated_at
   `;
 
   const queryParams = [

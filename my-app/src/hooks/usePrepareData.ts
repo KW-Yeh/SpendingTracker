@@ -3,13 +3,12 @@
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { createGroup } from '@/services/groupServices';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
 import { getCookie } from '@/utils/handleCookie';
 import { useEffect } from 'react';
 
 export const usePrepareData = () => {
-  const { syncGroup, groups, setCurrentGroup, currentGroup, loading } =
+  const { syncGroup, groups, setCurrentGroup, currentGroup, setter: setGroups, loading } =
     useGroupCtx();
   const { config: userData, syncUser } = useUserConfigCtx();
   const { syncData } = useGetSpendingCtx();
@@ -42,29 +41,17 @@ export const usePrepareData = () => {
 
   useEffect(() => {
     if (!loading && groups.length === 0 && userData?.user_id) {
-      // If no groups exist, create a default group
-      // console.log(
-      //   '[usePrepareData] Creating default group for user:',
-      //   userData.user_id,
-      // );
-      const newGroup = {
+      const newGroup: Group = {
         account_id: Date.now(),
         name: `${userData.name} 的個人帳本`,
         owner_id: userData.user_id,
+        members: [userData.user_id],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       };
-      createGroup(newGroup).then((res) => {
-        if (res.status) {
-          console.log('[usePrepareData] ✅ Default group created successfully');
-          syncGroup(userData.user_id);
-        } else {
-          console.error(
-            '[usePrepareData] ❌ Failed to create default group:',
-            res.message,
-          );
-        }
-      });
+      setGroups([newGroup], userData.user_id);
     }
-  }, [loading, groups.length, userData?.user_id, syncGroup, userData?.name]);
+  }, [loading, groups.length, userData?.user_id, setGroups, userData?.name]);
 
   useEffect(() => {
     // console.log('Preparing data for', {

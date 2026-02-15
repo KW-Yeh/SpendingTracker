@@ -1,7 +1,7 @@
 'use client';
 
 import { useIDB } from '@/hooks/useIDB';
-import { getUser, putUser, createUser } from '@/services/userServices';
+import { getUser, createUser } from '@/services/userServices';
 import { useSession } from 'next-auth/react';
 import { redirect, usePathname } from 'next/navigation';
 import {
@@ -39,86 +39,46 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
   const { db: IDB, getUserData, setUserData } = useIDB();
   const controllerRef = useRef<AbortController | null>(null);
   const pathname = usePathname();
+  const initializedRef = useRef(false);
 
   const handleState = useCallback((value: User) => {
     setConfig(value);
     setLoading(false);
   }, []);
 
+  // IDB-only: write to IDB + update local state (no API call)
   const handleUpdateUser = useCallback(async (value: User) => {
-    await putUser(value);
-    // Update local state after API call
-    setConfig(value);
-  }, []);
+    const updatedUser = { ...value, updated_at: new Date().toISOString() };
+    await setUserData(IDB, updatedUser);
+    setConfig(updatedUser);
+  }, [IDB, setUserData]);
 
   const handleUpdateBudgetData = useCallback(
     async (value: UserBudgetData) => {
-      // Budget data is stored client-side only, no server sync needed
       setBudgetDataState(value);
-      // TODO: Store budget data in IndexedDB separately if needed
     },
     [],
   );
 
-  const handleNewUser = useCallback(
-    async (email: string) => {
-      if (session?.user) {
-        await createUser({
-          user_id: Date.now(),
-          name: session.user.name || '匿名',
-          email: email,
-        });
-      }
-    },
-    [session?.user],
-  );
-
-  const queryUser = useCallback(
-    (email: string, retryCount = 0) => {
-      const MAX_RETRIES = 3;
-      const RETRY_DELAY = 3000;
-
-      getUser(email)
-        .then((res) => {
-          // console.log('Querying user response: ', res);
-          if (controllerRef.current) {
-            controllerRef.current.abort();
-          }
-          if (res.status && res.data === null) {
-            console.log('User not found, creating new user...');
-            if (retryCount < MAX_RETRIES) {
-              handleNewUser(email).then(() => {
-                setTimeout(() => {
-                  queryUser(email, retryCount + 1);
-                }, RETRY_DELAY);
-              });
-            } else {
-              console.error('Max retries reached for user creation');
-            }
-          } else if (res.status && res.data !== null) {
-            console.log('User found, updating local state...');
-            handleState(res.data);
-            setUserData(IDB, res.data)
-              .then(() => {
-                console.log('Update User IDB success.');
-              })
-              .catch((err) => {
-                console.log('Update User IDB failed: ', err);
-              });
-          }
-        })
-        .catch(console.error);
-    },
-    [IDB, handleNewUser, setUserData, handleState],
-  );
-
+  // Re-read user from IDB (used after sync completes to refresh state)
   const syncUser = useCallback(() => {
+    if (!IDB || !session?.user?.email) return;
     setLoading(true);
-    if (session?.user?.email) {
-      // console.log('Syncing user: ', session.user.email);
-      queryUser(session.user.email);
-    }
-  }, [queryUser, session?.user?.email]);
+    const controller = new AbortController();
+    getUserData(IDB, session.user.email, controller.signal)
+      .then((res) => {
+        if (res) {
+          const _data = JSON.parse(res.data) as User;
+          handleState(_data);
+        } else {
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        console.error('[UserConfigProvider] Error re-reading from IDB:', err);
+        setLoading(false);
+      });
+  }, [IDB, session?.user?.email, getUserData, handleState]);
 
   const ctxVal = useMemo(
     () => ({
@@ -144,39 +104,75 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [status, handleLogin]);
 
-  // 當 session 狀態變為 authenticated 且有 email 時，觸發 syncUser
-  useEffect(() => {
-    // console.log('[UserConfigProvider] Session status:', status);
-    // console.log('[UserConfigProvider] Session email:', session?.user?.email);
-    // console.log('[UserConfigProvider] Config exists:', !!config);
-
-    if (status === 'authenticated' && session?.user?.email && !config) {
-      console.log('[UserConfigProvider] ✅ Conditions met! Syncing user...');
-      setLoading(true);
-      queryUser(session.user.email);
-    } else {
-      console.log('[UserConfigProvider] ❌ Conditions not met for sync');
-    }
-  }, [status, session?.user?.email, config, queryUser]);
-
+  // Load user from IDB on mount
   useEffect(() => {
     const controller = (controllerRef.current = new AbortController());
-    if (IDB && !config) {
-      getUserData(IDB, session?.user?.email ?? '', controller.signal)
+    if (IDB && !config && session?.user?.email) {
+      getUserData(IDB, session.user.email, controller.signal)
         .then((res) => {
           if (res) {
             const _data = JSON.parse(res.data) as User;
-            // console.log('Get User Data from IDB', _data);
             handleState(_data);
             controllerRef.current = null;
+            initializedRef.current = true;
+          } else {
+            // No user in IDB — first time login, need to create via API
+            initializedRef.current = true;
+            setLoading(false);
           }
         })
         .catch((err) => {
-          console.log('Error while syncing data: ', err);
+          console.log('Error while reading IDB:', err);
         });
     }
     return () => controller.abort();
   }, [IDB, config, getUserData, handleState, session?.user?.email]);
+
+  // First-time login: if IDB has no user and session is authenticated,
+  // create user via API and store in IDB (one-time exception)
+  useEffect(() => {
+    if (
+      status === 'authenticated' &&
+      session?.user?.email &&
+      IDB &&
+      initializedRef.current &&
+      !config
+    ) {
+      console.log('[UserConfigProvider] No local user, creating via API...');
+      const email = session.user.email;
+
+      const createAndFetch = async (retryCount = 0) => {
+        const MAX_RETRIES = 3;
+        const RETRY_DELAY = 3000;
+
+        try {
+          const res = await getUser(email);
+          if (res.status && res.data) {
+            await setUserData(IDB, res.data);
+            handleState(res.data);
+            return;
+          }
+
+          // User not found in cloud, create
+          if (retryCount < MAX_RETRIES) {
+            await createUser({
+              user_id: Date.now(),
+              name: session.user?.name || '匿名',
+              email,
+            });
+            await new Promise((r) => setTimeout(r, RETRY_DELAY));
+            await createAndFetch(retryCount + 1);
+          } else {
+            console.error('Max retries reached for user creation');
+          }
+        } catch (err) {
+          console.error('[UserConfigProvider] Error creating user:', err);
+        }
+      };
+
+      createAndFetch();
+    }
+  }, [status, session?.user?.email, session?.user?.name, IDB, config, setUserData, handleState]);
 
   return <Ctx.Provider value={ctxVal}>{children}</Ctx.Provider>;
 };

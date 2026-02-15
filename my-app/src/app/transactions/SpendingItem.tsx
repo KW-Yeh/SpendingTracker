@@ -3,8 +3,9 @@
 import { ActionMenu } from '@/components/ActionMenu';
 import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { EditIcon } from '@/components/icons/EditIcon';
+import { useGroupCtx } from '@/context/GroupProvider';
+import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { deleteItem } from '@/services/getRecords';
 import {
   CATEGORY_WORDING_MAP,
   Necessity,
@@ -25,6 +26,8 @@ interface Props {
 export const SpendingItem = (props: Props) => {
   const { spending, refreshData } = props;
   const { config: userData } = useUserConfigCtx();
+  const { deleteRecord } = useGetSpendingCtx();
+  const { currentGroup } = useGroupCtx();
   const [deleting, setDeleting] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
@@ -51,16 +54,16 @@ export const SpendingItem = (props: Props) => {
     return 'hover:shadow-[0_0_20px_rgba(6,182,212,0.25)] hover:border-primary-400 cursor-pointer';
   }, [deleting]);
 
-  const handleOnDelete = useCallback(() => {
+  const handleOnDelete = useCallback(async () => {
     if (!confirm('確定要刪除這筆資料嗎?')) return;
+    if (!currentGroup?.account_id) return;
     setDeleting(true);
-    deleteItem(spending.id).then(() => {
-      startTransition(() => {
-        setDeleting(false);
-        refreshData();
-      });
+    await deleteRecord(spending.id, currentGroup.account_id);
+    startTransition(() => {
+      setDeleting(false);
+      refreshData();
     });
-  }, [refreshData, spending.id]);
+  }, [refreshData, spending.id, currentGroup?.account_id, deleteRecord]);
 
   const handleAction = useCallback(
     (action: string) => {

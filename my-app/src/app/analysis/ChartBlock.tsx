@@ -3,6 +3,7 @@
 import { ChartContainer } from '@/app/analysis/ChartContainer';
 import { YearMonthFilter } from '@/app/analysis/YearMonthFilter';
 import { AnalysisSkeleton } from '@/components/skeletons/AnalysisSkeleton';
+import { useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
@@ -10,10 +11,9 @@ import { useScrollToTop } from '@/hooks/useScrollToTop';
 import { useYearMonth } from '@/hooks/useYearMonth';
 import { calSpending2Chart } from '@/utils/calSpending2Chart';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
-import { getBudget } from '@/services/budgetServices';
 import { CATEGORY_WORDING_MAP, SpendingType, Necessity } from '@/utils/constants';
 import dynamic from 'next/dynamic';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import ExpenseCostTable from './ExpenseCostTable';
 import NecessityCostTable from './NecessityCostTable';
 import BudgetCostTable from './BudgetCostTable';
@@ -62,7 +62,7 @@ export const ChartBlock = () => {
   const { config: userData } = useUserConfigCtx();
   const { data, syncData, loading, isInitialLoad } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
-  const [budget, setBudget] = useState<Budget | null>(null);
+  const { budget, syncBudget } = useBudgetCtx();
   const today = new Date();
   const dateHook = useYearMonth(today);
 
@@ -81,18 +81,12 @@ export const ChartBlock = () => {
     [syncData, userData?.email],
   );
 
-  // Fetch budget data
+  // Sync budget from IDB
   useEffect(() => {
     if (currentGroup?.account_id) {
-      getBudget(currentGroup.account_id)
-        .then((res) => {
-          if (res.status && res.data) {
-            setBudget(res.data);
-          }
-        })
-        .catch(console.error);
+      syncBudget(currentGroup.account_id);
     }
-  }, [currentGroup?.account_id]);
+  }, [currentGroup?.account_id, syncBudget]);
 
   // Memoize filtered data and chart calculation
   const chartData = useMemo(() => {

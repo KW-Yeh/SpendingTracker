@@ -19,6 +19,7 @@ export async function getGroupById(
       a.owner_id,
       a.members,
       a.created_at,
+      a.updated_at,
       u.email as owner_email,
       u.name as owner_name,
       COUNT(DISTINCT am.user_id) as member_count
@@ -26,7 +27,7 @@ export async function getGroupById(
     JOIN users u ON a.owner_id = u.user_id
     LEFT JOIN account_members am ON a.account_id = am.account_id
     WHERE a.account_id = $1
-    GROUP BY a.account_id, a.name, a.owner_id, a.members, a.created_at, u.email, u.name
+    GROUP BY a.account_id, a.name, a.owner_id, a.members, a.created_at, a.updated_at, u.email, u.name
   `;
 
   const result = await db.query(query, [groupId]);
@@ -63,6 +64,7 @@ export async function getUserGroups(userId: number): Promise<Group[]> {
       a.owner_id,
       a.members,
       a.created_at,
+      a.updated_at,
       u.email as owner_email,
       u.name as owner_name,
       am.role as user_role,
@@ -72,7 +74,7 @@ export async function getUserGroups(userId: number): Promise<Group[]> {
     JOIN users u ON a.owner_id = u.user_id
     LEFT JOIN account_members am2 ON a.account_id = am2.account_id
     WHERE am.user_id = $1
-    GROUP BY a.account_id, a.name, a.owner_id, a.members, a.created_at, u.email, u.name, am.role
+    GROUP BY a.account_id, a.name, a.owner_id, a.members, a.created_at, a.updated_at, u.email, u.name, am.role
     ORDER BY a.created_at DESC
   `;
 
@@ -104,6 +106,7 @@ export async function getUserOwnedGroups(userId: number): Promise<Group[]> {
       a.owner_id,
       a.members,
       a.created_at,
+      a.updated_at,
       u.email as owner_email,
       u.name as owner_name,
       COUNT(DISTINCT am.user_id) as member_count
@@ -111,7 +114,7 @@ export async function getUserOwnedGroups(userId: number): Promise<Group[]> {
     JOIN users u ON a.owner_id = u.user_id
     LEFT JOIN account_members am ON a.account_id = am.account_id
     WHERE a.owner_id = $1
-    GROUP BY a.account_id, a.name, a.owner_id, a.members, a.created_at, u.email, u.name
+    GROUP BY a.account_id, a.name, a.owner_id, a.members, a.created_at, a.updated_at, u.email, u.name
     ORDER BY a.created_at DESC
   `;
 
@@ -148,9 +151,9 @@ export async function createGroup(data: {
 
     // 建立群組
     const createQuery = `
-      INSERT INTO accounts (account_id, name, owner_id, members)
-      VALUES ($1, $2, $3, $4)
-      RETURNING account_id, name, owner_id, members, created_at
+      INSERT INTO accounts (account_id, name, owner_id, members, updated_at)
+      VALUES ($1, $2, $3, $4, NOW())
+      RETURNING account_id, name, owner_id, members, created_at, updated_at
     `;
 
     const accountResult = await db.query(createQuery, [
@@ -170,8 +173,8 @@ export async function createGroup(data: {
 
     // 自動將擁有者加入成員
     const memberQuery = `
-      INSERT INTO account_members (account_id, user_id, role)
-      VALUES ($1, $2, 'Owner')
+      INSERT INTO account_members (account_id, user_id, role, updated_at)
+      VALUES ($1, $2, 'Owner', NOW())
     `;
 
     await db.query(memberQuery, [account_id, owner_id]);
@@ -221,13 +224,14 @@ export async function updateGroup(
     throw new Error('沒有要更新的欄位');
   }
 
+  updates.push(`updated_at = NOW()`);
   values.push(groupId);
 
   const query = `
     UPDATE accounts
     SET ${updates.join(', ')}
     WHERE account_id = $${paramIndex}
-    RETURNING account_id, name, owner_id, members, created_at
+    RETURNING account_id, name, owner_id, members, created_at, updated_at
   `;
 
   const result = await db.query(query, values);
@@ -304,6 +308,7 @@ export async function getGroupMembers(groupId: number): Promise<GroupMember[]> {
       am.user_id,
       am.role,
       am.joined_at,
+      am.updated_at,
       u.email,
       u.name
     FROM account_members am
@@ -346,11 +351,11 @@ export async function addGroupMember(data: {
   const db = await getDb();
 
   const query = `
-    INSERT INTO account_members (account_id, user_id, role)
-    VALUES ($1, $2, $3)
-    ON CONFLICT (account_id, user_id) 
-    DO UPDATE SET role = EXCLUDED.role
-    RETURNING account_id, user_id, role, joined_at
+    INSERT INTO account_members (account_id, user_id, role, updated_at)
+    VALUES ($1, $2, $3, NOW())
+    ON CONFLICT (account_id, user_id)
+    DO UPDATE SET role = EXCLUDED.role, updated_at = NOW()
+    RETURNING account_id, user_id, role, joined_at, updated_at
   `;
 
   const result = await db.query(query, [account_id, user_id, role]);
@@ -378,9 +383,9 @@ export async function updateMemberRole(
 
   const query = `
     UPDATE account_members
-    SET role = $1
+    SET role = $1, updated_at = NOW()
     WHERE account_id = $2 AND user_id = $3
-    RETURNING account_id, user_id, role, joined_at
+    RETURNING account_id, user_id, role, joined_at, updated_at
   `;
 
   const result = await db.query(query, [newRole, accountId, userId]);

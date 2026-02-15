@@ -1,6 +1,5 @@
 'use client';
 
-import { getGroups } from '@/services/groupServices';
 import { useIDB } from '@/hooks/useIDB';
 import {
   createContext,
@@ -17,7 +16,7 @@ const INIT_CTX_VAL: {
   currentGroup?: Group;
   groups: Group[];
   syncGroup: (user_id: number) => void;
-  setter: (_groups: Group[]) => void;
+  setter: (_groups: Group[], userId?: number) => void;
   setCurrentGroup: (_group?: Group) => void;
 } = {
   loading: true,
@@ -39,56 +38,44 @@ export const GroupProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   }, []);
 
-  // Stale-While-Revalidate strategy
-  const queryGroup = useCallback(
+  // IDB-only: write to IDB + update local state
+  const handleSetGroups = useCallback(
+    (newGroups: Group[], userId?: number) => {
+      startTransition(() => {
+        handleState(newGroups);
+      });
+      if (db && userId) {
+        setGroupData(db, userId, newGroups).catch(console.error);
+      }
+    },
+    [db, setGroupData, handleState],
+  );
+
+  // IDB-only: read groups from IDB
+  const syncGroup = useCallback(
     async (user_id: number) => {
       if (!db) {
-        // Fallback to direct API call if IndexedDB not ready
         setLoading(true);
-        getGroups(user_id)
-          .then((res) => {
-            if (res.status) {
-              handleState(res.data);
-            }
-          })
-          .catch(console.error);
         return;
       }
 
-      // Try to get cached data first
       try {
         const cachedData = await getGroupData(db, user_id);
         if (cachedData) {
-          // Show cached data immediately (stale)
-          console.log('[GroupProvider] Using cached group data');
           startTransition(() => {
             setGroups(cachedData);
             setLoading(false);
           });
         } else {
-          // No cache, show loading
-          setLoading(true);
+          setGroups([]);
+          setLoading(false);
         }
       } catch (error) {
-        console.error('[GroupProvider] Error reading cache:', error);
-        setLoading(true);
+        console.error('[GroupProvider] Error reading IDB:', error);
+        setLoading(false);
       }
-
-      // Always fetch fresh data in background (revalidate)
-      getGroups(user_id)
-        .then((res) => {
-          if (res.status) {
-            // Update UI with fresh data
-            startTransition(() => {
-              handleState(res.data);
-            });
-            // Update cache
-            setGroupData(db, user_id, res.data).catch(console.error);
-          }
-        })
-        .catch(console.error);
     },
-    [db, getGroupData, setGroupData, handleState],
+    [db, getGroupData],
   );
 
   const ctxVal = useMemo(
@@ -97,10 +84,10 @@ export const GroupProvider = ({ children }: { children: ReactNode }) => {
       groups,
       currentGroup,
       setCurrentGroup,
-      syncGroup: queryGroup,
-      setter: handleState,
+      syncGroup,
+      setter: handleSetGroups,
     }),
-    [currentGroup, groups, loading, queryGroup, handleState],
+    [currentGroup, groups, loading, syncGroup, handleSetGroups],
   );
 
   return <Ctx.Provider value={ctxVal}>{children}</Ctx.Provider>;

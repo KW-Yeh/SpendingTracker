@@ -9,6 +9,7 @@ enum StoreName {
   GroupData = 'Group Data',
   BudgetData = 'Budget Data',
   FavoriteCategoriesData = 'Favorite Categories Data',
+  SyncMetadata = 'Sync Metadata',
 }
 
 const DB_NAME = IDB_NAME;
@@ -19,6 +20,7 @@ const STORE_NAME = [
   StoreName.GroupData,
   StoreName.BudgetData,
   StoreName.FavoriteCategoriesData,
+  StoreName.SyncMetadata,
 ];
 const STORE_CONFIG: Record<
   string,
@@ -47,6 +49,10 @@ const STORE_CONFIG: Record<
   [StoreName.FavoriteCategoriesData]: {
     indexName: 'owner_id',
     indexValue: ['owner_id'],
+  },
+  [StoreName.SyncMetadata]: {
+    indexName: 'user_id',
+    indexValue: ['user_id'],
   },
 };
 
@@ -81,6 +87,12 @@ interface FavoriteCategoriesDATA_IDB {
   id?: number;
   owner_id: number;
   data: string; // JSON stringified FavoriteCategories
+}
+
+interface SyncMetadataDATA_IDB {
+  id?: number;
+  user_id: number;
+  last_synced_at: string;
 }
 
 export const useIDB = () => {
@@ -514,6 +526,83 @@ export const useIDB = () => {
     [],
   );
 
+  // Sync Metadata methods
+  const setSyncMetadata = useCallback(
+    (db: IDBDatabase | null, userId: number, lastSyncedAt: string): Promise<void> => {
+      if (!db) return Promise.reject('Database not initialized');
+
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(STORE_NAME, 'readwrite');
+        const store = transaction.objectStore(StoreName.SyncMetadata);
+
+        const newData: SyncMetadataDATA_IDB = {
+          user_id: userId,
+          last_synced_at: lastSyncedAt,
+        };
+
+        const index = store.index(STORE_CONFIG[StoreName.SyncMetadata].indexName);
+        const checkRequest = index.get([userId]);
+        checkRequest.onsuccess = () => {
+          const existingRecord = checkRequest.result;
+          if (existingRecord) {
+            newData.id = existingRecord.id;
+          }
+          const request = store.put(newData);
+          request.onsuccess = () => resolve();
+          request.onerror = () => reject(request.error);
+        };
+        checkRequest.onerror = () => reject(checkRequest.error);
+      });
+    },
+    [],
+  );
+
+  const getSyncMetadata = useCallback(
+    (db: IDBDatabase | null, userId: number): Promise<SyncMetadata | null> => {
+      if (!db) return Promise.reject('Database not initialized');
+
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(STORE_NAME, 'readonly');
+        const store = transaction.objectStore(StoreName.SyncMetadata);
+        const index = store.index(STORE_CONFIG[StoreName.SyncMetadata].indexName);
+        const request = index.get([userId]);
+
+        request.onsuccess = () => {
+          const result = request.result as SyncMetadataDATA_IDB | undefined;
+          if (!result) {
+            resolve(null);
+            return;
+          }
+          resolve({
+            user_id: result.user_id,
+            last_synced_at: result.last_synced_at,
+          });
+        };
+        request.onerror = () => reject(request.error);
+      });
+    },
+    [],
+  );
+
+  // Get all spending data across all groups/months (for sync push)
+  const getAllSpendingData = useCallback(
+    (db: IDBDatabase | null): Promise<SpendingDATA_IDB[]> => {
+      if (!db) return Promise.reject('Database not initialized');
+
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(STORE_NAME, 'readonly');
+        const store = transaction.objectStore(StoreName.ExpenseRecord);
+        const request = store.getAll();
+
+        request.onsuccess = () => {
+          resolve(request.result as unknown as SpendingDATA_IDB[]);
+        };
+        request.onerror = () => reject(request.error);
+      });
+    },
+    [],
+  );
+
   return {
     db,
     setSpendingData,
@@ -526,5 +615,8 @@ export const useIDB = () => {
     getBudgetData,
     setFavoriteCategoriesData,
     getFavoriteCategoriesData,
+    setSyncMetadata,
+    getSyncMetadata,
+    getAllSpendingData,
   };
 };

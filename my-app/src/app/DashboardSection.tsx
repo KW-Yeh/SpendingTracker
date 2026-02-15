@@ -5,9 +5,9 @@ import Overview from '@/app/transactions/Overview';
 import { QuickNavigationCards } from '@/components/QuickNavigationCards';
 import { RecentTransactionsList } from '@/components/RecentTransactionsList';
 import { DashboardSkeleton } from '@/components/skeletons/DashboardSkeleton';
+import { useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
-import { getBudget } from '@/services/budgetServices';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
 import { startTransition, useCallback, useEffect, useState, useMemo } from 'react';
 import { YearMonthFilter } from './analysis/YearMonthFilter';
@@ -17,8 +17,8 @@ import { CategoricalChartState } from 'recharts/types/chart/types';
 export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
   const { syncData, data, loading, isInitialLoad } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
+  const { budget, syncBudget } = useBudgetCtx();
   const [monthlyData, setMonthlyData] = useState<SpendingRecord[]>([]);
-  const [budget, setBudget] = useState<Budget | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const dateHook = useYearMonth(new Date());
 
@@ -48,18 +48,12 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
     [syncData],
   );
 
-  // Fetch budget data
+  // Sync budget from IDB
   useEffect(() => {
     if (currentGroup?.account_id) {
-      getBudget(currentGroup.account_id)
-        .then((res) => {
-          if (res.status && res.data) {
-            setBudget(res.data);
-          }
-        })
-        .catch(console.error);
+      syncBudget(currentGroup.account_id);
     }
-  }, [currentGroup?.account_id]);
+  }, [currentGroup?.account_id, syncBudget]);
 
   // Auto-sync current month data
   useEffect(() => {

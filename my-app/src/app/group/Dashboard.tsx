@@ -12,9 +12,6 @@ import { Modal } from '@/components/Modal';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import {
-  createGroup,
-  putGroup,
-  deleteGroup as deleteGroupService,
   removeGroupMember,
   getGroupMembers,
 } from '@/services/groupServices';
@@ -23,7 +20,7 @@ import QRCode from 'react-qr-code';
 
 export const Dashboard = () => {
   const { config: userData, syncUser } = useUserConfigCtx();
-  const { groups, syncGroup, loading } = useGroupCtx();
+  const { groups, syncGroup, setter: setGroups, loading } = useGroupCtx();
 
   const refresh = useCallback(() => {
     if (userData) {
@@ -35,14 +32,16 @@ export const Dashboard = () => {
     if (!userData) return;
     const groupName = prompt('請輸入身分群組名稱');
     if (!groupName) return;
-    await createGroup({
+    const newGroup: Group = {
       account_id: Date.now(),
       name: groupName,
       owner_id: userData.user_id,
-    });
-    syncGroup(userData.user_id);
-    syncUser();
-  }, [userData, syncGroup, syncUser]);
+      members: [userData.user_id],
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    setGroups([...groups, newGroup], userData.user_id);
+  }, [userData, groups, setGroups]);
 
   return (
     <div className="content-wrapper">
@@ -73,6 +72,7 @@ const GroupCard = ({
   refresh: () => void;
 }) => {
   const { config: userData } = useUserConfigCtx();
+  const { groups, setter: setGroups } = useGroupCtx();
   const [loading, setLoading] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [membersModalOpen, setMembersModalOpen] = useState(false);
@@ -116,22 +116,14 @@ const GroupCard = ({
       return;
     }
 
-    setLoading(true);
-    try {
-      await putGroup({
-        account_id: group.account_id,
-        name: newGroupName,
-        owner_id: group.owner_id,
-      });
-      alert('群組名稱已更新');
-      setEditModalOpen(false);
-      refresh();
-    } catch (error) {
-      console.error(error);
-      alert('更新失敗，請稍後再試');
-    } finally {
-      setLoading(false);
-    }
+    const updatedGroups = groups.map((g) =>
+      g.account_id === group.account_id
+        ? { ...g, name: newGroupName, updated_at: new Date().toISOString() }
+        : g,
+    );
+    setGroups(updatedGroups, userData?.user_id);
+    alert('群組名稱已更新');
+    setEditModalOpen(false);
   };
 
   const handleRemoveMember = async (userId: number, userName: string) => {
@@ -182,17 +174,11 @@ const GroupCard = ({
           `確定要刪除群組「${group.name}」嗎？此操作無法復原。`,
         );
         if (confirmDelete) {
-          setLoading(true);
-          try {
-            await deleteGroupService(String(group.account_id));
-            alert('群組已刪除');
-            refresh();
-          } catch (error) {
-            console.error(error);
-            alert('刪除失敗，請稍後再試');
-          } finally {
-            setLoading(false);
-          }
+          const filteredGroups = groups.filter(
+            (g) => g.account_id !== group.account_id,
+          );
+          setGroups(filteredGroups, userData?.user_id);
+          alert('群組已刪除');
         }
         break;
 

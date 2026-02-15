@@ -8,6 +8,7 @@ interface SpendingRecord {
   amount: string;
   category: string;
   description: string;
+  updated_at?: string;
 }
 
 interface Group {
@@ -16,6 +17,7 @@ interface Group {
   owner_id: number;
   members?: number[]; // 新增：成員 user_id 陣列
   created_at?: string;
+  updated_at?: string;
   // 擴充資訊
   owner_email?: string;
   owner_name?: string;
@@ -28,6 +30,7 @@ interface GroupMember {
   user_id: number;
   role: string;
   joined_at: string;
+  updated_at?: string;
   // 使用者資訊
   email?: string;
   name?: string;
@@ -52,6 +55,7 @@ interface User {
   email: string;
   avatar_url?: string;
   created_at?: string;
+  updated_at?: string;
 }
 
 interface UserBudgetData {
@@ -163,6 +167,35 @@ interface FavoriteCategories {
   bonus?: string;
   created_at?: string;
   updated_at?: string;
+}
+
+// Sync-related types
+interface SyncMetadata {
+  user_id: number;
+  last_synced_at: string; // ISO timestamp
+}
+
+interface SyncProgress {
+  step: 'pull' | 'push';
+  entity: string; // 'user' | 'groups' | 'transactions' | 'budgets' | 'favorites'
+  current: number;
+  total: number;
+}
+
+interface SyncPullResponse {
+  user: User | null;
+  groups: Group[];
+  members: Record<number, GroupMember[]>; // keyed by account_id
+  transactions: Record<string, SpendingRecord[]>; // keyed by "groupId_year_month"
+  budgets: Budget[];
+  favorites: FavoriteCategories | null;
+}
+
+interface SyncPushPayload {
+  user: User;
+  transactions: SpendingRecord[];
+  budgets: Budget[];
+  favorites: FavoriteCategories | null;
 }
 
 // Helper type for category keys

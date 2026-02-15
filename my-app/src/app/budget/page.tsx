@@ -7,45 +7,34 @@ import { MonthlyBudgetBlocks } from '@/app/budget/MonthlyBudgetBlocks';
 import { BudgetSkeleton } from '@/components/skeletons/BudgetSkeleton';
 import { BudgetProvider, useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
-import { getItems } from '@/services/getRecords';
-import { useEffect, useState, startTransition } from 'react';
+import { useGetSpendingCtx } from '@/context/SpendingProvider';
+import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
+import { useEffect, useMemo } from 'react';
 
 function BudgetContent() {
   const { currentGroup } = useGroupCtx();
   const { syncBudget, loading, isInitialLoad } = useBudgetCtx();
-  const [yearlySpending, setYearlySpending] = useState<SpendingRecord[]>([]);
+  const { data: spendingData, syncData } = useGetSpendingCtx();
 
-  // Fetch budget and spending data
+  // Sync budget and spending data from IDB
   useEffect(() => {
     if (!currentGroup?.account_id) return;
 
-    const accountId = currentGroup.account_id;
+    syncBudget(currentGroup.account_id);
 
-    // Sync budget data
-    syncBudget(accountId);
-
-    // Fetch yearly spending data
+    // Sync spending data for current year from IDB
     const now = new Date();
-    const startOfYear = new Date(now.getFullYear(), 0, 1);
-    const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
-
-    getItems(
-      String(accountId),
+    const { startDate, endDate } = getStartEndOfMonth(now);
+    syncData(
+      String(currentGroup.account_id),
       undefined,
-      startOfYear.toISOString(),
-      endOfYear.toISOString(),
-    )
-      .then((response) => {
-        if (response.status && response.data) {
-          startTransition(() => {
-            setYearlySpending(response.data);
-          });
-        }
-      })
-      .catch((error) => {
-        console.error('[BudgetPage] Error fetching spending data:', error);
-      });
-  }, [currentGroup?.account_id, syncBudget]);
+      startDate.toISOString(),
+      endDate.toISOString(),
+    );
+  }, [currentGroup?.account_id, syncBudget, syncData]);
+
+  // Use spending data from context as yearly spending (IDB data for the current group)
+  const yearlySpending = useMemo(() => spendingData, [spendingData]);
 
   if (!currentGroup) {
     return (

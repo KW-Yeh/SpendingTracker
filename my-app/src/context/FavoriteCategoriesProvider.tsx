@@ -1,10 +1,6 @@
 'use client';
 
 import {
-  getFavoriteCategories,
-  putFavoriteCategories,
-} from '@/services/favoriteCategoriesServices';
-import {
   getCategoryFavorites,
   updateCategoryFavorites,
 } from '@/utils/categoryHelpers';
@@ -61,80 +57,61 @@ export const FavoriteCategoriesProvider = ({
     setLoading(false);
   }, []);
 
-  // Stale-While-Revalidate strategy for favorite categories
+  // IDB-only: read favorites from IDB
   const syncFavorites = useCallback(
     async (ownerId: number) => {
       if (!db) {
-        // Fallback to direct API call
         setLoading(true);
-        getFavoriteCategories(ownerId)
-          .then((res) => {
-            if (res.status) {
-              handleState(res.data);
-            } else {
-              handleState(null);
-            }
-          })
-          .catch((err) => {
-            console.error(err);
-            handleState(null);
-          });
         return;
       }
 
-      // Try cache first
       try {
         const cachedData = await getFavoriteCategoriesData(db, ownerId);
         if (cachedData) {
-          console.log('[FavoriteCategoriesProvider] Using cached favorite categories data');
           startTransition(() => {
             setFavorites(cachedData);
             setLoading(false);
           });
         } else {
-          setLoading(true);
+          handleState(null);
         }
       } catch (error) {
-        console.error('[FavoriteCategoriesProvider] Error reading cache:', error);
-        setLoading(true);
+        console.error('[FavoriteCategoriesProvider] Error reading IDB:', error);
+        handleState(null);
       }
-
-      // Revalidate in background
-      getFavoriteCategories(ownerId)
-        .then((res) => {
-          if (res.status && res.data) {
-            startTransition(() => {
-              handleState(res.data);
-            });
-            // Update cache
-            setFavoriteCategoriesData(db, ownerId, res.data).catch(console.error);
-          } else {
-            handleState(null);
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-          handleState(null);
-        });
     },
-    [db, getFavoriteCategoriesData, setFavoriteCategoriesData, handleState],
+    [db, getFavoriteCategoriesData, handleState],
   );
 
+  // IDB-only: write favorites to IDB + update state
   const updateFavorites = useCallback(
     async (data: Partial<FavoriteCategories> & { owner_id: number }) => {
       setLoading(true);
-      const res = await putFavoriteCategories(data);
-      if (res.status && res.data) {
-        handleState(res.data);
-        // Update cache
-        if (db) {
-          setFavoriteCategoriesData(db, data.owner_id, res.data).catch(console.error);
-        }
-      } else {
-        setLoading(false);
+
+      const updatedFavorites: FavoriteCategories = {
+        category_id: favorites?.category_id || Date.now(),
+        owner_id: data.owner_id,
+        food: data.food ?? favorites?.food,
+        clothing: data.clothing ?? favorites?.clothing,
+        housing: data.housing ?? favorites?.housing,
+        transportation: data.transportation ?? favorites?.transportation,
+        education: data.education ?? favorites?.education,
+        entertainment: data.entertainment ?? favorites?.entertainment,
+        daily: data.daily ?? favorites?.daily,
+        medical: data.medical ?? favorites?.medical,
+        investment: data.investment ?? favorites?.investment,
+        other: data.other ?? favorites?.other,
+        salary: data.salary ?? favorites?.salary,
+        bonus: data.bonus ?? favorites?.bonus,
+        updated_at: new Date().toISOString(),
+      };
+
+      if (db) {
+        await setFavoriteCategoriesData(db, data.owner_id, updatedFavorites);
       }
+      handleState(updatedFavorites);
     },
-    [db, setFavoriteCategoriesData, handleState],
+    [db, favorites, setFavoriteCategoriesData, handleState],
   );
 
   const getCategoryDescriptions = useCallback(
@@ -147,7 +124,7 @@ export const FavoriteCategoriesProvider = ({
   const addCategoryDescription = useCallback(
     async (categoryEmoji: string, description: string, ownerId: number) => {
       const current = getCategoryFavorites(favorites, categoryEmoji);
-      if (current.includes(description)) return; // Already exists
+      if (current.includes(description)) return;
 
       const updated = [...current, description];
       const patch = updateCategoryFavorites(favorites, categoryEmoji, updated);

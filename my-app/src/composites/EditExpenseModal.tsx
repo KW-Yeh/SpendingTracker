@@ -10,7 +10,6 @@ import { useFavoriteCategoriesCtx } from '@/context/FavoriteCategoriesProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { putItem } from '@/services/getRecords';
 import {
   INCOME_TYPE_MAP,
   Necessity,
@@ -19,7 +18,6 @@ import {
 } from '@/utils/constants';
 import { getCategoryIcon } from '@/utils/getCategoryIcon';
 import { getSpendingCategoryMap } from '@/utils/getSpendingCategoryMap';
-import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { v7 as uuid } from 'uuid';
@@ -33,7 +31,7 @@ interface Props {
 export const EditExpenseModal = (props: Props) => {
   const { data, isNewData, onClose } = props;
   const { config: userData, setter: updateUser, syncUser } = useUserConfigCtx();
-  const { syncData } = useGetSpendingCtx();
+  const { addRecord, updateRecord } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
   const { date } = useDateCtx();
   const {
@@ -136,13 +134,14 @@ export const EditExpenseModal = (props: Props) => {
         return;
       }
       setLoading(true);
+      const groupId = currentGroup?.account_id
+        ? String(currentGroup.account_id)
+        : undefined;
       const newSpending: SpendingRecord = {
         ...data,
         id: data.id || uuid(),
         'user-token': userEmail,
-        groupId: currentGroup?.account_id
-          ? String(currentGroup.account_id)
-          : undefined,
+        groupId: groupId,
         type: spendingType,
         date: date.toISOString(),
         necessity,
@@ -151,14 +150,13 @@ export const EditExpenseModal = (props: Props) => {
         amount: amount.toString(),
       };
 
-      await putItem(newSpending);
-      const { startDate, endDate } = getStartEndOfMonth(date);
-      syncData(
-        currentGroup?.account_id ? String(currentGroup.account_id) : undefined,
-        userEmail,
-        startDate.toISOString(),
-        endDate.toISOString(),
-      );
+      if (groupId) {
+        if (isNewData) {
+          await addRecord(newSpending, groupId);
+        } else {
+          await updateRecord(newSpending, groupId);
+        }
+      }
       setLoading(false);
       if (onClose) onClose();
     },
@@ -168,11 +166,13 @@ export const EditExpenseModal = (props: Props) => {
       data,
       date,
       description,
+      isNewData,
       necessity,
       onClose,
       selectedCategory,
       spendingType,
-      syncData,
+      addRecord,
+      updateRecord,
       userData?.email,
     ],
   );

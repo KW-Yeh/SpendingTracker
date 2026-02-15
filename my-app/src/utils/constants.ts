@@ -145,4 +145,4 @@ export const BUDGET_PERIOD_WORDINGS: Record<string, string> = {
 };
 
 export const IDB_NAME = 'Expense Tracking';
-export const IDB_VERSION = 2;
+export const IDB_VERSION = 3;

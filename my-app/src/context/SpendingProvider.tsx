@@ -1,7 +1,6 @@
 'use client';
 
 import { useIDB } from '@/hooks/useIDB';
-import { getItems } from '@/services/getRecords';
 import { getCookie } from '@/utils/handleCookie';
 import {
   createContext,
@@ -24,11 +23,17 @@ const INIT_CTX_VAL: {
     startDate?: string,
     endDate?: string,
   ) => void;
+  addRecord: (record: SpendingRecord, groupId: string | number) => Promise<void>;
+  updateRecord: (record: SpendingRecord, groupId: string | number) => Promise<void>;
+  deleteRecord: (recordId: string, groupId: string | number) => Promise<void>;
 } = {
   loading: true,
   isInitialLoad: true,
   data: [],
   syncData: () => {},
+  addRecord: async () => {},
+  updateRecord: async () => {},
+  deleteRecord: async () => {},
 };
 
 type State = {
@@ -48,7 +53,6 @@ const reducer = (state: State, action: Action): State => {
         ...state,
         data: action.payload,
         loading: false,
-        // Once we have data, isInitialLoad becomes false permanently
         isInitialLoad: action.payload.length > 0 ? false : state.isInitialLoad,
       };
     case 'SET_LOADING':
@@ -75,34 +79,7 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
     dispatch({ type: 'SET_DATA', payload: _data });
   }, []);
 
-  const queryItem = useCallback(
-    (
-      email?: string,
-      groupId?: string,
-      startDate?: string,
-      endDate?: string,
-    ) => {
-      if (!email && !groupId) return;
-      getItems(groupId, email, startDate, endDate)
-        .then((res) => {
-          if (controllerRef.current) {
-            controllerRef.current.abort();
-          }
-          console.log('Get Data from API');
-          handleSetState(res.data);
-          setData2IDB(IDB, res.data, Number(groupId), startDate)
-            .then(() => {
-              console.log('Update IDB success.');
-            })
-            .catch((err) => {
-              console.log('Update IDB failed: ', err);
-            });
-        })
-        .catch(console.error);
-    },
-    [IDB, handleSetState, setData2IDB],
-  );
-
+  // IDB-only: read spending data from IDB
   const syncData = useCallback(
     async (
       groupId?: string,
@@ -110,51 +87,89 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       startDate?: string,
       endDate?: string,
     ) => {
-      // Set loading to true when starting sync
       dispatch({ type: 'SET_LOADING', payload: true });
 
-      if (!groupId) {
-        queryItem(email, groupId, startDate, endDate);
+      if (!groupId || !IDB) {
+        dispatch({ type: 'SET_LOADING', payload: false });
         return;
       }
 
-      // Try to load from IndexedDB first (Stale-While-Revalidate)
-      let cacheHit = false;
-      if (IDB) {
-        try {
-          const cachedData = await getDataFromIDB(IDB, Number(groupId), new AbortController().signal);
-          if (cachedData && cachedData.length > 0) {
-            const _data = JSON.parse(cachedData[0].data) as SpendingRecord[];
-            if (_data.length > 0) {
-              console.log('[SpendingProvider] Using cached spending data');
-              handleSetState(_data);
-              cacheHit = true;
-            }
-          }
-        } catch (error) {
-          console.error('[SpendingProvider] Error reading cache:', error);
+      try {
+        const cachedData = await getDataFromIDB(
+          IDB,
+          Number(groupId),
+          new AbortController().signal,
+        );
+        if (cachedData && cachedData.length > 0) {
+          const _data = JSON.parse(cachedData[0].data) as SpendingRecord[];
+          handleSetState(_data);
+        } else {
+          handleSetState([]);
         }
+      } catch (error) {
+        console.error('[SpendingProvider] Error reading IDB:', error);
+        handleSetState([]);
       }
-
-      // If no cache hit, keep loading state true until API returns
-      if (!cacheHit) {
-        dispatch({ type: 'SET_LOADING', payload: true });
-      }
-
-      // Revalidate in background
-      queryItem(email, groupId, startDate, endDate);
     },
-    [queryItem, IDB, getDataFromIDB, handleSetState],
+    [IDB, getDataFromIDB, handleSetState],
+  );
+
+  // IDB-only: add a new spending record
+  const addRecord = useCallback(
+    async (record: SpendingRecord, groupId: string | number) => {
+      const newRecord = { ...record, updated_at: new Date().toISOString() };
+      const updatedData = [...state.data, newRecord];
+      handleSetState(updatedData);
+
+      if (IDB) {
+        await setData2IDB(IDB, updatedData, groupId, record.date);
+      }
+    },
+    [IDB, state.data, handleSetState, setData2IDB],
+  );
+
+  // IDB-only: update an existing spending record
+  const updateRecord = useCallback(
+    async (record: SpendingRecord, groupId: string | number) => {
+      const updatedRecord = { ...record, updated_at: new Date().toISOString() };
+      const updatedData = state.data.map((r) =>
+        r.id === record.id ? updatedRecord : r,
+      );
+      handleSetState(updatedData);
+
+      if (IDB) {
+        await setData2IDB(IDB, updatedData, groupId, record.date);
+      }
+    },
+    [IDB, state.data, handleSetState, setData2IDB],
+  );
+
+  // IDB-only: delete a spending record
+  const deleteRecord = useCallback(
+    async (recordId: string, groupId: string | number) => {
+      const updatedData = state.data.filter((r) => r.id !== recordId);
+      handleSetState(updatedData);
+
+      if (IDB) {
+        const dateStr = state.data.find((r) => r.id === recordId)?.date;
+        await setData2IDB(IDB, updatedData, groupId, dateStr);
+      }
+    },
+    [IDB, state.data, handleSetState, setData2IDB],
   );
 
   const ctxVal = useMemo(
     () => ({
       ...state,
       syncData,
+      addRecord,
+      updateRecord,
+      deleteRecord,
     }),
-    [state, syncData],
+    [state, syncData, addRecord, updateRecord, deleteRecord],
   );
 
+  // Load data from IDB on mount
   useEffect(() => {
     const controller = (controllerRef.current = new AbortController());
     const groupId = getCookie('currentGroupId');
@@ -163,7 +178,6 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
         .then((res) => {
           if (res && res.length === 1) {
             const _data = JSON.parse(res[0].data) as SpendingRecord[];
-            // console.log('Get Data from IDB', _data);
             if (_data.length !== 0) {
               handleSetState(_data);
               controllerRef.current = null;
@@ -171,7 +185,7 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
           }
         })
         .catch((err) => {
-          console.log('Error while syncing data: ', err);
+          console.log('Error while reading IDB:', err);
         });
     }
     return () => controller.abort();
