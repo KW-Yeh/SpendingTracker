@@ -185,182 +185,146 @@ export async function POST(req: NextRequest) {
       favorites: { updated: false },
     };
 
-    // 1. Push user data (only if client is newer)
+    // 1. Push user data (upsert with conflict resolution)
     if (user.updated_at) {
-      const existingUser = await db.query(
-        'SELECT updated_at FROM users WHERE user_id = $1',
-        [user.user_id],
+      await db.query(
+        `UPDATE users SET name = $1, avatar_url = $2, updated_at = $3
+         WHERE user_id = $4
+           AND (updated_at IS NULL OR $3::timestamp > updated_at)`,
+        [user.name, user.avatar_url || null, user.updated_at, user.user_id],
       );
-      const serverUpdatedAt = existingUser.rows[0]?.updated_at;
-      if (
-        !serverUpdatedAt ||
-        new Date(user.updated_at) > new Date(serverUpdatedAt)
-      ) {
-        await db.query(
-          `UPDATE users SET name = $1, avatar_url = $2, updated_at = $3
-           WHERE user_id = $4`,
-          [user.name, user.avatar_url || null, user.updated_at, user.user_id],
-        );
-        results.user.updated = true;
-      }
+      results.user.updated = true;
     }
 
-    // 2. Push transactions (only if client is newer)
-    for (const tx of transactions) {
-      if (!tx.id) continue;
-
-      const existing = await db.query(
-        'SELECT updated_at FROM transactions WHERE transaction_id = $1',
-        [tx.id],
-      );
-      const serverUpdatedAt = existing.rows[0]?.updated_at;
-
-      if (
-        !serverUpdatedAt ||
-        !tx.updated_at ||
-        new Date(tx.updated_at) > new Date(serverUpdatedAt)
-      ) {
-        // Look up user_id from email
-        let recordedByUserId = user.user_id;
-        if (tx['user-token']) {
-          const userResult = await db.query(
-            'SELECT user_id FROM users WHERE email = $1',
-            [tx['user-token']],
-          );
-          if (userResult.rows.length > 0) {
-            recordedByUserId = userResult.rows[0].user_id;
-          }
+    // 2. Push transactions - batch email lookup, then parallel upserts
+    const validTx = transactions.filter((tx) => tx.id);
+    if (validTx.length > 0) {
+      // Batch lookup: collect unique emails and resolve to user_ids
+      const uniqueEmails = [
+        ...new Set(validTx.map((tx) => tx['user-token']).filter(Boolean)),
+      ];
+      const emailToUserId: Record<string, string> = {};
+      if (uniqueEmails.length > 0) {
+        const emailResult = await db.query(
+          `SELECT user_id, email FROM users WHERE email = ANY($1)`,
+          [uniqueEmails],
+        );
+        for (const row of emailResult.rows) {
+          emailToUserId[row.email] = row.user_id;
         }
-
-        await db.query(
-          `INSERT INTO transactions (
-            transaction_id, account_id, recorded_by_user_id,
-            necessity, "date", category, amount, description, type, updated_at
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-          ON CONFLICT (transaction_id)
-          DO UPDATE SET
-            necessity = EXCLUDED.necessity,
-            "date" = EXCLUDED."date",
-            category = EXCLUDED.category,
-            amount = EXCLUDED.amount,
-            description = EXCLUDED.description,
-            type = EXCLUDED.type,
-            updated_at = EXCLUDED.updated_at
-          WHERE transactions.updated_at IS NULL
-             OR EXCLUDED.updated_at > transactions.updated_at`,
-          [
-            tx.id,
-            tx.groupId || 1,
-            recordedByUserId,
-            tx.necessity,
-            tx.date,
-            tx.category,
-            tx.amount,
-            tx.description,
-            tx.type,
-            tx.updated_at || new Date().toISOString(),
-          ],
-        );
-        results.transactions.upserted++;
-      } else {
-        results.transactions.skipped++;
       }
+
+      // Parallel upserts (batches of 10 to avoid overwhelming the DB)
+      const BATCH_SIZE = 10;
+      for (let i = 0; i < validTx.length; i += BATCH_SIZE) {
+        const batch = validTx.slice(i, i + BATCH_SIZE);
+        await Promise.all(
+          batch.map((tx) => {
+            const recordedByUserId =
+              (tx['user-token'] && emailToUserId[tx['user-token']]) ||
+              user.user_id;
+            return db.query(
+              `INSERT INTO transactions (
+                transaction_id, account_id, recorded_by_user_id,
+                necessity, "date", category, amount, description, type, updated_at
+              ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+              ON CONFLICT (transaction_id)
+              DO UPDATE SET
+                necessity = EXCLUDED.necessity,
+                "date" = EXCLUDED."date",
+                category = EXCLUDED.category,
+                amount = EXCLUDED.amount,
+                description = EXCLUDED.description,
+                type = EXCLUDED.type,
+                updated_at = EXCLUDED.updated_at
+              WHERE transactions.updated_at IS NULL
+                 OR EXCLUDED.updated_at > transactions.updated_at`,
+              [
+                tx.id,
+                tx.groupId || 1,
+                recordedByUserId,
+                tx.necessity,
+                tx.date,
+                tx.category,
+                tx.amount,
+                tx.description,
+                tx.type,
+                tx.updated_at || new Date().toISOString(),
+              ],
+            );
+          }),
+        );
+      }
+      results.transactions.upserted = validTx.length;
     }
 
-    // 3. Push budgets (only if client is newer)
+    // 3. Push budgets (direct upsert, no pre-check needed)
     for (const budget of budgets) {
       if (!budget.account_id) continue;
-
-      const existing = await db.query(
-        'SELECT updated_at FROM budgets WHERE account_id = $1',
-        [budget.account_id],
+      const monthlyItemsJson = JSON.stringify(budget.monthly_items);
+      await db.query(
+        `INSERT INTO budgets (
+          budget_id, account_id, annual_budget, monthly_budget,
+          monthly_items, created_at, updated_at
+        ) VALUES ($1, $2, $3, $4, $5, NOW(), $6)
+        ON CONFLICT (account_id)
+        DO UPDATE SET
+          annual_budget = EXCLUDED.annual_budget,
+          monthly_budget = EXCLUDED.monthly_budget,
+          monthly_items = EXCLUDED.monthly_items,
+          updated_at = EXCLUDED.updated_at
+        WHERE budgets.updated_at IS NULL
+           OR EXCLUDED.updated_at > budgets.updated_at`,
+        [
+          budget.budget_id || Date.now(),
+          budget.account_id,
+          budget.annual_budget,
+          budget.monthly_budget,
+          monthlyItemsJson,
+          budget.updated_at || new Date().toISOString(),
+        ],
       );
-      const serverUpdatedAt = existing.rows[0]?.updated_at;
-
-      if (
-        !serverUpdatedAt ||
-        !budget.updated_at ||
-        new Date(budget.updated_at) > new Date(serverUpdatedAt)
-      ) {
-        const monthlyItemsJson = JSON.stringify(budget.monthly_items);
-        await db.query(
-          `INSERT INTO budgets (
-            budget_id, account_id, annual_budget, monthly_budget,
-            monthly_items, created_at, updated_at
-          ) VALUES ($1, $2, $3, $4, $5, NOW(), $6)
-          ON CONFLICT (account_id)
-          DO UPDATE SET
-            annual_budget = EXCLUDED.annual_budget,
-            monthly_budget = EXCLUDED.monthly_budget,
-            monthly_items = EXCLUDED.monthly_items,
-            updated_at = EXCLUDED.updated_at
-          WHERE budgets.updated_at IS NULL
-             OR EXCLUDED.updated_at > budgets.updated_at`,
-          [
-            budget.budget_id || Date.now(),
-            budget.account_id,
-            budget.annual_budget,
-            budget.monthly_budget,
-            monthlyItemsJson,
-            budget.updated_at || new Date().toISOString(),
-          ],
-        );
-        results.budgets.upserted++;
-      } else {
-        results.budgets.skipped++;
-      }
+      results.budgets.upserted++;
     }
 
-    // 4. Push favorite categories (only if client is newer)
+    // 4. Push favorite categories (direct upsert, no pre-check needed)
     if (favorites && favorites.owner_id) {
-      const existing = await db.query(
-        'SELECT updated_at FROM favorite_categories WHERE owner_id = $1',
-        [favorites.owner_id],
+      await db.query(
+        `INSERT INTO favorite_categories (
+          category_id, owner_id, food, clothing, housing, transportation,
+          education, entertainment, daily, medical, investment, other,
+          salary, bonus, created_at, updated_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW(), $15)
+        ON CONFLICT (owner_id)
+        DO UPDATE SET
+          food = EXCLUDED.food, clothing = EXCLUDED.clothing,
+          housing = EXCLUDED.housing, transportation = EXCLUDED.transportation,
+          education = EXCLUDED.education, entertainment = EXCLUDED.entertainment,
+          daily = EXCLUDED.daily, medical = EXCLUDED.medical,
+          investment = EXCLUDED.investment, other = EXCLUDED.other,
+          salary = EXCLUDED.salary, bonus = EXCLUDED.bonus,
+          updated_at = EXCLUDED.updated_at
+        WHERE favorite_categories.updated_at IS NULL
+           OR EXCLUDED.updated_at > favorite_categories.updated_at`,
+        [
+          favorites.category_id || Date.now(),
+          favorites.owner_id,
+          favorites.food || '',
+          favorites.clothing || '',
+          favorites.housing || '',
+          favorites.transportation || '',
+          favorites.education || '',
+          favorites.entertainment || '',
+          favorites.daily || '',
+          favorites.medical || '',
+          favorites.investment || '',
+          favorites.other || '',
+          favorites.salary || '',
+          favorites.bonus || '',
+          favorites.updated_at || new Date().toISOString(),
+        ],
       );
-      const serverUpdatedAt = existing.rows[0]?.updated_at;
-
-      if (
-        !serverUpdatedAt ||
-        !favorites.updated_at ||
-        new Date(favorites.updated_at) > new Date(serverUpdatedAt)
-      ) {
-        await db.query(
-          `INSERT INTO favorite_categories (
-            category_id, owner_id, food, clothing, housing, transportation,
-            education, entertainment, daily, medical, investment, other,
-            salary, bonus, created_at, updated_at
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW(), $15)
-          ON CONFLICT (owner_id)
-          DO UPDATE SET
-            food = EXCLUDED.food, clothing = EXCLUDED.clothing,
-            housing = EXCLUDED.housing, transportation = EXCLUDED.transportation,
-            education = EXCLUDED.education, entertainment = EXCLUDED.entertainment,
-            daily = EXCLUDED.daily, medical = EXCLUDED.medical,
-            investment = EXCLUDED.investment, other = EXCLUDED.other,
-            salary = EXCLUDED.salary, bonus = EXCLUDED.bonus,
-            updated_at = EXCLUDED.updated_at
-          WHERE favorite_categories.updated_at IS NULL
-             OR EXCLUDED.updated_at > favorite_categories.updated_at`,
-          [
-            favorites.category_id || Date.now(),
-            favorites.owner_id,
-            favorites.food || '',
-            favorites.clothing || '',
-            favorites.housing || '',
-            favorites.transportation || '',
-            favorites.education || '',
-            favorites.entertainment || '',
-            favorites.daily || '',
-            favorites.medical || '',
-            favorites.investment || '',
-            favorites.other || '',
-            favorites.salary || '',
-            favorites.bonus || '',
-            favorites.updated_at || new Date().toISOString(),
-          ],
-        );
-        results.favorites.updated = true;
-      }
+      results.favorites.updated = true;
     }
 
     return NextResponse.json({ success: true, results });
