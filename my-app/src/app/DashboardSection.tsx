@@ -17,7 +17,7 @@ import { CategoricalChartState } from 'recharts/types/chart/types';
 export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
   const { syncData, data, loading, isInitialLoad } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
-  const { budget, syncBudget } = useBudgetCtx();
+  const { budget } = useBudgetCtx();
   const [monthlyData, setMonthlyData] = useState<SpendingRecord[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const dateHook = useYearMonth(new Date());
@@ -47,13 +47,6 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
     },
     [syncData],
   );
-
-  // Sync budget from IDB
-  useEffect(() => {
-    if (currentGroup?.account_id) {
-      syncBudget(currentGroup.account_id);
-    }
-  }, [currentGroup?.account_id, syncBudget]);
 
   // Auto-sync current month data
   useEffect(() => {

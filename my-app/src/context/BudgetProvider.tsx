@@ -1,11 +1,13 @@
 'use client';
 
 import { useIDB } from '@/hooks/useIDB';
+import { useGroupCtx } from '@/context/GroupProvider';
 import {
   createContext,
   ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   startTransition,
@@ -37,6 +39,7 @@ export const BudgetProvider = ({ children }: { children: ReactNode }) => {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [budget, setBudget] = useState<Budget | null>(null);
   const { db, getBudgetData, setBudgetData } = useIDB();
+  const { currentGroup } = useGroupCtx();
 
   const handleState = useCallback((data: Budget | null) => {
     setBudget(data);
@@ -112,6 +115,13 @@ export const BudgetProvider = ({ children }: { children: ReactNode }) => {
     },
     [handleState],
   );
+
+  // Auto-sync budget when current group or db changes
+  useEffect(() => {
+    if (currentGroup?.account_id) {
+      syncBudget(currentGroup.account_id);
+    }
+  }, [currentGroup?.account_id, syncBudget]);
 
   const ctxVal = useMemo(
     () => ({

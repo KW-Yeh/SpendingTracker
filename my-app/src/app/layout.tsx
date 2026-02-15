@@ -5,6 +5,7 @@ import { PrepareData } from '@/composites/PrepareData';
 import { DateProvider } from '@/context/DateProvider';
 import { FavoriteCategoriesProvider } from '@/context/FavoriteCategoriesProvider';
 import { GroupProvider } from '@/context/GroupProvider';
+import { BudgetProvider } from '@/context/BudgetProvider';
 import { SpendingProvider } from '@/context/SpendingProvider';
 import { UserConfigProvider } from '@/context/UserConfigProvider';
 import type { Viewport } from 'next';
@@ -47,10 +48,12 @@ export default function RootLayout({
               <UserConfigProvider>
                 <FavoriteCategoriesProvider>
                   <SpendingProvider>
-                    <Header />
-                    {children}
-                    {modal}
-                    <PrepareData />
+                    <BudgetProvider>
+                      <Header />
+                      {children}
+                      {modal}
+                      <PrepareData />
+                    </BudgetProvider>
                   </SpendingProvider>
                 </FavoriteCategoriesProvider>
               </UserConfigProvider>

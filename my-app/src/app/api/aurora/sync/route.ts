@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/utils/getAurora';
+import { getPool } from '@/utils/getAurora';
 
 /**
  * GET /api/aurora/sync?user_id=X&since=ISO_TIMESTAMP
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const db = await getDb();
+    const db = await getPool();
 
     // 1. Fetch user data
     const userResult = await db.query(
@@ -177,7 +177,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const db = await getDb();
+    const db = await getPool();
     const results = {
       user: { updated: false },
       transactions: { upserted: 0, skipped: 0 },

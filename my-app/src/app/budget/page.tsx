@@ -5,7 +5,7 @@ import { AnnualBudgetSection } from '@/app/budget/AnnualBudgetSection';
 import { MonthlyBudgetSection } from '@/app/budget/MonthlyBudgetSection';
 import { MonthlyBudgetBlocks } from '@/app/budget/MonthlyBudgetBlocks';
 import { BudgetSkeleton } from '@/components/skeletons/BudgetSkeleton';
-import { BudgetProvider, useBudgetCtx } from '@/context/BudgetProvider';
+import { useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
@@ -13,16 +13,13 @@ import { useEffect, useMemo } from 'react';
 
 function BudgetContent() {
   const { currentGroup } = useGroupCtx();
-  const { syncBudget, loading, isInitialLoad } = useBudgetCtx();
+  const { loading, isInitialLoad } = useBudgetCtx();
   const { data: spendingData, syncData } = useGetSpendingCtx();
 
-  // Sync budget and spending data from IDB
+  // Sync spending data for current year from IDB
   useEffect(() => {
     if (!currentGroup?.account_id) return;
 
-    syncBudget(currentGroup.account_id);
-
-    // Sync spending data for current year from IDB
     const now = new Date();
     const { startDate, endDate } = getStartEndOfMonth(now);
     syncData(
@@ -31,7 +28,7 @@ function BudgetContent() {
       startDate.toISOString(),
       endDate.toISOString(),
     );
-  }, [currentGroup?.account_id, syncBudget, syncData]);
+  }, [currentGroup?.account_id, syncData]);
 
   // Use spending data from context as yearly spending (IDB data for the current group)
   const yearlySpending = useMemo(() => spendingData, [spendingData]);
@@ -44,8 +41,8 @@ function BudgetContent() {
     );
   }
 
-  // Show skeleton only on initial load
-  if (isInitialLoad && (loading || yearlySpending.length === 0)) {
+  // Show skeleton only on initial load while budget is loading
+  if (isInitialLoad && loading) {
     return <BudgetSkeleton />;
   }
 
@@ -65,9 +62,7 @@ export default function BudgetPage() {
   return (
     <div className="bg-soft relative flex w-full flex-1 flex-col">
       <PageTitle>預算管理</PageTitle>
-      <BudgetProvider>
-        <BudgetContent />
-      </BudgetProvider>
+      <BudgetContent />
     </div>
   );
 }

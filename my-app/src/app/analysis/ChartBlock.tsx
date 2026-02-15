@@ -62,7 +62,7 @@ export const ChartBlock = () => {
   const { config: userData } = useUserConfigCtx();
   const { data, syncData, loading, isInitialLoad } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
-  const { budget, syncBudget } = useBudgetCtx();
+  const { budget } = useBudgetCtx();
   const today = new Date();
   const dateHook = useYearMonth(today);
 
@@ -80,13 +80,6 @@ export const ChartBlock = () => {
     },
     [syncData, userData?.email],
   );
-
-  // Sync budget from IDB
-  useEffect(() => {
-    if (currentGroup?.account_id) {
-      syncBudget(currentGroup.account_id);
-    }
-  }, [currentGroup?.account_id, syncBudget]);
 
   // Memoize filtered data and chart calculation
   const chartData = useMemo(() => {
