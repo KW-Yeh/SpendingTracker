@@ -258,32 +258,38 @@ export async function POST(req: NextRequest) {
       results.transactions.upserted = validTx.length;
     }
 
-    // 3. Push budgets (direct upsert, no pre-check needed)
+    // 3. Push budgets (check existing then insert or update)
     for (const budget of budgets) {
       if (!budget.account_id) continue;
       const monthlyItemsJson = JSON.stringify(budget.monthly_items);
-      await db.query(
-        `INSERT INTO budgets (
-          budget_id, account_id, annual_budget, monthly_budget,
-          monthly_items, created_at, updated_at
-        ) VALUES ($1, $2, $3, $4, $5, NOW(), $6)
-        ON CONFLICT (account_id)
-        DO UPDATE SET
-          annual_budget = EXCLUDED.annual_budget,
-          monthly_budget = EXCLUDED.monthly_budget,
-          monthly_items = EXCLUDED.monthly_items,
-          updated_at = EXCLUDED.updated_at
-        WHERE budgets.updated_at IS NULL
-           OR EXCLUDED.updated_at > budgets.updated_at`,
-        [
-          budget.budget_id || Date.now(),
-          budget.account_id,
-          budget.annual_budget,
-          budget.monthly_budget,
-          monthlyItemsJson,
-          budget.updated_at || new Date().toISOString(),
-        ],
+      const updatedAt = budget.updated_at || new Date().toISOString();
+
+      const existing = await db.query(
+        'SELECT budget_id, updated_at FROM budgets WHERE account_id = $1',
+        [budget.account_id],
       );
+
+      if (existing.rows.length > 0) {
+        const serverTime = existing.rows[0].updated_at
+          ? new Date(existing.rows[0].updated_at).getTime()
+          : 0;
+        if (!serverTime || new Date(updatedAt).getTime() > serverTime) {
+          await db.query(
+            `UPDATE budgets SET annual_budget = $1, monthly_budget = $2,
+              monthly_items = $3, updated_at = $4
+             WHERE account_id = $5`,
+            [budget.annual_budget, budget.monthly_budget, monthlyItemsJson, updatedAt, budget.account_id],
+          );
+        }
+      } else {
+        await db.query(
+          `INSERT INTO budgets (budget_id, account_id, annual_budget, monthly_budget,
+            monthly_items, created_at, updated_at)
+           VALUES ($1, $2, $3, $4, $5, NOW(), $6)`,
+          [budget.budget_id || Date.now(), budget.account_id, budget.annual_budget,
+           budget.monthly_budget, monthlyItemsJson, updatedAt],
+        );
+      }
       results.budgets.upserted++;
     }
 
