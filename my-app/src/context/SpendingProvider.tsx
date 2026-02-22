@@ -1,6 +1,11 @@
 'use client';
 
 import { useIDB } from '@/hooks/useIDB';
+import {
+  getItems,
+  putItem,
+  deleteItem as deleteItemAPI,
+} from '@/services/getRecords';
 import { getCookie } from '@/utils/handleCookie';
 import {
   createContext,
@@ -79,7 +84,7 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
     dispatch({ type: 'SET_DATA', payload: _data });
   }, []);
 
-  // IDB-only: read spending data from IDB
+  // Cloud-first: fetch from API, cache to IDB
   const syncData = useCallback(
     async (
       groupId?: string,
@@ -87,72 +92,114 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       startDate?: string,
       endDate?: string,
     ) => {
-      dispatch({ type: 'SET_LOADING', payload: true });
-
-      if (!groupId || !IDB) {
+      if (!groupId) {
         dispatch({ type: 'SET_LOADING', payload: false });
         return;
       }
 
+      dispatch({ type: 'SET_LOADING', payload: true });
+
+      // Show IDB cache first for fast render
+      if (IDB) {
+        try {
+          const cachedData = await getDataFromIDB(
+            IDB,
+            Number(groupId),
+            new AbortController().signal,
+          );
+          if (cachedData && cachedData.length > 0) {
+            const _data = JSON.parse(cachedData[0].data) as SpendingRecord[];
+            if (_data.length > 0) {
+              handleSetState(_data);
+            }
+          }
+        } catch {
+          // IDB cache miss is fine, API will provide data
+        }
+      }
+
+      // Fetch from API (source of truth)
       try {
-        const cachedData = await getDataFromIDB(
-          IDB,
-          Number(groupId),
-          new AbortController().signal,
-        );
-        if (cachedData && cachedData.length > 0) {
-          const _data = JSON.parse(cachedData[0].data) as SpendingRecord[];
-          handleSetState(_data);
-        } else {
-          handleSetState([]);
+        const res = await getItems(groupId, email, startDate, endDate);
+        if (res.status) {
+          handleSetState(res.data);
+          // Update IDB cache
+          if (IDB && res.data.length > 0) {
+            await setData2IDB(IDB, res.data, groupId, res.data[0]?.date);
+          }
         }
       } catch (error) {
-        console.error('[SpendingProvider] Error reading IDB:', error);
-        handleSetState([]);
+        console.error('[SpendingProvider] Error fetching from API:', error);
       }
     },
-    [IDB, getDataFromIDB, handleSetState],
+    [IDB, getDataFromIDB, setData2IDB, handleSetState],
   );
 
-  // IDB-only: add a new spending record
+  // Cloud-first: write to API, then update local state + IDB cache
   const addRecord = useCallback(
     async (record: SpendingRecord, groupId: string | number) => {
       const newRecord = { ...record, updated_at: new Date().toISOString() };
+
+      // Optimistic update
       const updatedData = [...state.data, newRecord];
       handleSetState(updatedData);
 
-      if (IDB) {
-        await setData2IDB(IDB, updatedData, groupId, record.date);
+      try {
+        await putItem(newRecord);
+        // Update IDB cache
+        if (IDB) {
+          await setData2IDB(IDB, updatedData, groupId, record.date);
+        }
+      } catch (error) {
+        console.error('[SpendingProvider] Error adding record to API:', error);
+        // Rollback optimistic update
+        handleSetState(state.data);
       }
     },
     [IDB, state.data, handleSetState, setData2IDB],
   );
 
-  // IDB-only: update an existing spending record
+  // Cloud-first: write to API, then update local state + IDB cache
   const updateRecord = useCallback(
     async (record: SpendingRecord, groupId: string | number) => {
       const updatedRecord = { ...record, updated_at: new Date().toISOString() };
       const updatedData = state.data.map((r) =>
         r.id === record.id ? updatedRecord : r,
       );
+
+      // Optimistic update
       handleSetState(updatedData);
 
-      if (IDB) {
-        await setData2IDB(IDB, updatedData, groupId, record.date);
+      try {
+        await putItem(updatedRecord);
+        if (IDB) {
+          await setData2IDB(IDB, updatedData, groupId, record.date);
+        }
+      } catch (error) {
+        console.error('[SpendingProvider] Error updating record in API:', error);
+        handleSetState(state.data);
       }
     },
     [IDB, state.data, handleSetState, setData2IDB],
   );
 
-  // IDB-only: delete a spending record
+  // Cloud-first: delete from API, then update local state + IDB cache
   const deleteRecord = useCallback(
     async (recordId: string, groupId: string | number) => {
       const updatedData = state.data.filter((r) => r.id !== recordId);
+      const dateStr = state.data.find((r) => r.id === recordId)?.date;
+
+      // Optimistic update
       handleSetState(updatedData);
 
-      if (IDB) {
-        const dateStr = state.data.find((r) => r.id === recordId)?.date;
-        await setData2IDB(IDB, updatedData, groupId, dateStr);
+      try {
+        await deleteItemAPI(recordId);
+        if (IDB) {
+          await setData2IDB(IDB, updatedData, groupId, dateStr);
+        }
+      } catch (error) {
+        console.error('[SpendingProvider] Error deleting record from API:', error);
+        handleSetState(state.data);
       }
     },
     [IDB, state.data, handleSetState, setData2IDB],
@@ -169,7 +216,7 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
     [state, syncData, addRecord, updateRecord, deleteRecord],
   );
 
-  // Load data from IDB on mount
+  // Load IDB cache on mount for fast initial render
   useEffect(() => {
     const controller = (controllerRef.current = new AbortController());
     const groupId = getCookie('currentGroupId');

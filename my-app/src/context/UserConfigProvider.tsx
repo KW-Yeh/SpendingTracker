@@ -1,7 +1,7 @@
 'use client';
 
 import { useIDB } from '@/hooks/useIDB';
-import { getUser, createUser } from '@/services/userServices';
+import { getUser, createUser, putUser } from '@/services/userServices';
 import { useSession } from 'next-auth/react';
 import { redirect, usePathname } from 'next/navigation';
 import {
@@ -46,11 +46,20 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   }, []);
 
-  // IDB-only: write to IDB + update local state (no API call)
+  // Cloud-first: write to API, then update local state + IDB cache
   const handleUpdateUser = useCallback(async (value: User) => {
     const updatedUser = { ...value, updated_at: new Date().toISOString() };
-    await setUserData(IDB, updatedUser);
-    setConfig(updatedUser);
+
+    try {
+      await putUser(updatedUser);
+      setConfig(updatedUser);
+      // Update IDB cache
+      if (IDB) {
+        await setUserData(IDB, updatedUser);
+      }
+    } catch (error) {
+      console.error('[UserConfigProvider] Error updating user in API:', error);
+    }
   }, [IDB, setUserData]);
 
   const handleUpdateBudgetData = useCallback(
@@ -60,25 +69,40 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
     [],
   );
 
-  // Re-read user from IDB (used after sync completes to refresh state)
-  const syncUser = useCallback(() => {
-    if (!IDB || !session?.user?.email) return;
+  // Cloud-first: fetch user from API, show IDB cache first
+  const syncUser = useCallback(async () => {
+    if (!session?.user?.email) return;
     setLoading(true);
-    const controller = new AbortController();
-    getUserData(IDB, session.user.email, controller.signal)
-      .then((res) => {
-        if (res) {
-          const _data = JSON.parse(res.data) as User;
+
+    // Show IDB cache first for fast render
+    if (IDB) {
+      try {
+        const controller = new AbortController();
+        const cachedData = await getUserData(IDB, session.user.email, controller.signal);
+        if (cachedData) {
+          const _data = JSON.parse(cachedData.data) as User;
           handleState(_data);
-        } else {
-          setLoading(false);
         }
-      })
-      .catch((err) => {
-        console.error('[UserConfigProvider] Error re-reading from IDB:', err);
-        setLoading(false);
-      });
-  }, [IDB, session?.user?.email, getUserData, handleState]);
+      } catch {
+        // IDB cache miss is fine
+      }
+    }
+
+    // Fetch from API (source of truth)
+    try {
+      const res = await getUser(session.user.email);
+      if (res.status && res.data) {
+        handleState(res.data);
+        // Update IDB cache
+        if (IDB) {
+          await setUserData(IDB, res.data);
+        }
+      }
+    } catch (error) {
+      console.error('[UserConfigProvider] Error fetching from API:', error);
+      setLoading(false);
+    }
+  }, [IDB, session?.user?.email, getUserData, setUserData, handleState]);
 
   const ctxVal = useMemo(
     () => ({
@@ -104,21 +128,34 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [status, handleLogin]);
 
-  // Load user from IDB on mount
+  // Load user: IDB cache first, then API
   useEffect(() => {
     const controller = (controllerRef.current = new AbortController());
     if (IDB && !config && session?.user?.email) {
-      getUserData(IDB, session.user.email, controller.signal)
-        .then((res) => {
+      const email = session.user.email;
+
+      // Try IDB cache first for fast render
+      getUserData(IDB, email, controller.signal)
+        .then(async (res) => {
           if (res) {
             const _data = JSON.parse(res.data) as User;
             handleState(_data);
             controllerRef.current = null;
             initializedRef.current = true;
           } else {
-            // No user in IDB — first time login, need to create via API
             initializedRef.current = true;
             setLoading(false);
+          }
+
+          // Then fetch from API to get latest
+          try {
+            const apiRes = await getUser(email);
+            if (apiRes.status && apiRes.data) {
+              handleState(apiRes.data);
+              await setUserData(IDB, apiRes.data);
+            }
+          } catch {
+            // API fetch failed, IDB cache is still shown
           }
         })
         .catch((err) => {
@@ -126,10 +163,9 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
         });
     }
     return () => controller.abort();
-  }, [IDB, config, getUserData, handleState, session?.user?.email]);
+  }, [IDB, config, getUserData, setUserData, handleState, session?.user?.email]);
 
-  // First-time login: if IDB has no user and session is authenticated,
-  // create user via API and store in IDB (one-time exception)
+  // First-time login: if no user found anywhere, create via API
   useEffect(() => {
     if (
       status === 'authenticated' &&

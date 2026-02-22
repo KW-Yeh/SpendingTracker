@@ -6,6 +6,10 @@ import {
 } from '@/utils/categoryHelpers';
 import { useIDB } from '@/hooks/useIDB';
 import {
+  getFavoriteCategories,
+  putFavoriteCategories,
+} from '@/services/favoriteCategoriesServices';
+import {
   createContext,
   ReactNode,
   useCallback,
@@ -57,33 +61,44 @@ export const FavoriteCategoriesProvider = ({
     setLoading(false);
   }, []);
 
-  // IDB-only: read favorites from IDB
+  // Cloud-first: fetch from API, show IDB cache first
   const syncFavorites = useCallback(
     async (ownerId: number) => {
-      if (!db) {
-        setLoading(true);
-        return;
+      setLoading(true);
+
+      // Show IDB cache first for fast render
+      if (db) {
+        try {
+          const cachedData = await getFavoriteCategoriesData(db, ownerId);
+          if (cachedData) {
+            startTransition(() => {
+              setFavorites(cachedData);
+              setLoading(false);
+            });
+          }
+        } catch {
+          // IDB cache miss is fine
+        }
       }
 
+      // Fetch from API (source of truth)
       try {
-        const cachedData = await getFavoriteCategoriesData(db, ownerId);
-        if (cachedData) {
-          startTransition(() => {
-            setFavorites(cachedData);
-            setLoading(false);
-          });
-        } else {
-          handleState(null);
+        const res = await getFavoriteCategories(ownerId);
+        if (res.status) {
+          handleState(res.data);
+          // Update IDB cache
+          if (db && res.data) {
+            await setFavoriteCategoriesData(db, ownerId, res.data);
+          }
         }
       } catch (error) {
-        console.error('[FavoriteCategoriesProvider] Error reading IDB:', error);
-        handleState(null);
+        console.error('[FavoriteCategoriesProvider] Error fetching from API:', error);
       }
     },
-    [db, getFavoriteCategoriesData, handleState],
+    [db, getFavoriteCategoriesData, setFavoriteCategoriesData, handleState],
   );
 
-  // IDB-only: write favorites to IDB + update state
+  // Cloud-first: write to API, then update local state + IDB cache
   const updateFavorites = useCallback(
     async (data: Partial<FavoriteCategories> & { owner_id: number }) => {
       setLoading(true);
@@ -106,10 +121,22 @@ export const FavoriteCategoriesProvider = ({
         updated_at: new Date().toISOString(),
       };
 
-      if (db) {
-        await setFavoriteCategoriesData(db, data.owner_id, updatedFavorites);
+      try {
+        const res = await putFavoriteCategories(updatedFavorites);
+        if (res.status && res.data) {
+          handleState(res.data);
+          // Update IDB cache
+          if (db) {
+            await setFavoriteCategoriesData(db, data.owner_id, res.data);
+          }
+        } else {
+          // Fallback: use local data
+          handleState(updatedFavorites);
+        }
+      } catch (error) {
+        console.error('[FavoriteCategoriesProvider] Error updating API:', error);
+        handleState(updatedFavorites);
       }
-      handleState(updatedFavorites);
     },
     [db, favorites, setFavoriteCategoriesData, handleState],
   );
