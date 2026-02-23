@@ -59,6 +59,7 @@ const reducer = (state: State, action: Action): State => {
         ...state,
         data: action.payload,
         loading: false,
+        isInitialLoad: false,
       };
     case 'SET_LOADING':
       return { ...state, loading: action.payload };
@@ -96,6 +97,7 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
     ) => {
       if (!groupId) {
         dispatch({ type: 'SET_LOADING', payload: false });
+        dispatch({ type: 'SET_INITIAL_LOAD_DONE' });
         return;
       }
 
