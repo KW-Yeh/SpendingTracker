@@ -49,7 +49,8 @@ type State = {
 
 type Action =
   | { type: 'SET_DATA'; payload: SpendingRecord[] }
-  | { type: 'SET_LOADING'; payload: boolean };
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_INITIAL_LOAD_DONE' };
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -58,10 +59,11 @@ const reducer = (state: State, action: Action): State => {
         ...state,
         data: action.payload,
         loading: false,
-        isInitialLoad: action.payload.length > 0 ? false : state.isInitialLoad,
       };
     case 'SET_LOADING':
       return { ...state, loading: action.payload };
+    case 'SET_INITIAL_LOAD_DONE':
+      return { ...state, isInitialLoad: false };
     default:
       return state;
   }
@@ -131,6 +133,10 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
         }
       } catch (error) {
         console.error('[SpendingProvider] Error fetching from API:', error);
+      } finally {
+        // Always mark initial load as done after the first API call completes,
+        // regardless of whether data is empty or not, to prevent infinite re-fetch loops.
+        dispatch({ type: 'SET_INITIAL_LOAD_DONE' });
       }
     },
     [IDB, getDataFromIDB, setData2IDB, handleSetState],
