@@ -39,7 +39,6 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
   const { db: IDB, getUserData, setUserData } = useIDB();
   const controllerRef = useRef<AbortController | null>(null);
   const pathname = usePathname();
-  const initializedRef = useRef(false);
 
   const handleState = useCallback((value: User) => {
     setConfig(value);
@@ -128,11 +127,34 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [status, handleLogin]);
 
-  // Load user: IDB cache first, then API
+  // Load user: IDB cache first, then API. If new user, create via API.
   useEffect(() => {
     const controller = (controllerRef.current = new AbortController());
-    if (IDB && !config && session?.user?.email) {
+    if (IDB && !config && session?.user?.email && status === 'authenticated') {
       const email = session.user.email;
+      const userName = session.user?.name || '匿名';
+
+      const createAndFetch = async (retryCount = 0): Promise<void> => {
+        const MAX_RETRIES = 3;
+        const RETRY_DELAY = 3000;
+
+        const apiRes = await getUser(email);
+        if (apiRes.status && apiRes.data) {
+          handleState(apiRes.data);
+          await setUserData(IDB, apiRes.data);
+          return;
+        }
+
+        // User not found in cloud, create
+        if (retryCount < MAX_RETRIES) {
+          console.log('[UserConfigProvider] No user found, creating via API...');
+          await createUser({ user_id: Date.now(), name: userName, email });
+          await new Promise((r) => setTimeout(r, RETRY_DELAY));
+          await createAndFetch(retryCount + 1);
+        } else {
+          console.error('Max retries reached for user creation');
+        }
+      };
 
       // Try IDB cache first for fast render
       getUserData(IDB, email, controller.signal)
@@ -141,21 +163,14 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
             const _data = JSON.parse(res.data) as User;
             handleState(_data);
             controllerRef.current = null;
-            initializedRef.current = true;
-          } else {
-            initializedRef.current = true;
-            setLoading(false);
           }
 
-          // Then fetch from API to get latest
+          // Fetch from API (source of truth), create if not found
           try {
-            const apiRes = await getUser(email);
-            if (apiRes.status && apiRes.data) {
-              handleState(apiRes.data);
-              await setUserData(IDB, apiRes.data);
-            }
-          } catch {
-            // API fetch failed, IDB cache is still shown
+            await createAndFetch();
+          } catch (err) {
+            console.error('[UserConfigProvider] Error syncing user:', err);
+            setLoading(false);
           }
         })
         .catch((err) => {
@@ -163,52 +178,7 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
         });
     }
     return () => controller.abort();
-  }, [IDB, config, getUserData, setUserData, handleState, session?.user?.email]);
-
-  // First-time login: if no user found anywhere, create via API
-  useEffect(() => {
-    if (
-      status === 'authenticated' &&
-      session?.user?.email &&
-      IDB &&
-      initializedRef.current &&
-      !config
-    ) {
-      console.log('[UserConfigProvider] No local user, creating via API...');
-      const email = session.user.email;
-
-      const createAndFetch = async (retryCount = 0) => {
-        const MAX_RETRIES = 3;
-        const RETRY_DELAY = 3000;
-
-        try {
-          const res = await getUser(email);
-          if (res.status && res.data) {
-            await setUserData(IDB, res.data);
-            handleState(res.data);
-            return;
-          }
-
-          // User not found in cloud, create
-          if (retryCount < MAX_RETRIES) {
-            await createUser({
-              user_id: Date.now(),
-              name: session.user?.name || '匿名',
-              email,
-            });
-            await new Promise((r) => setTimeout(r, RETRY_DELAY));
-            await createAndFetch(retryCount + 1);
-          } else {
-            console.error('Max retries reached for user creation');
-          }
-        } catch (err) {
-          console.error('[UserConfigProvider] Error creating user:', err);
-        }
-      };
-
-      createAndFetch();
-    }
-  }, [status, session?.user?.email, session?.user?.name, IDB, config, setUserData, handleState]);
+  }, [IDB, config, getUserData, setUserData, handleState, session?.user?.email, session?.user?.name, status]);
 
   return <Ctx.Provider value={ctxVal}>{children}</Ctx.Provider>;
 };
