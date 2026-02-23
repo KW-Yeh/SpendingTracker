@@ -10,9 +10,10 @@ export const getUser = async (
   try {
     if (!id) return { status: false, data: null, message: '缺少 ID 資訊' };
     // console.log('[Client getUser] Fetching user with email:', id);
-    const data: User | null = await fetch(`${URL}?id=${id}`).then((res) => res.json());
+    const data = await fetch(`${URL}?id=${id}`).then((res) => res.json());
     // console.log('[Client getUser] Response data:', data);
-    return { status: true, data, message: 'success' };
+    const isUser = data && typeof data === 'object' && 'user_id' in data;
+    return { status: true, data: isUser ? (data as User) : null, message: 'success' };
   } catch (error) {
     console.error('[Client getUser] Error:', error);
     return { status: false, data: null, message: '發生不預期的錯誤' };
@@ -46,7 +47,10 @@ export const createUser = async (data: User) => {
       body: JSON.stringify(data),
     });
     const result = await response.json();
-    // console.log('[Client createUser] Server response:', result);
+    if (!response.ok || result?.message === 'Internal Server Error') {
+      console.error('[Client createUser] Server error:', result?.message);
+      return { status: false, message: result?.message || '建立失敗' };
+    }
     return { status: true, message: 'success' };
   } catch (error) {
     console.error('[Client createUser] Error:', error);

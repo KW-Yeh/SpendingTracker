@@ -52,7 +52,7 @@ export async function createUser(data: User): Promise<User> {
   const query = `
     INSERT INTO users (user_id, email, name, updated_at)
     VALUES ($1, $2, $3, NOW())
-    ON CONFLICT (user_id) DO NOTHING
+    ON CONFLICT (email) DO NOTHING
     RETURNING user_id, email, name, avatar_url, created_at, updated_at
   `;
 
@@ -61,8 +61,12 @@ export async function createUser(data: User): Promise<User> {
   console.log('[DB createUser] Query result rows:', result.rows.length);
 
   if (result.rows.length === 0) {
-    console.log('[DB createUser] ❌ User ID already exists:', user_id);
-    throw new Error('使用者 ID 已存在');
+    console.log('[DB createUser] ⚠️ Email already exists, fetching existing user:', email);
+    const existing = await getUser(email);
+    if (!existing) {
+      throw new Error('使用者建立失敗');
+    }
+    return existing;
   }
 
   console.log('[DB createUser] ✅ User created successfully:', result.rows[0]);
