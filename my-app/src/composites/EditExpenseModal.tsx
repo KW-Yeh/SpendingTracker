@@ -302,7 +302,7 @@ export const EditExpenseModal = (props: Props) => {
           <button
             type="button"
             disabled={description === '' || updatingCategory}
-            className={`border-text bg-text text-background w-full rounded-lg border border-solid p-2 font-semibold transition-colors hover:bg-gray-800 active:bg-gray-800 disabled:cursor-not-allowed! disabled:border-gray-300 disabled:bg-gray-300 disabled:text-gray-300 ${description === '' ? 'hidden' : ''}`}
+            className={`border-text bg-text text-background w-full rounded-lg border border-solid p-2 font-semibold transition-colors hover:bg-gray-200 active:bg-gray-200 disabled:cursor-not-allowed! disabled:border-gray-600 disabled:bg-gray-700 disabled:text-gray-400 ${description === '' ? 'hidden' : ''}`}
             onClick={() => handleSetCommonDesc(isNewDesc)}
           >
             {updatingCategory
