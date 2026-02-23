@@ -178,7 +178,8 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
         });
     }
     return () => controller.abort();
-  }, [IDB, config, getUserData, setUserData, handleState, session?.user?.email, session?.user?.name, status]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [IDB, getUserData, setUserData, handleState, session?.user?.email, session?.user?.name, status]);
 
   return <Ctx.Provider value={ctxVal}>{children}</Ctx.Provider>;
 };

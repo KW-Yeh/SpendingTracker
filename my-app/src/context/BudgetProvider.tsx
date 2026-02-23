@@ -43,7 +43,7 @@ export const BudgetProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [budget, setBudget] = useState<Budget | null>(null);
-  const { db, getBudgetData, setBudgetData } = useIDB();
+  const { db, getBudgetData, setBudgetData, deleteBudgetData } = useIDB();
   const { currentGroup } = useGroupCtx();
 
   const handleState = useCallback((data: Budget | null) => {
@@ -123,12 +123,16 @@ export const BudgetProvider = ({ children }: { children: ReactNode }) => {
       try {
         await deleteBudgetAPI(accountId);
         handleState(null);
+        // Clear IDB cache so stale budget data is not shown on next load
+        if (db) {
+          await deleteBudgetData(db, accountId);
+        }
       } catch (error) {
         console.error('[BudgetProvider] Error deleting budget from API:', error);
         setLoading(false);
       }
     },
-    [handleState],
+    [db, deleteBudgetData, handleState],
   );
 
   // Auto-sync budget when current group or db changes

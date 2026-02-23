@@ -123,9 +123,10 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
         const res = await getItems(groupId, email, startDate, endDate);
         if (res.status) {
           handleSetState(res.data);
-          // Update IDB cache
-          if (IDB && res.data.length > 0) {
-            await setData2IDB(IDB, res.data, groupId, res.data[0]?.date);
+          // Update IDB cache (always sync even for empty arrays to clear stale data)
+          if (IDB) {
+            const dateForCache = res.data[0]?.date ?? startDate ?? new Date().toISOString();
+            await setData2IDB(IDB, res.data, groupId, dateForCache);
           }
         }
       } catch (error) {

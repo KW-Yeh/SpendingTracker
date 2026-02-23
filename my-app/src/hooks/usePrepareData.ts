@@ -6,7 +6,7 @@ import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { createGroup } from '@/services/groupServices';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
 import { getCookie } from '@/utils/handleCookie';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 export const usePrepareData = () => {
   const { syncGroup, groups, setCurrentGroup, currentGroup, setter: setGroups, loading } =
@@ -70,7 +70,12 @@ export const usePrepareData = () => {
     }
   }, [userData?.email, syncData, currentGroup?.account_id]);
 
+  const hasSyncedUser = useRef(false);
+
   useEffect(() => {
-    syncUser();
+    if (!hasSyncedUser.current) {
+      hasSyncedUser.current = true;
+      syncUser();
+    }
   }, [syncUser]);
 };

@@ -435,6 +435,32 @@ export const useIDB = () => {
     [],
   );
 
+  const deleteBudgetData = useCallback(
+    (db: IDBDatabase | null, accountId: number): Promise<void> => {
+      if (!db) return Promise.reject('Database not initialized');
+
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(STORE_NAME, 'readwrite');
+        const store = transaction.objectStore(StoreName.BudgetData);
+        const index = store.index(STORE_CONFIG[StoreName.BudgetData].indexName);
+
+        const checkRequest = index.get([accountId]);
+        checkRequest.onsuccess = () => {
+          const existingRecord = checkRequest.result as BudgetDATA_IDB | undefined;
+          if (!existingRecord) {
+            resolve();
+            return;
+          }
+          const deleteRequest = store.delete(existingRecord.id!);
+          deleteRequest.onsuccess = () => resolve();
+          deleteRequest.onerror = () => reject(deleteRequest.error);
+        };
+        checkRequest.onerror = () => reject(checkRequest.error);
+      });
+    },
+    [],
+  );
+
   const getBudgetData = useCallback(
     (db: IDBDatabase | null, accountId: number): Promise<Budget | null> => {
       if (!db) return Promise.reject('Database not initialized');
@@ -612,6 +638,7 @@ export const useIDB = () => {
     setGroupData,
     getGroupData,
     setBudgetData,
+    deleteBudgetData,
     getBudgetData,
     setFavoriteCategoriesData,
     getFavoriteCategoriesData,
