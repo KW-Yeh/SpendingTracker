@@ -12,10 +12,11 @@ interface Props {
   isMobile: boolean;
   monthlyBudget?: number;
   budget?: Budget | null;
+  selectedMonth?: number;
 }
 
 export default function OverView(props: Props) {
-  const { monthlyBudget = 0, budget, costList } = props;
+  const { monthlyBudget = 0, budget, costList, selectedMonth = new Date().getMonth() + 1 } = props;
   const [isBudgetExpanded, setIsBudgetExpanded] = useState(false);
 
   // Memoize expensive expense calculation
@@ -42,7 +43,7 @@ export default function OverView(props: Props) {
   const currentMonthBudgetItems = useMemo(() => {
     if (!budget?.monthly_items) return [];
 
-    const currentMonth = new Date().getMonth() + 1;
+    const currentMonth = selectedMonth;
     const categoryMap: Record<
       string,
       { category: string; budgeted: number; spent: number }

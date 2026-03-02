@@ -33,7 +33,7 @@ export const EditExpenseModal = (props: Props) => {
   const { config: userData, setter: updateUser, syncUser } = useUserConfigCtx();
   const { addRecord, updateRecord } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
-  const { date } = useDateCtx();
+  const { date, setDate } = useDateCtx();
   const {
     getCategoryDescriptions,
     addCategoryDescription,
@@ -112,6 +112,12 @@ export const EditExpenseModal = (props: Props) => {
       removeCategoryDescription,
     ],
   );
+
+  // Initialize date context on modal open: today for new records, record date for edits
+  useEffect(() => {
+    setDate(isNewData ? new Date() : new Date(data.date));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Sync favorites on mount
   useEffect(() => {

@@ -64,18 +64,18 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
   const currentMonthBudget = useMemo(() => {
     if (!budget?.monthly_items) return 0;
 
-    const currentMonth = new Date().getMonth() + 1;
+    const selectedMonth = Number(dateHook.month);
     let total = 0;
 
     budget.monthly_items.forEach((item) => {
-      const monthAmount = item.months?.[currentMonth.toString()];
+      const monthAmount = item.months?.[selectedMonth.toString()];
       if (monthAmount) {
         total += monthAmount;
       }
     });
 
     return total;
-  }, [budget]);
+  }, [budget, dateHook.month]);
 
   const handleChartClick = useCallback((state: CategoricalChartState) => {
     if (!state.activePayload || !state.activePayload[0]) return;
@@ -104,6 +104,7 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
           budget={budget}
           costList={monthlyData}
           isMobile={isMobile}
+          selectedMonth={Number(dateHook.month)}
         />
 
         <MiniDailyCostChart

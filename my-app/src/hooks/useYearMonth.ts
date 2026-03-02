@@ -1,10 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useDateCtx } from '@/context/DateProvider';
 
-export const useYearMonth = (today: Date) => {
-  const [year, setYear] = useState(`${today.getFullYear()}`);
-  const [month, setMonth] = useState(`${today.getMonth() + 1}`);
+export const useYearMonth = (_today?: Date) => {
+  const { year, month, setYear, setMonth } = useDateCtx();
   return {
     today: new Date(Number(year), Number(month) - 1),
     year,
