@@ -140,7 +140,7 @@ export const useIDB = () => {
       if (!db) return Promise.reject('Database not initialized');
 
       return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readwrite');
+        const transaction = db.transaction([StoreName.UserConfig], 'readwrite');
         const store = transaction.objectStore(StoreName.UserConfig);
 
         const newData: {
@@ -161,9 +161,9 @@ export const useIDB = () => {
           }
           const request = store.put(newData);
           request.onsuccess = () => resolve();
-          request.onerror = () => console.error(request.error);
+          request.onerror = () => reject(request.error);
         };
-        checkRequest.onerror = () => console.error(checkRequest.error);
+        checkRequest.onerror = () => reject(checkRequest.error);
       });
     },
     [],
@@ -178,7 +178,7 @@ export const useIDB = () => {
       if (!db) return Promise.reject('Database not initialized');
 
       return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readonly');
+        const transaction = db.transaction([StoreName.UserConfig], 'readonly');
         let isTransactionActive = true;
 
         transaction.oncomplete = () => {
@@ -229,7 +229,7 @@ export const useIDB = () => {
       }
 
       return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readwrite');
+        const transaction = db.transaction([StoreName.ExpenseRecord], 'readwrite');
         const store = transaction.objectStore(StoreName.ExpenseRecord);
         const year = new Date(time).getFullYear();
         const month = new Date(time).getMonth();
@@ -300,7 +300,7 @@ export const useIDB = () => {
       if (!db) return Promise.reject('Database not initialized');
 
       return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readonly');
+        const transaction = db.transaction([StoreName.ExpenseRecord], 'readonly');
         let isTransactionActive = true;
 
         transaction.oncomplete = () => {
@@ -349,7 +349,7 @@ export const useIDB = () => {
       if (!db) return Promise.reject('Database not initialized');
 
       return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readwrite');
+        const transaction = db.transaction([StoreName.GroupData], 'readwrite');
         const store = transaction.objectStore(StoreName.GroupData);
 
         const newData: GroupDATA_IDB = {
@@ -379,7 +379,7 @@ export const useIDB = () => {
       if (!db) return Promise.reject('Database not initialized');
 
       return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readonly');
+        const transaction = db.transaction([StoreName.GroupData], 'readonly');
         const store = transaction.objectStore(StoreName.GroupData);
         const index = store.index(STORE_CONFIG[StoreName.GroupData].indexName);
         const request = index.get([userId]);
@@ -410,7 +410,7 @@ export const useIDB = () => {
       if (!db) return Promise.reject('Database not initialized');
 
       return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readwrite');
+        const transaction = db.transaction([StoreName.BudgetData], 'readwrite');
         const store = transaction.objectStore(StoreName.BudgetData);
 
         const newData: BudgetDATA_IDB = {
@@ -440,7 +440,7 @@ export const useIDB = () => {
       if (!db) return Promise.reject('Database not initialized');
 
       return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readwrite');
+        const transaction = db.transaction([StoreName.BudgetData], 'readwrite');
         const store = transaction.objectStore(StoreName.BudgetData);
         const index = store.index(STORE_CONFIG[StoreName.BudgetData].indexName);
 
@@ -466,7 +466,7 @@ export const useIDB = () => {
       if (!db) return Promise.reject('Database not initialized');
 
       return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readonly');
+        const transaction = db.transaction([StoreName.BudgetData], 'readonly');
         const store = transaction.objectStore(StoreName.BudgetData);
         const index = store.index(STORE_CONFIG[StoreName.BudgetData].indexName);
         const request = index.get([accountId]);
@@ -497,7 +497,7 @@ export const useIDB = () => {
       if (!db) return Promise.reject('Database not initialized');
 
       return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readwrite');
+        const transaction = db.transaction([StoreName.FavoriteCategoriesData], 'readwrite');
         const store = transaction.objectStore(StoreName.FavoriteCategoriesData);
 
         const newData: FavoriteCategoriesDATA_IDB = {
@@ -527,7 +527,7 @@ export const useIDB = () => {
       if (!db) return Promise.reject('Database not initialized');
 
       return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readonly');
+        const transaction = db.transaction([StoreName.FavoriteCategoriesData], 'readonly');
         const store = transaction.objectStore(StoreName.FavoriteCategoriesData);
         const index = store.index(STORE_CONFIG[StoreName.FavoriteCategoriesData].indexName);
         const request = index.get([ownerId]);
@@ -558,7 +558,7 @@ export const useIDB = () => {
       if (!db) return Promise.reject('Database not initialized');
 
       return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readwrite');
+        const transaction = db.transaction([StoreName.SyncMetadata], 'readwrite');
         const store = transaction.objectStore(StoreName.SyncMetadata);
 
         const newData: SyncMetadataDATA_IDB = {
@@ -588,7 +588,7 @@ export const useIDB = () => {
       if (!db) return Promise.reject('Database not initialized');
 
       return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readonly');
+        const transaction = db.transaction([StoreName.SyncMetadata], 'readonly');
         const store = transaction.objectStore(StoreName.SyncMetadata);
         const index = store.index(STORE_CONFIG[StoreName.SyncMetadata].indexName);
         const request = index.get([userId]);
@@ -616,7 +616,7 @@ export const useIDB = () => {
       if (!db) return Promise.reject('Database not initialized');
 
       return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readonly');
+        const transaction = db.transaction([StoreName.ExpenseRecord], 'readonly');
         const store = transaction.objectStore(StoreName.ExpenseRecord);
         const request = store.getAll();
 

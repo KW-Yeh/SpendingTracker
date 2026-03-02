@@ -83,6 +83,9 @@ export const BudgetProvider = ({ children }: { children: ReactNode }) => {
         }
       } catch (error) {
         console.error('[BudgetProvider] Error fetching from API:', error);
+      } finally {
+        setIsInitialLoad(false);
+        setLoading(false);
       }
     },
     [db, getBudgetData, setBudgetData, handleState],
