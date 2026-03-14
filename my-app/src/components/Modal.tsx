@@ -53,25 +53,25 @@ export const Modal = forwardRef<ModalRef, Props>((props, ref) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm sm:p-4">
       <div
         ref={contentRef}
-        className={`animate-modal relative max-h-[90vh] w-full max-w-2xl self-end rounded-2xl border border-gray-700 bg-gray-800 shadow-2xl sm:max-w-96 sm:self-center sm:rounded-xl ${props.className}`}
+        className={`animate-modal relative flex w-full max-w-2xl flex-col self-end rounded-2xl border border-gray-700 bg-gray-800 shadow-2xl sm:max-w-96 sm:self-center sm:rounded-xl max-h-[90dvh] ${props.className}`}
       >
         <button
           type="button"
           onClick={handleCloseModal}
-          className="hover:text-primary-400 focus-visible:outline-primary-400 absolute top-4 right-4 z-10 size-10 rounded-full bg-gray-700/90 p-2 text-gray-400 backdrop-blur-sm transition-all duration-200 hover:bg-gray-600 hover:shadow-[0_0_15px_rgba(6,182,212,0.3)]"
+          className="hover:text-primary-400 focus-visible:outline-primary-400 absolute top-4 right-4 z-10 size-6 rounded-full bg-gray-700/90 p-2 text-gray-400 backdrop-blur-sm transition-all duration-200 hover:bg-gray-600 hover:shadow-[0_0_15px_rgba(6,182,212,0.3)]"
           aria-label="Close modal"
         >
           <CloseIcon className="size-full" />
         </button>
-        <div className="from-primary-500 to-accent-500 rounded-t-2xl bg-linear-to-r px-6 py-5 text-white sm:rounded-t-xl">
-          <h2
-            className="pr-12 text-lg font-bold sm:text-xl"
+        <div className="from-primary-500 to-accent-500 rounded-t-2xl bg-linear-to-r px-5 py-4 text-white sm:rounded-t-xl">
+          <h3
+            className="pr-12 text-base font-bold sm:text-lg"
             style={{ fontFamily: 'var(--font-heading)' }}
           >
             {props.title}
-          </h2>
+          </h3>
         </div>
-        <div className="max-h-[calc(90vh-5rem)] p-6">{props.children}</div>
+        <div className="flex-1 overflow-y-auto p-6">{props.children}</div>
       </div>
     </div>
   );
