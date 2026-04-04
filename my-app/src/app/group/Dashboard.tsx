@@ -352,7 +352,7 @@ const GroupCard = ({
           <div className="flex w-full flex-col gap-4">
             <input
               type="text"
-              className="w-full rounded-md border border-solid border-gray-300 px-3 py-2"
+              className="w-full rounded-md border border-solid border-gray-600 bg-gray-900/40 px-3 py-2 text-gray-100 placeholder:text-gray-500 focus:outline-none focus:border-primary-500"
               value={newGroupName}
               onChange={(e) => setNewGroupName(e.target.value)}
               placeholder="群組名稱"

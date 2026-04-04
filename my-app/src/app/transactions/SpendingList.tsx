@@ -50,19 +50,19 @@ export const SpendingList = (props: Props) => {
       <div className="flex w-full flex-col gap-2 text-xs sm:text-sm">
         {[1, 2, 3].map((i) => (
           <div key={i} className="flex flex-col gap-1">
-            <div className="mb-1 h-4 w-24 animate-pulse rounded-md bg-gray-200"></div>
-            <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100 sm:h-14"></div>
-            <div className="mt-1 h-12 w-full animate-pulse rounded-lg bg-gray-100 sm:h-14"></div>
+            <div className="mb-1 h-4 w-24 skeleton rounded-md"></div>
+            <div className="h-12 w-full skeleton rounded-lg sm:h-14"></div>
+            <div className="mt-1 h-12 w-full skeleton rounded-lg sm:h-14"></div>
           </div>
         ))}
       </div>
     );
   } else if (filteredBySearch.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-8 text-center">
-        <SearchIcon className="mb-3 size-10 text-gray-300" />
-        <p className="mb-1 font-medium text-gray-600">找不到符合的帳目</p>
-        <p className="text-sm text-gray-300">請嘗試其他搜尋條件或新增帳目</p>
+      <div className="flex flex-col items-center justify-center py-12 text-center">
+        <SearchIcon className="mb-3 size-10 text-gray-500" />
+        <p className="mb-1 font-semibold text-gray-300">找不到符合的帳目</p>
+        <p className="text-sm text-gray-500">請嘗試其他搜尋條件或新增帳目</p>
       </div>
     );
   }
@@ -71,7 +71,7 @@ export const SpendingList = (props: Props) => {
     <div className="flex w-full flex-col gap-2 text-xs sm:text-sm">
       {Object.keys(sortedData).map((groupKey, index) => (
         <div key={groupKey}>
-          <span className="text-gray-300">{groupKey}</span>
+          <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">{groupKey}</span>
           <div
             className="flex flex-col gap-1 rounded border-2 border-solid border-transparent p-1 transition-all"
             id={`spending-list-${groupKey}`}

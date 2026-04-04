@@ -76,8 +76,8 @@ export const SpendingInfoSection = () => {
     const handleOnChangeSearch = () => {
       setFilterStr(elem?.value || '');
     };
-    elem?.addEventListener('change', handleOnChangeSearch);
-    return () => elem?.removeEventListener('change', handleOnChangeSearch);
+    elem?.addEventListener('input', handleOnChangeSearch);
+    return () => elem?.removeEventListener('input', handleOnChangeSearch);
   }, []);
 
   useEffect(() => {
@@ -111,13 +111,13 @@ export const SpendingInfoSection = () => {
           value={SORT_BY[sortBy]}
           name="sortBy"
           onChange={setSortBy}
-          className="bg-background hover:border-primary-400 rounded-lg border border-solid border-gray-300 px-3 py-1.5 text-sm font-medium transition-all"
+          className="bg-background hover:border-primary-400 rounded-lg border border-solid border-gray-700 px-3 py-1.5 text-sm font-medium transition-all"
         >
           <Select.Item value="date">日期</Select.Item>
           <Select.Item value="category">類別</Select.Item>
           <Select.Item value="type">收支</Select.Item>
         </Select>
-        <div className="group hover:border-primary-400 focus-within:border-primary-500 bg-background relative flex items-center gap-2 rounded-lg border border-solid border-gray-300 px-3 py-1.5 transition-all focus-within:shadow-sm">
+        <div className="group hover:border-primary-400 focus-within:border-primary-500 bg-background relative flex items-center gap-2 rounded-lg border border-solid border-gray-700 px-3 py-1.5 transition-all focus-within:shadow-sm">
           <SearchIcon className="group-hover:text-primary-500 group-focus-within:text-primary-500 text-gray-300 transition-colors" />
           <input
             ref={searchRef}

@@ -21,10 +21,10 @@ import BudgetCostTable from './BudgetCostTable';
 const ExpensePieChart = dynamic(() => import('./ExpensePieChart'), {
   ssr: false,
   loading: () => (
-    <div className="mx-auto mt-15 aspect-square size-45 rounded-full bg-gray-200 p-1.5">
-      <div className="bg-background size-full rounded-full p-1.5">
-        <div className="size-full rounded-full bg-gray-200 p-5">
-          <div className="bg-background size-full rounded-full"></div>
+    <div className="mx-auto mt-15 aspect-square size-45 animate-pulse rounded-full bg-gray-600/50 p-1.5">
+      <div className="bg-gray-800 size-full rounded-full p-1.5">
+        <div className="size-full rounded-full bg-gray-600/50 p-5">
+          <div className="bg-gray-800 size-full rounded-full"></div>
         </div>
       </div>
     </div>
@@ -34,10 +34,10 @@ const ExpensePieChart = dynamic(() => import('./ExpensePieChart'), {
 const NecessityPieChart = dynamic(() => import('./NecessityPieChart'), {
   ssr: false,
   loading: () => (
-    <div className="mx-auto mt-15 aspect-square size-45 rounded-full bg-gray-200 p-1.5">
-      <div className="bg-background size-full rounded-full p-1.5">
-        <div className="size-full rounded-full bg-gray-200 p-5">
-          <div className="bg-background size-full rounded-full"></div>
+    <div className="mx-auto mt-15 aspect-square size-45 animate-pulse rounded-full bg-gray-600/50 p-1.5">
+      <div className="bg-gray-800 size-full rounded-full p-1.5">
+        <div className="size-full rounded-full bg-gray-600/50 p-5">
+          <div className="bg-gray-800 size-full rounded-full"></div>
         </div>
       </div>
     </div>
@@ -47,10 +47,10 @@ const NecessityPieChart = dynamic(() => import('./NecessityPieChart'), {
 const BudgetPieChart = dynamic(() => import('./BudgetPieChart'), {
   ssr: false,
   loading: () => (
-    <div className="mx-auto mt-15 aspect-square size-45 rounded-full bg-gray-200 p-1.5">
-      <div className="bg-background size-full rounded-full p-1.5">
-        <div className="size-full rounded-full bg-gray-200 p-5">
-          <div className="bg-background size-full rounded-full"></div>
+    <div className="mx-auto mt-15 aspect-square size-45 animate-pulse rounded-full bg-gray-600/50 p-1.5">
+      <div className="bg-gray-800 size-full rounded-full p-1.5">
+        <div className="size-full rounded-full bg-gray-600/50 p-5">
+          <div className="bg-gray-800 size-full rounded-full"></div>
         </div>
       </div>
     </div>

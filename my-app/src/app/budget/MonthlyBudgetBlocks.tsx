@@ -358,7 +358,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                           onClick={() =>
                             handleDeleteItem(month.value, item.index)
                           }
-                          className="text-secondary-600 hover:bg-secondary-100 active:bg-secondary-100 min-h-8 min-w-8 rounded-lg p-2 transition-all"
+                          className="text-secondary-400 hover:bg-secondary-500/20 active:bg-secondary-500/30 min-h-8 min-w-8 rounded-lg p-2 transition-all"
                         >
                           <DeleteIcon className="size-4" />
                         </button>
@@ -404,7 +404,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                   )
                 }
                 onChange={setItemCategory}
-                className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1 transition-colors hover:border-gray-500 active:border-gray-500"
+                className="h-10 w-full rounded-md border border-solid border-gray-600 bg-gray-900/40 px-3 py-1 text-gray-100 transition-colors hover:border-primary-500 active:border-primary-500"
               >
                 {ALL_CATEGORIES.map((category) => (
                   <Select.Item key={category.value} value={category.value}>
@@ -423,7 +423,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
               </legend>
               <input
                 type="text"
-                className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1"
+                className="h-10 w-full rounded-md border border-solid border-gray-600 bg-gray-900/40 px-3 py-1 text-gray-100 placeholder:text-gray-500 focus:outline-none focus:border-primary-500"
                 value={itemDescription}
                 onChange={(e) => setItemDescription(e.target.value)}
                 placeholder={`例如：房租、午餐、薪水（預設：${selectedCategoryLabel}）`}
@@ -434,7 +434,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
               <legend className="mb-2">預算金額</legend>
               <input
                 type="number"
-                className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1"
+                className="h-10 w-full rounded-md border border-solid border-gray-600 bg-gray-900/40 px-3 py-1 text-gray-100 placeholder:text-gray-500 focus:outline-none focus:border-primary-500"
                 value={itemAmount || ''}
                 onChange={(e) => setItemAmount(Number(e.target.value))}
                 placeholder="5000"

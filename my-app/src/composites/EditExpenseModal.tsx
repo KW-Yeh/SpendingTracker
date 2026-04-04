@@ -212,7 +212,7 @@ export const EditExpenseModal = (props: Props) => {
                 value: SpendingType.Income,
               }}
               value={spendingType}
-              className="h-10 flex-1 border border-solid border-gray-300 text-sm"
+              className="h-10 flex-1 border border-solid border-gray-700 text-sm"
               onChange={handleSetSpendingType}
             />
             <Switch
@@ -231,7 +231,7 @@ export const EditExpenseModal = (props: Props) => {
                 value: Necessity.NotNeed,
               }}
               value={necessity}
-              className="h-10 flex-1 border border-solid border-gray-300 text-sm"
+              className="h-10 flex-1 border border-solid border-gray-700 text-sm"
               onChange={setNecessity}
             />
           </div>
@@ -247,7 +247,7 @@ export const EditExpenseModal = (props: Props) => {
                   </span>
                 }
                 onChange={setSelectedCategory}
-                className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1 transition-colors hover:border-gray-500 active:border-gray-500"
+                className="h-10 w-full rounded-md border border-solid border-gray-700 bg-gray-900/40 px-3 py-1 transition-colors hover:border-primary-600 active:border-primary-600"
               >
                 {spendingCategories.map((category) => (
                   <Select.Item key={category.value} value={category.value}>
@@ -260,7 +260,7 @@ export const EditExpenseModal = (props: Props) => {
               </Select>
             </fieldset>
             <DatePicker
-              className="h-10 flex-1 rounded-md border border-solid border-gray-300 bg-transparent"
+              className="h-10 flex-1 rounded-md border border-solid border-gray-700 bg-gray-900/40 transition-colors hover:border-primary-600"
               labelClassName="text-base px-2 py-1"
               format="yyyy/mm/dd"
               init={new Date(data.date)}
@@ -272,7 +272,7 @@ export const EditExpenseModal = (props: Props) => {
                 type="text"
                 id="description"
                 name="description"
-                className="h-10 w-full rounded-md rounded-r-none border border-r-0 border-solid border-gray-300 px-2 py-1 transition-colors group-hover:border-gray-500 group-active:border-gray-500 focus:outline-0"
+                className="h-10 w-full rounded-md rounded-r-none border border-r-0 border-solid border-gray-700 bg-gray-900/40 px-2 py-1 text-gray-100 placeholder:text-gray-500 transition-colors group-hover:border-primary-600 group-active:border-primary-600 focus:outline-0"
                 autoComplete="off"
                 placeholder="描述"
                 onChange={(e) => {
@@ -285,7 +285,7 @@ export const EditExpenseModal = (props: Props) => {
               <Select
                 name="category"
                 onChange={setDescription}
-                className="h-10 w-10 justify-center rounded-md rounded-l-none border border-l-0 border-solid border-gray-300 px-3 py-1 transition-colors group-hover:border-gray-500 group-active:border-gray-500"
+                className="h-10 w-10 justify-center rounded-md rounded-l-none border border-l-0 border-solid border-gray-700 bg-gray-900/40 px-3 py-1 transition-colors group-hover:border-primary-600 group-active:border-primary-600"
                 menuStyle="min-w-24"
               >
                 {descriptionList.map((commonDesc: string) => (
@@ -308,7 +308,11 @@ export const EditExpenseModal = (props: Props) => {
           <button
             type="button"
             disabled={description === '' || updatingCategory}
-            className={`border-text bg-text text-background w-full rounded-lg border border-solid p-2 font-semibold transition-colors hover:bg-gray-200 active:bg-gray-200 disabled:cursor-not-allowed! disabled:border-gray-600 disabled:bg-gray-700 disabled:text-gray-400 ${description === '' ? 'hidden' : ''}`}
+            className={`w-full rounded-lg border border-solid p-2 font-semibold transition-all disabled:cursor-not-allowed disabled:border-gray-600 disabled:bg-gray-700 disabled:text-gray-400 ${description === '' ? 'hidden' : ''} ${
+              isNewDesc
+                ? 'border-primary-700 bg-primary-900/30 text-primary-400 hover:border-primary-600 hover:bg-primary-900/50'
+                : 'border-secondary-700 bg-secondary-900/30 text-secondary-400 hover:border-secondary-600 hover:bg-secondary-900/50'
+            }`}
             onClick={() => handleSetCommonDesc(isNewDesc)}
           >
             {updatingCategory
@@ -320,7 +324,7 @@ export const EditExpenseModal = (props: Props) => {
         </div>
         <div className="flex flex-col gap-2">
           <div
-            className={`flex w-full items-center rounded-md border border-solid px-2 ${isNoAmount ? 'border-red-500' : 'border-gray-300'}`}
+            className={`flex w-full items-center rounded-md border border-solid px-2 ${isNoAmount ? 'border-red-500' : 'border-gray-700'}`}
           >
             <span className="text-sm text-gray-300">金額</span>
             <input
@@ -337,7 +341,7 @@ export const EditExpenseModal = (props: Props) => {
             disabled={loading}
             type="button"
             onClick={cancel}
-            className="bg-background flex w-24 items-center justify-center rounded-lg border border-solid border-gray-300 p-2 text-gray-300 transition-colors hover:border-gray-500 hover:text-gray-300 active:border-gray-500 active:text-gray-300"
+            className="flex w-24 items-center justify-center rounded-lg border border-solid border-gray-600 bg-transparent p-2 text-gray-300 transition-colors hover:border-gray-400 hover:text-gray-100 active:border-gray-400 active:text-gray-100"
           >
             <span>取消</span>
           </button>

@@ -21,9 +21,9 @@ export default async function Home() {
 
   return (
     <div className="flex w-full flex-1 items-center justify-center bg-radial p-4">
-      <div className="flex w-full max-w-130 flex-col items-center justify-start gap-6 rounded-2xl bg-white/50 p-6 shadow-lg">
-        <h1 className="text-2xl leading-18 font-black">Login</h1>
-        <p className="text-gray-300">
+      <div className="flex w-full max-w-130 flex-col items-center justify-start gap-6 rounded-2xl bg-gray-800/80 border border-gray-700 p-6 shadow-lg backdrop-blur-sm">
+        <h1 className="text-2xl leading-18 font-black gradient-text">Login</h1>
+        <p className="text-gray-400 text-center">
           很抱歉，該系統暫時無法透過 Email 方式註冊並登入，請先用 Google 帳號或
           Line 帳號直接登入使用，感謝您的配合。
         </p>
@@ -59,7 +59,7 @@ const SocialButton = (props: SocialButtonProps) => {
   return (
     <button
       onClick={onClick}
-      className={`flex items-center justify-center gap-3 rounded-lg border border-solid border-gray-200 px-6 py-3 transition-colors hover:border-gray-500 ${className}`}
+      className={`flex items-center justify-center gap-3 rounded-lg border border-solid border-gray-700 bg-gray-800/60 px-6 py-3 text-gray-200 transition-all hover:border-primary-500 hover:bg-primary-900/20 hover:shadow-[0_0_15px_rgba(6,182,212,0.15)] ${className}`}
       {...legacy}
     >
       <span className="aspect-square">{icon}</span>

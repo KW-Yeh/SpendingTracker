@@ -45,14 +45,14 @@ export const RecentTransactionsList = ({
     <div className="card flex w-full flex-col md:min-w-110">
       <div className="mb-4 flex items-center justify-between">
         <h3
-          className="text-lg font-bold text-gray-800"
+          className="text-lg font-bold text-gray-100"
           style={{ fontFamily: 'var(--font-heading)' }}
         >
           最近 5 筆交易
         </h3>
         <Link
           href="/transactions"
-          className="text-primary-600 hover:text-primary-700 active:text-primary-800 flex items-center gap-1 text-xs font-bold transition-colors"
+          className="text-primary-400 hover:text-primary-300 active:text-primary-200 flex items-center gap-1 text-xs font-bold transition-colors"
         >
           查看更多
           <DoubleArrowIcon className="size-3" />

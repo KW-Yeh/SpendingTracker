@@ -16,7 +16,7 @@ interface Props {
 const UsageLineChart = dynamic(() => import('./UsageLineChart'), {
   ssr: false,
   loading: () => (
-    <div className="h-64 w-full animate-pulse rounded-lg bg-gray-100"></div>
+    <div className="h-64 w-full animate-pulse rounded-lg bg-gray-700/50"></div>
   ),
 });
 

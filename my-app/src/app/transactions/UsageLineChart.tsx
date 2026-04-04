@@ -84,7 +84,7 @@ const CustomToolTip = (props: DefaultTooltipContentProps<string, string>) => {
   if (!payload) return null;
   return (
     <div className="bg-background flex flex-col rounded p-2 text-xs shadow">
-      <span className="text-primary-700">
+      <span className="text-primary-300">
         花費：${normalizeNumber(payload.cost)}
       </span>
       <span className="text-xs">{payload.date}</span>

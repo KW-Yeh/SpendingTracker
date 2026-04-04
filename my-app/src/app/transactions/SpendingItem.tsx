@@ -126,7 +126,7 @@ export const SpendingItem = (props: Props) => {
         </div>
       </div>
       <div
-        className={`w-fit text-end text-lg font-bold ${spending.type === SpendingType.Outcome ? 'text-secondary-600' : 'text-income-600'}`}
+        className={`w-fit text-end text-lg font-bold ${spending.type === SpendingType.Outcome ? 'text-secondary-400' : 'text-income-400'}`}
       >
         ${normalizeNumber(Number(spending.amount))}
       </div>
