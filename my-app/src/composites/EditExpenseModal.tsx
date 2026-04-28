@@ -409,11 +409,10 @@ const StepAmount = ({
           ))}
         </div>
 
-        {/* Calculator — ✓ advances to step 2 */}
+        {/* Calculator */}
         <NumberKeyboard
           value={amountStr}
           onChange={onChangeAmount}
-          onSubmit={onNext}
         />
       </div>
 

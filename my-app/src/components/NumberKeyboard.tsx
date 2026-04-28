@@ -2,15 +2,13 @@
 
 import { BackspaceIcon } from '@/components/icons/BackspaceIcon';
 import { CSSProperties, ReactNode } from 'react';
-import { IoCheckmarkSharp } from 'react-icons/io5';
 
 interface Props {
   value: string;
   onChange: (val: string) => void;
-  onSubmit?: () => void;
 }
 
-export const NumberKeyboard = ({ value, onChange, onSubmit }: Props) => {
+export const NumberKeyboard = ({ value, onChange }: Props) => {
   const press = (k: string) => {
     if (k === 'clear') {
       onChange('0');
@@ -20,10 +18,6 @@ export const NumberKeyboard = ({ value, onChange, onSubmit }: Props) => {
       onChange(value.length <= 1 ? '0' : value.slice(0, -1));
       return;
     }
-    if (k === 'submit') {
-      onSubmit?.();
-      return;
-    }
     if (k === '.') {
       if (value.includes('.')) return;
       onChange(value + '.');
@@ -31,7 +25,6 @@ export const NumberKeyboard = ({ value, onChange, onSubmit }: Props) => {
     }
     // digit ('0','1'..'9') or multi-digit ('00','000')
     if (value === '0') {
-      // overwrite the leading zero unless inserting '00'/'000' which would still mean 0
       if (k === '00' || k === '000') return;
       onChange(k);
       return;
@@ -63,31 +56,21 @@ export const NumberKeyboard = ({ value, onChange, onSubmit }: Props) => {
         <span className="text-2xl leading-none">·</span>
       </Key>
 
-      {/* row 3: 1 2 3 ✓ (start of submit, spans rows 3-4) */}
+      {/* row 3: 1 2 3 C */}
       <Key value="1" onPress={press} style={{ gridRow: 3, gridColumn: 1 }}>1</Key>
       <Key value="2" onPress={press} style={{ gridRow: 3, gridColumn: 2 }}>2</Key>
       <Key value="3" onPress={press} style={{ gridRow: 3, gridColumn: 3 }}>3</Key>
-      <Key
-        value="submit"
-        variant="submit"
-        onPress={press}
-        style={{ gridRow: '3 / span 2', gridColumn: 4 }}
-      >
-        <IoCheckmarkSharp className="size-7" />
-      </Key>
+      <Key value="clear" variant="clear" onPress={press} style={{ gridRow: 3, gridColumn: 4 }}>C</Key>
 
-      {/* row 4: 0 00 C */}
-      <Key value="0" onPress={press} style={{ gridRow: 4, gridColumn: 1 }}>0</Key>
-      <Key value="00" onPress={press} style={{ gridRow: 4, gridColumn: 2 }}>00</Key>
-      <Key value="clear" variant="clear" onPress={press} style={{ gridRow: 4, gridColumn: 3 }}>
-        C
-      </Key>
+      {/* row 4: 0 (wide) 00 (wide) */}
+      <Key value="0" onPress={press} style={{ gridRow: 4, gridColumn: '1 / span 2' }}>0</Key>
+      <Key value="00" onPress={press} style={{ gridRow: 4, gridColumn: '3 / span 2' }}>00</Key>
     </div>
   );
 };
 NumberKeyboard.displayName = 'NumberKeyboard';
 
-type KeyVariant = 'digit' | 'delete' | 'clear' | 'submit';
+type KeyVariant = 'digit' | 'delete' | 'clear';
 
 const Key = ({
   value,
@@ -103,24 +86,14 @@ const Key = ({
   children: ReactNode;
 }) => {
   const variantClass =
-    variant === 'submit'
-      ? 'text-white font-extrabold'
-      : variant === 'delete'
-        ? 'bg-white/[0.04] text-[var(--color-expense)] border border-white/[0.06]'
-        : 'bg-white/[0.04] text-gray-100 border border-white/[0.06]';
-
-  const submitBg =
-    variant === 'submit'
-      ? {
-          background: 'linear-gradient(135deg, #06B6D4, #0891B2)',
-          boxShadow: '0 8px 20px rgba(6, 182, 212, 0.35)',
-        }
-      : undefined;
+    variant === 'delete'
+      ? 'bg-white/[0.04] text-[var(--color-expense)] border border-white/[0.06]'
+      : 'bg-white/[0.04] text-gray-100 border border-white/[0.06]';
 
   return (
     <button
       type="button"
-      style={{ ...style, ...submitBg }}
+      style={style}
       className={`flex cursor-pointer items-center justify-center rounded-[14px] text-lg font-semibold transition-colors select-none active:scale-[0.97] sm:text-xl ${variantClass}`}
       onClick={() => onPress(value)}
     >
