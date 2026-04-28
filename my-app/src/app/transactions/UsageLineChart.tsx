@@ -2,10 +2,11 @@
 
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import { PRIMARY_COLORS } from '@/styles/colors';
-import { startTransition, useEffect, useState } from 'react';
+import { startTransition, useEffect, useMemo, useState } from 'react';
 import {
-  Area,
-  AreaChart,
+  Bar,
+  BarChart,
+  Cell,
   DefaultTooltipContentProps,
   ResponsiveContainer,
   Tooltip,
@@ -22,7 +23,6 @@ interface Props {
 
 type DataType = {
   date: string;
-  cumulation: number;
   cost: number;
 };
 
@@ -36,28 +36,35 @@ const UsageLineChart = (props: Props) => {
     });
   }, [data, month]);
 
+  const peakCost = useMemo(
+    () => dataList.reduce((max, d) => Math.max(max, d.cost), 0),
+    [dataList],
+  );
+
   return (
-    <ResponsiveContainer width="100%" height={isMobile ? 150 : 200}>
-      <AreaChart data={dataList} onClick={handleOnClick}>
-        <defs>
-          <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-            <stop
-              offset="5%"
-              stopColor={PRIMARY_COLORS[400]}
-              stopOpacity={0.8}
+    <ResponsiveContainer width="100%" height={isMobile ? 130 : 170}>
+      <BarChart
+        data={dataList}
+        onClick={handleOnClick}
+        margin={{ top: 4, right: 0, left: 0, bottom: 0 }}
+      >
+        <Bar dataKey="cost" radius={[3, 3, 0, 0]}>
+          {dataList.map((entry, index) => (
+            <Cell
+              key={`cell-${index}`}
+              fill={
+                entry.cost > 0 && entry.cost === peakCost
+                  ? PRIMARY_COLORS[400]
+                  : 'rgba(34, 211, 238, 0.45)'
+              }
             />
-            <stop offset="95%" stopColor={PRIMARY_COLORS[400]} stopOpacity={0} />
-          </linearGradient>
-        </defs>
-        <Area
-          dataKey="cumulation"
-          stroke={PRIMARY_COLORS[400]}
-          fill="url(#colorUv)"
-          type="monotone"
-          dot={{ stroke: PRIMARY_COLORS[400], r: 1 }}
+          ))}
+        </Bar>
+        <Tooltip
+          cursor={{ fill: 'rgba(255,255,255,0.04)' }}
+          content={CustomToolTip}
         />
-        <Tooltip content={CustomToolTip} />
-      </AreaChart>
+      </BarChart>
     </ResponsiveContainer>
   );
 };
@@ -65,17 +72,10 @@ const UsageLineChart = (props: Props) => {
 export default UsageLineChart;
 
 function formatData(list: number[], month: number) {
-  const result: DataType[] = [];
-  let cumulation = 0;
-  list.forEach((item, index) => {
-    cumulation += item;
-    result.push({
-      date: `${(month + 1).toString().padStart(2, '0')}/${(index + 1).toString().padStart(2, '0')}`,
-      cumulation: cumulation,
-      cost: item,
-    });
-  });
-  return result;
+  return list.map((cost, index) => ({
+    date: `${(month + 1).toString().padStart(2, '0')}/${(index + 1).toString().padStart(2, '0')}`,
+    cost,
+  }));
 }
 
 const CustomToolTip = (props: DefaultTooltipContentProps<string, string>) => {
@@ -84,7 +84,10 @@ const CustomToolTip = (props: DefaultTooltipContentProps<string, string>) => {
   if (!payload) return null;
   return (
     <div className="bg-background flex flex-col rounded p-2 text-xs shadow">
-      <span className="text-primary-300">
+      <span
+        className="text-primary-300"
+        style={{ fontVariantNumeric: 'tabular-nums' }}
+      >
         花費：${normalizeNumber(payload.cost)}
       </span>
       <span className="text-xs">{payload.date}</span>

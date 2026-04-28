@@ -22,10 +22,10 @@ export const CHART_COLORS = {
   INCOME_NECESSARY: '#34D399',    // --color-income-400 必要收入（較亮）
   INCOME_UNNECESSARY: '#6EE7B7',  // --color-income-300 非必要收入（更亮）
 
-  // 支出圖表（紫色系）
-  OUTCOME_PRIMARY: '#A855F7',     // --color-secondary-500
-  OUTCOME_NECESSARY: '#C084FC',   // --color-secondary-400 必要支出（較亮）
-  OUTCOME_UNNECESSARY: '#D8B4FE', // --color-secondary-300 非必要支出（更亮）
+  // 支出圖表（珊瑚紅系 - 符合金融慣例）
+  OUTCOME_PRIMARY: '#F87171',     // coral-400 取代紫色
+  OUTCOME_NECESSARY: '#FCA5A5',   // coral-300 必要支出（較亮）
+  OUTCOME_UNNECESSARY: '#FECACA', // coral-200 非必要支出（更亮）
 
   // 通用
   NEUTRAL: '#475569',             // --color-gray-600
@@ -110,6 +110,27 @@ export const GRAY_COLORS = {
 } as const;
 
 /**
+ * 金錢語意顏色（符合金融慣例：紅 = 支出 / 綠 = 收入）
+ *
+ * 使用準則：
+ * - `expense` 給支出金額、支出 badge、支出方向 delta
+ * - `overBudget` 比 `expense` 更鮮，**只**給超支警示（border / 警告 row）
+ * - `warning` 給預算 80–99% 的橘色警示
+ * - `primary` 給「中性的現況數字」（例：本月結餘為正時、進度條 < 80%）
+ * - `primaryGlow` 是 RGB 字串，用於 `rgba(var(--...), .X)` 樣式
+ */
+export const MONEY_COLORS = {
+  income: '#34D399', // emerald-400
+  incomeMuted: 'rgba(52, 211, 153, 0.10)',
+  expense: '#F87171', // coral-400 取代紫色
+  expenseMuted: 'rgba(248, 113, 113, 0.10)',
+  overBudget: '#FB7185', // rose-400 比 expense 更鮮
+  warning: '#FBBF24', // amber-400
+  primary: PRIMARY_COLORS[500],
+  primaryGlow: '6, 182, 212', // rgb 字串給 rgba() 用
+} as const;
+
+/**
  * 語義化顏色
  */
 export const SEMANTIC_COLORS = {
@@ -170,9 +191,9 @@ export const getChartColor = (index: number): string => {
 export const LEGACY_INCOME_COLOR = '#10B981';
 
 /**
- * @deprecated 使用 CHART_COLORS.OUTCOME_PRIMARY
+ * @deprecated 使用 CHART_COLORS.OUTCOME_PRIMARY 或 MONEY_COLORS.expense
  */
-export const LEGACY_OUTCOME_COLOR = '#A855F7';
+export const LEGACY_OUTCOME_COLOR = '#F87171';
 
 /**
  * @deprecated 使用 CHART_COLORS.NEUTRAL

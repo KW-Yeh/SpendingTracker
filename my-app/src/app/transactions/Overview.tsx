@@ -1,8 +1,6 @@
 import { getExpenseFromData } from '@/utils/getExpenseFromData';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 import { useMemo, useState } from 'react';
-import { MdOutlineWallet } from 'react-icons/md';
-import { IoMdAdd } from 'react-icons/io';
 import { CATEGORY_WORDING_MAP, SpendingType } from '@/utils/constants';
 import Link from 'next/link';
 import { IoChevronDown, IoChevronUp } from 'react-icons/io5';
@@ -16,44 +14,40 @@ interface Props {
 }
 
 export default function OverView(props: Props) {
-  const { monthlyBudget = 0, budget, costList, selectedMonth = new Date().getMonth() + 1 } = props;
+  const {
+    monthlyBudget = 0,
+    budget,
+    costList,
+    selectedMonth = new Date().getMonth() + 1,
+  } = props;
   const [isBudgetExpanded, setIsBudgetExpanded] = useState(false);
 
-  // Memoize expensive expense calculation
   const { totalIncome, totalOutcome } = useMemo(
     () => getExpenseFromData(costList),
     [costList],
   );
 
-  // Calculate spending by category for current month
   const categorySpending = useMemo(() => {
     const spending: Record<string, number> = {};
-
     costList.forEach((record) => {
       if (record.type === SpendingType.Outcome) {
-        const category = record.category;
-        spending[category] = (spending[category] || 0) + Number(record.amount);
+        spending[record.category] =
+          (spending[record.category] || 0) + Number(record.amount);
       }
     });
-
     return spending;
   }, [costList]);
 
-  // Get budget items for current month, aggregated by category
   const currentMonthBudgetItems = useMemo(() => {
     if (!budget?.monthly_items) return [];
-
-    const currentMonth = selectedMonth;
     const categoryMap: Record<
       string,
       { category: string; budgeted: number; spent: number }
     > = {};
-
     budget.monthly_items.forEach((item) => {
-      const budgetAmount = item.months?.[currentMonth.toString()];
+      const budgetAmount = item.months?.[selectedMonth.toString()];
       if (budgetAmount && budgetAmount > 0) {
         const category = item.category;
-
         if (!categoryMap[category]) {
           categoryMap[category] = {
             category,
@@ -61,14 +55,16 @@ export default function OverView(props: Props) {
             spent: categorySpending[category] || 0,
           };
         }
-
         categoryMap[category].budgeted += budgetAmount;
       }
     });
-
-    // Convert to array and sort by highest budget first
     return Object.values(categoryMap).sort((a, b) => b.budgeted - a.budgeted);
-  }, [budget, categorySpending]);
+  }, [budget, categorySpending, selectedMonth]);
+
+  const overBudgetItems = useMemo(
+    () => currentMonthBudgetItems.filter((it) => it.spent > it.budgeted),
+    [currentMonthBudgetItems],
+  );
 
   const balance = monthlyBudget - totalOutcome;
   const usagePercentage =
@@ -76,101 +72,154 @@ export default function OverView(props: Props) {
   const isOverBudget = balance < 0;
   const isWarning = usagePercentage >= 80 && !isOverBudget;
 
+  const remainingPercent = Math.max(0, 100 - usagePercentage);
+
+  const progressFillStyle = isOverBudget
+    ? { backgroundColor: 'var(--color-over-budget)' }
+    : isWarning
+      ? { backgroundColor: 'var(--color-warning)' }
+      : { backgroundColor: 'var(--color-primary-500)' };
+
+  const markerLeft = `${Math.min(usagePercentage, 100)}%`;
+
   return (
-    <div className="card relative flex w-full flex-col gap-5 text-gray-300 transition-all duration-200 hover:shadow-[0_0_25px_rgba(6,182,212,0.2)] md:min-w-110">
-      {/* Header with primary metric */}
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1">
-          <div className="mb-2 flex items-center gap-2">
-            <MdOutlineWallet className="text-primary-400 size-6" />
-            <h3 className="text-sm font-semibold text-gray-400">
-              本月預算結餘
-            </h3>
-          </div>
-          <div className="mb-3 flex items-baseline gap-2">
+    <div
+      className="relative flex w-full flex-col gap-5 rounded-2xl border border-white/[0.06] bg-gray-800/80 p-5 text-gray-300 shadow-md backdrop-blur-sm md:min-w-110"
+      style={{ textWrap: 'pretty' }}
+    >
+      {/* Hero — 主結餘數字 */}
+      <div className="flex flex-col gap-3">
+        <span
+          className="text-[11px] font-semibold tracking-[0.12em] text-gray-400 uppercase"
+          style={{ letterSpacing: '0.12em' }}
+        >
+          本月預算結餘
+        </span>
+        <div className="flex items-baseline gap-3">
+          <span
+            className="font-extrabold tabular-nums text-gray-50"
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontSize: 'clamp(2.25rem, 9vw, 2.625rem)', // ~36–42px
+              fontVariantNumeric: 'tabular-nums',
+              color: isOverBudget ? 'var(--color-over-budget)' : undefined,
+            }}
+          >
+            ${normalizeNumber(Math.abs(balance))}
+          </span>
+          <span
+            className="text-xs font-semibold"
+            style={{
+              color: isOverBudget
+                ? 'var(--color-over-budget)'
+                : 'var(--color-text-tertiary)',
+            }}
+          >
+            {isOverBudget ? '超支' : `剩 ${remainingPercent.toFixed(0)}%`}
+          </span>
+        </div>
+
+        {/* Slim progress bar with marker */}
+        <div className="relative h-1.5 w-full overflow-visible rounded-full bg-white/[0.06]">
+          <div
+            className="h-full rounded-full transition-all duration-300"
+            style={{
+              ...progressFillStyle,
+              width: `${Math.min(usagePercentage, 100)}%`,
+            }}
+          />
+          <div
+            className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-gray-900 transition-all duration-300"
+            style={{
+              left: markerLeft,
+              width: 10,
+              height: 10,
+              ...progressFillStyle,
+            }}
+          />
+        </div>
+
+        <div className="flex items-center justify-between text-[11px] font-medium text-gray-400">
+          <span style={{ fontVariantNumeric: 'tabular-nums' }}>
+            已使用 {usagePercentage.toFixed(1)}%
+          </span>
+          {isOverBudget && (
             <span
-              className={`text-3xl font-extrabold sm:text-4xl ${
-                isOverBudget
-                  ? 'text-secondary-400'
-                  : isWarning
-                    ? 'text-primary-400'
-                    : 'text-primary-400'
-              }`}
-              style={{ fontFamily: 'var(--font-heading)' }}
-            >
-              ${normalizeNumber(Math.abs(balance))}
-            </span>
-            {isOverBudget && (
-              <span className="text-secondary-400 text-sm font-semibold">
-                超支
-              </span>
-            )}
-          </div>
-          {/* Progress bar */}
-          <div className="relative h-3 w-full overflow-hidden rounded-full bg-gray-700/50">
-            <div
-              className={`h-full rounded-full transition-all duration-300 ${
-                isOverBudget
-                  ? 'from-secondary-500 to-secondary-600 bg-linear-to-r shadow-[0_0_10px_rgba(139,92,246,0.5)]'
-                  : isWarning
-                    ? 'from-primary-500 to-accent-500 bg-linear-to-r shadow-[0_0_10px_rgba(6,182,212,0.5)]'
-                    : 'from-primary-400 to-primary-500 bg-linear-to-r shadow-[0_0_10px_rgba(6,182,212,0.4)]'
-              }`}
+              className="font-semibold"
               style={{
-                width: `${Math.min(usagePercentage, 100)}%`,
+                color: 'var(--color-over-budget)',
+                fontVariantNumeric: 'tabular-nums',
               }}
+            >
+              超出 {(usagePercentage - 100).toFixed(1)}%
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* 收支雙卡 (取代 3 卡) */}
+      <div className="grid grid-cols-2 gap-3">
+        <Tile
+          label="本月收入"
+          amount={totalIncome}
+          colorVar="--color-income"
+          mutedBgVar="--color-income-bg"
+        />
+        <Tile
+          label="本月支出"
+          amount={totalOutcome}
+          colorVar="--color-expense"
+          mutedBgVar="--color-expense-bg"
+        />
+      </div>
+
+      {/* 預算超支警告 */}
+      {overBudgetItems.length > 0 && (
+        <Link
+          href="/budget"
+          className="flex items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm transition-colors hover:bg-white/[0.03]"
+          style={{
+            borderColor: 'rgba(248,113,113,0.25)',
+            backgroundColor: 'rgba(248,113,113,0.08)',
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <span
+              aria-hidden
+              className="inline-flex size-1.5 rounded-full"
+              style={{ backgroundColor: 'var(--color-over-budget)' }}
             />
+            <span
+              className="text-xs font-semibold"
+              style={{ color: 'var(--color-over-budget)' }}
+            >
+              {overBudgetItems.length} 個類別超支
+            </span>
           </div>
-          <div className="mt-2 flex items-center justify-between text-xs font-medium text-gray-400">
-            <span>已使用 {usagePercentage.toFixed(1)}%</span>
-            {isOverBudget && (
-              <span className="text-secondary-400 font-semibold">
-                超出 {(usagePercentage - 100).toFixed(1)}%
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Financial breakdown grid */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="bg-accent-500/10 border-accent-500/30 flex flex-col gap-1.5 rounded-xl border p-3.5 backdrop-blur-sm">
-          <span className="text-accent-400 text-xs font-medium">預算</span>
-          <span className="text-accent-300 text-base font-bold sm:text-lg">
-            ${normalizeNumber(monthlyBudget)}
+          <span className="text-[11px] font-medium text-gray-400">
+            查看預算 →
           </span>
-        </div>
+        </Link>
+      )}
 
-        <div className="bg-secondary-500/10 border-secondary-500/30 flex flex-col gap-1.5 rounded-xl border p-3.5 backdrop-blur-sm">
-          <span className="text-secondary-400 text-xs font-medium">支出</span>
-          <span className="text-secondary-300 text-base font-bold sm:text-lg">
-            ${normalizeNumber(totalOutcome)}
-          </span>
-        </div>
-
-        <div className="bg-income-500/10 border-income-500/30 flex flex-col gap-1.5 rounded-xl border p-3.5 backdrop-blur-sm">
-          <span className="text-income-400 text-xs font-medium">收入</span>
-          <span className="text-income-300 text-base font-bold sm:text-lg">
-            ${normalizeNumber(totalIncome)}
-          </span>
-        </div>
-      </div>
-
-      {/* Category-based budget cards - Accordion */}
+      {/* 類別預算 accordion - 保留但 recolor */}
       {currentMonthBudgetItems.length > 0 && (
         <div className="flex flex-col">
           <button
             type="button"
             onClick={() => setIsBudgetExpanded(!isBudgetExpanded)}
-            className="flex cursor-pointer items-center justify-between rounded-xl px-3 py-2.5 transition-all duration-200 hover:bg-gray-700/50 hover:shadow-[0_0_10px_rgba(6,182,212,0.15)]"
+            className="flex cursor-pointer items-center justify-between rounded-xl px-3 py-2 transition-colors hover:bg-white/[0.04]"
           >
-            <h4 className="text-sm font-semibold text-gray-300">
+            <span
+              className="text-[11px] font-semibold text-gray-400"
+              style={{ letterSpacing: '0.12em' }}
+            >
               預算使用狀況
-            </h4>
+            </span>
             {isBudgetExpanded ? (
-              <IoChevronUp className="text-primary-400 size-4" />
+              <IoChevronUp className="size-4 text-gray-400" />
             ) : (
-              <IoChevronDown className="text-primary-400 size-4" />
+              <IoChevronDown className="size-4 text-gray-400" />
             )}
           </button>
 
@@ -181,30 +230,35 @@ export default function OverView(props: Props) {
                   item.budgeted > 0 ? (item.spent / item.budgeted) * 100 : 0;
                 const isOver = item.spent > item.budgeted;
                 const isNearLimit = usagePercent >= 80 && !isOver;
+                const fillVar = isOver
+                  ? '--color-over-budget'
+                  : isNearLimit
+                    ? '--color-warning'
+                    : '--color-primary-500';
 
                 return (
                   <div
                     key={item.category}
-                    className={`flex flex-col gap-2 rounded-xl border-2 p-3 shadow-sm backdrop-blur-sm transition-all duration-200 ${
-                      isOver
-                        ? 'border-secondary-500/50 bg-secondary-500/10 hover:shadow-[0_0_15px_rgba(139,92,246,0.2)]'
-                        : isNearLimit
-                          ? 'border-primary-500/50 bg-primary-500/10 hover:shadow-[0_0_15px_rgba(6,182,212,0.2)]'
-                          : 'border-gray-600 bg-gray-700/50 hover:shadow-[0_0_10px_rgba(6,182,212,0.15)]'
-                    }`}
+                    className="flex flex-col gap-2 rounded-xl border p-3 transition-colors"
+                    style={{
+                      borderColor: isOver
+                        ? 'rgba(248,113,113,0.3)'
+                        : 'rgba(255,255,255,0.06)',
+                      backgroundColor: isOver
+                        ? 'rgba(248,113,113,0.06)'
+                        : 'rgba(255,255,255,0.02)',
+                    }}
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-gray-200">
                         {CATEGORY_WORDING_MAP[item.category]}
                       </span>
                       <span
-                        className={`text-xs font-extrabold ${
-                          isOver
-                            ? 'text-secondary-400'
-                            : isNearLimit
-                              ? 'text-primary-400'
-                              : 'text-primary-400'
-                        }`}
+                        className="text-xs font-extrabold"
+                        style={{
+                          color: `var(${fillVar})`,
+                          fontVariantNumeric: 'tabular-nums',
+                        }}
                       >
                         {usagePercent.toFixed(0)}%
                       </span>
@@ -216,13 +270,8 @@ export default function OverView(props: Props) {
                           已使用
                         </span>
                         <span
-                          className={`text-sm font-bold ${
-                            isOver
-                              ? 'text-secondary-300'
-                              : isNearLimit
-                                ? 'text-primary-300'
-                                : 'text-gray-200'
-                          }`}
+                          className="text-sm font-bold text-gray-100"
+                          style={{ fontVariantNumeric: 'tabular-nums' }}
                         >
                           ${normalizeNumber(item.spent)}
                         </span>
@@ -231,31 +280,35 @@ export default function OverView(props: Props) {
                         <span className="text-[10px] font-medium text-gray-400">
                           預算
                         </span>
-                        <span className="text-xs font-semibold text-gray-300">
+                        <span
+                          className="text-xs font-semibold text-gray-300"
+                          style={{ fontVariantNumeric: 'tabular-nums' }}
+                        >
                           ${normalizeNumber(item.budgeted)}
                         </span>
                       </div>
                     </div>
 
-                    <div className="relative h-2 w-full overflow-hidden rounded-full bg-gray-700/50">
+                    <div className="relative h-1 w-full overflow-hidden rounded-full bg-white/[0.06]">
                       <div
-                        className={`h-full rounded-full transition-all duration-300 ${
-                          isOver
-                            ? 'from-secondary-500 to-secondary-600 bg-linear-to-r shadow-[0_0_8px_rgba(139,92,246,0.6)]'
-                            : isNearLimit
-                              ? 'from-primary-500 to-accent-500 bg-linear-to-r shadow-[0_0_8px_rgba(6,182,212,0.6)]'
-                              : 'from-primary-400 to-primary-500 bg-linear-to-r shadow-[0_0_8px_rgba(6,182,212,0.5)]'
-                        }`}
-                        style={{ width: `${Math.min(usagePercent, 100)}%` }}
+                        className="h-full rounded-full transition-all duration-300"
+                        style={{
+                          width: `${Math.min(usagePercent, 100)}%`,
+                          backgroundColor: `var(${fillVar})`,
+                        }}
                       />
                     </div>
 
                     {isOver && (
-                      <div className="bg-secondary-500/20 border-secondary-500/40 mt-0.5 rounded-lg border px-2 py-1">
-                        <span className="text-secondary-300 text-[10px] font-bold">
-                          超支 ${normalizeNumber(item.spent - item.budgeted)}
-                        </span>
-                      </div>
+                      <span
+                        className="text-[10px] font-bold"
+                        style={{
+                          color: 'var(--color-over-budget)',
+                          fontVariantNumeric: 'tabular-nums',
+                        }}
+                      >
+                        超支 ${normalizeNumber(item.spent - item.budgeted)}
+                      </span>
                     )}
                   </div>
                 );
@@ -264,16 +317,45 @@ export default function OverView(props: Props) {
           )}
         </div>
       )}
+    </div>
+  );
+}
 
-      {/* Action button */}
-      <Link
-        href="/edit"
-        className="btn-primary flex w-full items-center justify-center gap-2 text-sm font-semibold sm:text-base"
-        scroll={false}
+function Tile({
+  label,
+  amount,
+  colorVar,
+  mutedBgVar,
+}: {
+  label: string;
+  amount: number;
+  colorVar: string;
+  mutedBgVar: string;
+}) {
+  return (
+    <div
+      className="flex flex-col gap-1 rounded-xl border border-white/[0.06] px-3.5 py-3"
+      style={{ backgroundColor: `var(${mutedBgVar})` }}
+    >
+      <span
+        className="text-[11px] font-medium"
+        style={{
+          color: `var(${colorVar})`,
+          letterSpacing: '0.04em',
+        }}
       >
-        <IoMdAdd className="size-5" />
-        <span>立即新增帳目</span>
-      </Link>
+        {label}
+      </span>
+      <span
+        className="text-xl font-extrabold tabular-nums"
+        style={{
+          color: `var(${colorVar})`,
+          fontVariantNumeric: 'tabular-nums',
+          fontFamily: 'var(--font-heading)',
+        }}
+      >
+        ${normalizeNumber(amount)}
+      </span>
     </div>
   );
 }

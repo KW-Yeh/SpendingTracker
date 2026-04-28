@@ -9,7 +9,7 @@ import { useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 function BudgetContent() {
   const { currentGroup } = useGroupCtx();
@@ -58,10 +58,33 @@ function BudgetContent() {
   );
 }
 
+function BudgetHero() {
+  const [now, setNow] = useState<Date | null>(null);
+  useEffect(() => setNow(new Date()), []);
+  const sub = now
+    ? `${now.getFullYear()} 年 · ${now.getMonth() + 1} 月`
+    : '';
+  return (
+    <div
+      className="content-wrapper !pb-2 !gap-1"
+      style={{ alignItems: 'flex-start', textWrap: 'pretty' }}
+    >
+      <h1
+        className="text-2xl font-extrabold text-gray-100 sm:text-3xl"
+        style={{ fontFamily: 'var(--font-heading)' }}
+      >
+        預算規劃
+      </h1>
+      <span className="text-xs font-medium text-gray-400">{sub}</span>
+    </div>
+  );
+}
+
 export default function BudgetPage() {
   return (
     <div className="bg-soft relative flex w-full flex-1 flex-col">
       <PageTitle>預算管理</PageTitle>
+      <BudgetHero />
       <BudgetContent />
     </div>
   );

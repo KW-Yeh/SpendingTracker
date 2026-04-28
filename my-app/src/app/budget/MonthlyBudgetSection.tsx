@@ -12,65 +12,78 @@ interface Props {
 export const MonthlyBudgetSection = ({ yearlySpending }: Props) => {
   const { budget } = useBudgetCtx();
 
-  // Calculate current month's budget and spending
   const { monthlyBudget, spent } = useMemo(() => {
     const currentMonth = new Date().getMonth() + 1;
 
-    // Calculate budget
     let budgetTotal = 0;
     if (budget?.monthly_items) {
       budget.monthly_items.forEach((item) => {
         const monthAmount = item.months?.[currentMonth.toString()];
-        if (monthAmount) {
-          budgetTotal += monthAmount;
-        }
+        if (monthAmount) budgetTotal += monthAmount;
       });
     }
 
-    // Calculate spent
     const currentMonthRecords = yearlySpending.filter((record) => {
       const recordDate = new Date(record.date);
       return recordDate.getMonth() + 1 === currentMonth;
     });
     const { totalOutcome } = getExpenseFromData(currentMonthRecords);
 
-    return {
-      monthlyBudget: budgetTotal,
-      spent: totalOutcome,
-    };
+    return { monthlyBudget: budgetTotal, spent: totalOutcome };
   }, [budget?.monthly_items, yearlySpending]);
 
   const percentage = monthlyBudget ? (spent / monthlyBudget) * 100 : 0;
+  const isOver = percentage >= 100;
+  const isWarning = percentage >= 80 && !isOver;
+  const fillVar = isOver
+    ? '--color-over-budget'
+    : isWarning
+      ? '--color-warning'
+      : '--color-primary-500';
 
   return (
-    <div className="card w-full">
-      <h2
-        className="text-xl font-bold text-gray-100"
-        style={{ fontFamily: 'var(--font-heading)' }}
+    <div
+      className="relative flex w-full flex-col gap-3 overflow-hidden rounded-2xl border p-5 shadow-md backdrop-blur-sm"
+      style={{
+        borderColor: 'rgba(6, 182, 212, 0.30)',
+        background:
+          'linear-gradient(180deg, rgba(6,182,212,0.10), rgba(6,182,212,0.02))',
+        textWrap: 'pretty',
+      }}
+    >
+      <span
+        className="text-[11px] font-semibold uppercase"
+        style={{
+          letterSpacing: '0.12em',
+          color: 'var(--color-primary-400)',
+        }}
       >
         本月預算
-      </h2>
-
-      <div className="mt-4">
-        <p className="text-3xl font-bold text-gray-200">
-          {normalizeNumber(monthlyBudget)} 元
-        </p>
-        <p className="text-sm text-gray-400">(由月度項目自動計算)</p>
-
-        <div className="mt-3 h-3 w-full rounded-full bg-gray-700/50">
-          <div
-            className={`h-full rounded-full transition-all duration-300 ${
-              percentage > 100
-                ? 'bg-secondary-500 shadow-[0_0_8px_rgba(139,92,246,0.6)]'
-                : 'from-primary-500 to-accent-500 bg-linear-to-r shadow-[0_0_8px_rgba(6,182,212,0.5)]'
-            }`}
-            style={{ width: `${Math.min(percentage, 100)}%` }}
-          />
-        </div>
-        <p className="mt-2 text-sm text-gray-400">
-          已使用 {normalizeNumber(spent)} 元 ({percentage.toFixed(1)}%)
-        </p>
+      </span>
+      <p
+        className="text-2xl font-extrabold text-gray-100 sm:text-3xl"
+        style={{
+          fontFamily: 'var(--font-heading)',
+          fontVariantNumeric: 'tabular-nums',
+        }}
+      >
+        ${normalizeNumber(monthlyBudget)}
+      </p>
+      <div className="h-1 w-full overflow-hidden rounded-full bg-white/[0.06]">
+        <div
+          className="h-full rounded-full transition-all duration-300"
+          style={{
+            width: `${Math.min(percentage, 100)}%`,
+            backgroundColor: `var(${fillVar})`,
+          }}
+        />
       </div>
+      <p
+        className="text-xs font-medium text-gray-400"
+        style={{ fontVariantNumeric: 'tabular-nums' }}
+      >
+        已使用 ${normalizeNumber(spent)} ({percentage.toFixed(1)}%)
+      </p>
     </div>
   );
 };

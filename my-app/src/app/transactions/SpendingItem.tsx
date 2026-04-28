@@ -49,9 +49,9 @@ export const SpendingItem = (props: Props) => {
 
   const additionalStyle = useMemo(() => {
     if (deleting) {
-      return 'ring-2 ring-secondary-400';
+      return 'ring-2 ring-[var(--color-expense)]';
     }
-    return 'hover:shadow-[0_0_20px_rgba(6,182,212,0.25)] hover:border-primary-400 cursor-pointer';
+    return 'hover:bg-white/[0.03] cursor-pointer';
   }, [deleting]);
 
   const handleOnDelete = useCallback(async () => {
@@ -89,44 +89,61 @@ export const SpendingItem = (props: Props) => {
     };
   }, [spending.date]);
 
+  const isNeed = spending.necessity === Necessity.Need;
+
   return (
     <div
-      className={`relative flex items-center gap-3 rounded-xl border border-gray-600 bg-gray-800/90 p-3 text-sm shadow-sm backdrop-blur-sm transition-all sm:text-base md:p-4 ${additionalStyle} ${menuOpen ? 'z-10' : ''}`}
+      className={`relative flex items-center gap-3 rounded-[14px] border border-white/[0.06] bg-gray-800/80 px-3 py-2.5 text-sm backdrop-blur-sm transition-colors sm:text-base ${additionalStyle} ${menuOpen ? 'z-10' : ''}`}
     >
       {deleting && (
-        <span className="bg-secondary-500 absolute top-0 left-2 -translate-y-1/2 rounded-full px-3 py-1 text-xs font-bold text-white shadow-md">
+        <span
+          className="absolute top-0 left-2 -translate-y-1/2 rounded-full px-3 py-1 text-xs font-bold text-white shadow-md"
+          style={{ backgroundColor: 'var(--color-expense)' }}
+        >
           刪除中
         </span>
       )}
       {category && (
         <span
           title={CATEGORY_WORDING_MAP[category.value]}
-          className="flex size-10 items-center justify-center rounded-xl bg-gray-700/70"
+          className="flex size-9 items-center justify-center rounded-[10px] bg-gray-700/60"
+          style={
+            isNeed
+              ? { boxShadow: 'inset 0 0 0 1px rgba(6,182,212,0.3)' }
+              : undefined
+          }
         >
           {getCategoryIcon(
             category.value,
-            `size-6 ${spending.necessity === Necessity.Need ? 'text-primary-400' : 'text-gray-400'}`,
+            `size-5 ${isNeed ? 'text-primary-400' : 'text-gray-400'}`,
           )}
         </span>
       )}
-      <div className="flex flex-1 flex-col gap-1 overflow-hidden">
+      <div className="flex flex-1 flex-col gap-0.5 overflow-hidden">
         <div
           title={spending.description}
-          className="overflow-hidden font-semibold text-ellipsis whitespace-nowrap text-gray-100"
+          className="overflow-hidden text-[13.5px] font-semibold text-ellipsis whitespace-nowrap text-gray-100 sm:text-sm"
         >
           {spending.description}
         </div>
-        <div className="flex items-center gap-1.5">
-          <span className="bg-primary-500/20 text-primary-400 rounded-md px-2 py-0.5 text-xs font-semibold">
-            {timeInfo.period}
-          </span>
-          <span className="text-xs font-medium text-gray-400">
-            {timeInfo.time}
-          </span>
+        <div
+          className="flex items-center gap-1 text-[10.5px] font-medium text-gray-400"
+          style={{ fontVariantNumeric: 'tabular-nums' }}
+        >
+          <span>{timeInfo.time}</span>
+          <span aria-hidden>·</span>
+          <span>{timeInfo.period}</span>
         </div>
       </div>
       <div
-        className={`w-fit text-end text-lg font-bold ${spending.type === SpendingType.Outcome ? 'text-secondary-400' : 'text-income-400'}`}
+        className="w-fit text-end text-base font-extrabold sm:text-lg"
+        style={{
+          color:
+            spending.type === SpendingType.Outcome
+              ? 'var(--color-expense)'
+              : 'var(--color-income)',
+          fontVariantNumeric: 'tabular-nums',
+        }}
       >
         ${normalizeNumber(Number(spending.amount))}
       </div>
@@ -150,7 +167,7 @@ export const SpendingItem = (props: Props) => {
             {
               value: 'delete',
               label: (
-                <span className="group group-hover:text-secondary-400 group-active:text-secondary-300 flex items-center gap-3 text-gray-300 transition-colors">
+                <span className="group flex items-center gap-3 text-gray-300 transition-colors group-hover:text-[var(--color-expense)] group-active:text-[var(--color-expense)]">
                   <DeleteIcon className="size-4 transition-colors sm:size-4" />
                   <span className="font-medium">刪除</span>
                 </span>

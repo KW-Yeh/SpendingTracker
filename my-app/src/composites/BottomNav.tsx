@@ -1,7 +1,6 @@
 'use client';
 
 import { BarChartIcon } from '@/components/icons/BarChartIcon';
-import { BookIcon } from '@/components/icons/BookIcon';
 import { CoinIcon } from '@/components/icons/CoinIcon';
 import { HomeIcon } from '@/components/icons/HomeIcon';
 import { ListTaskIcon } from '@/components/icons/ListTaskIcon';
@@ -12,59 +11,80 @@ import { ReactNode } from 'react';
 import { IoMdAdd } from 'react-icons/io';
 
 const ROUTE_ICON: Record<string, ReactNode> = {
-  '/': <HomeIcon className="size-4" />,
-  '/transactions': <ListTaskIcon className="size-4" />,
-  '/group': <BookIcon className="size-4" />,
-  '/analysis': <BarChartIcon className="size-4" />,
-  '/budget': <CoinIcon className="size-4" />,
+  '/': <HomeIcon className="size-5" />,
+  '/transactions': <ListTaskIcon className="size-5" />,
+  '/analysis': <BarChartIcon className="size-5" />,
+  '/budget': <CoinIcon className="size-5" />,
 };
+
+// "2 + FAB + 2" — /group lives in the AsideMenu drawer
+const LEFT_ROUTES = ['/', '/transactions'];
+const RIGHT_ROUTES = ['/analysis', '/budget'];
 
 export const BottomNav = () => {
   const pathname = usePathname();
 
   return (
     <nav
-      className="fixed right-4 bottom-5 left-4 z-40 rounded-2xl border border-gray-700/50 bg-gray-800/90 shadow-2xl backdrop-blur-xl md:hidden"
+      className="fixed right-0 bottom-0 left-0 z-40 border-t border-white/[0.06] md:hidden"
+      style={{ backgroundColor: 'rgba(10, 14, 26, 0.7)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
       aria-label="Mobile navigation"
     >
-      <div className="safe-area-inset-bottom flex items-center justify-between px-3 py-2">
-        {/* Add Transaction Button - Prominent with warm gradient */}
-        <Link
-          href="/edit"
-          className="from-primary-500 to-accent-500 shadow-primary-glow flex size-14 items-center justify-center rounded-full bg-linear-to-r text-white transition-all duration-200 hover:shadow-[0_0_25px_rgba(6,182,212,0.6)] active:shadow-[0_0_15px_rgba(6,182,212,0.4)]"
-          aria-label="新增帳目"
-          scroll={false}
-        >
-          <IoMdAdd className="size-7" />
-        </Link>
+      <div className="safe-area-inset-bottom relative mx-auto grid max-w-md grid-cols-5 items-center px-2 pt-1.5 pb-2">
+        {LEFT_ROUTES.map((route) => (
+          <NavItem
+            key={route}
+            route={route}
+            isActive={pathname === route}
+          />
+        ))}
 
-        {/* Navigation Links */}
-        <div className="flex flex-1 items-center justify-around gap-1">
-          {Object.keys(MENU_CONFIG).map((route) => {
-            const isActive = pathname === route;
-            return (
-              <Link
-                key={route}
-                href={route}
-                className={`flex min-h-11 min-w-11 flex-col items-center justify-center gap-0.5 rounded-xl transition-all duration-200 ${
-                  isActive
-                    ? 'text-primary-400 bg-primary-900/30 shadow-primary-glow'
-                    : 'hover:text-primary-400 active:text-primary-300 text-gray-400 hover:bg-gray-700'
-                }`}
-                aria-label={MENU_CONFIG[route]}
-                aria-current={isActive ? 'page' : undefined}
-              >
-                <span className="flex items-center justify-center">
-                  {ROUTE_ICON[route]}
-                </span>
-                <span className="text-[10px] font-semibold">
-                  {MENU_CONFIG[route]}
-                </span>
-              </Link>
-            );
-          })}
+        {/* Centered FAB */}
+        <div className="flex items-center justify-center">
+          <Link
+            href="/edit"
+            className="flex size-14 -translate-y-3 items-center justify-center rounded-full text-white transition-transform duration-150 active:scale-95"
+            style={{
+              background: 'linear-gradient(135deg, #06B6D4, #0891B2)',
+              boxShadow: '0 8px 24px rgba(6, 182, 212, 0.4)',
+            }}
+            aria-label="新增帳目"
+            scroll={false}
+          >
+            <IoMdAdd className="size-7" />
+          </Link>
         </div>
+
+        {RIGHT_ROUTES.map((route) => (
+          <NavItem
+            key={route}
+            route={route}
+            isActive={pathname === route}
+          />
+        ))}
       </div>
     </nav>
   );
 };
+
+const NavItem = ({ route, isActive }: { route: string; isActive: boolean }) => (
+  <Link
+    href={route}
+    className={`relative flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-xl py-1 transition-colors ${
+      isActive ? 'text-primary-400' : 'text-gray-500 hover:text-gray-300'
+    }`}
+    aria-label={MENU_CONFIG[route]}
+    aria-current={isActive ? 'page' : undefined}
+  >
+    {/* Active dot above icon */}
+    <span
+      aria-hidden
+      className={`absolute top-0 h-1 w-6 rounded-full transition-opacity ${
+        isActive ? 'opacity-100' : 'opacity-0'
+      }`}
+      style={{ backgroundColor: 'var(--color-primary-500)' }}
+    />
+    {ROUTE_ICON[route]}
+    <span className="text-[10px] font-semibold">{MENU_CONFIG[route]}</span>
+  </Link>
+);

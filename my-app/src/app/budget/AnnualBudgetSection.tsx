@@ -12,10 +12,8 @@ interface Props {
 export const AnnualBudgetSection = ({ yearlySpending }: Props) => {
   const { budget } = useBudgetCtx();
 
-  // Calculate annual budget from all monthly items
   const annualBudget = useMemo(() => {
     if (!budget?.monthly_items || budget.monthly_items.length === 0) return 0;
-
     let total = 0;
     budget.monthly_items.forEach((item) => {
       Object.values(item.months || {}).forEach((amount) => {
@@ -25,7 +23,6 @@ export const AnnualBudgetSection = ({ yearlySpending }: Props) => {
     return total;
   }, [budget?.monthly_items]);
 
-  // Calculate spent from transactions
   const spent = useMemo(() => {
     const { totalOutcome } = getExpenseFromData(yearlySpending);
     return totalOutcome;
@@ -34,31 +31,40 @@ export const AnnualBudgetSection = ({ yearlySpending }: Props) => {
   const percentage = annualBudget ? (spent / annualBudget) * 100 : 0;
 
   return (
-    <div className="card w-full">
-      <div className="flex items-center justify-between">
-        <h2
-          className="text-xl font-bold text-gray-100"
-          style={{ fontFamily: 'var(--font-heading)' }}
-        >
-          年度預算
-        </h2>
+    <div
+      className="flex w-full flex-col gap-3 rounded-2xl border border-white/[0.06] bg-gray-800/80 p-5 shadow-md backdrop-blur-sm"
+      style={{ textWrap: 'pretty' }}
+    >
+      <span
+        className="text-[11px] font-semibold uppercase text-gray-400"
+        style={{ letterSpacing: '0.12em' }}
+      >
+        年度預算
+      </span>
+      <p
+        className="text-2xl font-extrabold text-gray-100 sm:text-3xl"
+        style={{
+          fontFamily: 'var(--font-heading)',
+          fontVariantNumeric: 'tabular-nums',
+        }}
+      >
+        ${normalizeNumber(annualBudget)}
+      </p>
+      <div className="h-1 w-full overflow-hidden rounded-full bg-white/[0.06]">
+        <div
+          className="h-full rounded-full transition-all duration-300"
+          style={{
+            width: `${Math.min(percentage, 100)}%`,
+            backgroundColor: 'var(--color-primary-500)',
+          }}
+        />
       </div>
-
-      <div className="mt-4">
-        <p className="text-3xl font-bold text-gray-200">
-          {normalizeNumber(annualBudget)} 元
-        </p>
-        <p className="text-sm text-gray-400">(自動計算)</p>
-        <div className="mt-3 h-3 w-full rounded-full bg-gray-700/50">
-          <div
-            className="from-primary-500 to-accent-500 h-full rounded-full bg-linear-to-r shadow-[0_0_8px_rgba(6,182,212,0.5)] transition-all duration-300"
-            style={{ width: `${Math.min(percentage, 100)}%` }}
-          />
-        </div>
-        <p className="mt-2 text-sm text-gray-400">
-          已使用 {normalizeNumber(spent)} 元 ({percentage.toFixed(1)}%)
-        </p>
-      </div>
+      <p
+        className="text-xs font-medium text-gray-400"
+        style={{ fontVariantNumeric: 'tabular-nums' }}
+      >
+        已使用 ${normalizeNumber(spent)} ({percentage.toFixed(1)}%)
+      </p>
     </div>
   );
 };

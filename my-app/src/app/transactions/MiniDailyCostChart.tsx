@@ -27,16 +27,21 @@ export const MiniDailyCostChart = (props: Props) => {
   const month = day.getMonth();
   const days = new Date(year, month + 1, 0).getDate();
   const dailyCost: number[] = new Array(days).fill(0);
-  let largestCost = 0;
 
   costList.forEach((item) => {
     if (item.type === SpendingType.Outcome) {
       const date = new Date(item.date);
       const dayIndex = date.getDate() - 1;
       dailyCost[dayIndex] += Number(item.amount);
-      largestCost = Math.max(largestCost, Math.abs(dailyCost[dayIndex]));
     }
   });
+
+  const totalCost = dailyCost.reduce((sum, c) => sum + c, 0);
+  const today = new Date();
+  const isCurrentMonth =
+    today.getFullYear() === year && today.getMonth() === month;
+  const elapsedDays = isCurrentMonth ? today.getDate() : days;
+  const avgPerDay = elapsedDays > 0 ? Math.round(totalCost / elapsedDays) : 0;
 
   const selectedDayTransactions = useMemo(() => {
     if (!selectedDate) return [];
@@ -57,10 +62,26 @@ export const MiniDailyCostChart = (props: Props) => {
   }, [selectedDayTransactions]);
 
   return (
-    <div className="relative flex w-full flex-col items-start rounded-2xl border border-solid border-gray-600 bg-gray-800/90 p-6 text-gray-300 shadow-sm backdrop-blur-sm transition-all duration-200 hover:shadow-[0_0_25px_rgba(6,182,212,0.2)] md:min-w-110">
-      <h3 className="mb-2 text-lg font-semibold text-gray-100">本月消費趨勢</h3>
+    <div
+      className="relative flex w-full flex-col items-start rounded-2xl border border-white/[0.06] bg-gray-800/80 p-5 text-gray-300 shadow-md backdrop-blur-sm md:min-w-110"
+      style={{ textWrap: 'pretty' }}
+    >
+      <div className="flex w-full items-baseline justify-between">
+        <span
+          className="text-[11px] font-semibold tracking-[0.12em] text-gray-400 uppercase"
+          style={{ letterSpacing: '0.12em' }}
+        >
+          本月消費趨勢
+        </span>
+        <span
+          className="text-[11px] font-medium text-gray-400"
+          style={{ fontVariantNumeric: 'tabular-nums' }}
+        >
+          平均 ${normalizeNumber(avgPerDay)} / 天
+        </span>
+      </div>
 
-      <div className="flex w-full items-end py-4 text-xs sm:text-sm">
+      <div className="flex w-full items-end pt-3 pb-1 text-xs sm:text-sm">
         <UsageLineChart
           month={month}
           data={dailyCost}
@@ -79,7 +100,13 @@ export const MiniDailyCostChart = (props: Props) => {
                   <span className="text-sm font-medium text-gray-400">
                     {selectedDate} 的帳目
                   </span>
-                  <span className="text-secondary-400 text-lg font-bold">
+                  <span
+                    className="text-lg font-bold"
+                    style={{
+                      color: 'var(--color-expense)',
+                      fontVariantNumeric: 'tabular-nums',
+                    }}
+                  >
                     ${normalizeNumber(selectedDayTotal)}
                   </span>
                 </div>
@@ -120,11 +147,14 @@ export const MiniDailyCostChart = (props: Props) => {
                     </div>
                   </div>
                   <span
-                    className={`font-semibold ${
-                      item.type === SpendingType.Income
-                        ? 'text-income-400'
-                        : 'text-secondary-400'
-                    }`}
+                    className="font-semibold"
+                    style={{
+                      color:
+                        item.type === SpendingType.Income
+                          ? 'var(--color-income)'
+                          : 'var(--color-expense)',
+                      fontVariantNumeric: 'tabular-nums',
+                    }}
                   >
                     {item.type === SpendingType.Income ? '+' : '-'}$
                     {normalizeNumber(Number(item.amount))}

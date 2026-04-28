@@ -25,16 +25,16 @@ export const RecentTransactionsList = ({
   // Only show loading skeleton if we have no data yet
   if (loading && data.length === 0) {
     return (
-      <div className="card flex w-full flex-col md:min-w-110">
+      <div className="flex w-full flex-col rounded-2xl border border-white/[0.06] bg-gray-800/80 p-5 shadow-md backdrop-blur-sm md:min-w-110">
         <h3
-          className="mb-4 text-lg font-bold"
+          className="mb-4 text-base font-bold text-gray-100"
           style={{ fontFamily: 'var(--font-heading)' }}
         >
           最近 5 筆交易
         </h3>
         <div className="flex flex-col gap-2">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="skeleton h-16 w-full rounded-xl" />
+            <div key={i} className="skeleton h-[58px] w-full rounded-[14px]" />
           ))}
         </div>
       </div>
@@ -42,10 +42,10 @@ export const RecentTransactionsList = ({
   }
 
   return (
-    <div className="card flex w-full flex-col md:min-w-110">
+    <div className="flex w-full flex-col rounded-2xl border border-white/[0.06] bg-gray-800/80 p-5 shadow-md backdrop-blur-sm md:min-w-110">
       <div className="mb-4 flex items-center justify-between">
         <h3
-          className="text-lg font-bold text-gray-100"
+          className="text-base font-bold text-gray-100"
           style={{ fontFamily: 'var(--font-heading)' }}
         >
           最近 5 筆交易

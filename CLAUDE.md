@@ -20,57 +20,15 @@ npm run lint     # ESLint
 
 Prettier is configured with single quotes and `prettier-plugin-tailwindcss` for automatic class sorting. There is no explicit format script — run `npx prettier --write <file>` manually.
 
-## E2E Testing (Playwright + Chrome CDP)
+There is no automated test runner checked in. The root `package.json` carries `playwright` as a dependency; ad-hoc Playwright scripts can be authored at the repo root and pointed at a Chrome session launched with `--remote-debugging-port=9222` to skip OAuth re-authentication.
 
-Tests use [Playwright](https://playwright.dev/) to connect to an **already-running Chrome** session via CDP, avoiding Google OAuth re-authentication.
+### Notable UI design constraints
 
-### Prerequisites
+These have caused regressions before — preserve them when touching the related code:
 
-1. Install Playwright (from project root, not `my-app/`):
-   ```bash
-   npm install playwright
-   npx playwright install chromium
-   ```
-
-2. Start the dev server:
-   ```bash
-   cd my-app && npm run dev
-   ```
-
-3. Launch Chrome with remote debugging (closes any existing Chrome first):
-   ```bash
-   pkill -x "Google Chrome"; sleep 1 && open -a "Google Chrome" --args --remote-debugging-port=9222
-   ```
-
-4. Log in via Google OAuth in the browser that opens, then run the test:
-   ```bash
-   # From project root
-   node playwright-auth-test.cjs
-   ```
-
-Screenshots are saved to `/tmp/pw-*.png`.
-
-### What is tested
-
-| Suite | Checks |
-|-------|--------|
-| Auth check | Already logged in; selects 個人帳本; pins `currentGroupId` cookie |
-| Dashboard | Header, greeting, group selector, bottom nav, quick nav cards, recent transactions, year/month filter |
-| Group selector dropdown | Opens, renders items in viewport, closes on select |
-| Bottom nav active state | Each route (`/`, `/transactions`, `/analysis`, `/budget`, `/group`) highlights correctly |
-| Transactions page | Sort dropdown (not clipped), real-time search (`input` event), action menu (edit/delete links) |
-| /edit modal — new | Switch toggle, category Select (viewport-bounded), date picker, description + common-desc dropdown, number keyboard (input/backspace/clear), zero-amount validation, cancel |
-| Edit existing transaction | Navigates to `/edit?id=`, shows 編輯帳目 title |
-| Budget page | Loads without error |
-| Analysis page | Loads without error |
-| Group page | Loads without error |
-| Responsive | Dashboard renders at tablet (768 px) and desktop (1440 px) |
-
-### Known design decisions captured by tests
-
-- Sort/search bar uses `bg-background` intentionally (blends with page, not a card).
-- Category Select inside the modal uses `Escape` to close rather than item-click, because `useFocusRef` closes the dropdown between async Playwright operations.
-- `animation-fill-mode: forwards` was removed from `.animate-modal` — the `transform` it left behind made `position: fixed` dropdowns inside the modal calculate viewport offsets incorrectly.
+- The transactions sort/search bar uses `bg-background` intentionally (blends with page, not a card).
+- The category `Select` inside the edit modal closes on `Escape` rather than item-click — `useFocusRef` otherwise closes the dropdown between async operations.
+- `animation-fill-mode: forwards` was removed from `.animate-modal` — the residual `transform` made `position: fixed` dropdowns inside the modal calculate viewport offsets incorrectly.
 
 ## Architecture Overview
 
@@ -82,7 +40,7 @@ The backend connects to **AWS Aurora DSQL** (PostgreSQL-compatible) or a standar
 
 Connection is configured via environment variables — either `DATABASE_URL` (simplest) or individual `PGHOST`/`PGUSER`/`PGPASSWORD`/`PGDATABASE`/`PGPORT` vars. For DSQL, set `AURORA_DSQL_HOST`, `AURORA_DSQL_REGION`, `AURORA_DSQL_USER`, `AURORA_DSQL_DB`, plus AWS credentials.
 
-Auth is handled by **NextAuth v5** (via `@/auth`) with Google OAuth. The session user object includes a `userId` (integer from DB).
+Auth is handled by **NextAuth v5** (via `@/auth`) with both Google and LINE OAuth providers (JWT session strategy). On first login, the `jwt` callback resolves the email to a DB `user_id` and stores it on the token, so the session user object always carries an integer `userId`.
 
 ### Data Layer: Cloud-first + IndexedDB Cache
 
@@ -147,8 +105,9 @@ Two service tiers:
 | `/analysis` | Pie/bar charts by category and necessity |
 | `/budget` | Annual + monthly budget planning |
 | `/group` | Ledger group management, invite members |
-| `/setting` | User settings, profile |
-| `/login` | Google OAuth login |
+| `/setting` | User settings |
+| `/profile` | User profile page |
+| `/login` | OAuth login (Google + LINE) |
 | `/edit` | Edit expense (also rendered as intercepted modal via `@modal/(.)edit`) |
 
 ### Component Organization

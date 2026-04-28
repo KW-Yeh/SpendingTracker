@@ -268,16 +268,29 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
           const isCurrentMonth = month.value === currentMonth;
           const isOverBudget = monthSpent > monthTotal;
 
+          const isWarning =
+            usagePercentage >= 80 && !isOverBudget && monthTotal > 0;
+          const fillVar = isOverBudget
+            ? '--color-over-budget'
+            : isWarning
+              ? '--color-warning'
+              : '--color-primary-500';
+
           return (
             <div
               key={month.value}
-              className={`card ${
-                isCurrentMonth ? 'ring-primary-400 shadow-warm ring-2' : ''
-              }`}
+              className="flex flex-col gap-3 rounded-2xl border bg-gray-800/80 p-4 backdrop-blur-sm"
+              style={{
+                borderColor: isOverBudget
+                  ? 'rgba(248,113,113,0.3)'
+                  : isCurrentMonth
+                    ? 'rgba(6,182,212,0.35)'
+                    : 'rgba(255,255,255,0.06)',
+              }}
             >
               <div className="flex items-center justify-between">
                 <h3
-                  className="text-lg font-bold text-gray-100"
+                  className="text-base font-bold text-gray-100"
                   style={{ fontFamily: 'var(--font-heading)' }}
                 >
                   {month.label}
@@ -296,15 +309,25 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                 </button>
               </div>
 
-              <div className="mt-2">
-                <p className="text-2xl font-bold text-gray-200">
-                  {normalizeNumber(monthTotal)} 元
+              <div className="flex flex-col gap-1">
+                <p
+                  className="text-xl font-extrabold text-gray-100"
+                  style={{
+                    fontFamily: 'var(--font-heading)',
+                    fontVariantNumeric: 'tabular-nums',
+                  }}
+                >
+                  ${normalizeNumber(monthTotal)}
                 </p>
-                <p className="text-sm text-gray-400">
-                  已使用 {normalizeNumber(monthSpent)} 元
+                <p
+                  className="text-xs font-medium text-gray-400"
+                  style={{ fontVariantNumeric: 'tabular-nums' }}
+                >
+                  已使用 ${normalizeNumber(monthSpent)}
                   {monthTotal > 0 && (
                     <span
-                      className={`ml-1 font-semibold ${isOverBudget ? 'text-secondary-400' : 'text-income-400'}`}
+                      className="ml-1 font-semibold"
+                      style={{ color: `var(${fillVar})` }}
                     >
                       ({usagePercentage.toFixed(1)}%)
                     </span>
@@ -312,36 +335,64 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                 </p>
               </div>
 
-              {/* Progress Bar */}
+              {/* Slim progress bar - 4px */}
               {monthTotal > 0 && (
-                <div className="mt-3">
-                  <div className="h-3 w-full overflow-hidden rounded-full bg-gray-700/50">
-                    <div
-                      className={`h-full transition-all duration-300 ${
-                        isOverBudget
-                          ? 'bg-secondary-500 shadow-[0_0_8px_rgba(139,92,246,0.6)]'
-                          : 'from-primary-500 to-accent-500 bg-linear-to-r shadow-[0_0_8px_rgba(6,182,212,0.5)]'
-                      }`}
-                      style={{ width: `${Math.min(usagePercentage, 100)}%` }}
-                    />
-                  </div>
+                <div className="h-1 w-full overflow-hidden rounded-full bg-white/[0.06]">
+                  <div
+                    className="h-full rounded-full transition-all duration-300"
+                    style={{
+                      width: `${Math.min(usagePercentage, 100)}%`,
+                      backgroundColor: `var(${fillVar})`,
+                    }}
+                  />
                 </div>
               )}
 
-              <div className="mt-3 space-y-2">
+              {monthTotal > 0 && (
+                <div
+                  className="flex justify-between text-[11px] font-medium text-gray-400"
+                  style={{ fontVariantNumeric: 'tabular-nums' }}
+                >
+                  <span>{usagePercentage.toFixed(0)}% 已使用</span>
+                  <span
+                    style={
+                      isOverBudget
+                        ? { color: 'var(--color-over-budget)' }
+                        : undefined
+                    }
+                  >
+                    {isOverBudget
+                      ? `超支 $${normalizeNumber(monthSpent - monthTotal)}`
+                      : `剩餘 $${normalizeNumber(monthTotal - monthSpent)}`}
+                  </span>
+                </div>
+              )}
+
+              <div className="mt-1 flex flex-col gap-1.5">
                 {monthItems.length > 0 ? (
                   monthItems.map((item) => (
                     <div
                       key={`${month.value}-${item.index}`}
-                      className="hover:border-primary-500/50 flex items-center justify-between rounded-xl border border-gray-600 bg-gray-700/30 p-2.5 transition-all hover:bg-gray-700/50 hover:shadow-[0_0_10px_rgba(6,182,212,0.15)]"
+                      className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2 transition-colors hover:bg-white/[0.04]"
                     >
-                      <div className="flex-1">
-                        <p className="text-sm font-semibold text-gray-200">
-                          {item.category} {item.description}
-                        </p>
-                        <p className="text-xs font-medium text-gray-400">
-                          {normalizeNumber(item.amount)} 元
-                        </p>
+                      <div className="flex flex-1 items-center gap-2 overflow-hidden">
+                        <span
+                          aria-hidden
+                          className="flex size-[34px] shrink-0 items-center justify-center rounded-[10px] bg-white/[0.04] text-lg"
+                        >
+                          {item.category}
+                        </span>
+                        <div className="flex flex-col overflow-hidden">
+                          <p className="truncate text-sm font-semibold text-gray-100">
+                            {item.description}
+                          </p>
+                          <p
+                            className="text-[11px] font-medium text-gray-400"
+                            style={{ fontVariantNumeric: 'tabular-nums' }}
+                          >
+                            ${normalizeNumber(item.amount)}
+                          </p>
+                        </div>
                       </div>
                       <div className="flex gap-1">
                         <button
@@ -349,7 +400,8 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                           onClick={() =>
                             handleOpenEditModal(month.value, item.index)
                           }
-                          className="text-primary-400 hover:bg-primary-500/20 active:bg-primary-500/30 min-h-8 min-w-8 rounded-lg p-2 transition-all"
+                          className="text-primary-400 hover:bg-white/[0.05] min-h-8 min-w-8 rounded-lg p-2 transition-colors"
+                          aria-label="編輯"
                         >
                           <EditIcon className="size-4" />
                         </button>
@@ -358,7 +410,9 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                           onClick={() =>
                             handleDeleteItem(month.value, item.index)
                           }
-                          className="text-secondary-400 hover:bg-secondary-500/20 active:bg-secondary-500/30 min-h-8 min-w-8 rounded-lg p-2 transition-all"
+                          className="hover:bg-white/[0.05] min-h-8 min-w-8 rounded-lg p-2 transition-colors"
+                          style={{ color: 'var(--color-expense)' }}
+                          aria-label="刪除"
                         >
                           <DeleteIcon className="size-4" />
                         </button>
@@ -366,7 +420,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                     </div>
                   ))
                 ) : (
-                  <p className="py-4 text-center text-xs text-gray-300">
+                  <p className="py-3 text-center text-xs text-gray-400">
                     尚未新增項目
                   </p>
                 )}
