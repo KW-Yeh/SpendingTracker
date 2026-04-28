@@ -68,7 +68,6 @@ export const EditExpenseModal = (props: Props) => {
 
   const isIncome = spendingType === SpendingType.Income;
   const amountNum = Number(amountStr) || 0;
-  const hasAmount = amountNum > 0;
 
   const spendingCategories = useMemo(
     () =>
@@ -124,6 +123,15 @@ export const EditExpenseModal = (props: Props) => {
     setAmountStr(String(cur + delta));
   };
 
+  // Validate amount before advancing to step 2
+  const handleNext = () => {
+    if (amountNum === 0) {
+      setIsNoAmount(true);
+      return;
+    }
+    setStep(2);
+  };
+
   const handleSetCommonDesc = useCallback(
     async (isNew: boolean) => {
       if (!userData?.user_id || description === '') return;
@@ -161,10 +169,6 @@ export const EditExpenseModal = (props: Props) => {
   const submitForm = useCallback(async () => {
     const userEmail = userData?.email;
     if (!userEmail) return;
-    if (amountNum === 0) {
-      setIsNoAmount(true);
-      return;
-    }
     setLoading(true);
     const groupId = currentGroup?.account_id
       ? String(currentGroup.account_id)
@@ -244,8 +248,17 @@ export const EditExpenseModal = (props: Props) => {
       </header>
 
       {step === 1 ? (
-        <Step1
+        <StepAmount
+          amountStr={amountStr}
+          onChangeAmount={setAmountStr}
+          onAddQuick={handleAddQuick}
+          isNoAmount={isNoAmount}
+          onNext={handleNext}
+        />
+      ) : (
+        <StepDetails
           isIncome={isIncome}
+          amountStr={amountStr}
           spendingType={spendingType}
           onSetSpendingType={handleSetSpendingType}
           necessity={necessity}
@@ -260,26 +273,6 @@ export const EditExpenseModal = (props: Props) => {
           updatingCategory={updatingCategory}
           onToggleCommonDesc={handleSetCommonDesc}
           dateInit={new Date(data.date)}
-          hasAmount={hasAmount}
-          amountNum={amountNum}
-          onNext={() => setStep(2)}
-        />
-      ) : (
-        <Step2
-          isIncome={isIncome}
-          summary={{
-            emoji: selectedCategory,
-            label:
-              description ||
-              CATEGORY_WORDING_MAP[selectedCategory] ||
-              selectedCategoryLabel,
-            categoryLabel: selectedCategoryLabel,
-            necessityLabel: necessity,
-          }}
-          amountStr={amountStr}
-          onChangeAmount={setAmountStr}
-          onAddQuick={handleAddQuick}
-          isNoAmount={isNoAmount}
           loading={loading}
           onSubmit={submitForm}
         />
@@ -345,10 +338,105 @@ const StepDots = ({ step }: { step: Step }) => (
   </div>
 );
 
-// --------- Step 1: 選擇細節 (What)
+// --------- Step 1: 輸入金額 (How much)
 
-interface Step1Props {
+interface StepAmountProps {
+  amountStr: string;
+  onChangeAmount: (s: string) => void;
+  onAddQuick: (delta: number) => void;
+  isNoAmount: boolean;
+  onNext: () => void;
+}
+
+const StepAmount = ({
+  amountStr,
+  onChangeAmount,
+  onAddQuick,
+  isNoAmount,
+  onNext,
+}: StepAmountProps) => {
+  return (
+    <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-5 pt-4 pb-3">
+        {/* Big amount display */}
+        <div className="flex flex-col items-center gap-2 py-2">
+          <span
+            className="text-[11px] font-semibold uppercase"
+            style={{
+              letterSpacing: '0.12em',
+              color: 'var(--color-text-tertiary)',
+            }}
+          >
+            輸入金額
+          </span>
+          <div
+            className={`flex items-baseline gap-1 ${isNoAmount ? 'animate-pulse' : ''}`}
+          >
+            <span
+              className="font-extrabold text-gray-100"
+              style={{
+                fontFamily: 'var(--font-heading)',
+                fontSize: 'clamp(2.75rem, 12vw, 3.5rem)',
+                fontVariantNumeric: 'tabular-nums',
+                lineHeight: 1,
+              }}
+            >
+              $ {formatAmount(amountStr)}
+            </span>
+          </div>
+          {isNoAmount && (
+            <span
+              className="text-xs font-semibold"
+              style={{ color: 'var(--color-expense)' }}
+            >
+              請輸入金額
+            </span>
+          )}
+        </div>
+
+        {/* Quick chips */}
+        <div className="flex flex-wrap justify-center gap-2">
+          {QUICK_AMOUNTS.map((q) => (
+            <button
+              key={q}
+              type="button"
+              onClick={() => onAddQuick(q)}
+              className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3.5 py-1 text-xs font-semibold text-gray-300 transition-colors hover:bg-white/[0.06]"
+              style={{ fontVariantNumeric: 'tabular-nums' }}
+            >
+              +{formatAmount(String(q))}
+            </button>
+          ))}
+        </div>
+
+        {/* Calculator — ✓ advances to step 2 */}
+        <NumberKeyboard
+          value={amountStr}
+          onChange={onChangeAmount}
+          onSubmit={onNext}
+        />
+      </div>
+
+      {/* Footer CTA */}
+      <div className="border-t border-white/[0.06] px-5 py-3">
+        <button
+          type="button"
+          onClick={onNext}
+          className="submit-button flex w-full items-center justify-center"
+          style={{ minHeight: 48 }}
+        >
+          <span>下一步 →</span>
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// --------- Step 2: 選擇細節 (What)
+
+interface StepDetailsProps {
   isIncome: boolean;
+  amountStr: string;
   spendingType: string;
   onSetSpendingType: (t: string) => void;
   necessity: string;
@@ -363,13 +451,13 @@ interface Step1Props {
   updatingCategory: boolean;
   onToggleCommonDesc: (isNew: boolean) => Promise<void>;
   dateInit: Date;
-  hasAmount: boolean;
-  amountNum: number;
-  onNext: () => void;
+  loading: boolean;
+  onSubmit: () => void;
 }
 
-const Step1 = ({
+const StepDetails = ({
   isIncome,
+  amountStr,
   spendingType,
   onSetSpendingType,
   necessity,
@@ -384,13 +472,30 @@ const Step1 = ({
   updatingCategory,
   onToggleCommonDesc,
   dateInit,
-  hasAmount,
-  amountNum,
-  onNext,
-}: Step1Props) => {
+  loading,
+  onSubmit,
+}: StepDetailsProps) => {
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <div className="flex flex-1 flex-col gap-5 overflow-y-auto px-5 pt-4 pb-2">
+        {/* Amount summary */}
+        <div
+          className="flex items-baseline justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] px-3.5 py-2.5"
+          style={{ fontVariantNumeric: 'tabular-nums' }}
+        >
+          <span className="text-sm text-gray-400">金額</span>
+          <span
+            className="text-lg font-bold"
+            style={{
+              color: isIncome
+                ? 'var(--color-income)'
+                : 'var(--color-text-primary)',
+            }}
+          >
+            {isIncome ? '+' : '−'} NT$ {formatAmount(amountStr)}
+          </span>
+        </div>
+
         {/* Type segment */}
         <Section label="類型">
           <Switch
@@ -521,7 +626,7 @@ const Step1 = ({
           )}
         </Section>
 
-        {/* Date — small inline editor */}
+        {/* Date */}
         <Section label="日期">
           <DatePicker
             className="hover:border-primary-600 h-10 w-full rounded-xl border border-solid border-white/[0.06] bg-white/[0.02] transition-colors"
@@ -532,178 +637,23 @@ const Step1 = ({
         </Section>
       </div>
 
-      {/* Bottom CTA */}
+      {/* Footer submit */}
       <div className="border-t border-white/[0.06] px-5 py-3">
-        {hasAmount && (
-          <div
-            className="mb-2 flex items-baseline justify-between text-xs"
-            style={{ fontVariantNumeric: 'tabular-nums' }}
-          >
-            <span className="text-gray-400">已輸入金額</span>
-            <span
-              className="font-bold"
-              style={{
-                color: isIncome
-                  ? 'var(--color-income)'
-                  : 'var(--color-text-primary)',
-              }}
-            >
-              {isIncome ? '+' : '−'} NT$ {formatAmount(amountNum.toString())}
-            </span>
+        {loading ? (
+          <div className="flex items-center justify-center" style={{ minHeight: 48 }}>
+            <Loading className="size-6 animate-spin text-white" />
           </div>
+        ) : (
+          <button
+            type="button"
+            onClick={onSubmit}
+            className="submit-button flex w-full items-center justify-center gap-1.5"
+            style={{ minHeight: 48 }}
+          >
+            <IoCheckmarkSharp className="size-5" />
+            <span>送出</span>
+          </button>
         )}
-        <button
-          type="button"
-          onClick={onNext}
-          className="submit-button flex w-full items-center justify-center"
-          style={{ minHeight: 48 }}
-        >
-          <span>{hasAmount ? '修改金額' : 'Next →'}</span>
-        </button>
-      </div>
-    </div>
-  );
-};
-
-// --------- Step 2: 輸入金額 (How much)
-
-interface Step2Props {
-  isIncome: boolean;
-  summary: {
-    emoji: string;
-    label: string;
-    categoryLabel: string;
-    necessityLabel: string;
-  };
-  amountStr: string;
-  onChangeAmount: (s: string) => void;
-  onAddQuick: (delta: number) => void;
-  isNoAmount: boolean;
-  loading: boolean;
-  onSubmit: () => void;
-}
-
-const Step2 = ({
-  isIncome,
-  summary,
-  amountStr,
-  onChangeAmount,
-  onAddQuick,
-  isNoAmount,
-  loading,
-  onSubmit,
-}: Step2Props) => {
-  const sign = isIncome ? '+' : '−';
-  const amountColor = isIncome
-    ? 'var(--color-income)'
-    : 'var(--color-text-primary)';
-
-  const necessityWording =
-    summary.necessityLabel === Necessity.Need ? '必要' : '額外';
-
-  return (
-    <div className="flex flex-1 flex-col overflow-hidden">
-      <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-5 pt-4 pb-3">
-        {/* Summary card */}
-        <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3.5 py-2.5">
-          <span
-            aria-hidden
-            className="flex size-9 items-center justify-center rounded-[10px] bg-white/[0.04] text-xl"
-          >
-            {summary.emoji}
-          </span>
-          <div className="flex flex-1 flex-col leading-tight">
-            <span className="truncate text-sm font-bold text-gray-100">
-              {summary.label || summary.categoryLabel}
-            </span>
-            <span
-              className="text-[11px] font-medium text-gray-400"
-              style={{ letterSpacing: '0.04em' }}
-            >
-              {summary.categoryLabel} · {necessityWording}
-            </span>
-          </div>
-        </div>
-
-        {/* Big amount display */}
-        <div className="flex flex-col items-center gap-2 py-2">
-          <span
-            className="text-[11px] font-semibold uppercase"
-            style={{
-              letterSpacing: '0.12em',
-              color: isIncome
-                ? 'var(--color-income)'
-                : 'var(--color-text-tertiary)',
-            }}
-          >
-            {isIncome ? '收入金額' : '支出金額'}
-          </span>
-          <div
-            className={`flex items-baseline gap-1 ${isNoAmount ? 'animate-pulse' : ''}`}
-          >
-            <span
-              className="font-extrabold"
-              style={{
-                color: amountColor,
-                fontFamily: 'var(--font-heading)',
-                fontSize: 'clamp(2.75rem, 12vw, 3.5rem)',
-                fontVariantNumeric: 'tabular-nums',
-                lineHeight: 1,
-              }}
-            >
-              {sign} ${formatAmount(amountStr)}
-            </span>
-          </div>
-          {isNoAmount && (
-            <span
-              className="text-xs font-semibold"
-              style={{ color: 'var(--color-expense)' }}
-            >
-              請輸入金額
-            </span>
-          )}
-        </div>
-
-        {/* Quick chips */}
-        <div className="flex flex-wrap justify-center gap-2">
-          {QUICK_AMOUNTS.map((q) => (
-            <button
-              key={q}
-              type="button"
-              onClick={() => onAddQuick(q)}
-              className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3.5 py-1 text-xs font-semibold text-gray-300 transition-colors hover:bg-white/[0.06]"
-              style={{ fontVariantNumeric: 'tabular-nums' }}
-            >
-              +{formatAmount(String(q))}
-            </button>
-          ))}
-        </div>
-
-        {/* Calculator */}
-        <NumberKeyboard
-          value={amountStr}
-          onChange={onChangeAmount}
-          onSubmit={onSubmit}
-        />
-      </div>
-
-      {loading && (
-        <div className="flex items-center justify-center py-2">
-          <Loading className="size-6 animate-spin text-white" />
-        </div>
-      )}
-
-      {/* Footer hint — calculator ✓ already submits, footer is a fallback */}
-      <div className="flex items-center justify-between border-t border-white/[0.06] px-5 py-2 text-[11px] text-gray-400">
-        <span>按計算機 ✓ 即可送出</span>
-        <button
-          type="button"
-          onClick={onSubmit}
-          disabled={loading}
-          className="text-primary-400 inline-flex items-center gap-1 font-semibold disabled:opacity-50"
-        >
-          送出 <IoCheckmarkSharp className="size-4" />
-        </button>
       </div>
     </div>
   );
