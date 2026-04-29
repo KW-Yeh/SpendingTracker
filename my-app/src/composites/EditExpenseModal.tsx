@@ -573,6 +573,12 @@ const StepDetails = ({
             autoComplete="off"
             placeholder="例如：午餐、咖啡、薪水"
             onChange={(e) => onSetDescription(e.target.value)}
+            onFocus={(e) => {
+              const target = e.target;
+              setTimeout(() => {
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }, 300);
+            }}
             value={description}
           />
 
