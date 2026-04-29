@@ -4,11 +4,15 @@ import {
   getCategoryFavorites,
   updateCategoryFavorites,
 } from '@/utils/categoryHelpers';
-import { useIDB } from '@/hooks/useIDB';
+import { useIDBCtx } from '@/context/IDBProvider';
 import {
   getFavoriteCategories,
   putFavoriteCategories,
 } from '@/services/favoriteCategoriesServices';
+import {
+  getCachedFavorites,
+  setCachedFavorites,
+} from '@/utils/localCache';
 import {
   createContext,
   ReactNode,
@@ -21,6 +25,8 @@ import {
 
 const INIT_CTX_VAL: {
   loading: boolean;
+  isFetching: boolean;
+  hasEverLoaded: boolean;
   favorites: FavoriteCategories | null;
   syncFavorites: (ownerId: number) => void;
   updateFavorites: (
@@ -39,6 +45,8 @@ const INIT_CTX_VAL: {
   ) => Promise<void>;
 } = {
   loading: true,
+  isFetching: false,
+  hasEverLoaded: false,
   favorites: null,
   syncFavorites: () => {},
   updateFavorites: async () => {},
@@ -52,57 +60,67 @@ export const FavoriteCategoriesProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const [loading, setLoading] = useState(true);
   const [favorites, setFavorites] = useState<FavoriteCategories | null>(null);
-  const { db, getFavoriteCategoriesData, setFavoriteCategoriesData } = useIDB();
+  const [hasEverLoaded, setHasEverLoaded] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
+  const { db, getFavoriteCategoriesData, setFavoriteCategoriesData } =
+    useIDBCtx();
 
-  const handleState = useCallback((data: FavoriteCategories | null) => {
-    setFavorites(data);
-    setLoading(false);
-  }, []);
+  const handleState = useCallback(
+    (data: FavoriteCategories | null, ownerId?: number) => {
+      setFavorites(data);
+      setHasEverLoaded(true);
+      if (ownerId) setCachedFavorites(ownerId, data);
+    },
+    [],
+  );
 
-  // Cloud-first: fetch from API, show IDB cache first
   const syncFavorites = useCallback(
     async (ownerId: number) => {
-      setLoading(true);
+      setIsFetching(true);
 
-      // Show IDB cache first for fast render
+      // Synchronous LS hit
+      const ls = getCachedFavorites(ownerId);
+      if (ls) {
+        startTransition(() => handleState(ls, ownerId));
+      }
+
+      // Async IDB hit
       if (db) {
         try {
           const cachedData = await getFavoriteCategoriesData(db, ownerId);
           if (cachedData) {
-            startTransition(() => {
-              setFavorites(cachedData);
-              setLoading(false);
-            });
+            startTransition(() => handleState(cachedData, ownerId));
           }
         } catch {
-          // IDB cache miss is fine
+          /* miss is fine */
         }
       }
 
-      // Fetch from API (source of truth)
       try {
         const res = await getFavoriteCategories(ownerId);
         if (res.status) {
-          handleState(res.data);
-          // Update IDB cache
+          handleState(res.data, ownerId);
           if (db && res.data) {
             await setFavoriteCategoriesData(db, ownerId, res.data);
           }
         }
       } catch (error) {
-        console.error('[FavoriteCategoriesProvider] Error fetching from API:', error);
+        console.error(
+          '[FavoriteCategoriesProvider] Error fetching from API:',
+          error,
+        );
+      } finally {
+        setIsFetching(false);
+        setHasEverLoaded(true);
       }
     },
     [db, getFavoriteCategoriesData, setFavoriteCategoriesData, handleState],
   );
 
-  // Cloud-first: write to API, then update local state + IDB cache
   const updateFavorites = useCallback(
     async (data: Partial<FavoriteCategories> & { owner_id: number }) => {
-      setLoading(true);
-
+      setIsFetching(true);
       const updatedFavorites: FavoriteCategories = {
         category_id: favorites?.category_id || Date.now(),
         owner_id: data.owner_id,
@@ -124,27 +142,26 @@ export const FavoriteCategoriesProvider = ({
       try {
         const res = await putFavoriteCategories(updatedFavorites);
         if (res.status && res.data) {
-          handleState(res.data);
-          // Update IDB cache
+          handleState(res.data, data.owner_id);
           if (db) {
             await setFavoriteCategoriesData(db, data.owner_id, res.data);
           }
         } else {
-          // Fallback: use local data
-          handleState(updatedFavorites);
+          handleState(updatedFavorites, data.owner_id);
         }
       } catch (error) {
         console.error('[FavoriteCategoriesProvider] Error updating API:', error);
-        handleState(updatedFavorites);
+        handleState(updatedFavorites, data.owner_id);
+      } finally {
+        setIsFetching(false);
       }
     },
     [db, favorites, setFavoriteCategoriesData, handleState],
   );
 
   const getCategoryDescriptions = useCallback(
-    (categoryEmoji: string): string[] => {
-      return getCategoryFavorites(favorites, categoryEmoji);
-    },
+    (categoryEmoji: string): string[] =>
+      getCategoryFavorites(favorites, categoryEmoji),
     [favorites],
   );
 
@@ -152,10 +169,8 @@ export const FavoriteCategoriesProvider = ({
     async (categoryEmoji: string, description: string, ownerId: number) => {
       const current = getCategoryFavorites(favorites, categoryEmoji);
       if (current.includes(description)) return;
-
       const updated = [...current, description];
       const patch = updateCategoryFavorites(favorites, categoryEmoji, updated);
-
       await updateFavorites({ owner_id: ownerId, ...patch });
     },
     [favorites, updateFavorites],
@@ -166,7 +181,6 @@ export const FavoriteCategoriesProvider = ({
       const current = getCategoryFavorites(favorites, categoryEmoji);
       const updated = current.filter((d) => d !== description);
       const patch = updateCategoryFavorites(favorites, categoryEmoji, updated);
-
       await updateFavorites({ owner_id: ownerId, ...patch });
     },
     [favorites, updateFavorites],
@@ -174,7 +188,9 @@ export const FavoriteCategoriesProvider = ({
 
   const ctxVal = useMemo(
     () => ({
-      loading,
+      loading: !hasEverLoaded,
+      isFetching,
+      hasEverLoaded,
       favorites,
       syncFavorites,
       updateFavorites,
@@ -183,7 +199,8 @@ export const FavoriteCategoriesProvider = ({
       removeCategoryDescription,
     }),
     [
-      loading,
+      hasEverLoaded,
+      isFetching,
       favorites,
       syncFavorites,
       updateFavorites,

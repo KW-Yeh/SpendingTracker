@@ -26,7 +26,7 @@ const SORT_BY: Record<string, string> = {
 
 export const SpendingInfoSection = () => {
   useScrollToTop();
-  const { syncData, data, loading, isInitialLoad } = useGetSpendingCtx();
+  const { syncData, data, loading, hasEverLoaded } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
   const [isProcessing, setIsProcessing] = useState(true);
   const [monthlyData, setMonthlyData] = useState<SpendingRecord[]>([]);
@@ -92,8 +92,8 @@ export const SpendingInfoSection = () => {
     );
   }, [currentGroup?.account_id, dateHook.month, dateHook.year, syncData]);
 
-  // Show skeleton only on initial load
-  if (isInitialLoad && loading) {
+  // Only show the skeleton when we genuinely have nothing to render yet.
+  if (!hasEverLoaded && data.length === 0) {
     return <TransactionsSkeleton />;
   }
 

@@ -15,7 +15,7 @@ import { useYearMonth } from '@/hooks/useYearMonth';
 import { CategoricalChartState } from 'recharts/types/chart/types';
 
 export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
-  const { syncData, data, loading, isInitialLoad } = useGetSpendingCtx();
+  const { syncData, data, loading, hasEverLoaded } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
   const { budget } = useBudgetCtx();
   const [monthlyData, setMonthlyData] = useState<SpendingRecord[]>([]);
@@ -84,8 +84,8 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
     setSelectedDate(prevDate => prevDate === clickedDate ? null : clickedDate);
   }, []);
 
-  // Show skeleton only on initial load
-  if (isInitialLoad && loading) {
+  // Only show the skeleton when we genuinely have nothing to render yet.
+  if (!hasEverLoaded && data.length === 0) {
     return <DashboardSkeleton />;
   }
 

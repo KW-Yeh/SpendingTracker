@@ -8,6 +8,7 @@ import { GroupProvider } from '@/context/GroupProvider';
 import { BudgetProvider } from '@/context/BudgetProvider';
 import { SpendingProvider } from '@/context/SpendingProvider';
 import { UserConfigProvider } from '@/context/UserConfigProvider';
+import { IDBProvider } from '@/context/IDBProvider';
 import type { Viewport } from 'next';
 import './globals.css';
 import { SessionProvider } from 'next-auth/react';
@@ -43,22 +44,24 @@ export default function RootLayout({
       </head>
       <body>
         <SessionProvider>
-          <DateProvider>
-            <GroupProvider>
-              <UserConfigProvider>
-                <FavoriteCategoriesProvider>
-                  <SpendingProvider>
-                    <BudgetProvider>
-                      <Header />
-                      {children}
-                      {modal}
-                      <PrepareData />
-                    </BudgetProvider>
-                  </SpendingProvider>
-                </FavoriteCategoriesProvider>
-              </UserConfigProvider>
-            </GroupProvider>
-          </DateProvider>
+          <IDBProvider>
+            <DateProvider>
+              <GroupProvider>
+                <UserConfigProvider>
+                  <FavoriteCategoriesProvider>
+                    <SpendingProvider>
+                      <BudgetProvider>
+                        <Header />
+                        {children}
+                        {modal}
+                        <PrepareData />
+                      </BudgetProvider>
+                    </SpendingProvider>
+                  </FavoriteCategoriesProvider>
+                </UserConfigProvider>
+              </GroupProvider>
+            </DateProvider>
+          </IDBProvider>
         </SessionProvider>
         <Footer />
         <BottomNav />

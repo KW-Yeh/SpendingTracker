@@ -1,7 +1,13 @@
 'use client';
 
-import { useIDB } from '@/hooks/useIDB';
+import { useIDBCtx } from '@/context/IDBProvider';
 import { getGroups } from '@/services/groupServices';
+import {
+  getCachedCurrentGroup,
+  getCachedGroups,
+  setCachedCurrentGroup,
+  setCachedGroups,
+} from '@/utils/localCache';
 import {
   createContext,
   ReactNode,
@@ -14,6 +20,8 @@ import {
 
 const INIT_CTX_VAL: {
   loading: boolean;
+  isFetching: boolean;
+  hasEverLoaded: boolean;
   currentGroup?: Group;
   groups: Group[];
   syncGroup: (user_id: number) => void;
@@ -21,6 +29,8 @@ const INIT_CTX_VAL: {
   setCurrentGroup: (_group?: Group) => void;
 } = {
   loading: true,
+  isFetching: false,
+  hasEverLoaded: false,
   currentGroup: undefined,
   groups: [],
   syncGroup: () => {},
@@ -29,22 +39,35 @@ const INIT_CTX_VAL: {
 };
 
 export const GroupProvider = ({ children }: { children: ReactNode }) => {
-  const [loading, setLoading] = useState(true);
+  // Synchronous warm-start. We don't yet know the userId at this point
+  // (UserConfigProvider hasn't initialized), so we start with empty groups
+  // and pull from cache as soon as the user_id arrives via syncGroup.
   const [groups, setGroups] = useState<Group[]>([]);
-  const [currentGroup, setCurrentGroup] = useState<Group>();
-  const { db, getGroupData, setGroupData } = useIDB();
+  const [currentGroup, setCurrentGroupState] = useState<Group | undefined>(
+    () => getCachedCurrentGroup() ?? undefined,
+  );
+  const [hasEverLoaded, setHasEverLoaded] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
+  const { db, getGroupData, setGroupData } = useIDBCtx();
+
+  const setCurrentGroup = useCallback((g?: Group) => {
+    setCurrentGroupState(g);
+    setCachedCurrentGroup(g ?? null);
+  }, []);
 
   const handleState = useCallback((res: Group[]) => {
     setGroups(res);
-    setLoading(false);
+    setHasEverLoaded(true);
   }, []);
 
-  // Update local state + IDB cache
   const handleSetGroups = useCallback(
     (newGroups: Group[], userId?: number) => {
       startTransition(() => {
         handleState(newGroups);
       });
+      if (userId) {
+        setCachedGroups(userId, newGroups);
+      }
       if (db && userId) {
         setGroupData(db, userId, newGroups).catch(console.error);
       }
@@ -52,41 +75,50 @@ export const GroupProvider = ({ children }: { children: ReactNode }) => {
     [db, setGroupData, handleState],
   );
 
-  // Cloud-first: fetch from API, show IDB cache first
   const syncGroup = useCallback(
     async (user_id: number) => {
-      setLoading(true);
+      setIsFetching(true);
 
-      // Show IDB cache first for fast render
+      // Synchronous localStorage hit (instant)
+      const lsGroups = getCachedGroups(user_id);
+      if (lsGroups && lsGroups.length > 0) {
+        startTransition(() => {
+          handleState(lsGroups);
+        });
+      }
+
+      // Async IDB hit (slower but still local)
       if (db) {
         try {
           const cachedData = await getGroupData(db, user_id);
           if (cachedData) {
             startTransition(() => {
-              setGroups(cachedData);
-              setLoading(false);
+              handleState(cachedData);
             });
+            setCachedGroups(user_id, cachedData);
           }
         } catch {
-          // IDB cache miss is fine
+          /* miss is fine */
         }
       }
 
-      // Fetch from API (source of truth)
+      // Source of truth
       try {
         const res = await getGroups(user_id);
         if (res.status && res.data) {
           startTransition(() => {
             handleState(res.data);
           });
-          // Update IDB cache
+          setCachedGroups(user_id, res.data);
           if (db) {
             await setGroupData(db, user_id, res.data);
           }
         }
       } catch (error) {
         console.error('[GroupProvider] Error fetching from API:', error);
-        setLoading(false);
+      } finally {
+        setIsFetching(false);
+        setHasEverLoaded(true);
       }
     },
     [db, getGroupData, setGroupData, handleState],
@@ -94,14 +126,24 @@ export const GroupProvider = ({ children }: { children: ReactNode }) => {
 
   const ctxVal = useMemo(
     () => ({
-      loading,
+      loading: !hasEverLoaded,
+      isFetching,
+      hasEverLoaded,
       groups,
       currentGroup,
       setCurrentGroup,
       syncGroup,
       setter: handleSetGroups,
     }),
-    [currentGroup, groups, loading, syncGroup, handleSetGroups],
+    [
+      hasEverLoaded,
+      isFetching,
+      currentGroup,
+      groups,
+      setCurrentGroup,
+      syncGroup,
+      handleSetGroups,
+    ],
   );
 
   return <Ctx.Provider value={ctxVal}>{children}</Ctx.Provider>;

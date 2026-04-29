@@ -1,12 +1,16 @@
 'use client';
 
-import { useIDB } from '@/hooks/useIDB';
+import { useIDBCtx } from '@/context/IDBProvider';
 import {
   getItems,
   putItem,
   deleteItem as deleteItemAPI,
 } from '@/services/getRecords';
 import { getCookie } from '@/utils/handleCookie';
+import {
+  getCachedSpending,
+  setCachedSpending,
+} from '@/utils/localCache';
 import {
   createContext,
   ReactNode,
@@ -20,6 +24,8 @@ import {
 
 const INIT_CTX_VAL: {
   loading: boolean;
+  isFetching: boolean;
+  hasEverLoaded: boolean;
   isInitialLoad: boolean;
   data: SpendingRecord[];
   syncData: (
@@ -33,6 +39,8 @@ const INIT_CTX_VAL: {
   deleteRecord: (recordId: string, groupId: string | number) => Promise<void>;
 } = {
   loading: true,
+  isFetching: false,
+  hasEverLoaded: false,
   isInitialLoad: true,
   data: [],
   syncData: () => {},
@@ -43,14 +51,14 @@ const INIT_CTX_VAL: {
 
 type State = {
   data: SpendingRecord[];
-  loading: boolean;
-  isInitialLoad: boolean;
+  isFetching: boolean;
+  hasEverLoaded: boolean;
 };
 
 type Action =
   | { type: 'SET_DATA'; payload: SpendingRecord[] }
-  | { type: 'SET_LOADING'; payload: boolean }
-  | { type: 'SET_INITIAL_LOAD_DONE' };
+  | { type: 'FETCH_START' }
+  | { type: 'FETCH_END' };
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -58,36 +66,53 @@ const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         data: action.payload,
-        loading: false,
-        isInitialLoad: false,
+        hasEverLoaded: true,
       };
-    case 'SET_LOADING':
-      return { ...state, loading: action.payload };
-    case 'SET_INITIAL_LOAD_DONE':
-      return { ...state, isInitialLoad: false };
+    case 'FETCH_START':
+      return { ...state, isFetching: true };
+    case 'FETCH_END':
+      return { ...state, isFetching: false, hasEverLoaded: true };
     default:
       return state;
   }
 };
 
+// Synchronous warm-start from localStorage (instant — runs before first render).
+function getInitialState(): State {
+  if (typeof window === 'undefined') {
+    return { data: [], isFetching: false, hasEverLoaded: false };
+  }
+  const groupId = getCookie('currentGroupId');
+  if (!groupId) {
+    return { data: [], isFetching: false, hasEverLoaded: false };
+  }
+  const snap = getCachedSpending(groupId);
+  if (!snap) {
+    return { data: [], isFetching: false, hasEverLoaded: false };
+  }
+  // Only use the snapshot if it matches the current month being viewed by
+  // default (today). Other months can render once IDB resolves.
+  const now = new Date();
+  if (snap.year === now.getFullYear() && snap.month === now.getMonth()) {
+    return { data: snap.data, isFetching: false, hasEverLoaded: true };
+  }
+  return { data: [], isFetching: false, hasEverLoaded: false };
+}
+
 export const SpendingProvider = ({ children }: { children: ReactNode }) => {
-  const [state, dispatch] = useReducer(reducer, {
-    data: [],
-    loading: true,
-    isInitialLoad: true,
-  });
+  const [state, dispatch] = useReducer(reducer, undefined, getInitialState);
   const {
     db: IDB,
     getSpendingData: getDataFromIDB,
+    getAllSpendingForGroup,
     setSpendingData: setData2IDB,
-  } = useIDB();
+  } = useIDBCtx();
   const controllerRef = useRef<AbortController | null>(null);
 
   const handleSetState = useCallback((_data: SpendingRecord[]) => {
     dispatch({ type: 'SET_DATA', payload: _data });
   }, []);
 
-  // Cloud-first: fetch from API, cache to IDB
   const syncData = useCallback(
     async (
       groupId?: string,
@@ -96,93 +121,118 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       endDate?: string,
     ) => {
       if (!groupId) {
-        dispatch({ type: 'SET_LOADING', payload: false });
-        dispatch({ type: 'SET_INITIAL_LOAD_DONE' });
+        dispatch({ type: 'FETCH_END' });
         return;
       }
+      dispatch({ type: 'FETCH_START' });
 
-      dispatch({ type: 'SET_LOADING', payload: true });
+      const targetDate = startDate ? new Date(startDate) : new Date();
+      const year = targetDate.getFullYear();
+      const month = targetDate.getMonth();
 
-      // Show IDB cache first for fast render
+      // Try the exact (group, year, month) cache first.
       if (IDB) {
         try {
           const cachedData = await getDataFromIDB(
             IDB,
             Number(groupId),
             new AbortController().signal,
+            year,
+            month,
           );
           if (cachedData && cachedData.length > 0) {
             const _data = JSON.parse(cachedData[0].data) as SpendingRecord[];
-            if (_data.length > 0) {
-              handleSetState(_data);
+            handleSetState(_data);
+          } else {
+            // Fall back to ANY cached month for this group so the user sees
+            // something instead of empty/skeleton while the API call runs.
+            const all = await getAllSpendingForGroup(IDB, Number(groupId));
+            if (all.length > 0) {
+              all.sort((a, b) => b.year * 100 + b.month - (a.year * 100 + a.month));
+              const fallback = JSON.parse(all[0].data) as SpendingRecord[];
+              if (!state.hasEverLoaded) handleSetState(fallback);
             }
           }
         } catch {
-          // IDB cache miss is fine, API will provide data
+          /* miss is fine */
         }
       }
 
-      // Fetch from API (source of truth)
       try {
         const res = await getItems(groupId, email, startDate, endDate);
         if (res.status) {
           handleSetState(res.data);
-          // Update IDB cache (always sync even for empty arrays to clear stale data)
           if (IDB) {
-            const dateForCache = res.data[0]?.date ?? startDate ?? new Date().toISOString();
+            const dateForCache =
+              res.data[0]?.date ?? startDate ?? new Date().toISOString();
             await setData2IDB(IDB, res.data, groupId, dateForCache);
+          }
+          // Mirror to localStorage when the period matches "now" — this is
+          // what the next cold start will render synchronously.
+          const now = new Date();
+          if (year === now.getFullYear() && month === now.getMonth()) {
+            setCachedSpending(groupId, res.data, now);
           }
         }
       } catch (error) {
         console.error('[SpendingProvider] Error fetching from API:', error);
       } finally {
-        // Always mark initial load as done after the first API call completes,
-        // regardless of whether data is empty or not, to prevent infinite re-fetch loops.
-        dispatch({ type: 'SET_INITIAL_LOAD_DONE' });
+        dispatch({ type: 'FETCH_END' });
       }
     },
-    [IDB, getDataFromIDB, setData2IDB, handleSetState],
+    [
+      IDB,
+      getDataFromIDB,
+      getAllSpendingForGroup,
+      setData2IDB,
+      handleSetState,
+      state.hasEverLoaded,
+    ],
   );
 
-  // Cloud-first: write to API, then update local state + IDB cache
   const addRecord = useCallback(
     async (record: SpendingRecord, groupId: string | number) => {
       const newRecord = { ...record, updated_at: new Date().toISOString() };
-
-      // Optimistic update
       const updatedData = [...state.data, newRecord];
       handleSetState(updatedData);
 
       try {
         await putItem(newRecord);
-        // Update IDB cache
-        if (IDB) {
-          await setData2IDB(IDB, updatedData, groupId, record.date);
+        if (IDB) await setData2IDB(IDB, updatedData, groupId, record.date);
+        const now = new Date();
+        const recDate = new Date(record.date);
+        if (
+          recDate.getFullYear() === now.getFullYear() &&
+          recDate.getMonth() === now.getMonth()
+        ) {
+          setCachedSpending(groupId, updatedData, now);
         }
       } catch (error) {
         console.error('[SpendingProvider] Error adding record to API:', error);
-        // Rollback optimistic update
         handleSetState(state.data);
       }
     },
     [IDB, state.data, handleSetState, setData2IDB],
   );
 
-  // Cloud-first: write to API, then update local state + IDB cache
   const updateRecord = useCallback(
     async (record: SpendingRecord, groupId: string | number) => {
       const updatedRecord = { ...record, updated_at: new Date().toISOString() };
       const updatedData = state.data.map((r) =>
         r.id === record.id ? updatedRecord : r,
       );
-
-      // Optimistic update
       handleSetState(updatedData);
 
       try {
         await putItem(updatedRecord);
-        if (IDB) {
-          await setData2IDB(IDB, updatedData, groupId, record.date);
+        if (IDB) await setData2IDB(IDB, updatedData, groupId, record.date);
+        const now = new Date();
+        const recDate = new Date(record.date);
+        if (
+          recDate.getFullYear() === now.getFullYear() &&
+          recDate.getMonth() === now.getMonth()
+        ) {
+          setCachedSpending(groupId, updatedData, now);
         }
       } catch (error) {
         console.error('[SpendingProvider] Error updating record in API:', error);
@@ -192,19 +242,24 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
     [IDB, state.data, handleSetState, setData2IDB],
   );
 
-  // Cloud-first: delete from API, then update local state + IDB cache
   const deleteRecord = useCallback(
     async (recordId: string, groupId: string | number) => {
       const updatedData = state.data.filter((r) => r.id !== recordId);
       const dateStr = state.data.find((r) => r.id === recordId)?.date;
-
-      // Optimistic update
       handleSetState(updatedData);
 
       try {
         await deleteItemAPI(recordId);
-        if (IDB) {
-          await setData2IDB(IDB, updatedData, groupId, dateStr);
+        if (IDB) await setData2IDB(IDB, updatedData, groupId, dateStr);
+        if (dateStr) {
+          const now = new Date();
+          const recDate = new Date(dateStr);
+          if (
+            recDate.getFullYear() === now.getFullYear() &&
+            recDate.getMonth() === now.getMonth()
+          ) {
+            setCachedSpending(groupId, updatedData, now);
+          }
         }
       } catch (error) {
         console.error('[SpendingProvider] Error deleting record from API:', error);
@@ -216,7 +271,12 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
 
   const ctxVal = useMemo(
     () => ({
-      ...state,
+      // Backwards-compat shape:
+      loading: state.isFetching && !state.hasEverLoaded,
+      isInitialLoad: !state.hasEverLoaded,
+      isFetching: state.isFetching,
+      hasEverLoaded: state.hasEverLoaded,
+      data: state.data,
       syncData,
       addRecord,
       updateRecord,
@@ -225,7 +285,9 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
     [state, syncData, addRecord, updateRecord, deleteRecord],
   );
 
-  // Load IDB cache on mount for fast initial render
+  // When IDB opens, top up state from cache (covers the case where
+  // localStorage didn't have the current month, or the user is viewing a
+  // different month).
   useEffect(() => {
     const controller = (controllerRef.current = new AbortController());
     const groupId = getCookie('currentGroupId');
@@ -234,15 +296,10 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
         .then((res) => {
           if (res && res.length === 1) {
             const _data = JSON.parse(res[0].data) as SpendingRecord[];
-            if (_data.length !== 0) {
-              handleSetState(_data);
-              controllerRef.current = null;
-            }
+            handleSetState(_data);
           }
         })
-        .catch((err) => {
-          console.log('Error while reading IDB:', err);
-        });
+        .catch(() => {});
     }
     return () => controller.abort();
   }, [IDB, getDataFromIDB, handleSetState]);

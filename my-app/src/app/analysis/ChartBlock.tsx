@@ -60,7 +60,7 @@ const BudgetPieChart = dynamic(() => import('./BudgetPieChart'), {
 export const ChartBlock = () => {
   useScrollToTop();
   const { config: userData } = useUserConfigCtx();
-  const { data, syncData, loading, isInitialLoad } = useGetSpendingCtx();
+  const { data, syncData, hasEverLoaded } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
   const { budget } = useBudgetCtx();
   const today = new Date();
@@ -160,8 +160,8 @@ export const ChartBlock = () => {
     };
   }, [budget, data, dateHook.year, dateHook.month]);
 
-  // Show skeleton only on initial load
-  if (isInitialLoad && loading) {
+  // Only show the skeleton when we genuinely have nothing to render yet.
+  if (!hasEverLoaded && data.length === 0) {
     return <AnalysisSkeleton />;
   }
 

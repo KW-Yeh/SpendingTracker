@@ -1,12 +1,16 @@
 'use client';
 
-import { useIDB } from '@/hooks/useIDB';
+import { useIDBCtx } from '@/context/IDBProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import {
   getBudget as getBudgetAPI,
   putBudget as putBudgetAPI,
   deleteBudget as deleteBudgetAPI,
 } from '@/services/budgetServices';
+import {
+  getCachedBudget,
+  setCachedBudget,
+} from '@/utils/localCache';
 import {
   createContext,
   ReactNode,
@@ -20,6 +24,8 @@ import {
 
 const INIT_CTX_VAL: {
   loading: boolean;
+  isFetching: boolean;
+  hasEverLoaded: boolean;
   isInitialLoad: boolean;
   budget: Budget | null;
   syncBudget: (accountId: number) => void;
@@ -32,6 +38,8 @@ const INIT_CTX_VAL: {
   removeBudget: (accountId: number) => Promise<void>;
 } = {
   loading: true,
+  isFetching: false,
+  hasEverLoaded: false,
   isInitialLoad: true,
   budget: null,
   syncBudget: () => {},
@@ -40,43 +48,54 @@ const INIT_CTX_VAL: {
 };
 
 export const BudgetProvider = ({ children }: { children: ReactNode }) => {
-  const [loading, setLoading] = useState(true);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [budget, setBudget] = useState<Budget | null>(null);
-  const { db, getBudgetData, setBudgetData, deleteBudgetData } = useIDB();
   const { currentGroup } = useGroupCtx();
+  const { db, getBudgetData, setBudgetData, deleteBudgetData } = useIDBCtx();
 
-  const handleState = useCallback((data: Budget | null) => {
+  // Synchronous warm-start: if we already know the current group, pull
+  // its cached budget from localStorage now.
+  const [budget, setBudget] = useState<Budget | null>(() => {
+    if (!currentGroup?.account_id) return null;
+    return getCachedBudget(currentGroup.account_id);
+  });
+  const [hasEverLoaded, setHasEverLoaded] = useState<boolean>(() => {
+    if (!currentGroup?.account_id) return false;
+    return getCachedBudget(currentGroup.account_id) !== null;
+  });
+  const [isFetching, setIsFetching] = useState(false);
+
+  const handleState = useCallback((data: Budget | null, accountId?: number) => {
     setBudget(data);
-    setLoading(false);
-    setIsInitialLoad(false);
+    setHasEverLoaded(true);
+    if (accountId) setCachedBudget(accountId, data);
   }, []);
 
-  // Cloud-first: fetch from API, show IDB cache first
   const syncBudget = useCallback(
     async (accountId: number) => {
-      setLoading(true);
+      setIsFetching(true);
 
-      // Show IDB cache first for fast render
+      // Synchronous LS hit
+      const ls = getCachedBudget(accountId);
+      if (ls) {
+        startTransition(() => handleState(ls, accountId));
+      }
+
+      // Async IDB hit
       if (db) {
         try {
           const cachedData = await getBudgetData(db, accountId);
           if (cachedData) {
-            startTransition(() => {
-              handleState(cachedData);
-            });
+            startTransition(() => handleState(cachedData, accountId));
           }
         } catch {
-          // IDB cache miss is fine
+          /* miss is fine */
         }
       }
 
-      // Fetch from API (source of truth)
+      // Source of truth
       try {
         const res = await getBudgetAPI(accountId);
         if (res.status) {
-          handleState(res.data);
-          // Update IDB cache
+          handleState(res.data, accountId);
           if (db && res.data) {
             await setBudgetData(db, accountId, res.data);
           }
@@ -84,14 +103,13 @@ export const BudgetProvider = ({ children }: { children: ReactNode }) => {
       } catch (error) {
         console.error('[BudgetProvider] Error fetching from API:', error);
       } finally {
-        setIsInitialLoad(false);
-        setLoading(false);
+        setIsFetching(false);
+        setHasEverLoaded(true);
       }
     },
     [db, getBudgetData, setBudgetData, handleState],
   );
 
-  // Cloud-first: write to API, then update local state + IDB cache
   const updateBudget = useCallback(
     async (data: {
       budget_id?: number;
@@ -99,62 +117,61 @@ export const BudgetProvider = ({ children }: { children: ReactNode }) => {
       annual_budget: number;
       monthly_items: MonthlyBudgetItem[];
     }) => {
-      setLoading(true);
-
+      setIsFetching(true);
       try {
         const res = await putBudgetAPI(data);
         if (res.status && res.data) {
-          handleState(res.data);
-          // Update IDB cache
-          if (db) {
-            await setBudgetData(db, data.account_id, res.data);
-          }
+          handleState(res.data, data.account_id);
+          if (db) await setBudgetData(db, data.account_id, res.data);
         }
       } catch (error) {
         console.error('[BudgetProvider] Error updating budget in API:', error);
-        setLoading(false);
+      } finally {
+        setIsFetching(false);
       }
     },
     [db, setBudgetData, handleState],
   );
 
-  // Cloud-first: delete from API, then clear local state
   const removeBudget = useCallback(
     async (accountId: number) => {
-      setLoading(true);
-
+      setIsFetching(true);
       try {
         await deleteBudgetAPI(accountId);
-        handleState(null);
-        // Clear IDB cache so stale budget data is not shown on next load
-        if (db) {
-          await deleteBudgetData(db, accountId);
-        }
+        handleState(null, accountId);
+        if (db) await deleteBudgetData(db, accountId);
       } catch (error) {
         console.error('[BudgetProvider] Error deleting budget from API:', error);
-        setLoading(false);
+      } finally {
+        setIsFetching(false);
       }
     },
     [db, deleteBudgetData, handleState],
   );
 
-  // Auto-sync budget when current group or db changes
+  // When current group changes, hot-swap to its cached budget synchronously
+  // (before the API call resolves).
   useEffect(() => {
-    if (currentGroup?.account_id) {
-      syncBudget(currentGroup.account_id);
+    if (!currentGroup?.account_id) return;
+    const ls = getCachedBudget(currentGroup.account_id);
+    if (ls) {
+      startTransition(() => handleState(ls, currentGroup.account_id!));
     }
-  }, [currentGroup?.account_id, syncBudget]);
+    syncBudget(currentGroup.account_id);
+  }, [currentGroup?.account_id, syncBudget, handleState]);
 
   const ctxVal = useMemo(
     () => ({
-      loading,
-      isInitialLoad,
+      loading: !hasEverLoaded,
+      isFetching,
+      hasEverLoaded,
+      isInitialLoad: !hasEverLoaded,
       budget,
       syncBudget,
       updateBudget,
       removeBudget,
     }),
-    [loading, isInitialLoad, budget, syncBudget, updateBudget, removeBudget],
+    [hasEverLoaded, isFetching, budget, syncBudget, updateBudget, removeBudget],
   );
 
   return <Ctx.Provider value={ctxVal}>{children}</Ctx.Provider>;

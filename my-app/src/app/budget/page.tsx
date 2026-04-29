@@ -13,7 +13,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 function BudgetContent() {
   const { currentGroup } = useGroupCtx();
-  const { loading, isInitialLoad } = useBudgetCtx();
+  const { hasEverLoaded, budget } = useBudgetCtx();
   const { data: spendingData, syncData } = useGetSpendingCtx();
 
   // Sync spending data for current year from IDB
@@ -41,8 +41,8 @@ function BudgetContent() {
     );
   }
 
-  // Show skeleton only on initial load while budget is loading
-  if (isInitialLoad && loading) {
+  // Only show the skeleton when we genuinely have nothing to render yet.
+  if (!hasEverLoaded && !budget) {
     return <BudgetSkeleton />;
   }
 
