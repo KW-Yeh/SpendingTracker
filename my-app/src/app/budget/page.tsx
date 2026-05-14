@@ -4,6 +4,7 @@ import { PageTitle } from '@/components/PageTitle';
 import { AnnualBudgetSection } from '@/app/budget/AnnualBudgetSection';
 import { MonthlyBudgetSection } from '@/app/budget/MonthlyBudgetSection';
 import { MonthlyBudgetBlocks } from '@/app/budget/MonthlyBudgetBlocks';
+import { RecurringBudgetItems } from '@/app/budget/RecurringBudgetItems';
 import { BudgetSkeleton } from '@/components/skeletons/BudgetSkeleton';
 import { useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
@@ -53,6 +54,7 @@ function BudgetContent() {
         <AnnualBudgetSection yearlySpending={yearlySpending} />
         <MonthlyBudgetSection yearlySpending={yearlySpending} />
       </div>
+      <RecurringBudgetItems />
       <MonthlyBudgetBlocks yearlySpending={yearlySpending} />
     </div>
   );

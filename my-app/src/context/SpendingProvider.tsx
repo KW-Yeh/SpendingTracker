@@ -108,6 +108,12 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
     setSpendingData: setData2IDB,
   } = useIDBCtx();
   const controllerRef = useRef<AbortController | null>(null);
+  // Remember the last sync params so we can re-run them when the tab regains
+  // focus / becomes visible. Without this, returning to a stale tab keeps
+  // showing whatever was last fetched.
+  const lastSyncArgsRef = useRef<
+    [string?, string?, string?, string?] | null
+  >(null);
 
   const handleSetState = useCallback((_data: SpendingRecord[]) => {
     dispatch({ type: 'SET_DATA', payload: _data });
@@ -124,14 +130,18 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
         dispatch({ type: 'FETCH_END' });
         return;
       }
+      lastSyncArgsRef.current = [groupId, email, startDate, endDate];
       dispatch({ type: 'FETCH_START' });
 
       const targetDate = startDate ? new Date(startDate) : new Date();
       const year = targetDate.getFullYear();
       const month = targetDate.getMonth();
 
-      // Try the exact (group, year, month) cache first.
-      if (IDB) {
+      // Try the exact (group, year, month) cache first. We only paint from
+      // cache when state is empty — once we have in-memory data (e.g. an
+      // optimistic add), don't clobber it with a possibly-stale IDB snapshot
+      // while the API call is in flight.
+      if (IDB && !state.hasEverLoaded) {
         try {
           const cachedData = await getDataFromIDB(
             IDB,
@@ -150,7 +160,7 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
             if (all.length > 0) {
               all.sort((a, b) => b.year * 100 + b.month - (a.year * 100 + a.month));
               const fallback = JSON.parse(all[0].data) as SpendingRecord[];
-              if (!state.hasEverLoaded) handleSetState(fallback);
+              handleSetState(fallback);
             }
           }
         } catch {
@@ -284,6 +294,24 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
     }),
     [state, syncData, addRecord, updateRecord, deleteRecord],
   );
+
+  // Re-sync when the tab becomes visible again. Without this, an inactive
+  // dashboard tab keeps showing stale data even after edits made elsewhere.
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const onVisible = () => {
+      if (document.visibilityState !== 'visible') return;
+      const args = lastSyncArgsRef.current;
+      if (!args) return;
+      syncData(...args);
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('focus', onVisible);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('focus', onVisible);
+    };
+  }, [syncData]);
 
   // When IDB opens, top up state from cache (covers the case where
   // localStorage didn't have the current month, or the user is viewing a
