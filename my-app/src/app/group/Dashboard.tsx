@@ -14,6 +14,7 @@ import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import {
   removeGroupMember,
   getGroupMembers,
+  deleteGroup,
 } from '@/services/groupServices';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import QRCode from 'react-qr-code';
@@ -197,11 +198,20 @@ const GroupCard = ({
           `確定要刪除群組「${group.name}」嗎？此操作無法復原。`,
         );
         if (confirmDelete) {
-          const filteredGroups = groups.filter(
-            (g) => g.account_id !== group.account_id,
-          );
-          setGroups(filteredGroups, userData?.user_id);
-          alert('群組已刪除');
+          setLoading(true);
+          try {
+            await deleteGroup(String(group.account_id));
+            const filteredGroups = groups.filter(
+              (g) => g.account_id !== group.account_id,
+            );
+            setGroups(filteredGroups, userData?.user_id);
+            alert('群組已刪除');
+          } catch (error) {
+            console.error(error);
+            alert('刪除失敗，請稍後再試');
+          } finally {
+            setLoading(false);
+          }
         }
         break;
 
