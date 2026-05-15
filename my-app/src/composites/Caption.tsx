@@ -2,6 +2,7 @@
 
 import { GroupSelector } from '@/composites/GroupSelector';
 import { MenuButton } from '@/composites/MenuButton';
+import { SettingIcon } from '@/components/icons/SettingIcon';
 import { UserAvatar } from '@/components/UserAvatar';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import Link from 'next/link';
@@ -71,8 +72,15 @@ export const Caption = ({ openAside }: { openAside: () => void }) => {
           </Link>
         </div>
 
-        <div className="flex items-center md:ml-auto">
+        <div className="flex items-center gap-2 md:ml-auto">
           <GroupSelector className="max-w-80 font-bold" />
+          <Link
+            href="/setting"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-700 hover:text-gray-200 md:hidden"
+            aria-label="設定"
+          >
+            <SettingIcon className="size-5" />
+          </Link>
         </div>
       </div>
     </div>
