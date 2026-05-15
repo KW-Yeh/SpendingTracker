@@ -6,6 +6,7 @@ import { MonthlyBudgetSection } from '@/app/budget/MonthlyBudgetSection';
 import { MonthlyBudgetBlocks } from '@/app/budget/MonthlyBudgetBlocks';
 import { RecurringBudgetItems } from '@/app/budget/RecurringBudgetItems';
 import { BudgetSkeleton } from '@/components/skeletons/BudgetSkeleton';
+import { NoGroupEmptyState } from '@/components/NoGroupEmptyState';
 import { useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
@@ -35,11 +36,7 @@ function BudgetContent() {
   const yearlySpending = useMemo(() => spendingData, [spendingData]);
 
   if (!currentGroup) {
-    return (
-      <div className="flex w-full flex-1 items-center justify-center">
-        <p className="text-gray-300">請先選擇一個帳本</p>
-      </div>
-    );
+    return <NoGroupEmptyState>{null}</NoGroupEmptyState>;
   }
 
   // Only show the skeleton when we genuinely have nothing to render yet.

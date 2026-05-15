@@ -3,6 +3,7 @@
 import { ChartContainer } from '@/app/analysis/ChartContainer';
 import { YearMonthFilter } from '@/app/analysis/YearMonthFilter';
 import { AnalysisSkeleton } from '@/components/skeletons/AnalysisSkeleton';
+import { NoGroupEmptyState } from '@/components/NoGroupEmptyState';
 import { useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
@@ -163,6 +164,10 @@ export const ChartBlock = () => {
   // Only show the skeleton when we genuinely have nothing to render yet.
   if (!hasEverLoaded && data.length === 0) {
     return <AnalysisSkeleton />;
+  }
+
+  if (!currentGroup) {
+    return <NoGroupEmptyState>{null}</NoGroupEmptyState>;
   }
 
   return (

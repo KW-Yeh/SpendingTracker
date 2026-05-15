@@ -4,7 +4,6 @@ import { useFavoriteCategoriesCtx } from '@/context/FavoriteCategoriesProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
-import { createGroup } from '@/services/groupServices';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
 import { getCookie } from '@/utils/handleCookie';
 import { useSession } from 'next-auth/react';
@@ -16,8 +15,6 @@ export const usePrepareData = () => {
     groups,
     setCurrentGroup,
     currentGroup,
-    setter: setGroups,
-    hasEverLoaded: groupsLoaded,
   } = useGroupCtx();
   const { config: userData, syncUser } = useUserConfigCtx();
   const { syncData } = useGetSpendingCtx();
@@ -62,27 +59,6 @@ export const usePrepareData = () => {
       setCurrentGroup(defaultGroup);
     }
   }, [groups, setCurrentGroup, currentGroup]);
-
-  // Create default group if user has none.
-  useEffect(() => {
-    if (groupsLoaded && groups.length === 0 && effectiveUserId && userData) {
-      const newGroup: Group = {
-        account_id: Date.now(),
-        name: `${userData.name} 的個人帳本`,
-        owner_id: effectiveUserId,
-        members: [effectiveUserId],
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-
-      createGroup(newGroup)
-        .then(() => setGroups([newGroup], effectiveUserId))
-        .catch((err) => {
-          console.error('[usePrepareData] Error creating default group:', err);
-          setGroups([newGroup], effectiveUserId);
-        });
-    }
-  }, [groupsLoaded, groups.length, effectiveUserId, userData, setGroups]);
 
   // Sync current month spending whenever currentGroup changes.
   useEffect(() => {

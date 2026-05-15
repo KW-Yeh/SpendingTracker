@@ -5,6 +5,7 @@ import { YearMonthFilter } from '@/app/analysis/YearMonthFilter';
 import { SearchIcon } from '@/components/icons/SearchIcon';
 import { Select } from '@/components/Select';
 import { TransactionsSkeleton } from '@/components/skeletons/TransactionsSkeleton';
+import { NoGroupEmptyState } from '@/components/NoGroupEmptyState';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useScrollToTop } from '@/hooks/useScrollToTop';
@@ -95,6 +96,10 @@ export const SpendingInfoSection = () => {
   // Only show the skeleton when we genuinely have nothing to render yet.
   if (!hasEverLoaded && data.length === 0) {
     return <TransactionsSkeleton />;
+  }
+
+  if (!currentGroup) {
+    return <NoGroupEmptyState>{null}</NoGroupEmptyState>;
   }
 
   return (
