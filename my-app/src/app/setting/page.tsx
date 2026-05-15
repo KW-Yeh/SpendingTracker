@@ -1,8 +1,8 @@
 import { UserLayer } from '@/app/setting/UserLayer';
 
-export default function Home() {
+export default function SettingPage() {
   return (
-    <div className="bg-soft relative flex w-full flex-1">
+    <div className="relative flex w-full flex-1 justify-center">
       <UserLayer />
     </div>
   );
