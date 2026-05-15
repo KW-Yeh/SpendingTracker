@@ -5,6 +5,7 @@ import Overview from '@/app/transactions/Overview';
 import { QuickNavigationCards } from '@/components/QuickNavigationCards';
 import { RecentTransactionsList } from '@/components/RecentTransactionsList';
 import { DashboardSkeleton } from '@/components/skeletons/DashboardSkeleton';
+import { NoGroupEmptyState } from '@/components/NoGroupEmptyState';
 import { useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
@@ -87,6 +88,10 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
   // Only show the skeleton when we genuinely have nothing to render yet.
   if (!hasEverLoaded && data.length === 0) {
     return <DashboardSkeleton />;
+  }
+
+  if (!currentGroup) {
+    return <NoGroupEmptyState>{null}</NoGroupEmptyState>;
   }
 
   return (

@@ -20,7 +20,14 @@ import QRCode from 'react-qr-code';
 
 export const Dashboard = () => {
   const { config: userData, syncUser } = useUserConfigCtx();
-  const { groups, syncGroup, setter: setGroups, loading } = useGroupCtx();
+  const {
+    groups,
+    syncGroup,
+    setter: setGroups,
+    loading,
+    currentGroup,
+    setCurrentGroup,
+  } = useGroupCtx();
 
   const refresh = useCallback(() => {
     if (userData) {
@@ -56,9 +63,21 @@ export const Dashboard = () => {
         </button>
       </div>
       <div className="flex w-full flex-col gap-4 sm:flex-row sm:flex-wrap">
-        {groups.map((group) => (
-          <GroupCard key={group.account_id} group={group} refresh={refresh} />
-        ))}
+        {groups.length === 0 ? (
+          <div className="w-full rounded-xl border border-dashed border-gray-600 p-8 text-center text-sm text-gray-400">
+            尚未建立任何帳本，點上方「建立新帳本」開始記帳。
+          </div>
+        ) : (
+          groups.map((group) => (
+            <GroupCard
+              key={group.account_id}
+              group={group}
+              refresh={refresh}
+              isCurrent={group.account_id === currentGroup?.account_id}
+              onSelect={() => setCurrentGroup(group)}
+            />
+          ))
+        )}
       </div>
     </div>
   );
@@ -67,9 +86,13 @@ export const Dashboard = () => {
 const GroupCard = ({
   group,
   refresh,
+  isCurrent,
+  onSelect,
 }: {
   group: Group;
   refresh: () => void;
+  isCurrent: boolean;
+  onSelect: () => void;
 }) => {
   const { config: userData } = useUserConfigCtx();
   const { groups, setter: setGroups } = useGroupCtx();
@@ -219,17 +242,38 @@ const GroupCard = ({
   };
 
   return (
-    <div className="card relative grid w-full max-w-87.5 grid-cols-12 gap-4 transition-all duration-200 hover:shadow-[0_0_20px_rgba(6,182,212,0.2)]">
+    <div
+      className={`card relative grid w-full max-w-87.5 grid-cols-12 gap-4 transition-all duration-200 hover:shadow-[0_0_20px_rgba(6,182,212,0.2)] ${
+        isCurrent
+          ? 'ring-primary-400 shadow-[0_0_20px_rgba(6,182,212,0.25)] ring-2'
+          : ''
+      }`}
+    >
       <div
         className={`absolute top-0 right-0 bottom-0 left-0 animate-pulse rounded-xl border border-solid border-transparent bg-gray-500/50 ${loading ? 'visible' : 'invisible'}`}
       ></div>
       <div className="col-span-10 flex flex-col justify-between gap-2">
-        <h3
-          className="overflow-hidden text-base font-bold text-ellipsis whitespace-nowrap text-gray-100 sm:text-lg"
-          style={{ fontFamily: 'var(--font-heading)' }}
-        >
-          {group.name}
-        </h3>
+        <div className="flex items-center gap-2">
+          <h3
+            className="overflow-hidden text-base font-bold text-ellipsis whitespace-nowrap text-gray-100 sm:text-lg"
+            style={{ fontFamily: 'var(--font-heading)' }}
+          >
+            {group.name}
+          </h3>
+          {isCurrent ? (
+            <span className="bg-primary-500/20 text-primary-300 ring-primary-500/40 shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1 ring-inset">
+              使用中
+            </span>
+          ) : (
+            <button
+              type="button"
+              onClick={onSelect}
+              className="text-primary-400 hover:text-primary-300 shrink-0 text-[10px] font-semibold underline transition-colors"
+            >
+              切換為當前帳本
+            </button>
+          )}
+        </div>
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm text-gray-400">成員:</span>
           {loadingMembers ? (
