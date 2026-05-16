@@ -1,10 +1,12 @@
 'use client';
 
+import { Accordion } from '@/components/Accordion';
 import { Modal } from '@/components/Modal';
 import { Select } from '@/components/Select';
 import { Loading } from '@/components/icons/Loading';
 import { DeleteIcon } from '@/components/icons/DeleteIcon';
 import { EditIcon } from '@/components/icons/EditIcon';
+import { CaretDown } from '@/components/icons/CaretDown';
 import { useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { normalizeNumber } from '@/utils/normalizeNumber';
@@ -258,7 +260,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
 
   return (
     <>
-      <div className="grid w-full grid-cols-1 gap-4 md:max-w-250 md:grid-cols-2 lg:grid-cols-3">
+      <div className="flex w-full flex-col gap-3 md:max-w-250">
         {MONTHS.map((month) => {
           const monthItems = getMonthItems(month.value);
           const monthTotal = monthlyTotals[month.value];
@@ -266,7 +268,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
           const usagePercentage =
             monthTotal > 0 ? (monthSpent / monthTotal) * 100 : 0;
           const isCurrentMonth = month.value === currentMonth;
-          const isOverBudget = monthSpent > monthTotal;
+          const isOverBudget = monthSpent > monthTotal && monthTotal > 0;
 
           const isWarning =
             usagePercentage >= 80 && !isOverBudget && monthTotal > 0;
@@ -277,9 +279,10 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
               : '--color-primary-500';
 
           return (
-            <div
+            <Accordion
               key={month.value}
-              className="flex flex-col gap-3 rounded-2xl border bg-gray-800/80 p-4 backdrop-blur-sm"
+              defaultOpen={isCurrentMonth}
+              className="rounded-2xl border bg-gray-800/80 backdrop-blur-sm"
               style={{
                 borderColor: isOverBudget
                   ? 'rgba(248,113,113,0.3)'
@@ -287,145 +290,170 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                     ? 'rgba(6,182,212,0.35)'
                     : 'rgba(255,255,255,0.06)',
               }}
-            >
-              <div className="flex items-center justify-between">
-                <h3
-                  className="text-base font-bold text-gray-100"
-                  style={{ fontFamily: 'var(--font-heading)' }}
-                >
-                  {month.label}
-                  {isCurrentMonth && (
-                    <span className="text-primary-400 ml-2 text-xs font-semibold">
-                      (本月)
+              buttonProps={{ className: 'w-full px-4 py-3' }}
+              summary={(isOpen) => (
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <CaretDown
+                      className={`size-3 shrink-0 text-gray-400 transition-transform duration-300 ${isOpen ? '' : '-rotate-90'}`}
+                    />
+                    <h3
+                      className="text-base font-bold text-gray-100"
+                      style={{ fontFamily: 'var(--font-heading)' }}
+                    >
+                      {month.label}
+                      {isCurrentMonth && (
+                        <span className="text-primary-400 ml-2 text-xs font-semibold">
+                          本月
+                        </span>
+                      )}
+                    </h3>
+                  </div>
+                  <div
+                    className="flex items-center gap-2 text-xs"
+                    style={{ fontVariantNumeric: 'tabular-nums' }}
+                  >
+                    {monthTotal > 0 ? (
+                      <span
+                        className="font-semibold"
+                        style={{ color: `var(${fillVar})` }}
+                      >
+                        {usagePercentage.toFixed(0)}%
+                      </span>
+                    ) : null}
+                    <span className="font-medium text-gray-300">
+                      ${normalizeNumber(monthTotal)}
                     </span>
+                  </div>
+                </div>
+              )}
+            >
+              <div className="flex flex-col gap-3 px-4 pb-4">
+                <div className="flex flex-col gap-1">
+                  <p
+                    className="text-xl font-extrabold text-gray-100"
+                    style={{
+                      fontFamily: 'var(--font-heading)',
+                      fontVariantNumeric: 'tabular-nums',
+                    }}
+                  >
+                    ${normalizeNumber(monthTotal)}
+                  </p>
+                  <p
+                    className="text-xs font-medium text-gray-400"
+                    style={{ fontVariantNumeric: 'tabular-nums' }}
+                  >
+                    已使用 ${normalizeNumber(monthSpent)}
+                    {monthTotal > 0 && (
+                      <span
+                        className="ml-1 font-semibold"
+                        style={{ color: `var(${fillVar})` }}
+                      >
+                        ({usagePercentage.toFixed(1)}%)
+                      </span>
+                    )}
+                  </p>
+                </div>
+
+                {monthTotal > 0 && (
+                  <div className="h-1 w-full overflow-hidden rounded-full bg-white/[0.06]">
+                    <div
+                      className="h-full rounded-full transition-all duration-300"
+                      style={{
+                        width: `${Math.min(usagePercentage, 100)}%`,
+                        backgroundColor: `var(${fillVar})`,
+                      }}
+                    />
+                  </div>
+                )}
+
+                {monthTotal > 0 && (
+                  <div
+                    className="flex justify-between text-[11px] font-medium text-gray-400"
+                    style={{ fontVariantNumeric: 'tabular-nums' }}
+                  >
+                    <span>{usagePercentage.toFixed(0)}% 已使用</span>
+                    <span
+                      style={
+                        isOverBudget
+                          ? { color: 'var(--color-over-budget)' }
+                          : undefined
+                      }
+                    >
+                      {isOverBudget
+                        ? `超支 $${normalizeNumber(monthSpent - monthTotal)}`
+                        : `剩餘 $${normalizeNumber(monthTotal - monthSpent)}`}
+                    </span>
+                  </div>
+                )}
+
+                <div className="flex flex-col gap-1.5">
+                  {monthItems.length > 0 ? (
+                    monthItems.map((item) => (
+                      <div
+                        key={`${month.value}-${item.index}`}
+                        className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2 transition-colors hover:bg-white/[0.04]"
+                      >
+                        <div className="flex flex-1 items-center gap-2 overflow-hidden">
+                          <span
+                            aria-hidden
+                            className="flex size-[34px] shrink-0 items-center justify-center rounded-[10px] bg-white/[0.04] text-lg"
+                          >
+                            {item.category}
+                          </span>
+                          <div className="flex flex-col overflow-hidden">
+                            <p className="truncate text-sm font-semibold text-gray-100">
+                              {item.description}
+                            </p>
+                            <p
+                              className="text-[11px] font-medium text-gray-400"
+                              style={{ fontVariantNumeric: 'tabular-nums' }}
+                            >
+                              ${normalizeNumber(item.amount)}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex gap-1">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleOpenEditModal(month.value, item.index)
+                            }
+                            className="text-primary-400 hover:bg-white/[0.05] min-h-8 min-w-8 rounded-lg p-2 transition-colors"
+                            aria-label="編輯"
+                          >
+                            <EditIcon className="size-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleDeleteItem(month.value, item.index)
+                            }
+                            className="hover:bg-white/[0.05] min-h-8 min-w-8 rounded-lg p-2 transition-colors"
+                            style={{ color: 'var(--color-expense)' }}
+                            aria-label="刪除"
+                          >
+                            <DeleteIcon className="size-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="py-2 text-center text-xs text-gray-400">
+                      尚未新增項目
+                    </p>
                   )}
-                </h3>
+                </div>
+
                 <button
                   type="button"
                   onClick={() => handleOpenAddModal(month.value)}
-                  className="text-primary-400 hover:text-primary-300 cursor-pointer text-sm font-semibold transition-colors"
+                  className="text-primary-400 hover:text-primary-300 mt-1 cursor-pointer self-end text-sm font-semibold transition-colors"
                 >
-                  + 新增
+                  + 新增項目
                 </button>
               </div>
-
-              <div className="flex flex-col gap-1">
-                <p
-                  className="text-xl font-extrabold text-gray-100"
-                  style={{
-                    fontFamily: 'var(--font-heading)',
-                    fontVariantNumeric: 'tabular-nums',
-                  }}
-                >
-                  ${normalizeNumber(monthTotal)}
-                </p>
-                <p
-                  className="text-xs font-medium text-gray-400"
-                  style={{ fontVariantNumeric: 'tabular-nums' }}
-                >
-                  已使用 ${normalizeNumber(monthSpent)}
-                  {monthTotal > 0 && (
-                    <span
-                      className="ml-1 font-semibold"
-                      style={{ color: `var(${fillVar})` }}
-                    >
-                      ({usagePercentage.toFixed(1)}%)
-                    </span>
-                  )}
-                </p>
-              </div>
-
-              {/* Slim progress bar - 4px */}
-              {monthTotal > 0 && (
-                <div className="h-1 w-full overflow-hidden rounded-full bg-white/[0.06]">
-                  <div
-                    className="h-full rounded-full transition-all duration-300"
-                    style={{
-                      width: `${Math.min(usagePercentage, 100)}%`,
-                      backgroundColor: `var(${fillVar})`,
-                    }}
-                  />
-                </div>
-              )}
-
-              {monthTotal > 0 && (
-                <div
-                  className="flex justify-between text-[11px] font-medium text-gray-400"
-                  style={{ fontVariantNumeric: 'tabular-nums' }}
-                >
-                  <span>{usagePercentage.toFixed(0)}% 已使用</span>
-                  <span
-                    style={
-                      isOverBudget
-                        ? { color: 'var(--color-over-budget)' }
-                        : undefined
-                    }
-                  >
-                    {isOverBudget
-                      ? `超支 $${normalizeNumber(monthSpent - monthTotal)}`
-                      : `剩餘 $${normalizeNumber(monthTotal - monthSpent)}`}
-                  </span>
-                </div>
-              )}
-
-              <div className="mt-1 flex flex-col gap-1.5">
-                {monthItems.length > 0 ? (
-                  monthItems.map((item) => (
-                    <div
-                      key={`${month.value}-${item.index}`}
-                      className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2 transition-colors hover:bg-white/[0.04]"
-                    >
-                      <div className="flex flex-1 items-center gap-2 overflow-hidden">
-                        <span
-                          aria-hidden
-                          className="flex size-[34px] shrink-0 items-center justify-center rounded-[10px] bg-white/[0.04] text-lg"
-                        >
-                          {item.category}
-                        </span>
-                        <div className="flex flex-col overflow-hidden">
-                          <p className="truncate text-sm font-semibold text-gray-100">
-                            {item.description}
-                          </p>
-                          <p
-                            className="text-[11px] font-medium text-gray-400"
-                            style={{ fontVariantNumeric: 'tabular-nums' }}
-                          >
-                            ${normalizeNumber(item.amount)}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex gap-1">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleOpenEditModal(month.value, item.index)
-                          }
-                          className="text-primary-400 hover:bg-white/[0.05] min-h-8 min-w-8 rounded-lg p-2 transition-colors"
-                          aria-label="編輯"
-                        >
-                          <EditIcon className="size-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleDeleteItem(month.value, item.index)
-                          }
-                          className="hover:bg-white/[0.05] min-h-8 min-w-8 rounded-lg p-2 transition-colors"
-                          style={{ color: 'var(--color-expense)' }}
-                          aria-label="刪除"
-                        >
-                          <DeleteIcon className="size-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p className="py-3 text-center text-xs text-gray-400">
-                    尚未新增項目
-                  </p>
-                )}
-              </div>
-            </div>
+            </Accordion>
           );
         })}
       </div>
