@@ -80,12 +80,11 @@ export const Caption = ({ openAside }: { openAside: () => void }) => {
           <Link
             href="/edit"
             scroll={false}
-            className="hidden md:flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:opacity-90 hover:shadow-md active:scale-95"
-            style={{ background: 'linear-gradient(135deg, #06B6D4, #0891B2)' }}
+            className="group btn-add-header hidden md:flex items-center gap-1.5 whitespace-nowrap rounded-[10px] px-3.5 py-2 text-sm font-semibold text-white"
             aria-label="新增帳目"
           >
-            <IoMdAdd className="size-4 shrink-0" />
-            <span>新增帳目</span>
+            <IoMdAdd className="size-[15px] shrink-0 transition-transform duration-200 group-hover:rotate-90" />
+            新增帳目
           </Link>
 
           <Link

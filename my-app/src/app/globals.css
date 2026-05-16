@@ -474,6 +474,34 @@ input[type='number'] {
   );
 }
 
+/* Header quick-add CTA — desktop sticky header */
+.btn-add-header {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-500) 0%,
+    var(--color-primary-600) 100%
+  );
+  box-shadow:
+    0 0 0 1px rgba(6, 182, 212, 0.25),
+    0 4px 14px rgba(6, 182, 212, 0.28);
+  transition:
+    box-shadow var(--duration-normal) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+.btn-add-header:hover {
+  box-shadow:
+    0 0 0 1px rgba(6, 182, 212, 0.45),
+    0 6px 22px rgba(6, 182, 212, 0.48);
+  transform: translateY(-1px);
+}
+.btn-add-header:active {
+  box-shadow:
+    0 0 0 1px rgba(6, 182, 212, 0.25),
+    0 2px 8px rgba(6, 182, 212, 0.3);
+  transform: translateY(0) scale(0.95);
+  transition-duration: 80ms;
+}
+
 /* Accessibility improvements */
 *:focus-visible {
   outline: 3px solid var(--color-primary-400);
