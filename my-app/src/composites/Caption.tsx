@@ -7,6 +7,7 @@ import { UserAvatar } from '@/components/UserAvatar';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
+import { IoMdAdd } from 'react-icons/io';
 
 const WEEKDAY_LABELS = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];
 
@@ -74,6 +75,19 @@ export const Caption = ({ openAside }: { openAside: () => void }) => {
 
         <div className="flex items-center gap-2 md:ml-auto">
           <GroupSelector className="max-w-80 font-bold" />
+
+          {/* Desktop quick-add — mobile uses the BottomNav FAB */}
+          <Link
+            href="/edit"
+            scroll={false}
+            className="hidden md:flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:opacity-90 hover:shadow-md active:scale-95"
+            style={{ background: 'linear-gradient(135deg, #06B6D4, #0891B2)' }}
+            aria-label="新增帳目"
+          >
+            <IoMdAdd className="size-4 shrink-0" />
+            <span>新增帳目</span>
+          </Link>
+
           <Link
             href="/setting"
             className="flex min-h-11 min-w-11 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-700 hover:text-gray-200 md:hidden"
