@@ -115,6 +115,13 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
   const lastSyncArgsRef = useRef<
     [string?, string?, string?, string?] | null
   >(null);
+  // Avoid recreating syncData when hasEverLoaded flips — use a ref so the
+  // callback stays stable and downstream useEffects don't re-fire spuriously.
+  const hasEverLoadedRef = useRef(state.hasEverLoaded);
+  hasEverLoadedRef.current = state.hasEverLoaded;
+  // Deduplicate concurrent calls with identical params (e.g. usePrepareData +
+  // page component both firing on the same group/date change).
+  const inFlightKeyRef = useRef<string | null>(null);
 
   const handleSetState = useCallback((_data: SpendingRecord[]) => {
     dispatch({ type: 'SET_DATA', payload: _data });
@@ -131,6 +138,12 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
         dispatch({ type: 'FETCH_END' });
         return;
       }
+      // Skip if an identical fetch is already in flight (e.g. usePrepareData
+      // and a page component both react to the same group/date change).
+      const key = `${groupId}|${email ?? ''}|${startDate ?? ''}|${endDate ?? ''}`;
+      if (inFlightKeyRef.current === key) return;
+      inFlightKeyRef.current = key;
+
       lastSyncArgsRef.current = [groupId, email, startDate, endDate];
       dispatch({ type: 'FETCH_START' });
 
@@ -142,7 +155,7 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       // cache when state is empty — once we have in-memory data (e.g. an
       // optimistic add), don't clobber it with a possibly-stale IDB snapshot
       // while the API call is in flight.
-      if (IDB && !state.hasEverLoaded) {
+      if (IDB && !hasEverLoadedRef.current) {
         try {
           const cachedData = await getDataFromIDB(
             IDB,
@@ -188,6 +201,7 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       } catch (error) {
         console.error('[SpendingProvider] Error fetching from API:', error);
       } finally {
+        inFlightKeyRef.current = null;
         dispatch({ type: 'FETCH_END' });
       }
     },
@@ -197,7 +211,8 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       getAllSpendingForGroup,
       setData2IDB,
       handleSetState,
-      state.hasEverLoaded,
+      // state.hasEverLoaded intentionally omitted — read via hasEverLoadedRef
+      // so syncData stays stable and doesn't re-trigger downstream effects.
     ],
   );
 

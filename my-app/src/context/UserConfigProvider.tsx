@@ -48,6 +48,10 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
   const { data: session, status } = useSession();
   const { db: IDB, getUserData, setUserData } = useIDBCtx();
   const controllerRef = useRef<AbortController | null>(null);
+  // Track latest config in a ref so the bootstrap effect can read it without
+  // adding config to its deps (which would cause unnecessary re-runs).
+  const configRef = useRef<User | undefined>(config);
+  configRef.current = config;
   const pathname = usePathname();
 
   const handleState = useCallback((value: User) => {
@@ -149,6 +153,14 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
     if (IDB && session?.user?.email && status === 'authenticated') {
       const email = session.user.email;
       const userName = session.user?.name || '匿名';
+
+      // If syncUser() already resolved the user (e.g. session was available
+      // before IDB opened), skip the API call and just persist to IDB.
+      if (configRef.current) {
+        setUserData(IDB, configRef.current).catch(() => {});
+        return () => controller.abort();
+      }
+
       setIsFetching(true);
 
       const createAndFetch = async (retryCount = 0): Promise<void> => {
