@@ -13,6 +13,7 @@ import type { Viewport } from 'next';
 import './globals.css';
 import { SessionProvider } from 'next-auth/react';
 import { ReactNode } from 'react';
+import { Toaster } from 'sonner';
 
 export const viewport: Viewport = {
   initialScale: 1,
@@ -65,6 +66,7 @@ export default function RootLayout({
         </SessionProvider>
         <Footer />
         <BottomNav />
+        <Toaster position="top-center" richColors />
       </body>
     </html>
   );

@@ -29,24 +29,28 @@ export const getItems = async (
   }
 };
 
-export const putItem = async (data: SpendingRecord) => {
+export const putItem = async (
+  data: SpendingRecord,
+): Promise<{ status: boolean; message: string }> => {
   try {
-    return await fetch(URL, {
+    const res = await fetch(URL, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
     });
+    return res.json();
   } catch (error) {
     console.error(error);
     return { status: false, message: '發生不預期的錯誤' };
   }
 };
 
-export const deleteItem = async (id: string) => {
+export const deleteItem = async (
+  id: string,
+): Promise<{ status: boolean; message: string }> => {
   try {
-    return await fetch(`${URL}?id=${id}`, { method: 'DELETE' });
+    const res = await fetch(`${URL}?id=${id}`, { method: 'DELETE' });
+    return res.json();
   } catch (error) {
     console.error(error);
     return { status: false, message: '發生不預期的錯誤' };

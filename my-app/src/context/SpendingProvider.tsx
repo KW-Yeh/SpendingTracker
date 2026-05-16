@@ -21,6 +21,7 @@ import {
   useReducer,
   useRef,
 } from 'react';
+import { toast } from 'sonner';
 
 const INIT_CTX_VAL: {
   loading: boolean;
@@ -202,12 +203,14 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
 
   const addRecord = useCallback(
     async (record: SpendingRecord, groupId: string | number) => {
+      const prevData = state.data;
       const newRecord = { ...record, updated_at: new Date().toISOString() };
-      const updatedData = [...state.data, newRecord];
+      const updatedData = [...prevData, newRecord];
       handleSetState(updatedData);
 
       try {
-        await putItem(newRecord);
+        const res = await putItem(newRecord);
+        if (!res.status) throw new Error(res.message);
         if (IDB) await setData2IDB(IDB, updatedData, groupId, record.date);
         const now = new Date();
         const recDate = new Date(record.date);
@@ -219,7 +222,8 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
         }
       } catch (error) {
         console.error('[SpendingProvider] Error adding record to API:', error);
-        handleSetState(state.data);
+        handleSetState(prevData);
+        toast.error('新增失敗，請再試一次');
       }
     },
     [IDB, state.data, handleSetState, setData2IDB],
@@ -227,14 +231,16 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
 
   const updateRecord = useCallback(
     async (record: SpendingRecord, groupId: string | number) => {
+      const prevData = state.data;
       const updatedRecord = { ...record, updated_at: new Date().toISOString() };
-      const updatedData = state.data.map((r) =>
+      const updatedData = prevData.map((r) =>
         r.id === record.id ? updatedRecord : r,
       );
       handleSetState(updatedData);
 
       try {
-        await putItem(updatedRecord);
+        const res = await putItem(updatedRecord);
+        if (!res.status) throw new Error(res.message);
         if (IDB) await setData2IDB(IDB, updatedData, groupId, record.date);
         const now = new Date();
         const recDate = new Date(record.date);
@@ -246,7 +252,8 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
         }
       } catch (error) {
         console.error('[SpendingProvider] Error updating record in API:', error);
-        handleSetState(state.data);
+        handleSetState(prevData);
+        toast.error('更新失敗，請再試一次');
       }
     },
     [IDB, state.data, handleSetState, setData2IDB],
@@ -254,12 +261,14 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
 
   const deleteRecord = useCallback(
     async (recordId: string, groupId: string | number) => {
-      const updatedData = state.data.filter((r) => r.id !== recordId);
-      const dateStr = state.data.find((r) => r.id === recordId)?.date;
+      const prevData = state.data;
+      const updatedData = prevData.filter((r) => r.id !== recordId);
+      const dateStr = prevData.find((r) => r.id === recordId)?.date;
       handleSetState(updatedData);
 
       try {
-        await deleteItemAPI(recordId);
+        const res = await deleteItemAPI(recordId);
+        if (!res.status) throw new Error(res.message);
         if (IDB) await setData2IDB(IDB, updatedData, groupId, dateStr);
         if (dateStr) {
           const now = new Date();
@@ -273,7 +282,8 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
         }
       } catch (error) {
         console.error('[SpendingProvider] Error deleting record from API:', error);
-        handleSetState(state.data);
+        handleSetState(prevData);
+        toast.error('刪除失敗，請再試一次');
       }
     },
     [IDB, state.data, handleSetState, setData2IDB],
