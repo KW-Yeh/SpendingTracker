@@ -1,16 +1,12 @@
 'use client';
 
-import { useIDBCtx } from '@/context/IDBProvider';
 import {
   getItems,
   putItem,
   deleteItem as deleteItemAPI,
 } from '@/services/getRecords';
 import { getCookie } from '@/utils/handleCookie';
-import {
-  getCachedSpending,
-  setCachedSpending,
-} from '@/utils/localCache';
+import { getCachedSpending, setCachedSpending } from '@/utils/localCache';
 import {
   createContext,
   ReactNode,
@@ -35,8 +31,14 @@ const INIT_CTX_VAL: {
     startDate?: string,
     endDate?: string,
   ) => void;
-  addRecord: (record: SpendingRecord, groupId: string | number) => Promise<void>;
-  updateRecord: (record: SpendingRecord, groupId: string | number) => Promise<void>;
+  addRecord: (
+    record: SpendingRecord,
+    groupId: string | number,
+  ) => Promise<void>;
+  updateRecord: (
+    record: SpendingRecord,
+    groupId: string | number,
+  ) => Promise<void>;
   deleteRecord: (recordId: string, groupId: string | number) => Promise<void>;
 } = {
   loading: true,
@@ -92,7 +94,7 @@ function getInitialState(): State {
     return { data: [], isFetching: false, hasEverLoaded: false };
   }
   // Only use the snapshot if it matches the current month being viewed by
-  // default (today). Other months can render once IDB resolves.
+  // default (today). Other months render once the API responds.
   const now = new Date();
   if (snap.year === now.getFullYear() && snap.month === now.getMonth()) {
     return { data: snap.data, isFetching: false, hasEverLoaded: true };
@@ -102,23 +104,12 @@ function getInitialState(): State {
 
 export const SpendingProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(reducer, undefined, getInitialState);
-  const {
-    db: IDB,
-    getSpendingData: getDataFromIDB,
-    getAllSpendingForGroup,
-    setSpendingData: setData2IDB,
-  } = useIDBCtx();
-  const controllerRef = useRef<AbortController | null>(null);
   // Remember the last sync params so we can re-run them when the tab regains
   // focus / becomes visible. Without this, returning to a stale tab keeps
   // showing whatever was last fetched.
-  const lastSyncArgsRef = useRef<
-    [string?, string?, string?, string?] | null
-  >(null);
-  // Avoid recreating syncData when hasEverLoaded flips — use a ref so the
-  // callback stays stable and downstream useEffects don't re-fire spuriously.
-  const hasEverLoadedRef = useRef(state.hasEverLoaded);
-  hasEverLoadedRef.current = state.hasEverLoaded;
+  const lastSyncArgsRef = useRef<[string?, string?, string?, string?] | null>(
+    null,
+  );
   // Deduplicate concurrent calls with identical params (e.g. usePrepareData +
   // page component both firing on the same group/date change).
   const inFlightKeyRef = useRef<string | null>(null);
@@ -151,46 +142,10 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       const year = targetDate.getFullYear();
       const month = targetDate.getMonth();
 
-      // Try the exact (group, year, month) cache first. We only paint from
-      // cache when state is empty — once we have in-memory data (e.g. an
-      // optimistic add), don't clobber it with a possibly-stale IDB snapshot
-      // while the API call is in flight.
-      if (IDB && !hasEverLoadedRef.current) {
-        try {
-          const cachedData = await getDataFromIDB(
-            IDB,
-            Number(groupId),
-            new AbortController().signal,
-            year,
-            month,
-          );
-          if (cachedData && cachedData.length > 0) {
-            const _data = JSON.parse(cachedData[0].data) as SpendingRecord[];
-            handleSetState(_data);
-          } else {
-            // Fall back to ANY cached month for this group so the user sees
-            // something instead of empty/skeleton while the API call runs.
-            const all = await getAllSpendingForGroup(IDB, Number(groupId));
-            if (all.length > 0) {
-              all.sort((a, b) => b.year * 100 + b.month - (a.year * 100 + a.month));
-              const fallback = JSON.parse(all[0].data) as SpendingRecord[];
-              handleSetState(fallback);
-            }
-          }
-        } catch {
-          /* miss is fine */
-        }
-      }
-
       try {
         const res = await getItems(groupId, email, startDate, endDate);
         if (res.status) {
           handleSetState(res.data);
-          if (IDB) {
-            const dateForCache =
-              res.data[0]?.date ?? startDate ?? new Date().toISOString();
-            await setData2IDB(IDB, res.data, groupId, dateForCache);
-          }
           // Mirror to localStorage when the period matches "now" — this is
           // what the next cold start will render synchronously.
           const now = new Date();
@@ -205,15 +160,7 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
         dispatch({ type: 'FETCH_END' });
       }
     },
-    [
-      IDB,
-      getDataFromIDB,
-      getAllSpendingForGroup,
-      setData2IDB,
-      handleSetState,
-      // state.hasEverLoaded intentionally omitted — read via hasEverLoadedRef
-      // so syncData stays stable and doesn't re-trigger downstream effects.
-    ],
+    [handleSetState],
   );
 
   const addRecord = useCallback(
@@ -226,7 +173,6 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       try {
         const res = await putItem(newRecord);
         if (!res.status) throw new Error(res.message);
-        if (IDB) await setData2IDB(IDB, updatedData, groupId, record.date);
         const now = new Date();
         const recDate = new Date(record.date);
         if (
@@ -241,7 +187,7 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
         toast.error('新增失敗，請再試一次');
       }
     },
-    [IDB, state.data, handleSetState, setData2IDB],
+    [state.data, handleSetState],
   );
 
   const updateRecord = useCallback(
@@ -256,7 +202,6 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       try {
         const res = await putItem(updatedRecord);
         if (!res.status) throw new Error(res.message);
-        if (IDB) await setData2IDB(IDB, updatedData, groupId, record.date);
         const now = new Date();
         const recDate = new Date(record.date);
         if (
@@ -266,12 +211,15 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
           setCachedSpending(groupId, updatedData, now);
         }
       } catch (error) {
-        console.error('[SpendingProvider] Error updating record in API:', error);
+        console.error(
+          '[SpendingProvider] Error updating record in API:',
+          error,
+        );
         handleSetState(prevData);
         toast.error('更新失敗，請再試一次');
       }
     },
-    [IDB, state.data, handleSetState, setData2IDB],
+    [state.data, handleSetState],
   );
 
   const deleteRecord = useCallback(
@@ -284,7 +232,6 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       try {
         const res = await deleteItemAPI(recordId);
         if (!res.status) throw new Error(res.message);
-        if (IDB) await setData2IDB(IDB, updatedData, groupId, dateStr);
         if (dateStr) {
           const now = new Date();
           const recDate = new Date(dateStr);
@@ -296,12 +243,15 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
           }
         }
       } catch (error) {
-        console.error('[SpendingProvider] Error deleting record from API:', error);
+        console.error(
+          '[SpendingProvider] Error deleting record from API:',
+          error,
+        );
         handleSetState(prevData);
         toast.error('刪除失敗，請再試一次');
       }
     },
-    [IDB, state.data, handleSetState, setData2IDB],
+    [state.data, handleSetState],
   );
 
   const ctxVal = useMemo(
@@ -337,25 +287,6 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       window.removeEventListener('focus', onVisible);
     };
   }, [syncData]);
-
-  // When IDB opens, top up state from cache (covers the case where
-  // localStorage didn't have the current month, or the user is viewing a
-  // different month).
-  useEffect(() => {
-    const controller = (controllerRef.current = new AbortController());
-    const groupId = getCookie('currentGroupId');
-    if (IDB && groupId) {
-      getDataFromIDB(IDB, Number(groupId), controller.signal)
-        .then((res) => {
-          if (res && res.length === 1) {
-            const _data = JSON.parse(res[0].data) as SpendingRecord[];
-            handleSetState(_data);
-          }
-        })
-        .catch(() => {});
-    }
-    return () => controller.abort();
-  }, [IDB, getDataFromIDB, handleSetState]);
 
   return <Ctx.Provider value={ctxVal}>{children}</Ctx.Provider>;
 };

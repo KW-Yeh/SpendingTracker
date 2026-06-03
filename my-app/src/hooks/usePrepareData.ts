@@ -10,20 +10,16 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useRef } from 'react';
 
 export const usePrepareData = () => {
-  const {
-    syncGroup,
-    groups,
-    setCurrentGroup,
-    currentGroup,
-  } = useGroupCtx();
+  const { syncGroup, groups, setCurrentGroup, currentGroup } = useGroupCtx();
   const { config: userData, syncUser } = useUserConfigCtx();
   const { syncData } = useGetSpendingCtx();
   const { syncFavorites } = useFavoriteCategoriesCtx();
   const { data: session } = useSession();
 
-  // Prefer the JWT-resolved userId so we can fan out IDB reads / API calls
-  // before the full user object comes back.
-  const sessionUserId = (session?.user as { userId?: number } | undefined)?.userId;
+  // Prefer the JWT-resolved userId so we can fan out API calls before the
+  // full user object comes back.
+  const sessionUserId = (session?.user as { userId?: number } | undefined)
+    ?.userId;
   const effectiveUserId = sessionUserId ?? userData?.user_id;
 
   const hasSyncedUser = useRef(false);

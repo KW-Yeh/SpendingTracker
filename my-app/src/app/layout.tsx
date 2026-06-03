@@ -1,4 +1,5 @@
 import { BottomNav } from '@/composites/BottomNav';
+import { DataSyncToast } from '@/composites/DataSyncToast';
 import Footer from '@/composites/Footer';
 import { Header } from '@/composites/Header';
 import { PrepareData } from '@/composites/PrepareData';
@@ -8,7 +9,6 @@ import { GroupProvider } from '@/context/GroupProvider';
 import { BudgetProvider } from '@/context/BudgetProvider';
 import { SpendingProvider } from '@/context/SpendingProvider';
 import { UserConfigProvider } from '@/context/UserConfigProvider';
-import { IDBProvider } from '@/context/IDBProvider';
 import type { Viewport } from 'next';
 import './globals.css';
 import { SessionProvider } from 'next-auth/react';
@@ -45,24 +45,23 @@ export default function RootLayout({
       </head>
       <body>
         <SessionProvider>
-          <IDBProvider>
-            <DateProvider>
-              <GroupProvider>
-                <UserConfigProvider>
-                  <FavoriteCategoriesProvider>
-                    <SpendingProvider>
-                      <BudgetProvider>
-                        <Header />
-                        {children}
-                        {modal}
-                        <PrepareData />
-                      </BudgetProvider>
-                    </SpendingProvider>
-                  </FavoriteCategoriesProvider>
-                </UserConfigProvider>
-              </GroupProvider>
-            </DateProvider>
-          </IDBProvider>
+          <DateProvider>
+            <GroupProvider>
+              <UserConfigProvider>
+                <FavoriteCategoriesProvider>
+                  <SpendingProvider>
+                    <BudgetProvider>
+                      <Header />
+                      {children}
+                      {modal}
+                      <PrepareData />
+                      <DataSyncToast />
+                    </BudgetProvider>
+                  </SpendingProvider>
+                </FavoriteCategoriesProvider>
+              </UserConfigProvider>
+            </GroupProvider>
+          </DateProvider>
         </SessionProvider>
         <Footer />
         <BottomNav />

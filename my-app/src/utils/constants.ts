@@ -144,5 +144,6 @@ export const BUDGET_PERIOD_WORDINGS: Record<string, string> = {
   daily: '每日',
 };
 
+// Legacy IndexedDB database name — the IDB cache layer has been removed;
+// kept only so existing devices can delete the leftover database.
 export const IDB_NAME = 'Expense Tracking';
-export const IDB_VERSION = 3;
