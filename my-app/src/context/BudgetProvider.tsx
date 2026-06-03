@@ -1,16 +1,12 @@
 'use client';
 
-import { useIDBCtx } from '@/context/IDBProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import {
   getBudget as getBudgetAPI,
   putBudget as putBudgetAPI,
   deleteBudget as deleteBudgetAPI,
 } from '@/services/budgetServices';
-import {
-  getCachedBudget,
-  setCachedBudget,
-} from '@/utils/localCache';
+import { getCachedBudget, setCachedBudget } from '@/utils/localCache';
 import {
   createContext,
   ReactNode,
@@ -49,7 +45,6 @@ const INIT_CTX_VAL: {
 
 export const BudgetProvider = ({ children }: { children: ReactNode }) => {
   const { currentGroup } = useGroupCtx();
-  const { db, getBudgetData, setBudgetData, deleteBudgetData } = useIDBCtx();
 
   // Synchronous warm-start: if we already know the current group, pull
   // its cached budget from localStorage now.
@@ -79,26 +74,11 @@ export const BudgetProvider = ({ children }: { children: ReactNode }) => {
         startTransition(() => handleState(ls, accountId));
       }
 
-      // Async IDB hit
-      if (db) {
-        try {
-          const cachedData = await getBudgetData(db, accountId);
-          if (cachedData) {
-            startTransition(() => handleState(cachedData, accountId));
-          }
-        } catch {
-          /* miss is fine */
-        }
-      }
-
       // Source of truth
       try {
         const res = await getBudgetAPI(accountId);
         if (res.status) {
           handleState(res.data, accountId);
-          if (db && res.data) {
-            await setBudgetData(db, accountId, res.data);
-          }
         }
       } catch (error) {
         console.error('[BudgetProvider] Error fetching from API:', error);
@@ -107,7 +87,7 @@ export const BudgetProvider = ({ children }: { children: ReactNode }) => {
         setHasEverLoaded(true);
       }
     },
-    [db, getBudgetData, setBudgetData, handleState],
+    [handleState],
   );
 
   const updateBudget = useCallback(
@@ -122,7 +102,6 @@ export const BudgetProvider = ({ children }: { children: ReactNode }) => {
         const res = await putBudgetAPI(data);
         if (res.status && res.data) {
           handleState(res.data, data.account_id);
-          if (db) await setBudgetData(db, data.account_id, res.data);
         }
       } catch (error) {
         console.error('[BudgetProvider] Error updating budget in API:', error);
@@ -130,7 +109,7 @@ export const BudgetProvider = ({ children }: { children: ReactNode }) => {
         setIsFetching(false);
       }
     },
-    [db, setBudgetData, handleState],
+    [handleState],
   );
 
   const removeBudget = useCallback(
@@ -139,14 +118,16 @@ export const BudgetProvider = ({ children }: { children: ReactNode }) => {
       try {
         await deleteBudgetAPI(accountId);
         handleState(null, accountId);
-        if (db) await deleteBudgetData(db, accountId);
       } catch (error) {
-        console.error('[BudgetProvider] Error deleting budget from API:', error);
+        console.error(
+          '[BudgetProvider] Error deleting budget from API:',
+          error,
+        );
       } finally {
         setIsFetching(false);
       }
     },
-    [db, deleteBudgetData, handleState],
+    [handleState],
   );
 
   // When current group changes, hot-swap to its cached budget synchronously
