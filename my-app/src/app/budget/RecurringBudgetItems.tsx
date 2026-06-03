@@ -47,7 +47,12 @@ export const RecurringBudgetItems = () => {
       .map((item, index) => {
         const amount = getRecurringAmount(item);
         return amount !== null
-          ? { index, category: item.category, description: item.description, amount }
+          ? {
+              index,
+              category: item.category,
+              description: item.description,
+              amount,
+            }
           : null;
       })
       .filter((x): x is NonNullable<typeof x> => x !== null);
@@ -73,11 +78,7 @@ export const RecurringBudgetItems = () => {
   };
 
   const handleSave = useCallback(async () => {
-    if (
-      !currentGroup?.account_id ||
-      !itemCategory.trim() ||
-      itemAmount <= 0
-    ) {
+    if (!currentGroup?.account_id || !itemCategory.trim() || itemAmount <= 0) {
       alert('請填寫類別與大於 0 的金額');
       return;
     }
@@ -103,8 +104,7 @@ export const RecurringBudgetItems = () => {
         // it to recurring instead of creating a duplicate.
         const existingIdx = budget?.monthly_items?.findIndex(
           (it) =>
-            it.category === itemCategory &&
-            it.description === finalDescription,
+            it.category === itemCategory && it.description === finalDescription,
         );
         if (existingIdx !== undefined && existingIdx >= 0) {
           newItems = [...(budget?.monthly_items || [])];
@@ -176,7 +176,7 @@ export const RecurringBudgetItems = () => {
   return (
     <>
       <section
-        className="flex w-full flex-col gap-3 rounded-2xl border bg-gray-800/80 p-5 shadow-md backdrop-blur-sm md:max-w-250"
+        className="flex w-full flex-col gap-3 rounded-2xl border bg-gray-950 p-5 backdrop-blur-sm md:max-w-250"
         style={{ borderColor: 'rgba(255,255,255,0.06)' }}
       >
         <header className="flex items-center justify-between gap-3">
@@ -194,7 +194,7 @@ export const RecurringBudgetItems = () => {
           <button
             type="button"
             onClick={handleOpenAdd}
-            className="text-primary-400 hover:text-primary-300 shrink-0 cursor-pointer text-sm font-semibold transition-colors"
+            className="text-primary-500 hover:text-primary-400 shrink-0 cursor-pointer text-sm font-semibold transition-colors"
           >
             + 新增固定項目
           </button>
@@ -206,12 +206,12 @@ export const RecurringBudgetItems = () => {
               {recurringItems.map((item) => (
                 <li
                   key={`recurring-${item.index}`}
-                  className="flex items-center justify-between gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2 transition-colors hover:bg-white/[0.04]"
+                  className="flex items-center justify-between gap-2 rounded-xl border border-black/[0.08] bg-black/[0.02] px-3 py-2 transition-colors hover:bg-black/[0.04]"
                 >
                   <div className="flex flex-1 items-center gap-2 overflow-hidden">
                     <span
                       aria-hidden
-                      className="flex size-[34px] shrink-0 items-center justify-center rounded-[10px] bg-white/[0.04] text-lg"
+                      className="flex size-[34px] shrink-0 items-center justify-center rounded-[10px] bg-black/[0.04] text-lg"
                     >
                       {item.category}
                     </span>
@@ -231,7 +231,7 @@ export const RecurringBudgetItems = () => {
                     <button
                       type="button"
                       onClick={() => handleOpenEdit(item.index)}
-                      className="text-primary-400 hover:bg-white/[0.05] min-h-8 min-w-8 rounded-lg p-2 transition-colors"
+                      className="text-primary-400 min-h-8 min-w-8 rounded-lg p-2 transition-colors hover:bg-black/[0.05]"
                       aria-label="編輯"
                     >
                       <EditIcon className="size-4" />
@@ -239,7 +239,7 @@ export const RecurringBudgetItems = () => {
                     <button
                       type="button"
                       onClick={() => handleDelete(item.index)}
-                      className="hover:bg-white/[0.05] min-h-8 min-w-8 rounded-lg p-2 transition-colors"
+                      className="min-h-8 min-w-8 rounded-lg p-2 transition-colors hover:bg-black/[0.05]"
                       style={{ color: 'var(--color-expense)' }}
                       aria-label="刪除"
                     >
@@ -271,7 +271,9 @@ export const RecurringBudgetItems = () => {
           defaultOpen={true}
           onClose={() => setModalOpen(false)}
           className="flex w-full flex-col self-end sm:max-w-96 sm:self-center sm:rounded-xl"
-          title={editingIndex !== null ? '編輯固定預算項目' : '新增固定預算項目'}
+          title={
+            editingIndex !== null ? '編輯固定預算項目' : '新增固定預算項目'
+          }
         >
           <div className="flex w-full flex-col gap-4">
             <fieldset>
@@ -290,7 +292,7 @@ export const RecurringBudgetItems = () => {
                   )
                 }
                 onChange={setItemCategory}
-                className="h-10 w-full rounded-md border border-solid border-gray-600 bg-gray-900/40 px-3 py-1 text-gray-100 transition-colors hover:border-primary-500 active:border-primary-500"
+                className="hover:border-primary-500 active:border-primary-500 h-10 w-full rounded-md border border-solid border-gray-600 bg-gray-900/40 px-3 py-1 text-gray-100 transition-colors"
               >
                 {ALL_CATEGORIES.map((category) => (
                   <Select.Item key={category.value} value={category.value}>
@@ -309,7 +311,7 @@ export const RecurringBudgetItems = () => {
               </legend>
               <input
                 type="text"
-                className="h-10 w-full rounded-md border border-solid border-gray-600 bg-gray-900/40 px-3 py-1 text-gray-100 placeholder:text-gray-500 focus:outline-none focus:border-primary-500"
+                className="focus:border-primary-500 h-10 w-full rounded-md border border-solid border-gray-600 bg-gray-900/40 px-3 py-1 text-gray-100 placeholder:text-gray-500 focus:outline-none"
                 value={itemDescription}
                 onChange={(e) => setItemDescription(e.target.value)}
                 placeholder={`例如：房租、薪水、Netflix（預設：${selectedCategoryLabel}）`}
@@ -320,7 +322,7 @@ export const RecurringBudgetItems = () => {
               <legend className="mb-2">每月金額（會套用到 1–12 月）</legend>
               <input
                 type="number"
-                className="h-10 w-full rounded-md border border-solid border-gray-600 bg-gray-900/40 px-3 py-1 text-gray-100 placeholder:text-gray-500 focus:outline-none focus:border-primary-500"
+                className="focus:border-primary-500 h-10 w-full rounded-md border border-solid border-gray-600 bg-gray-900/40 px-3 py-1 text-gray-100 placeholder:text-gray-500 focus:outline-none"
                 value={itemAmount || ''}
                 onChange={(e) => setItemAmount(Number(e.target.value))}
                 placeholder="例如：20000"

@@ -44,8 +44,8 @@ const BudgetCostTable = (props: Props) => {
   return (
     <div className="flex w-full flex-col gap-4">
       {/* Overall Summary */}
-      <div className="overflow-hidden rounded-lg border border-gray-600 bg-gray-800/90 shadow-sm backdrop-blur-sm">
-        <div className="bg-primary-500/20 border-b border-gray-600 px-4 py-3">
+      <div className="overflow-hidden rounded-lg border border-gray-700 bg-gray-950/90 shadow-sm backdrop-blur-sm">
+        <div className="bg-primary-500/20 border-b border-gray-700 px-4 py-3">
           <h3 className="text-sm font-bold text-gray-200">預算總覽</h3>
         </div>
         <div className="divide-y divide-gray-700">
@@ -60,7 +60,7 @@ const BudgetCostTable = (props: Props) => {
             <span
               className={`text-base font-semibold ${
                 totalSpent > totalBudgeted
-                  ? 'text-secondary-400'
+                  ? 'text-[var(--color-expense)]'
                   : 'text-gray-200'
               }`}
             >
@@ -72,7 +72,7 @@ const BudgetCostTable = (props: Props) => {
             <span
               className={`text-base font-semibold ${
                 totalSpent > totalBudgeted
-                  ? 'text-secondary-400'
+                  ? 'text-[var(--color-expense)]'
                   : 'text-income-400'
               }`}
             >
@@ -83,8 +83,8 @@ const BudgetCostTable = (props: Props) => {
       </div>
 
       {/* Spending Breakdown */}
-      <div className="overflow-hidden rounded-lg border border-gray-600 bg-gray-800/90 shadow-sm backdrop-blur-sm">
-        <div className="border-b border-gray-600 bg-orange-500/20 px-4 py-3">
+      <div className="overflow-hidden rounded-lg border border-gray-700 bg-gray-950/90 shadow-sm backdrop-blur-sm">
+        <div className="border-b border-gray-700 bg-orange-500/20 px-4 py-3">
           <h3 className="text-sm font-bold text-gray-200">支出結構分析</h3>
         </div>
         <div className="divide-y divide-gray-700">
@@ -115,8 +115,8 @@ const BudgetCostTable = (props: Props) => {
 
       {/* Category Breakdown */}
       {categoryBreakdown.length > 0 && (
-        <div className="overflow-hidden rounded-lg border border-gray-600 bg-gray-800/90 shadow-sm backdrop-blur-sm">
-          <div className="bg-accent-500/20 border-b border-gray-600 px-4 py-3">
+        <div className="overflow-hidden rounded-lg border border-gray-700 bg-gray-950/90 shadow-sm backdrop-blur-sm">
+          <div className="border-b border-gray-700 bg-gray-900 px-4 py-3">
             <h3 className="text-sm font-bold text-gray-200">
               各類別預算使用情況
             </h3>
@@ -124,7 +124,7 @@ const BudgetCostTable = (props: Props) => {
           <div className="max-h-80 overflow-auto">
             <table className="w-full text-sm">
               <thead className="sticky top-0 bg-gray-800/95 backdrop-blur-sm">
-                <tr className="border-b border-gray-600">
+                <tr className="border-b border-gray-700">
                   <th className="px-4 py-2 text-left font-semibold text-gray-300">
                     類別
                   </th>
@@ -155,7 +155,9 @@ const BudgetCostTable = (props: Props) => {
                       </td>
                       <td
                         className={`px-4 py-2 text-right font-semibold ${
-                          isOver ? 'text-secondary-400' : 'text-gray-300'
+                          isOver
+                            ? 'text-[var(--color-expense)]'
+                            : 'text-gray-300'
                         }`}
                       >
                         ${normalizeNumber(item.spent)}

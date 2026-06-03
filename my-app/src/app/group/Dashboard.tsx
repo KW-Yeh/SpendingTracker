@@ -253,10 +253,8 @@ const GroupCard = ({
 
   return (
     <div
-      className={`card relative grid w-full max-w-87.5 grid-cols-12 gap-4 transition-all duration-200 hover:shadow-[0_0_20px_rgba(6,182,212,0.2)] ${
-        isCurrent
-          ? 'ring-primary-400 shadow-[0_0_20px_rgba(6,182,212,0.25)] ring-2'
-          : ''
+      className={`card relative grid w-full max-w-87.5 grid-cols-12 gap-4 transition-all duration-200 ${
+        isCurrent ? 'ring-primary-400 ring-2' : ''
       }`}
     >
       <div
@@ -271,14 +269,14 @@ const GroupCard = ({
             {group.name}
           </h3>
           {isCurrent ? (
-            <span className="bg-primary-500/20 text-primary-300 ring-primary-500/40 shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1 ring-inset">
+            <span className="bg-primary-50 text-primary-500 ring-primary-500/40 shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1 ring-inset">
               使用中
             </span>
           ) : (
             <button
               type="button"
               onClick={onSelect}
-              className="text-primary-400 hover:text-primary-300 shrink-0 text-[10px] font-semibold underline transition-colors"
+              className="text-primary-500 hover:text-primary-400 shrink-0 text-[10px] font-semibold underline transition-colors"
             >
               切換為當前帳本
             </button>
@@ -296,7 +294,7 @@ const GroupCard = ({
               <button
                 type="button"
                 onClick={() => setMembersModalOpen(true)}
-                className="text-primary-400 hover:text-primary-300 text-xs font-semibold underline transition-colors"
+                className="text-primary-500 hover:text-primary-400 text-xs font-semibold underline transition-colors"
               >
                 查看詳情
               </button>
@@ -406,7 +404,7 @@ const GroupCard = ({
           <div className="flex w-full flex-col gap-4">
             <input
               type="text"
-              className="w-full rounded-md border border-solid border-gray-600 bg-gray-900/40 px-3 py-2 text-gray-100 placeholder:text-gray-500 focus:outline-none focus:border-primary-500"
+              className="focus:border-primary-500 w-full rounded-md border border-solid border-gray-600 bg-gray-900/40 px-3 py-2 text-gray-100 placeholder:text-gray-500 focus:outline-none"
               value={newGroupName}
               onChange={(e) => setNewGroupName(e.target.value)}
               placeholder="群組名稱"
@@ -450,7 +448,7 @@ const GroupCard = ({
                 return (
                   <div
                     key={member.user_id}
-                    className="hover:border-primary-500/50 flex items-center justify-between rounded-xl border border-solid border-gray-600 p-3 transition-all hover:bg-gray-700/50 hover:shadow-[0_0_10px_rgba(6,182,212,0.15)]"
+                    className="hover:border-primary-500/50 flex items-center justify-between rounded-xl border border-solid border-gray-700 p-3 transition-all hover:bg-gray-900"
                   >
                     <div className="flex-1">
                       <p className="font-semibold text-gray-100">
@@ -476,7 +474,7 @@ const GroupCard = ({
                             member.name || member.email || '未知用戶',
                           )
                         }
-                        className="text-secondary-400 hover:bg-secondary-500/20 active:bg-secondary-500/30 min-h-8 min-w-8 rounded-lg p-2 transition-all"
+                        className="text-primary-500 hover:bg-primary-50 active:bg-primary-100 min-h-8 min-w-8 rounded-lg p-2 transition-all"
                       >
                         <DeleteIcon className="size-4" />
                       </button>

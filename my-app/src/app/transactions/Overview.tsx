@@ -84,7 +84,7 @@ export default function OverView(props: Props) {
 
   return (
     <div
-      className="relative flex w-full flex-col gap-5 rounded-2xl border border-white/[0.06] bg-gray-800/80 p-5 text-gray-300 shadow-md backdrop-blur-sm md:min-w-110"
+      className="relative flex w-full flex-col gap-5 rounded-2xl border border-black/[0.08] bg-gray-950 p-5 text-gray-300 backdrop-blur-sm md:min-w-110"
       style={{ textWrap: 'pretty' }}
     >
       {/* Hero — 主結餘數字 */}
@@ -97,7 +97,7 @@ export default function OverView(props: Props) {
         </span>
         <div className="flex items-baseline gap-3">
           <span
-            className="font-extrabold tabular-nums text-gray-50"
+            className="font-extrabold text-gray-50 tabular-nums"
             style={{
               fontFamily: 'var(--font-heading)',
               fontSize: 'clamp(2.25rem, 9vw, 2.625rem)', // ~36–42px
@@ -120,7 +120,7 @@ export default function OverView(props: Props) {
         </div>
 
         {/* Slim progress bar with marker */}
-        <div className="relative h-1.5 w-full overflow-visible rounded-full bg-white/[0.06]">
+        <div className="relative h-1.5 w-full overflow-visible rounded-full bg-black/[0.06]">
           <div
             className="h-full rounded-full transition-all duration-300"
             style={{
@@ -177,7 +177,7 @@ export default function OverView(props: Props) {
       {overBudgetItems.length > 0 && (
         <Link
           href="/budget"
-          className="flex items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm transition-colors hover:bg-white/[0.03]"
+          className="flex items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm transition-colors hover:bg-black/[0.03]"
           style={{
             borderColor: 'rgba(248,113,113,0.25)',
             backgroundColor: 'rgba(248,113,113,0.08)',
@@ -208,7 +208,7 @@ export default function OverView(props: Props) {
           <button
             type="button"
             onClick={() => setIsBudgetExpanded(!isBudgetExpanded)}
-            className="flex cursor-pointer items-center justify-between rounded-xl px-3 py-2 transition-colors hover:bg-white/[0.04]"
+            className="flex cursor-pointer items-center justify-between rounded-xl px-3 py-2 transition-colors hover:bg-black/[0.04]"
           >
             <span
               className="text-[11px] font-semibold text-gray-400"
@@ -289,7 +289,7 @@ export default function OverView(props: Props) {
                       </div>
                     </div>
 
-                    <div className="relative h-1 w-full overflow-hidden rounded-full bg-white/[0.06]">
+                    <div className="relative h-1 w-full overflow-hidden rounded-full bg-black/[0.06]">
                       <div
                         className="h-full rounded-full transition-all duration-300"
                         style={{
@@ -334,7 +334,7 @@ function Tile({
 }) {
   return (
     <div
-      className="flex flex-col gap-1 rounded-xl border border-white/[0.06] px-3.5 py-3"
+      className="flex flex-col gap-1 rounded-xl border border-black/[0.08] px-3.5 py-3"
       style={{ backgroundColor: `var(${mutedBgVar})` }}
     >
       <span
