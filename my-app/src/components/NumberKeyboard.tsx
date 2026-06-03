@@ -41,30 +41,72 @@ export const NumberKeyboard = ({ value, onChange }: Props) => {
       }}
     >
       {/* row 1: 7 8 9 ⌫ */}
-      <Key value="7" onPress={press} style={{ gridRow: 1, gridColumn: 1 }}>7</Key>
-      <Key value="8" onPress={press} style={{ gridRow: 1, gridColumn: 2 }}>8</Key>
-      <Key value="9" onPress={press} style={{ gridRow: 1, gridColumn: 3 }}>9</Key>
-      <Key value="delete" variant="delete" onPress={press} style={{ gridRow: 1, gridColumn: 4 }}>
+      <Key value="7" onPress={press} style={{ gridRow: 1, gridColumn: 1 }}>
+        7
+      </Key>
+      <Key value="8" onPress={press} style={{ gridRow: 1, gridColumn: 2 }}>
+        8
+      </Key>
+      <Key value="9" onPress={press} style={{ gridRow: 1, gridColumn: 3 }}>
+        9
+      </Key>
+      <Key
+        value="delete"
+        variant="delete"
+        onPress={press}
+        style={{ gridRow: 1, gridColumn: 4 }}
+      >
         <BackspaceIcon className="size-5" />
       </Key>
 
       {/* row 2: 4 5 6 . */}
-      <Key value="4" onPress={press} style={{ gridRow: 2, gridColumn: 1 }}>4</Key>
-      <Key value="5" onPress={press} style={{ gridRow: 2, gridColumn: 2 }}>5</Key>
-      <Key value="6" onPress={press} style={{ gridRow: 2, gridColumn: 3 }}>6</Key>
+      <Key value="4" onPress={press} style={{ gridRow: 2, gridColumn: 1 }}>
+        4
+      </Key>
+      <Key value="5" onPress={press} style={{ gridRow: 2, gridColumn: 2 }}>
+        5
+      </Key>
+      <Key value="6" onPress={press} style={{ gridRow: 2, gridColumn: 3 }}>
+        6
+      </Key>
       <Key value="." onPress={press} style={{ gridRow: 2, gridColumn: 4 }}>
         <span className="text-2xl leading-none">·</span>
       </Key>
 
       {/* row 3: 1 2 3 C */}
-      <Key value="1" onPress={press} style={{ gridRow: 3, gridColumn: 1 }}>1</Key>
-      <Key value="2" onPress={press} style={{ gridRow: 3, gridColumn: 2 }}>2</Key>
-      <Key value="3" onPress={press} style={{ gridRow: 3, gridColumn: 3 }}>3</Key>
-      <Key value="clear" variant="clear" onPress={press} style={{ gridRow: 3, gridColumn: 4 }}>C</Key>
+      <Key value="1" onPress={press} style={{ gridRow: 3, gridColumn: 1 }}>
+        1
+      </Key>
+      <Key value="2" onPress={press} style={{ gridRow: 3, gridColumn: 2 }}>
+        2
+      </Key>
+      <Key value="3" onPress={press} style={{ gridRow: 3, gridColumn: 3 }}>
+        3
+      </Key>
+      <Key
+        value="clear"
+        variant="clear"
+        onPress={press}
+        style={{ gridRow: 3, gridColumn: 4 }}
+      >
+        C
+      </Key>
 
       {/* row 4: 0 (wide) 00 (wide) */}
-      <Key value="0" onPress={press} style={{ gridRow: 4, gridColumn: '1 / span 2' }}>0</Key>
-      <Key value="00" onPress={press} style={{ gridRow: 4, gridColumn: '3 / span 2' }}>00</Key>
+      <Key
+        value="0"
+        onPress={press}
+        style={{ gridRow: 4, gridColumn: '1 / span 2' }}
+      >
+        0
+      </Key>
+      <Key
+        value="00"
+        onPress={press}
+        style={{ gridRow: 4, gridColumn: '3 / span 2' }}
+      >
+        00
+      </Key>
     </div>
   );
 };
@@ -87,8 +129,8 @@ const Key = ({
 }) => {
   const variantClass =
     variant === 'delete'
-      ? 'bg-white/[0.04] text-[var(--color-expense)] border border-white/[0.06]'
-      : 'bg-white/[0.04] text-gray-100 border border-white/[0.06]';
+      ? 'bg-black/[0.04] text-[var(--color-expense)] border border-black/[0.08]'
+      : 'bg-black/[0.04] text-gray-100 border border-black/[0.08]';
 
   return (
     <button

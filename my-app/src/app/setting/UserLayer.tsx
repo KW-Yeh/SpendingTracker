@@ -27,7 +27,7 @@ function clearAllCache(): Promise<void> {
 
 const ChevronRight = () => (
   <svg
-    className="size-4 shrink-0 text-gray-600"
+    className="size-4 shrink-0 text-gray-400"
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -48,7 +48,7 @@ const SectionLabel = ({ children }: { children: string }) => (
 );
 
 const RowGroup = ({ children }: { children: React.ReactNode }) => (
-  <div className="divide-y divide-white/[0.04] overflow-hidden rounded-2xl border border-white/[0.05] bg-gray-800/50">
+  <div className="divide-y divide-black/[0.06] overflow-hidden rounded-2xl border border-black/[0.06] bg-gray-950">
     {children}
   </div>
 );
@@ -86,7 +86,7 @@ export const UserLayer = () => {
       {/* ── 個人資料 ─────────────────────────────────────── */}
       <Link
         href="/profile"
-        className="group flex items-center gap-4 rounded-2xl border border-white/[0.05] bg-gray-800/50 p-4 transition-colors hover:bg-gray-800/80"
+        className="group flex items-center gap-4 rounded-2xl border border-black/[0.06] bg-gray-950 p-4 transition-colors hover:bg-gray-950"
       >
         <div className="ring-primary-500/20 size-12 shrink-0 overflow-hidden rounded-full ring-2">
           <UserAvatar user={userData} />
@@ -107,7 +107,7 @@ export const UserLayer = () => {
         <RowGroup>
           <Link
             href="/group"
-            className="flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-white/[0.03]"
+            className="flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-black/[0.03]"
           >
             <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-cyan-500/10">
               <BookIcon className="size-4 text-cyan-400" />

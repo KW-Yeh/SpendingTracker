@@ -111,12 +111,12 @@ export default function ProfilePage() {
 
       <div className="min-h-screen bg-gray-900 pb-20">
         {/* Header */}
-        <div className="border-b border-gray-700 bg-gray-800/90 shadow-lg backdrop-blur-sm">
+        <div className="border-b border-gray-700 bg-gray-950/90 backdrop-blur-sm">
           <div className="mx-auto max-w-2xl px-4 py-4">
             <div className="flex items-center justify-between">
               <button
                 onClick={() => router.back()}
-                className="hover:text-primary-400 active:text-primary-300 text-gray-400 transition-colors"
+                className="hover:text-primary-500 active:text-primary-600 text-gray-400 transition-colors"
               >
                 <svg
                   className="size-6"
@@ -140,7 +140,7 @@ export default function ProfilePage() {
 
         {/* Content */}
         <div className="mx-auto max-w-2xl px-4 py-6">
-          <div className="rounded-lg border border-gray-700 bg-gray-800/90 p-6 shadow-xl backdrop-blur-sm">
+          <div className="rounded-lg border border-gray-700 bg-gray-950/90 p-6 backdrop-blur-sm">
             {/* Avatar Section */}
             <div className="mb-6 flex flex-col items-center">
               <div className="relative mb-4">
@@ -173,7 +173,7 @@ export default function ProfilePage() {
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
-                className="text-primary-400 hover:text-primary-300 active:text-primary-200 rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-200 hover:shadow-[0_0_10px_rgba(6,182,212,0.2)] disabled:cursor-not-allowed disabled:opacity-50"
+                className="text-primary-500 hover:text-primary-400 active:text-primary-600 rounded-lg px-4 py-2 text-sm transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isUploading ? '上傳中...' : '更換頭像'}
               </button>
@@ -188,7 +188,7 @@ export default function ProfilePage() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="focus:border-primary-400 w-full rounded-md border border-gray-600 bg-gray-700/50 px-4 py-2 text-gray-100 transition-all placeholder:text-gray-500 focus:shadow-[0_0_10px_rgba(6,182,212,0.2)] focus:outline-none"
+                className="focus:border-primary-400 w-full rounded-md border border-gray-700 bg-gray-950 px-4 py-2 text-gray-100 transition-all placeholder:text-gray-500 focus:outline-none"
                 placeholder="請輸入名稱"
               />
             </div>
@@ -202,7 +202,7 @@ export default function ProfilePage() {
                 type="email"
                 value={user.email}
                 disabled
-                className="w-full cursor-not-allowed rounded-md border border-gray-700 bg-gray-800/70 px-4 py-2 text-gray-500"
+                className="w-full cursor-not-allowed rounded-md border border-gray-700 bg-gray-800 px-4 py-2 text-gray-500"
               />
             </div>
 
@@ -210,7 +210,7 @@ export default function ProfilePage() {
             <button
               onClick={handleSave}
               disabled={isSaving || isUploading}
-              className="from-primary-500 to-primary-600 mb-4 w-full rounded-md bg-linear-to-r py-3 font-semibold text-white shadow-sm transition-all hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] active:shadow-[0_0_10px_rgba(6,182,212,0.3)] disabled:cursor-not-allowed disabled:opacity-50"
+              className="bg-primary-500 hover:bg-primary-400 mb-4 w-full rounded-full py-3 text-white transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isSaving ? '儲存中...' : '儲存變更'}
             </button>
@@ -221,7 +221,7 @@ export default function ProfilePage() {
             {/* Sign Out Button */}
             <button
               onClick={handleSignOut}
-              className="border-secondary-500 text-secondary-400 hover:bg-secondary-500/10 active:bg-secondary-500/20 w-full rounded-md border-2 py-3 font-semibold transition-all hover:shadow-[0_0_15px_rgba(139,92,246,0.3)]"
+              className="border-primary-500 text-primary-500 hover:bg-primary-50 active:bg-primary-100 w-full rounded-full border py-3 transition-all active:scale-[0.98]"
             >
               登出
             </button>

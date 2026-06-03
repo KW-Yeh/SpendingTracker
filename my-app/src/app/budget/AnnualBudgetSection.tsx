@@ -32,11 +32,11 @@ export const AnnualBudgetSection = ({ yearlySpending }: Props) => {
 
   return (
     <div
-      className="flex w-full flex-col gap-3 rounded-2xl border border-white/[0.06] bg-gray-800/80 p-5 shadow-md backdrop-blur-sm"
+      className="flex w-full flex-col gap-3 rounded-2xl border border-black/[0.08] bg-gray-950 p-5 backdrop-blur-sm"
       style={{ textWrap: 'pretty' }}
     >
       <span
-        className="text-[11px] font-semibold uppercase text-gray-400"
+        className="text-[11px] font-semibold text-gray-400 uppercase"
         style={{ letterSpacing: '0.12em' }}
       >
         年度預算
@@ -50,7 +50,7 @@ export const AnnualBudgetSection = ({ yearlySpending }: Props) => {
       >
         ${normalizeNumber(annualBudget)}
       </p>
-      <div className="h-1 w-full overflow-hidden rounded-full bg-white/[0.06]">
+      <div className="h-1 w-full overflow-hidden rounded-full bg-black/[0.06]">
         <div
           className="h-full rounded-full transition-all duration-300"
           style={{
