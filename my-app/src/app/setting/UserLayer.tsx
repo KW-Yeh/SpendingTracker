@@ -48,7 +48,7 @@ const SectionLabel = ({ children }: { children: string }) => (
 );
 
 const RowGroup = ({ children }: { children: React.ReactNode }) => (
-  <div className="overflow-hidden rounded-2xl border border-white/[0.05] bg-gray-800/50 divide-y divide-white/[0.04]">
+  <div className="divide-y divide-white/[0.04] overflow-hidden rounded-2xl border border-white/[0.05] bg-gray-800/50">
     {children}
   </div>
 );
@@ -60,11 +60,7 @@ export const UserLayer = () => {
   if (!userData) return null;
 
   const handleClearCache = async () => {
-    if (
-      !window.confirm(
-        '確定要清除所有本地快取資料嗎？清除後頁面將重新載入。',
-      )
-    )
+    if (!window.confirm('確定要清除所有本地快取資料嗎？清除後頁面將重新載入。'))
       return;
     setClearing(true);
     await clearAllCache();
@@ -78,7 +74,7 @@ export const UserLayer = () => {
   };
 
   return (
-    <div className="mx-auto w-full max-w-lg px-4 py-6 space-y-5">
+    <div className="mx-auto w-full max-w-lg space-y-5 px-4 py-6">
       {/* Page title */}
       <h1
         className="mb-2 text-xl font-bold text-gray-100"
@@ -134,9 +130,7 @@ export const UserLayer = () => {
             </span>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium text-gray-200">清除本地快取</p>
-              <p className="text-xs text-gray-500">
-                IndexedDB 與 localStorage
-              </p>
+              <p className="text-xs text-gray-500">localStorage 與舊版快取</p>
             </div>
             <button
               onClick={handleClearCache}

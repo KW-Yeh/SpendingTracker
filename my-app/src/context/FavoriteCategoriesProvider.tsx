@@ -4,15 +4,11 @@ import {
   getCategoryFavorites,
   updateCategoryFavorites,
 } from '@/utils/categoryHelpers';
-import { useIDBCtx } from '@/context/IDBProvider';
 import {
   getFavoriteCategories,
   putFavoriteCategories,
 } from '@/services/favoriteCategoriesServices';
-import {
-  getCachedFavorites,
-  setCachedFavorites,
-} from '@/utils/localCache';
+import { getCachedFavorites, setCachedFavorites } from '@/utils/localCache';
 import {
   createContext,
   ReactNode,
@@ -63,8 +59,6 @@ export const FavoriteCategoriesProvider = ({
   const [favorites, setFavorites] = useState<FavoriteCategories | null>(null);
   const [hasEverLoaded, setHasEverLoaded] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
-  const { db, getFavoriteCategoriesData, setFavoriteCategoriesData } =
-    useIDBCtx();
 
   const handleState = useCallback(
     (data: FavoriteCategories | null, ownerId?: number) => {
@@ -85,25 +79,10 @@ export const FavoriteCategoriesProvider = ({
         startTransition(() => handleState(ls, ownerId));
       }
 
-      // Async IDB hit
-      if (db) {
-        try {
-          const cachedData = await getFavoriteCategoriesData(db, ownerId);
-          if (cachedData) {
-            startTransition(() => handleState(cachedData, ownerId));
-          }
-        } catch {
-          /* miss is fine */
-        }
-      }
-
       try {
         const res = await getFavoriteCategories(ownerId);
         if (res.status) {
           handleState(res.data, ownerId);
-          if (db && res.data) {
-            await setFavoriteCategoriesData(db, ownerId, res.data);
-          }
         }
       } catch (error) {
         console.error(
@@ -115,7 +94,7 @@ export const FavoriteCategoriesProvider = ({
         setHasEverLoaded(true);
       }
     },
-    [db, getFavoriteCategoriesData, setFavoriteCategoriesData, handleState],
+    [handleState],
   );
 
   const updateFavorites = useCallback(
@@ -143,20 +122,20 @@ export const FavoriteCategoriesProvider = ({
         const res = await putFavoriteCategories(updatedFavorites);
         if (res.status && res.data) {
           handleState(res.data, data.owner_id);
-          if (db) {
-            await setFavoriteCategoriesData(db, data.owner_id, res.data);
-          }
         } else {
           handleState(updatedFavorites, data.owner_id);
         }
       } catch (error) {
-        console.error('[FavoriteCategoriesProvider] Error updating API:', error);
+        console.error(
+          '[FavoriteCategoriesProvider] Error updating API:',
+          error,
+        );
         handleState(updatedFavorites, data.owner_id);
       } finally {
         setIsFetching(false);
       }
     },
-    [db, favorites, setFavoriteCategoriesData, handleState],
+    [favorites, handleState],
   );
 
   const getCategoryDescriptions = useCallback(

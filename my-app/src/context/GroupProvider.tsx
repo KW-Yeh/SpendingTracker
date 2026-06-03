@@ -1,6 +1,5 @@
 'use client';
 
-import { useIDBCtx } from '@/context/IDBProvider';
 import { getGroups } from '@/services/groupServices';
 import {
   getCachedCurrentGroup,
@@ -48,7 +47,6 @@ export const GroupProvider = ({ children }: { children: ReactNode }) => {
   );
   const [hasEverLoaded, setHasEverLoaded] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
-  const { db, getGroupData, setGroupData } = useIDBCtx();
 
   const setCurrentGroup = useCallback((g?: Group) => {
     setCurrentGroupState(g);
@@ -68,11 +66,8 @@ export const GroupProvider = ({ children }: { children: ReactNode }) => {
       if (userId) {
         setCachedGroups(userId, newGroups);
       }
-      if (db && userId) {
-        setGroupData(db, userId, newGroups).catch(console.error);
-      }
     },
-    [db, setGroupData, handleState],
+    [handleState],
   );
 
   const syncGroup = useCallback(
@@ -87,21 +82,6 @@ export const GroupProvider = ({ children }: { children: ReactNode }) => {
         });
       }
 
-      // Async IDB hit (slower but still local)
-      if (db) {
-        try {
-          const cachedData = await getGroupData(db, user_id);
-          if (cachedData) {
-            startTransition(() => {
-              handleState(cachedData);
-            });
-            setCachedGroups(user_id, cachedData);
-          }
-        } catch {
-          /* miss is fine */
-        }
-      }
-
       // Source of truth
       try {
         const res = await getGroups(user_id);
@@ -110,9 +90,6 @@ export const GroupProvider = ({ children }: { children: ReactNode }) => {
             handleState(res.data);
           });
           setCachedGroups(user_id, res.data);
-          if (db) {
-            await setGroupData(db, user_id, res.data);
-          }
         }
       } catch (error) {
         console.error('[GroupProvider] Error fetching from API:', error);
@@ -121,7 +98,7 @@ export const GroupProvider = ({ children }: { children: ReactNode }) => {
         setHasEverLoaded(true);
       }
     },
-    [db, getGroupData, setGroupData, handleState],
+    [handleState],
   );
 
   const ctxVal = useMemo(

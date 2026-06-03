@@ -169,19 +169,7 @@ interface FavoriteCategories {
   updated_at?: string;
 }
 
-// Sync-related types
-interface SyncMetadata {
-  user_id: number;
-  last_synced_at: string; // ISO timestamp
-}
-
-interface SyncProgress {
-  step: 'pull' | 'push';
-  entity: string; // 'user' | 'groups' | 'transactions' | 'budgets' | 'favorites'
-  current: number;
-  total: number;
-}
-
+// Sync-related types (used by /api/aurora/sync)
 interface SyncPullResponse {
   user: User | null;
   groups: Group[];
