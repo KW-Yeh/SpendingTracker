@@ -63,7 +63,7 @@ export const MiniDailyCostChart = (props: Props) => {
 
   return (
     <div
-      className="relative flex w-full flex-col items-start rounded-2xl border border-white/[0.06] bg-gray-800/80 p-5 text-gray-300 shadow-md backdrop-blur-sm md:min-w-110"
+      className="relative flex w-full flex-col items-start rounded-2xl border border-black/[0.08] bg-gray-950 p-5 text-gray-300 backdrop-blur-sm md:min-w-110"
       style={{ textWrap: 'pretty' }}
     >
       <div className="flex w-full items-baseline justify-between">
@@ -95,7 +95,7 @@ export const MiniDailyCostChart = (props: Props) => {
         <div className="mt-4 w-full">
           <Accordion
             summary={(isOpen) => (
-              <div className="flex w-full items-center justify-between rounded-lg bg-gray-700/70 p-4 transition-all duration-200 hover:bg-gray-700 hover:shadow-[0_0_15px_rgba(6,182,212,0.15)]">
+              <div className="flex w-full items-center justify-between rounded-lg bg-gray-800 p-4 transition-all duration-200 hover:bg-gray-700/60">
                 <div className="flex flex-col gap-1">
                   <span className="text-sm font-medium text-gray-400">
                     {selectedDate} 的帳目
@@ -128,11 +128,11 @@ export const MiniDailyCostChart = (props: Props) => {
             defaultOpen={true}
             className="w-full"
           >
-            <div className="mt-2 flex flex-col gap-2 rounded-lg border border-gray-600 bg-gray-800/90 p-3">
+            <div className="mt-2 flex flex-col gap-2 rounded-lg border border-gray-700 bg-gray-950/90 p-3">
               {selectedDayTransactions.map((item, index) => (
                 <div
                   key={`${item.id}-${index}`}
-                  className="flex items-center justify-between rounded-lg border border-gray-700 bg-gray-700/50 p-3 text-sm transition-all duration-200 hover:bg-gray-700 hover:shadow-[0_0_10px_rgba(6,182,212,0.1)]"
+                  className="flex items-center justify-between rounded-lg border border-gray-700/60 bg-gray-900 p-3 text-sm transition-all duration-200 hover:bg-gray-800"
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-xl">{item.category}</span>

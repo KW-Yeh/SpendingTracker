@@ -45,7 +45,7 @@ export const Account = (props: Props) => {
           onClick={() => {
             close();
           }}
-          className="text-primary-300 hover:bg-primary-100 hover:text-text flex shrink-0 items-center justify-center rounded-md p-2 transition-all"
+          className="text-primary-500 hover:bg-primary-100 hover:text-text flex shrink-0 items-center justify-center rounded-md p-2 transition-all"
         >
           <span className="text-xs">登入</span>
         </Link>

@@ -25,7 +25,7 @@ export const RecentTransactionsList = ({
   // Only show loading skeleton if we have no data yet
   if (loading && data.length === 0) {
     return (
-      <div className="flex w-full flex-col rounded-2xl border border-white/[0.06] bg-gray-800/80 p-5 shadow-md backdrop-blur-sm md:min-w-110">
+      <div className="flex w-full flex-col rounded-2xl border border-black/[0.08] bg-gray-950 p-5 backdrop-blur-sm md:min-w-110">
         <h3
           className="mb-4 text-base font-bold text-gray-100"
           style={{ fontFamily: 'var(--font-heading)' }}
@@ -42,7 +42,7 @@ export const RecentTransactionsList = ({
   }
 
   return (
-    <div className="flex w-full flex-col rounded-2xl border border-white/[0.06] bg-gray-800/80 p-5 shadow-md backdrop-blur-sm md:min-w-110">
+    <div className="flex w-full flex-col rounded-2xl border border-black/[0.08] bg-gray-950 p-5 backdrop-blur-sm md:min-w-110">
       <div className="mb-4 flex items-center justify-between">
         <h3
           className="text-base font-bold text-gray-100"
@@ -52,7 +52,7 @@ export const RecentTransactionsList = ({
         </h3>
         <Link
           href="/transactions"
-          className="text-primary-400 hover:text-primary-300 active:text-primary-200 flex items-center gap-1 text-xs font-bold transition-colors"
+          className="text-primary-500 hover:text-primary-400 active:text-primary-600 flex items-center gap-1 text-xs font-bold transition-colors"
         >
           查看更多
           <DoubleArrowIcon className="size-3" />

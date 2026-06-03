@@ -282,13 +282,13 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
             <Accordion
               key={month.value}
               defaultOpen={isCurrentMonth}
-              className="rounded-2xl border bg-gray-800/80 backdrop-blur-sm"
+              className="rounded-2xl border bg-gray-950/80 backdrop-blur-sm"
               style={{
                 borderColor: isOverBudget
-                  ? 'rgba(248,113,113,0.3)'
+                  ? 'rgba(227,0,0,0.3)'
                   : isCurrentMonth
-                    ? 'rgba(6,182,212,0.35)'
-                    : 'rgba(255,255,255,0.06)',
+                    ? 'rgba(0,102,204,0.35)'
+                    : 'rgba(0,0,0,0.08)',
               }}
               buttonProps={{ className: 'w-full px-4 py-3' }}
               summary={(isOpen) => (
@@ -356,7 +356,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                 </div>
 
                 {monthTotal > 0 && (
-                  <div className="h-1 w-full overflow-hidden rounded-full bg-white/[0.06]">
+                  <div className="h-1 w-full overflow-hidden rounded-full bg-black/[0.06]">
                     <div
                       className="h-full rounded-full transition-all duration-300"
                       style={{
@@ -392,12 +392,12 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                     monthItems.map((item) => (
                       <div
                         key={`${month.value}-${item.index}`}
-                        className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2 transition-colors hover:bg-white/[0.04]"
+                        className="flex items-center justify-between rounded-xl border border-black/[0.08] bg-black/[0.02] px-3 py-2 transition-colors hover:bg-black/[0.04]"
                       >
                         <div className="flex flex-1 items-center gap-2 overflow-hidden">
                           <span
                             aria-hidden
-                            className="flex size-[34px] shrink-0 items-center justify-center rounded-[10px] bg-white/[0.04] text-lg"
+                            className="flex size-[34px] shrink-0 items-center justify-center rounded-[10px] bg-black/[0.04] text-lg"
                           >
                             {item.category}
                           </span>
@@ -419,7 +419,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                             onClick={() =>
                               handleOpenEditModal(month.value, item.index)
                             }
-                            className="text-primary-400 hover:bg-white/[0.05] min-h-8 min-w-8 rounded-lg p-2 transition-colors"
+                            className="text-primary-400 min-h-8 min-w-8 rounded-lg p-2 transition-colors hover:bg-black/[0.05]"
                             aria-label="編輯"
                           >
                             <EditIcon className="size-4" />
@@ -429,7 +429,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                             onClick={() =>
                               handleDeleteItem(month.value, item.index)
                             }
-                            className="hover:bg-white/[0.05] min-h-8 min-w-8 rounded-lg p-2 transition-colors"
+                            className="min-h-8 min-w-8 rounded-lg p-2 transition-colors hover:bg-black/[0.05]"
                             style={{ color: 'var(--color-expense)' }}
                             aria-label="刪除"
                           >
@@ -448,7 +448,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                 <button
                   type="button"
                   onClick={() => handleOpenAddModal(month.value)}
-                  className="text-primary-400 hover:text-primary-300 mt-1 cursor-pointer self-end text-sm font-semibold transition-colors"
+                  className="text-primary-500 hover:text-primary-400 mt-1 cursor-pointer self-end text-sm font-semibold transition-colors"
                 >
                   + 新增項目
                 </button>
@@ -486,7 +486,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                   )
                 }
                 onChange={setItemCategory}
-                className="h-10 w-full rounded-md border border-solid border-gray-600 bg-gray-900/40 px-3 py-1 text-gray-100 transition-colors hover:border-primary-500 active:border-primary-500"
+                className="hover:border-primary-500 active:border-primary-500 h-10 w-full rounded-md border border-solid border-gray-600 bg-gray-900/40 px-3 py-1 text-gray-100 transition-colors"
               >
                 {ALL_CATEGORIES.map((category) => (
                   <Select.Item key={category.value} value={category.value}>
@@ -505,7 +505,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
               </legend>
               <input
                 type="text"
-                className="h-10 w-full rounded-md border border-solid border-gray-600 bg-gray-900/40 px-3 py-1 text-gray-100 placeholder:text-gray-500 focus:outline-none focus:border-primary-500"
+                className="focus:border-primary-500 h-10 w-full rounded-md border border-solid border-gray-600 bg-gray-900/40 px-3 py-1 text-gray-100 placeholder:text-gray-500 focus:outline-none"
                 value={itemDescription}
                 onChange={(e) => setItemDescription(e.target.value)}
                 placeholder={`例如：房租、午餐、薪水（預設：${selectedCategoryLabel}）`}
@@ -516,7 +516,7 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
               <legend className="mb-2">預算金額</legend>
               <input
                 type="number"
-                className="h-10 w-full rounded-md border border-solid border-gray-600 bg-gray-900/40 px-3 py-1 text-gray-100 placeholder:text-gray-500 focus:outline-none focus:border-primary-500"
+                className="focus:border-primary-500 h-10 w-full rounded-md border border-solid border-gray-600 bg-gray-900/40 px-3 py-1 text-gray-100 placeholder:text-gray-500 focus:outline-none"
                 value={itemAmount || ''}
                 onChange={(e) => setItemAmount(Number(e.target.value))}
                 placeholder="5000"

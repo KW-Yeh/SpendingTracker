@@ -32,16 +32,6 @@ export default function RootLayout({
     <html lang="zh-Hant-TW">
       <head>
         <title></title>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;700&display=swap"
-          rel="stylesheet"
-        />
       </head>
       <body>
         <SessionProvider>

@@ -66,14 +66,14 @@ export const AsideMenu = (props: Props) => {
       ></div>
       <aside
         ref={asideRef}
-        className="fixed top-0 bottom-0 -left-72 z-50 flex w-72 origin-right flex-col items-center justify-between border-r border-gray-700 bg-gray-800 shadow-2xl transition-all max-md:hidden"
+        className="fixed top-0 bottom-0 -left-72 z-50 flex w-72 origin-right flex-col items-center justify-between border-r border-gray-700 bg-gray-950 shadow-lg transition-all max-md:hidden"
       >
         <div className="gradient-glow clip-profile-bg absolute h-30 w-full"></div>
         <div className="relative flex w-full flex-col items-center pt-17">
           <Link
             href="/profile"
             onClick={onClose}
-            className="hover:ring-primary-500 active:ring-primary-600 flex size-20 items-center justify-center rounded-full bg-gray-700 p-1 shadow-xl ring-4 ring-gray-600 transition-all hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]"
+            className="hover:ring-primary-500 active:ring-primary-600 flex size-20 items-center justify-center rounded-full bg-gray-950 p-1 ring-4 ring-gray-950 transition-all"
           >
             <UserAvatar user={user} />
           </Link>
@@ -90,7 +90,7 @@ export const AsideMenu = (props: Props) => {
           </p>
         </div>
         <div className="flex h-px w-full items-center px-4 py-5">
-          <span className="h-px w-full bg-linear-to-r from-transparent via-gray-600 to-transparent"></span>
+          <span className="h-px w-full bg-gray-700"></span>
         </div>
         <div className="flex w-full flex-1 flex-col items-center gap-1 px-4">
           {Object.keys(MENU_CONFIG).map((path) => (
@@ -148,7 +148,7 @@ const MenuButton = ({
       <Link
         href={href}
         onClick={onClick}
-        className={`flex min-h-11 w-full cursor-pointer items-center rounded-xl px-5 py-3 text-left text-sm font-semibold transition-all duration-200 sm:text-base ${pathName === href ? 'bg-primary-900/30 text-primary-400 shadow-primary-glow' : 'hover:text-primary-400 text-gray-300 hover:bg-gray-700 active:bg-gray-600'}`}
+        className={`flex min-h-11 w-full cursor-pointer items-center rounded-xl px-5 py-3 text-left text-sm font-semibold transition-all duration-200 sm:text-base ${pathName === href ? 'bg-primary-50 text-primary-500' : 'hover:text-primary-500 text-gray-300 hover:bg-gray-800 active:bg-gray-700/60'}`}
       >
         {icon ?? ROUTE_ICON[href]}
         {label}
@@ -158,7 +158,7 @@ const MenuButton = ({
   return (
     <button
       onClick={onClick}
-      className="hover:text-primary-400 flex min-h-11 w-full cursor-pointer items-center rounded-xl px-5 py-3 text-left text-sm font-semibold text-gray-300 transition-all duration-200 hover:bg-gray-700 active:bg-gray-600 sm:text-base"
+      className="hover:text-primary-500 flex min-h-11 w-full cursor-pointer items-center rounded-xl px-5 py-3 text-left text-sm font-semibold text-gray-300 transition-all duration-200 hover:bg-gray-800 active:bg-gray-700/60 sm:text-base"
     >
       {icon}
       {label}

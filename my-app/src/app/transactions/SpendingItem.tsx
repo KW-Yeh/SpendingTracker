@@ -51,7 +51,7 @@ export const SpendingItem = (props: Props) => {
     if (deleting) {
       return 'ring-2 ring-[var(--color-expense)]';
     }
-    return 'hover:bg-white/[0.03] cursor-pointer';
+    return 'hover:bg-black/[0.03] cursor-pointer';
   }, [deleting]);
 
   const handleOnDelete = useCallback(async () => {
@@ -93,7 +93,7 @@ export const SpendingItem = (props: Props) => {
 
   return (
     <div
-      className={`relative flex items-center gap-3 rounded-[14px] border border-white/[0.06] bg-gray-800/80 px-3 py-2.5 text-sm backdrop-blur-sm transition-colors sm:text-base ${additionalStyle} ${menuOpen ? 'z-10' : ''}`}
+      className={`relative flex items-center gap-3 rounded-[14px] border border-black/[0.08] bg-gray-950/80 px-3 py-2.5 text-sm backdrop-blur-sm transition-colors sm:text-base ${additionalStyle} ${menuOpen ? 'z-10' : ''}`}
     >
       {deleting && (
         <span
@@ -106,10 +106,10 @@ export const SpendingItem = (props: Props) => {
       {category && (
         <span
           title={CATEGORY_WORDING_MAP[category.value]}
-          className="flex size-9 items-center justify-center rounded-[10px] bg-gray-700/60"
+          className="flex size-9 items-center justify-center rounded-[10px] bg-gray-800"
           style={
             isNeed
-              ? { boxShadow: 'inset 0 0 0 1px rgba(6,182,212,0.3)' }
+              ? { boxShadow: 'inset 0 0 0 1px rgba(0,102,204,0.3)' }
               : undefined
           }
         >
@@ -157,7 +157,7 @@ export const SpendingItem = (props: Props) => {
               label: (
                 <Link
                   href={`/edit?id=${spending.id}`}
-                  className="group-hover:text-primary-400 group-active:text-primary-300 flex items-center gap-3 text-gray-300 transition-colors"
+                  className="group-hover:text-primary-500 group-active:text-primary-600 flex items-center gap-3 text-gray-300 transition-colors"
                 >
                   <EditIcon className="size-4 transition-colors sm:size-4" />
                   <span className="font-medium">編輯</span>

@@ -5,7 +5,7 @@ export const CostTable = ({
   total,
   list,
   options = {
-    headerStyle: 'bg-gray-200',
+    headerStyle: 'bg-gray-700',
   },
 }: {
   title: string;
@@ -21,13 +21,13 @@ export const CostTable = ({
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr className={options.headerStyle}>
-            <th className="border border-solid border-gray-300 border-r-transparent px-2 py-1 text-center">
+            <th className="border border-solid border-gray-700 border-r-transparent px-2 py-1 text-center">
               類型
             </th>
-            <th className="border border-solid border-gray-300 border-r-transparent px-2 py-1 text-right">
+            <th className="border border-solid border-gray-700 border-r-transparent px-2 py-1 text-right">
               比例 (%)
             </th>
-            <th className="border border-solid border-gray-300 px-2 py-1 text-right">
+            <th className="border border-solid border-gray-700 px-2 py-1 text-right">
               金額 (NTD)
             </th>
           </tr>
@@ -38,16 +38,16 @@ export const CostTable = ({
               key={`income-${item.name}`}
               className={item.value === 0 ? 'text-gray-300' : ''}
             >
-              <td className="col-span-1 border border-solid border-gray-300 p-2 text-center">
+              <td className="col-span-1 border border-solid border-gray-700 p-2 text-center">
                 {item.name}
               </td>
-              <td className="col-span-1 border border-solid border-gray-300 p-2 text-end">
+              <td className="col-span-1 border border-solid border-gray-700 p-2 text-end">
                 {item.value === 0
                   ? 0
                   : (Math.round((item.value / total) * 100) || 0).toFixed(0)}
                 %
               </td>
-              <td className="col-span-2 border border-solid border-gray-300 p-2 text-end">
+              <td className="col-span-2 border border-solid border-gray-700 p-2 text-end">
                 ${normalizeNumber(item.value)}
               </td>
             </tr>

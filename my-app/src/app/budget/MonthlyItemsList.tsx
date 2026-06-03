@@ -156,7 +156,7 @@ export const MonthlyItemsList = () => {
         <button
           type="button"
           onClick={handleOpenAdd}
-          className="bg-text text-background rounded-lg px-4 py-2 text-sm font-bold transition-colors hover:bg-gray-800 active:bg-gray-800"
+          className="bg-text text-background rounded-lg px-4 py-2 text-sm font-semibold transition-all hover:opacity-85 active:scale-95"
         >
           + 新增項目
         </button>
@@ -170,7 +170,7 @@ export const MonthlyItemsList = () => {
             return (
               <div
                 key={index}
-                className="flex items-center justify-between rounded-lg border border-solid border-gray-200 p-3"
+                className="flex items-center justify-between rounded-lg border border-solid border-gray-700 p-3"
               >
                 <div className="flex-1">
                   <p className="font-medium">
@@ -231,7 +231,7 @@ export const MonthlyItemsList = () => {
                   )
                 }
                 onChange={setItemCategory}
-                className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1 transition-colors hover:border-gray-500 active:border-gray-500"
+                className="h-10 w-full rounded-md border border-solid border-gray-700 px-3 py-1 transition-colors hover:border-gray-500 active:border-gray-500"
               >
                 {ALL_CATEGORIES.map((category) => (
                   <Select.Item key={category.value} value={category.value}>
@@ -250,7 +250,7 @@ export const MonthlyItemsList = () => {
               </legend>
               <input
                 type="text"
-                className="h-10 w-full rounded-md border border-solid border-gray-300 px-3 py-1"
+                className="h-10 w-full rounded-md border border-solid border-gray-700 px-3 py-1"
                 value={itemDescription}
                 onChange={(e) => setItemDescription(e.target.value)}
                 placeholder={`例如：房租、午餐、薪水（預設：${selectedCategoryLabel}）`}
@@ -262,12 +262,12 @@ export const MonthlyItemsList = () => {
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {MONTHS.map((month) => (
                   <div key={month.value} className="flex flex-col">
-                    <label className="mb-1 text-sm text-gray-600">
+                    <label className="mb-1 text-sm text-gray-400">
                       {month.label}
                     </label>
                     <input
                       type="number"
-                      className="h-9 w-full rounded-md border border-solid border-gray-300 px-2 py-1 text-sm"
+                      className="h-9 w-full rounded-md border border-solid border-gray-700 px-2 py-1 text-sm"
                       value={monthlyAmounts[month.value] || ''}
                       onChange={(e) =>
                         handleMonthAmountChange(month.value, e.target.value)
@@ -284,7 +284,7 @@ export const MonthlyItemsList = () => {
                 type="button"
                 onClick={() => setModalOpen(false)}
                 disabled={saving}
-                className="rounded-lg border border-solid border-gray-300 px-4 py-2 text-gray-300"
+                className="rounded-lg border border-solid border-gray-700 px-4 py-2 text-gray-300"
               >
                 取消
               </button>
@@ -292,7 +292,7 @@ export const MonthlyItemsList = () => {
                 type="button"
                 onClick={handleSaveItem}
                 disabled={saving}
-                className="bg-text text-background flex items-center justify-center rounded-lg px-6 py-2 font-bold transition-colors hover:bg-gray-800 active:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+                className="bg-text text-background flex items-center justify-center rounded-lg px-6 py-2 font-semibold transition-all hover:opacity-85 active:scale-95 disabled:cursor-not-allowed disabled:bg-gray-400"
               >
                 {saving ? (
                   <Loading className="size-5 animate-spin" />
