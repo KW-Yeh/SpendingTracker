@@ -21,7 +21,7 @@ export const TransactionsSkeleton = () => {
                 {[1, 2, 3].map((j) => (
                   <div
                     key={j}
-                    className="flex items-center gap-2 rounded-lg bg-gray-50 p-3"
+                    className="flex items-center gap-2 rounded-lg bg-gray-800 p-3"
                   >
                     <div className="size-6 rounded bg-gray-700"></div>
                     <div className="flex-1">

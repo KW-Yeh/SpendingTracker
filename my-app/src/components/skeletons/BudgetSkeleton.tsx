@@ -35,7 +35,7 @@ export const BudgetSkeleton = () => {
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((i) => (
             <div
               key={i}
-              className="flex flex-col gap-2 rounded-lg border border-gray-700 bg-gray-50 p-3"
+              className="flex flex-col gap-2 rounded-lg border border-gray-700 bg-gray-800 p-3"
             >
               <div className="h-4 w-16 rounded bg-gray-700"></div>
               <div className="h-6 w-20 rounded bg-gray-700"></div>
@@ -54,7 +54,7 @@ export const BudgetSkeleton = () => {
           {[1, 2, 3, 4, 5].map((i) => (
             <div
               key={i}
-              className="flex items-center gap-3 rounded-lg border border-gray-700 bg-gray-50 p-3"
+              className="flex items-center gap-3 rounded-lg border border-gray-700 bg-gray-800 p-3"
             >
               <div className="size-6 rounded bg-gray-700"></div>
               <div className="flex-1">

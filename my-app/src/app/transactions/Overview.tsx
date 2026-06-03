@@ -179,8 +179,8 @@ export default function OverView(props: Props) {
           href="/budget"
           className="flex items-center justify-between rounded-xl border px-3.5 py-2.5 text-sm transition-colors hover:bg-black/[0.03]"
           style={{
-            borderColor: 'rgba(248,113,113,0.25)',
-            backgroundColor: 'rgba(248,113,113,0.08)',
+            borderColor: 'rgba(227,0,0,0.25)',
+            backgroundColor: 'var(--color-over-budget-bg)',
           }}
         >
           <div className="flex items-center gap-2">

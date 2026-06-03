@@ -94,6 +94,11 @@ export const ACCENT_COLORS = {
 
 /**
  * 灰階顏色（Apple 中性灰 — 近黑 ink 到純白 canvas）
+ *
+ * 注意：此常數依「數字小 = 淺、數字大 = 深」的自然順序排列，
+ * 與 globals.css 中語意反轉後的 Tailwind `gray-*` class **不對應**
+ * （例如 `bg-gray-50` 會渲染成 ink 深色，而 GRAY_COLORS[50] 是白色）。
+ * 在 TSX 中請使用 Tailwind class；此常數僅供 runtime（圖表等）取色。
  */
 export const GRAY_COLORS = {
   50: '#FFFFFF',

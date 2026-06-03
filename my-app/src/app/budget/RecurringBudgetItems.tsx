@@ -177,7 +177,7 @@ export const RecurringBudgetItems = () => {
     <>
       <section
         className="flex w-full flex-col gap-3 rounded-2xl border bg-gray-950 p-5 backdrop-blur-sm md:max-w-250"
-        style={{ borderColor: 'rgba(255,255,255,0.06)' }}
+        style={{ borderColor: 'var(--color-line)' }}
       >
         <header className="flex items-center justify-between gap-3">
           <div className="flex flex-col gap-0.5">

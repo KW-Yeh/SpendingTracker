@@ -25,7 +25,7 @@ export const DashboardSkeleton = () => {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="flex flex-col gap-1 rounded-lg bg-gray-50 p-3"
+                className="flex flex-col gap-1 rounded-lg bg-gray-800 p-3"
               >
                 <div className="h-3 w-12 rounded bg-gray-700"></div>
                 <div className="h-5 w-20 rounded bg-gray-700"></div>
@@ -74,7 +74,7 @@ export const DashboardSkeleton = () => {
             {[1, 2, 3, 4, 5].map((i) => (
               <div
                 key={i}
-                className="flex items-center gap-3 rounded-lg bg-gray-50 p-3"
+                className="flex items-center gap-3 rounded-lg bg-gray-800 p-3"
               >
                 <div className="size-6 rounded bg-gray-700"></div>
                 <div className="flex-1">
