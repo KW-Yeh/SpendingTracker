@@ -59,7 +59,7 @@ export const DailyCostChart = (props: Props) => {
   const monthName = monthNames[month];
 
   return (
-    <div className="bg-background relative flex w-full flex-col items-start rounded-2xl border border-solid border-gray-700 p-6 text-gray-200 shadow-sm transition-shadow duration-200 hover:shadow">
+    <div className="bg-background relative flex w-full flex-col items-start rounded-2xl border border-solid border-gray-700 p-6 text-gray-200">
       <div className="mb-2 flex w-full items-center justify-between">
         <h3 className="text-lg font-semibold">{monthName}花費趨勢</h3>
         <Link
