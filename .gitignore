@@ -27,3 +27,6 @@ yarn-error.log*
 .env.*.local
 
 node_modules
+
+# VibeFlow worktrees
+.vibeflow/
