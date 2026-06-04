@@ -10,7 +10,7 @@
 // and the localStorage warm-start — the SW cache only needs to cover offline.
 
 const CACHE_NAME = 'aurora-api-v2';
-const SWR_PATH_PREFIX = '/api/aurora/';
+const API_PATH_PREFIX = '/api/aurora/';
 const BYPASS_PATHS = [
   '/api/aurora/sync', // explicit pull-then-push, must hit network
 ];
@@ -24,7 +24,9 @@ self.addEventListener('activate', (event) => {
     (async () => {
       const keys = await caches.keys();
       await Promise.all(
-        keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)),
+        keys
+          .filter((k) => k.startsWith('aurora-api-') && k !== CACHE_NAME)
+          .map((k) => caches.delete(k)),
       );
       await self.clients.claim();
     })(),
@@ -37,7 +39,7 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
-  if (!url.pathname.startsWith(SWR_PATH_PREFIX)) return;
+  if (!url.pathname.startsWith(API_PATH_PREFIX)) return;
   if (BYPASS_PATHS.some((p) => url.pathname.startsWith(p))) return;
 
   event.respondWith(networkFirst(req));
