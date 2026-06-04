@@ -18,6 +18,7 @@ import {
   OUTCOME_TYPE_MAP,
   SpendingType,
 } from '@/utils/constants';
+import { getCategoryIcon } from '@/utils/getCategoryIcon';
 import { getSpendingCategoryMap } from '@/utils/getSpendingCategoryMap';
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { IoArrowBack, IoCheckmarkSharp } from 'react-icons/io5';
@@ -535,8 +536,16 @@ const StepDetails = ({
                   }}
                   title={CATEGORY_WORDING_MAP[cat.value] || cat.label}
                 >
-                  <span className="text-xl leading-none" aria-hidden>
-                    {cat.value}
+                  <span
+                    className="flex size-5 items-center justify-center"
+                    style={{
+                      color: selected
+                        ? 'var(--color-primary-500)'
+                        : 'var(--color-text-tertiary)',
+                    }}
+                    aria-hidden
+                  >
+                    {getCategoryIcon(cat.value, 'size-5') ?? cat.value}
                   </span>
                   <span
                     className="text-[10.5px] font-semibold"
