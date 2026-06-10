@@ -13,7 +13,7 @@ export async function PUT(req: Request) {
     return Response.json(result);
   } catch (error) {
     console.error(error);
-    return Response.json({ message: 'Internal Server Error' });
+    return Response.json({ message: 'Internal Server Error' }, { status: 500 });
   }
 }
 
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     return Response.json(result);
   } catch (error) {
     console.error(error);
-    return Response.json({ message: 'Internal Server Error' });
+    return Response.json({ message: 'Internal Server Error' }, { status: 500 });
   }
 }
 
@@ -55,7 +55,7 @@ export async function GET(req: Request) {
     return Response.json(result);
   } catch (error) {
     console.error(error);
-    return Response.json({ message: 'Internal Server Error' });
+    return Response.json({ message: 'Internal Server Error' }, { status: 500 });
   }
 }
 
@@ -68,6 +68,6 @@ export async function DELETE(req: Request) {
     return Response.json(result);
   } catch (error) {
     console.error(error);
-    return Response.json({ message: 'Internal Server Error' });
+    return Response.json({ message: 'Internal Server Error' }, { status: 500 });
   }
 }

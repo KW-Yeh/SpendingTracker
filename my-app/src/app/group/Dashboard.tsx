@@ -6,12 +6,13 @@ import { EditIcon } from '@/components/icons/EditIcon';
 import { LeaveIcon } from '@/components/icons/LeaveIcon';
 import { LinkIcon } from '@/components/icons/LinkIcon';
 import { PlusIcon } from '@/components/icons/PlusIcon';
-import { RefreshIcon } from '@/components/icons/RefreshIcon';
 import { SendIcon } from '@/components/icons/SendIcon';
 import { Modal } from '@/components/Modal';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import {
+  createGroup,
+  putGroup,
   removeGroupMember,
   getGroupMembers,
   deleteGroup,
@@ -20,15 +21,16 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import QRCode from 'react-qr-code';
 
 export const Dashboard = () => {
-  const { config: userData, syncUser } = useUserConfigCtx();
+  const { config: userData } = useUserConfigCtx();
   const {
     groups,
     syncGroup,
     setter: setGroups,
-    loading,
     currentGroup,
     setCurrentGroup,
   } = useGroupCtx();
+
+  const [isCreating, setIsCreating] = useState(false);
 
   const refresh = useCallback(() => {
     if (userData) {
@@ -37,19 +39,32 @@ export const Dashboard = () => {
   }, [userData, syncGroup]);
 
   const handleCreateGroup = useCallback(async () => {
-    if (!userData) return;
+    if (!userData || isCreating) return;
     const groupName = prompt('請輸入身分群組名稱');
-    if (!groupName) return;
-    const newGroup: Group = {
-      account_id: Date.now(),
-      name: groupName,
-      owner_id: userData.user_id,
-      members: [userData.user_id],
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    setGroups([...groups, newGroup], userData.user_id);
-  }, [userData, groups, setGroups]);
+    if (!groupName?.trim()) return;
+
+    setIsCreating(true);
+    try {
+      const newGroup: Group = {
+        account_id: Date.now(),
+        name: groupName.trim(),
+        owner_id: userData.user_id,
+        members: [userData.user_id],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      const result = await createGroup(newGroup);
+      if (!result.status) {
+        alert(result.message || '建立失敗，請稍後再試');
+        return;
+      }
+      const serverGroup = result.data ?? newGroup;
+      setGroups([...groups, serverGroup], userData.user_id);
+    } finally {
+      setIsCreating(false);
+    }
+  }, [userData, isCreating, groups, setGroups]);
 
   return (
     <div className="content-wrapper">
@@ -57,10 +72,11 @@ export const Dashboard = () => {
         <button
           type="button"
           onClick={handleCreateGroup}
-          className="btn-primary flex min-h-11 items-center text-sm"
+          disabled={isCreating}
+          className="btn-primary flex min-h-11 items-center text-sm disabled:cursor-not-allowed disabled:opacity-50"
         >
           <PlusIcon className="mr-2 size-4" />
-          <span>建立新帳本</span>
+          <span>{isCreating ? '建立中...' : '建立新帳本'}</span>
         </button>
       </div>
       <div className="flex w-full flex-col gap-4 sm:flex-row sm:flex-wrap">
@@ -98,6 +114,7 @@ const GroupCard = ({
   const { config: userData } = useUserConfigCtx();
   const { groups, setter: setGroups } = useGroupCtx();
   const [loading, setLoading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [membersModalOpen, setMembersModalOpen] = useState(false);
   const [newGroupName, setNewGroupName] = useState(group.name);
@@ -140,14 +157,27 @@ const GroupCard = ({
       return;
     }
 
-    const updatedGroups = groups.map((g) =>
-      g.account_id === group.account_id
-        ? { ...g, name: newGroupName, updated_at: new Date().toISOString() }
-        : g,
-    );
-    setGroups(updatedGroups, userData?.user_id);
-    alert('群組名稱已更新');
-    setEditModalOpen(false);
+    setIsEditing(true);
+    try {
+      const updatedGroup = {
+        ...group,
+        name: newGroupName.trim(),
+        updated_at: new Date().toISOString(),
+      };
+      const result = await putGroup(updatedGroup);
+      if (!result.status) {
+        alert(result.message || '更新失敗，請稍後再試');
+        return;
+      }
+      const updatedGroups = groups.map((g) =>
+        g.account_id === group.account_id ? updatedGroup : g,
+      );
+      setGroups(updatedGroups, userData?.user_id);
+      alert('群組名稱已更新');
+      setEditModalOpen(false);
+    } finally {
+      setIsEditing(false);
+    }
   };
 
   const handleRemoveMember = async (userId: number, userName: string) => {
@@ -200,7 +230,11 @@ const GroupCard = ({
         if (confirmDelete) {
           setLoading(true);
           try {
-            await deleteGroup(String(group.account_id));
+            const result = await deleteGroup(String(group.account_id));
+            if (!result.status) {
+              alert(result.message || '刪除失敗，請稍後再試');
+              return;
+            }
             const filteredGroups = groups.filter(
               (g) => g.account_id !== group.account_id,
             );
@@ -420,10 +454,10 @@ const GroupCard = ({
               <button
                 type="button"
                 onClick={handleEditGroupName}
-                disabled={loading}
+                disabled={isEditing || loading}
                 className="btn-primary min-h-11 px-4 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {loading ? '更新中...' : '確定'}
+                {isEditing ? '更新中...' : '確定'}
               </button>
             </div>
           </div>
