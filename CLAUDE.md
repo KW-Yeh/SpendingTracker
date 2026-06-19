@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Related docs
+
+- **AGENTS.md** — Agent operations manual: commands, Definition of Done, architecture invariants, runtime verification, gotchas, Git/PR rules. Read this before starting any task.
+- **DESIGN.md** — Apple-style design language reference (color tokens, typography, spacing, component specs). The UI has been restyled to follow this system. Consult when adding or modifying UI components.
+
 ## Project Location
 
 All source code lives under `my-app/`. Run all commands from that directory.
@@ -32,7 +37,7 @@ These have caused regressions before — preserve them when touching the related
 
 ## Architecture Overview
 
-This is a **Next.js 15 App Router** spending tracker PWA (Traditional Chinese UI) targeting mobile-first usage.
+This is a **Next.js 16 App Router** spending tracker PWA (Traditional Chinese UI) targeting mobile-first usage.
 
 ### Database
 
