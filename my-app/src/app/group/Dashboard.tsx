@@ -19,6 +19,7 @@ import {
 } from '@/services/groupServices';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import QRCode from 'react-qr-code';
+import { QRScanner } from './QRScanner';
 
 export const Dashboard = () => {
   const { config: userData } = useUserConfigCtx();
@@ -31,6 +32,7 @@ export const Dashboard = () => {
   } = useGroupCtx();
 
   const [isCreating, setIsCreating] = useState(false);
+  const [scannerOpen, setScannerOpen] = useState(false);
 
   const refresh = useCallback(() => {
     if (userData) {
@@ -71,6 +73,13 @@ export const Dashboard = () => {
       <div className="flex w-full items-center justify-end gap-4">
         <button
           type="button"
+          onClick={() => setScannerOpen(true)}
+          className="btn-secondary min-h-11 text-sm"
+        >
+          掃描加入
+        </button>
+        <button
+          type="button"
           onClick={handleCreateGroup}
           disabled={isCreating}
           className="btn-primary flex min-h-11 items-center text-sm disabled:cursor-not-allowed disabled:opacity-50"
@@ -79,6 +88,9 @@ export const Dashboard = () => {
           <span>{isCreating ? '建立中...' : '建立新帳本'}</span>
         </button>
       </div>
+      {scannerOpen && (
+        <QRScanner onClose={() => setScannerOpen(false)} />
+      )}
       <div className="flex w-full flex-col gap-4 sm:flex-row sm:flex-wrap">
         {groups.length === 0 ? (
           <div className="w-full rounded-xl border border-dashed border-gray-600 p-8 text-center text-sm text-gray-400">
