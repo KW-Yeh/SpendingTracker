@@ -26,7 +26,7 @@ export const GroupSelector = ({ className = '' }: { className?: string }) => {
       name="group"
       value={currentGroup?.name ?? '載入帳本資訊中...'}
       onChange={handleOnSelectGroup}
-      className={`hover:border-primary-400 active:border-primary-500 max-w-50 rounded-xl border-2 border-solid border-gray-600 bg-gray-800/90 px-4 py-2 text-gray-100 backdrop-blur-sm transition-all duration-200 hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] ${className}`}
+      className={`hover:border-primary-400 active:border-primary-500 max-w-50 rounded-full border border-solid border-gray-700 bg-gray-950/90 px-4 py-2 text-gray-100 backdrop-blur-sm transition-all duration-200 ${className}`}
     >
       {!loading &&
         groups.map(

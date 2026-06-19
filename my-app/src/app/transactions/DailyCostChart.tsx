@@ -14,7 +14,9 @@ interface Props {
 
 const UsageLineChart = dynamic(() => import('./UsageLineChart'), {
   ssr: false,
-  loading: () => <div className="h-64 w-full animate-pulse rounded-lg bg-gray-100"></div>
+  loading: () => (
+    <div className="h-64 w-full animate-pulse rounded-lg bg-gray-800"></div>
+  ),
 });
 
 export const DailyCostChart = (props: Props) => {
@@ -40,12 +42,25 @@ export const DailyCostChart = (props: Props) => {
   }, [costList, days]);
 
   // Get month name in Chinese
-  const monthNames = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
+  const monthNames = [
+    '一月',
+    '二月',
+    '三月',
+    '四月',
+    '五月',
+    '六月',
+    '七月',
+    '八月',
+    '九月',
+    '十月',
+    '十一月',
+    '十二月',
+  ];
   const monthName = monthNames[month];
 
   return (
-    <div className="bg-background relative flex w-full flex-col items-start rounded-2xl border border-solid border-gray-300 p-6 text-gray-700 shadow-sm hover:shadow transition-shadow duration-200">
-      <div className="flex w-full items-center justify-between mb-2">
+    <div className="bg-background relative flex w-full flex-col items-start rounded-2xl border border-solid border-gray-700 p-6 text-gray-200">
+      <div className="mb-2 flex w-full items-center justify-between">
         <h3 className="text-lg font-semibold">{monthName}花費趨勢</h3>
         <Link
           href="/list"
@@ -55,7 +70,7 @@ export const DailyCostChart = (props: Props) => {
           <DoubleArrowIcon className="size-3" />
         </Link>
       </div>
-      
+
       <div className="flex w-full items-end py-4 text-xs sm:text-sm">
         <UsageLineChart
           month={month}
@@ -65,8 +80,8 @@ export const DailyCostChart = (props: Props) => {
           handleOnClick={handleSelectDataPoint}
         />
       </div>
-      
-      <div className="w-full text-xs text-gray-300 mt-2">
+
+      <div className="mt-2 w-full text-xs text-gray-300">
         點擊圖表上的點可查看當日消費明細
       </div>
     </div>

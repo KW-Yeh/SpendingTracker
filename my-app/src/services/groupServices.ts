@@ -1,46 +1,60 @@
 const URL = '/api/aurora/groups';
 
-export const createGroup = async (data: Group) => {
+export const createGroup = async (
+  data: Group,
+): Promise<{ status: boolean; data?: Group; message: string }> => {
   try {
-    await fetch(URL, {
+    const res = await fetch(URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
     });
-    return { status: true, message: 'success' };
+    const body = await res.json();
+    if (!res.ok || !body?.account_id) {
+      return { status: false, message: body?.message ?? '建立失敗' };
+    }
+    return { status: true, data: body as Group, message: 'success' };
   } catch (error) {
     console.error(error);
-    return { status: false, data: [], message: '發生不預期的錯誤' };
+    return { status: false, message: '發生不預期的錯誤' };
   }
 };
 
-export const putGroup = async (data: Group) => {
+export const putGroup = async (data: Group): Promise<{ status: boolean; message: string }> => {
   try {
-    await fetch(URL, {
+    const res = await fetch(URL, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
     });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      return { status: false, message: body?.message ?? '更新失敗' };
+    }
     return { status: true, message: 'success' };
   } catch (error) {
     console.error(error);
-    return { status: false, data: [], message: '發生不預期的錯誤' };
+    return { status: false, message: '發生不預期的錯誤' };
   }
 };
 
-export const deleteGroup = async (id: string) => {
+export const deleteGroup = async (id: string): Promise<{ status: boolean; message: string }> => {
   try {
-    await fetch(`${URL}?id=${id}`, {
+    const res = await fetch(`${URL}?id=${id}`, {
       method: 'DELETE',
     });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      return { status: false, message: body?.message ?? '刪除失敗' };
+    }
     return { status: true, message: 'success' };
   } catch (error) {
     console.error(error);
-    return { status: false, data: [], message: '發生不預期的錯誤' };
+    return { status: false, message: '發生不預期的錯誤' };
   }
 };
 

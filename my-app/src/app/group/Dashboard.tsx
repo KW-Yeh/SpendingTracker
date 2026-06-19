@@ -6,29 +6,33 @@ import { EditIcon } from '@/components/icons/EditIcon';
 import { LeaveIcon } from '@/components/icons/LeaveIcon';
 import { LinkIcon } from '@/components/icons/LinkIcon';
 import { PlusIcon } from '@/components/icons/PlusIcon';
-import { RefreshIcon } from '@/components/icons/RefreshIcon';
 import { SendIcon } from '@/components/icons/SendIcon';
 import { Modal } from '@/components/Modal';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import {
+  createGroup,
+  putGroup,
   removeGroupMember,
   getGroupMembers,
   deleteGroup,
 } from '@/services/groupServices';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import QRCode from 'react-qr-code';
+import { QRScanner } from './QRScanner';
 
 export const Dashboard = () => {
-  const { config: userData, syncUser } = useUserConfigCtx();
+  const { config: userData } = useUserConfigCtx();
   const {
     groups,
     syncGroup,
     setter: setGroups,
-    loading,
     currentGroup,
     setCurrentGroup,
   } = useGroupCtx();
+
+  const [isCreating, setIsCreating] = useState(false);
+  const [scannerOpen, setScannerOpen] = useState(false);
 
   const refresh = useCallback(() => {
     if (userData) {
@@ -37,32 +41,56 @@ export const Dashboard = () => {
   }, [userData, syncGroup]);
 
   const handleCreateGroup = useCallback(async () => {
-    if (!userData) return;
+    if (!userData || isCreating) return;
     const groupName = prompt('請輸入身分群組名稱');
-    if (!groupName) return;
-    const newGroup: Group = {
-      account_id: Date.now(),
-      name: groupName,
-      owner_id: userData.user_id,
-      members: [userData.user_id],
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    setGroups([...groups, newGroup], userData.user_id);
-  }, [userData, groups, setGroups]);
+    if (!groupName?.trim()) return;
+
+    setIsCreating(true);
+    try {
+      const newGroup: Group = {
+        account_id: Date.now(),
+        name: groupName.trim(),
+        owner_id: userData.user_id,
+        members: [userData.user_id],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      const result = await createGroup(newGroup);
+      if (!result.status) {
+        alert(result.message || '建立失敗，請稍後再試');
+        return;
+      }
+      const serverGroup = result.data ?? newGroup;
+      setGroups([...groups, serverGroup], userData.user_id);
+    } finally {
+      setIsCreating(false);
+    }
+  }, [userData, isCreating, groups, setGroups]);
 
   return (
     <div className="content-wrapper">
       <div className="flex w-full items-center justify-end gap-4">
         <button
           type="button"
+          onClick={() => setScannerOpen(true)}
+          className="btn-secondary min-h-11 text-sm"
+        >
+          掃描加入
+        </button>
+        <button
+          type="button"
           onClick={handleCreateGroup}
-          className="btn-primary flex min-h-11 items-center text-sm"
+          disabled={isCreating}
+          className="btn-primary flex min-h-11 items-center text-sm disabled:cursor-not-allowed disabled:opacity-50"
         >
           <PlusIcon className="mr-2 size-4" />
-          <span>建立新帳本</span>
+          <span>{isCreating ? '建立中...' : '建立新帳本'}</span>
         </button>
       </div>
+      {scannerOpen && (
+        <QRScanner onClose={() => setScannerOpen(false)} />
+      )}
       <div className="flex w-full flex-col gap-4 sm:flex-row sm:flex-wrap">
         {groups.length === 0 ? (
           <div className="w-full rounded-xl border border-dashed border-gray-600 p-8 text-center text-sm text-gray-400">
@@ -98,6 +126,7 @@ const GroupCard = ({
   const { config: userData } = useUserConfigCtx();
   const { groups, setter: setGroups } = useGroupCtx();
   const [loading, setLoading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [membersModalOpen, setMembersModalOpen] = useState(false);
   const [newGroupName, setNewGroupName] = useState(group.name);
@@ -140,14 +169,27 @@ const GroupCard = ({
       return;
     }
 
-    const updatedGroups = groups.map((g) =>
-      g.account_id === group.account_id
-        ? { ...g, name: newGroupName, updated_at: new Date().toISOString() }
-        : g,
-    );
-    setGroups(updatedGroups, userData?.user_id);
-    alert('群組名稱已更新');
-    setEditModalOpen(false);
+    setIsEditing(true);
+    try {
+      const updatedGroup = {
+        ...group,
+        name: newGroupName.trim(),
+        updated_at: new Date().toISOString(),
+      };
+      const result = await putGroup(updatedGroup);
+      if (!result.status) {
+        alert(result.message || '更新失敗，請稍後再試');
+        return;
+      }
+      const updatedGroups = groups.map((g) =>
+        g.account_id === group.account_id ? updatedGroup : g,
+      );
+      setGroups(updatedGroups, userData?.user_id);
+      alert('群組名稱已更新');
+      setEditModalOpen(false);
+    } finally {
+      setIsEditing(false);
+    }
   };
 
   const handleRemoveMember = async (userId: number, userName: string) => {
@@ -200,7 +242,11 @@ const GroupCard = ({
         if (confirmDelete) {
           setLoading(true);
           try {
-            await deleteGroup(String(group.account_id));
+            const result = await deleteGroup(String(group.account_id));
+            if (!result.status) {
+              alert(result.message || '刪除失敗，請稍後再試');
+              return;
+            }
             const filteredGroups = groups.filter(
               (g) => g.account_id !== group.account_id,
             );
@@ -253,10 +299,8 @@ const GroupCard = ({
 
   return (
     <div
-      className={`card relative grid w-full max-w-87.5 grid-cols-12 gap-4 transition-all duration-200 hover:shadow-[0_0_20px_rgba(6,182,212,0.2)] ${
-        isCurrent
-          ? 'ring-primary-400 shadow-[0_0_20px_rgba(6,182,212,0.25)] ring-2'
-          : ''
+      className={`card relative grid w-full max-w-87.5 grid-cols-12 gap-4 transition-all duration-200 ${
+        isCurrent ? 'ring-primary-400 ring-2' : ''
       }`}
     >
       <div
@@ -271,14 +315,14 @@ const GroupCard = ({
             {group.name}
           </h3>
           {isCurrent ? (
-            <span className="bg-primary-500/20 text-primary-300 ring-primary-500/40 shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1 ring-inset">
+            <span className="bg-primary-50 text-primary-500 ring-primary-500/40 shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1 ring-inset">
               使用中
             </span>
           ) : (
             <button
               type="button"
               onClick={onSelect}
-              className="text-primary-400 hover:text-primary-300 shrink-0 text-[10px] font-semibold underline transition-colors"
+              className="text-primary-500 hover:text-primary-400 shrink-0 text-[10px] font-semibold underline transition-colors"
             >
               切換為當前帳本
             </button>
@@ -296,7 +340,7 @@ const GroupCard = ({
               <button
                 type="button"
                 onClick={() => setMembersModalOpen(true)}
-                className="text-primary-400 hover:text-primary-300 text-xs font-semibold underline transition-colors"
+                className="text-primary-500 hover:text-primary-400 text-xs font-semibold underline transition-colors"
               >
                 查看詳情
               </button>
@@ -406,7 +450,7 @@ const GroupCard = ({
           <div className="flex w-full flex-col gap-4">
             <input
               type="text"
-              className="w-full rounded-md border border-solid border-gray-600 bg-gray-900/40 px-3 py-2 text-gray-100 placeholder:text-gray-500 focus:outline-none focus:border-primary-500"
+              className="focus:border-primary-500 w-full rounded-md border border-solid border-gray-600 bg-gray-900/40 px-3 py-2 text-gray-100 placeholder:text-gray-500 focus:outline-none"
               value={newGroupName}
               onChange={(e) => setNewGroupName(e.target.value)}
               placeholder="群組名稱"
@@ -422,10 +466,10 @@ const GroupCard = ({
               <button
                 type="button"
                 onClick={handleEditGroupName}
-                disabled={loading}
+                disabled={isEditing || loading}
                 className="btn-primary min-h-11 px-4 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {loading ? '更新中...' : '確定'}
+                {isEditing ? '更新中...' : '確定'}
               </button>
             </div>
           </div>
@@ -450,7 +494,7 @@ const GroupCard = ({
                 return (
                   <div
                     key={member.user_id}
-                    className="hover:border-primary-500/50 flex items-center justify-between rounded-xl border border-solid border-gray-600 p-3 transition-all hover:bg-gray-700/50 hover:shadow-[0_0_10px_rgba(6,182,212,0.15)]"
+                    className="hover:border-primary-500/50 flex items-center justify-between rounded-xl border border-solid border-gray-700 p-3 transition-all hover:bg-gray-900"
                   >
                     <div className="flex-1">
                       <p className="font-semibold text-gray-100">
@@ -476,7 +520,7 @@ const GroupCard = ({
                             member.name || member.email || '未知用戶',
                           )
                         }
-                        className="text-secondary-400 hover:bg-secondary-500/20 active:bg-secondary-500/30 min-h-8 min-w-8 rounded-lg p-2 transition-all"
+                        className="text-primary-500 hover:bg-primary-50 active:bg-primary-100 min-h-8 min-w-8 rounded-lg p-2 transition-all"
                       >
                         <DeleteIcon className="size-4" />
                       </button>

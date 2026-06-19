@@ -10,7 +10,11 @@ interface ImageCropperProps {
   onCancel: () => void;
 }
 
-export function ImageCropper({ image, onCropComplete, onCancel }: ImageCropperProps) {
+export function ImageCropper({
+  image,
+  onCropComplete,
+  onCancel,
+}: ImageCropperProps) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
@@ -27,7 +31,7 @@ export function ImageCropper({ image, onCropComplete, onCancel }: ImageCropperPr
     (croppedArea: Area, croppedAreaPixels: Area) => {
       setCroppedAreaPixels(croppedAreaPixels);
     },
-    []
+    [],
   );
 
   const createImage = (url: string): Promise<HTMLImageElement> =>
@@ -40,7 +44,7 @@ export function ImageCropper({ image, onCropComplete, onCancel }: ImageCropperPr
 
   const getCroppedImg = async (
     imageSrc: string,
-    pixelCrop: Area
+    pixelCrop: Area,
   ): Promise<string> => {
     const image = await createImage(imageSrc);
     const canvas = document.createElement('canvas');
@@ -62,7 +66,7 @@ export function ImageCropper({ image, onCropComplete, onCancel }: ImageCropperPr
       0,
       0,
       pixelCrop.width,
-      pixelCrop.height
+      pixelCrop.height,
     );
 
     return new Promise((resolve) => {
@@ -93,11 +97,8 @@ export function ImageCropper({ image, onCropComplete, onCancel }: ImageCropperPr
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-black">
       {/* Header */}
-      <div className="flex items-center justify-between bg-gray-900 px-4 py-3">
-        <button
-          onClick={onCancel}
-          className="text-white hover:text-gray-300"
-        >
+      <div className="flex items-center justify-between bg-black px-4 py-3">
+        <button onClick={onCancel} className="text-white hover:text-white/70">
           取消
         </button>
         <h2 className="text-lg font-semibold text-white">裁剪圖片</h2>
@@ -125,7 +126,7 @@ export function ImageCropper({ image, onCropComplete, onCancel }: ImageCropperPr
       </div>
 
       {/* Zoom Control */}
-      <div className="bg-gray-900 px-6 py-4">
+      <div className="bg-black px-6 py-4">
         <div className="flex items-center gap-4">
           <span className="text-sm text-white">縮放</span>
           <input

@@ -27,7 +27,7 @@ function clearAllCache(): Promise<void> {
 
 const ChevronRight = () => (
   <svg
-    className="size-4 shrink-0 text-gray-600"
+    className="size-4 shrink-0 text-gray-400"
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -48,7 +48,7 @@ const SectionLabel = ({ children }: { children: string }) => (
 );
 
 const RowGroup = ({ children }: { children: React.ReactNode }) => (
-  <div className="overflow-hidden rounded-2xl border border-white/[0.05] bg-gray-800/50 divide-y divide-white/[0.04]">
+  <div className="divide-y divide-black/[0.06] overflow-hidden rounded-2xl border border-black/[0.06] bg-gray-950">
     {children}
   </div>
 );
@@ -60,11 +60,7 @@ export const UserLayer = () => {
   if (!userData) return null;
 
   const handleClearCache = async () => {
-    if (
-      !window.confirm(
-        '確定要清除所有本地快取資料嗎？清除後頁面將重新載入。',
-      )
-    )
+    if (!window.confirm('確定要清除所有本地快取資料嗎？清除後頁面將重新載入。'))
       return;
     setClearing(true);
     await clearAllCache();
@@ -78,7 +74,7 @@ export const UserLayer = () => {
   };
 
   return (
-    <div className="mx-auto w-full max-w-lg px-4 py-6 space-y-5">
+    <div className="mx-auto w-full max-w-lg space-y-5 px-4 py-6">
       {/* Page title */}
       <h1
         className="mb-2 text-xl font-bold text-gray-100"
@@ -90,7 +86,7 @@ export const UserLayer = () => {
       {/* ── 個人資料 ─────────────────────────────────────── */}
       <Link
         href="/profile"
-        className="group flex items-center gap-4 rounded-2xl border border-white/[0.05] bg-gray-800/50 p-4 transition-colors hover:bg-gray-800/80"
+        className="group flex items-center gap-4 rounded-2xl border border-black/[0.06] bg-gray-950 p-4 transition-colors hover:bg-gray-950"
       >
         <div className="ring-primary-500/20 size-12 shrink-0 overflow-hidden rounded-full ring-2">
           <UserAvatar user={userData} />
@@ -111,7 +107,7 @@ export const UserLayer = () => {
         <RowGroup>
           <Link
             href="/group"
-            className="flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-white/[0.03]"
+            className="flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-black/[0.03]"
           >
             <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-cyan-500/10">
               <BookIcon className="size-4 text-cyan-400" />
@@ -134,9 +130,7 @@ export const UserLayer = () => {
             </span>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium text-gray-200">清除本地快取</p>
-              <p className="text-xs text-gray-500">
-                IndexedDB 與 localStorage
-              </p>
+              <p className="text-xs text-gray-500">localStorage 與舊版快取</p>
             </div>
             <button
               onClick={handleClearCache}

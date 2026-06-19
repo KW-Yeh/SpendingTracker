@@ -1,6 +1,5 @@
 'use client';
 
-import { useIDBCtx } from '@/context/IDBProvider';
 import { getUser, createUser, putUser } from '@/services/userServices';
 import { getCachedUser, setCachedUser } from '@/utils/localCache';
 import { useSession } from 'next-auth/react';
@@ -39,15 +38,17 @@ const INIT_CTX_VAL: {
 export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
   // Synchronous warm-start from localStorage so the first paint already has
   // the user — no skeleton flash.
-  const [config, setConfig] = useState<User | undefined>(() => getCachedUser() ?? undefined);
+  const [config, setConfig] = useState<User | undefined>(
+    () => getCachedUser() ?? undefined,
+  );
   const [hasEverLoaded, setHasEverLoaded] = useState<boolean>(
     () => getCachedUser() !== null,
   );
   const [isFetching, setIsFetching] = useState(false);
-  const [budgetData, setBudgetDataState] = useState<UserBudgetData>({ budget: [] });
+  const [budgetData, setBudgetDataState] = useState<UserBudgetData>({
+    budget: [],
+  });
   const { data: session, status } = useSession();
-  const { db: IDB, getUserData, setUserData } = useIDBCtx();
-  const controllerRef = useRef<AbortController | null>(null);
   // Track latest config in a ref so the bootstrap effect can read it without
   // adding config to its deps (which would cause unnecessary re-runs).
   const configRef = useRef<User | undefined>(config);
@@ -66,14 +67,14 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
       try {
         await putUser(updatedUser);
         handleState(updatedUser);
-        if (IDB) {
-          await setUserData(IDB, updatedUser);
-        }
       } catch (error) {
-        console.error('[UserConfigProvider] Error updating user in API:', error);
+        console.error(
+          '[UserConfigProvider] Error updating user in API:',
+          error,
+        );
       }
     },
-    [IDB, setUserData, handleState],
+    [handleState],
   );
 
   const handleUpdateBudgetData = useCallback(async (value: UserBudgetData) => {
@@ -84,31 +85,17 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
     if (!session?.user?.email) return;
     setIsFetching(true);
 
-    if (IDB) {
-      try {
-        const controller = new AbortController();
-        const cachedData = await getUserData(IDB, session.user.email, controller.signal);
-        if (cachedData) {
-          const _data = JSON.parse(cachedData.data) as User;
-          handleState(_data);
-        }
-      } catch {
-        /* miss is fine */
-      }
-    }
-
     try {
       const res = await getUser(session.user.email);
       if (res.status && res.data) {
         handleState(res.data);
-        if (IDB) await setUserData(IDB, res.data);
       }
     } catch (error) {
       console.error('[UserConfigProvider] Error fetching from API:', error);
     } finally {
       setIsFetching(false);
     }
-  }, [IDB, session?.user?.email, getUserData, setUserData, handleState]);
+  }, [session?.user?.email, handleState]);
 
   const ctxVal = useMemo(
     () => ({
@@ -146,20 +133,16 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [status, handleLogin]);
 
-  // Bootstrap: try IDB cache (warm path) and fetch from API in parallel.
-  // localStorage already gave us synchronous state for the first paint.
+  // Bootstrap: fetch the user from the API (source of truth), creating it
+  // on first login. localStorage already gave us synchronous state for the
+  // first paint.
   useEffect(() => {
-    const controller = (controllerRef.current = new AbortController());
-    if (IDB && session?.user?.email && status === 'authenticated') {
+    if (session?.user?.email && status === 'authenticated') {
       const email = session.user.email;
       const userName = session.user?.name || '匿名';
 
-      // If syncUser() already resolved the user (e.g. session was available
-      // before IDB opened), skip the API call and just persist to IDB.
-      if (configRef.current) {
-        setUserData(IDB, configRef.current).catch(() => {});
-        return () => controller.abort();
-      }
+      // If syncUser() already resolved the user, nothing to bootstrap.
+      if (configRef.current) return;
 
       setIsFetching(true);
 
@@ -170,7 +153,6 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
         const apiRes = await getUser(email);
         if (apiRes.status && apiRes.data) {
           handleState(apiRes.data);
-          await setUserData(IDB, apiRes.data);
           return;
         }
         if (retryCount < MAX_RETRIES) {
@@ -182,31 +164,14 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
         }
       };
 
-      getUserData(IDB, email, controller.signal)
-        .then(async (res) => {
-          if (res) {
-            const _data = JSON.parse(res.data) as User;
-            handleState(_data);
-          }
-          try {
-            await createAndFetch();
-          } catch (err) {
-            console.error('[UserConfigProvider] Error syncing user:', err);
-          } finally {
-            setIsFetching(false);
-          }
-        })
-        .catch(() => {
-          createAndFetch()
-            .catch((err) =>
-              console.error('[UserConfigProvider] Error syncing user:', err),
-            )
-            .finally(() => setIsFetching(false));
-        });
+      createAndFetch()
+        .catch((err) =>
+          console.error('[UserConfigProvider] Error syncing user:', err),
+        )
+        .finally(() => setIsFetching(false));
     }
-    return () => controller.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [IDB, session?.user?.email, status]);
+  }, [session?.user?.email, status]);
 
   return <Ctx.Provider value={ctxVal}>{children}</Ctx.Provider>;
 };

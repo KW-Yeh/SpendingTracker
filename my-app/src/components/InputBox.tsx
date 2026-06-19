@@ -9,7 +9,7 @@ interface Props extends HTMLAttributes<HTMLInputElement> {
 export const InputBox = (props: Props) => {
   const { className = '', type, name, label, ...legacy } = props;
   return (
-    <fieldset className="hover:border-primary-600 focus-within:border-primary-500 focus-within:shadow-[0_0_15px_rgba(6,182,212,0.15)] rounded-xl border-2 border-solid border-gray-700 bg-gray-900/40 px-3 pb-2 transition-all duration-200">
+    <fieldset className="hover:border-primary-400 focus-within:border-primary-500 rounded-xl border border-solid border-gray-700 bg-gray-950 px-3 pb-2 transition-all duration-200">
       <legend className="px-2 text-sm font-medium text-gray-400">
         {label}
       </legend>

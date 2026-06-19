@@ -120,7 +120,7 @@ export const Select = (props: Props) => {
           />
         </button>
         <div
-          className={`fixed z-[9999] overflow-hidden rounded-xl border-2 border-solid border-gray-600 bg-gray-800 py-1 shadow-xl backdrop-blur-sm transition-all duration-200 ${openOptions ? 'visible scale-100 opacity-100' : 'invisible scale-95 opacity-0'}`}
+          className={`fixed z-[9999] overflow-hidden rounded-xl border border-solid border-gray-700 bg-gray-950 py-1 shadow-lg backdrop-blur-sm transition-all duration-200 ${openOptions ? 'visible scale-100 opacity-100' : 'invisible scale-95 opacity-0'}`}
           style={{
             ...dropdownStyle,
             maxHeight: menuMaxHeight,
@@ -168,7 +168,7 @@ const Item = ({
         onChange(value);
         close();
       }}
-      className={`flex min-h-11 w-full cursor-pointer px-4 py-3 transition-all duration-200 ${className} ${current === value ? 'bg-primary-500/20 text-primary-400 font-semibold shadow-[0_0_10px_rgba(6,182,212,0.2)]' : 'hover:text-primary-400 text-gray-300 hover:bg-gray-700/70 hover:shadow-[0_0_8px_rgba(6,182,212,0.15)] active:bg-gray-700'}`}
+      className={`flex min-h-11 w-full cursor-pointer px-4 py-3 transition-all duration-200 ${className} ${current === value ? 'bg-primary-50 text-primary-500 font-semibold' : 'hover:text-primary-500 text-gray-300 hover:bg-gray-800 active:bg-gray-700/60'}`}
     >
       <span className="overflow-hidden text-left text-ellipsis whitespace-nowrap">
         {children}
@@ -200,7 +200,9 @@ const calVerticalDirection = (element: HTMLDivElement) => {
   const { top, bottom } = getContainerBounds(element);
   const spaceBelow = bottom - rect.bottom;
   const spaceAbove = rect.top - top;
-  return spaceBelow >= spaceAbove ? MenuOpenDirection.Down : MenuOpenDirection.Up;
+  return spaceBelow >= spaceAbove
+    ? MenuOpenDirection.Down
+    : MenuOpenDirection.Up;
 };
 
 const calHorizontalDirection = (element: HTMLDivElement) => {

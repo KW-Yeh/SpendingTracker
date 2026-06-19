@@ -85,7 +85,7 @@ const CustomToolTip = (props: DefaultTooltipContentProps<string, string>) => {
   return (
     <div className="bg-background flex flex-col rounded p-2 text-xs shadow">
       <span
-        className="text-primary-300"
+        className="text-primary-500"
         style={{ fontVariantNumeric: 'tabular-nums' }}
       >
         花費：${normalizeNumber(payload.cost)}

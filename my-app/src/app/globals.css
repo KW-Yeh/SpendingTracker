@@ -1,51 +1,39 @@
-/* Google Fonts - Poppins (Headings) + Open Sans (Body) */
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap');
-
 @import 'tailwindcss';
 
 :root {
-  /* Spacing System (8px base) */
+  /* Spacing System (8px base — DESIGN.md spacing tokens) */
   --spacing-0: 0;
-  --spacing-1: 0.25rem; /* 4px */
-  --spacing-2: 0.5rem; /* 8px */
-  --spacing-3: 0.75rem; /* 12px */
+  --spacing-1: 0.25rem; /* 4px  — {spacing.xxs} */
+  --spacing-2: 0.5rem; /* 8px  — {spacing.xs} */
+  --spacing-3: 0.75rem; /* 12px — {spacing.sm} */
   --spacing-4: 1rem; /* 16px */
   --spacing-5: 1.25rem; /* 20px */
-  --spacing-6: 1.5rem; /* 24px */
-  --spacing-8: 2rem; /* 32px */
+  --spacing-6: 1.5rem; /* 24px — {spacing.lg} */
+  --spacing-8: 2rem; /* 32px — {spacing.xl} */
   --spacing-10: 2.5rem; /* 40px */
-  --spacing-12: 3rem; /* 48px */
+  --spacing-12: 3rem; /* 48px — {spacing.xxl} */
   --spacing-16: 4rem; /* 64px */
-  --spacing-20: 5rem; /* 80px */
+  --spacing-20: 5rem; /* 80px — {spacing.section} */
 
-  /* Border Radius */
-  --radius-sm: 0.375rem; /* 6px */
-  --radius-md: 0.5rem; /* 8px */
-  --radius-lg: 0.75rem; /* 12px */
-  --radius-xl: 1rem; /* 16px */
-  --radius-2xl: 1.5rem; /* 24px */
-  --radius-full: 9999px;
+  /* Border Radius — DESIGN.md rounded scale */
+  --radius-sm: 0.3125rem; /* 5px  — {rounded.xs} */
+  --radius-md: 0.5rem; /* 8px  — {rounded.sm} */
+  --radius-lg: 0.6875rem; /* 11px — {rounded.md} */
+  --radius-xl: 1.125rem; /* 18px — {rounded.lg} */
+  --radius-2xl: 1.125rem; /* 18px — {rounded.lg} */
+  --radius-full: 9999px; /* {rounded.pill} */
 
-  /* Shadows - Dark theme optimized */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-md:
-    0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
-  --shadow-lg:
-    0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
-  --shadow-xl:
-    0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
-  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  /* Shadows — chrome stays flat; soft neutral elevation reserved for
+     floating layers (dropdowns / modals / sticky bars) only */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.12);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.16);
 
-  /* Glow Shadows - Unified for all primary colors */
-  --shadow-glow: 0 0 20px 0 rgba(34, 211, 238, 0.15);
-  --shadow-glow-lg: 0 0 40px 0 rgba(34, 211, 238, 0.25);
-  --shadow-glow-intense: 0 0 60px 0 rgba(34, 211, 238, 0.35);
-
-  /* Color-specific glows for consistency */
-  --shadow-primary-glow: 0 0 20px 0 rgba(6, 182, 212, 0.25);
-  --shadow-secondary-glow: 0 0 20px 0 rgba(139, 92, 246, 0.25);
-  --shadow-accent-glow: 0 0 20px 0 rgba(59, 130, 246, 0.25);
-  --shadow-income-glow: 0 0 20px 0 rgba(16, 185, 129, 0.25);
+  /* Product shadow — the single signature drop-shadow in the system,
+     reserved for imagery resting on a surface */
+  --shadow-product: rgba(0, 0, 0, 0.22) 3px 5px 30px 0;
 
   /* Transitions */
   --duration-fast: 150ms;
@@ -59,160 +47,158 @@
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-  /* Typography */
-  --font-heading: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-body: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Typography — SF Pro with system fallbacks (DESIGN.md font stack) */
+  --font-heading:
+    'SF Pro Display', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body:
+    'SF Pro Text', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'SF Mono', 'Consolas', 'Monaco', monospace;
 
-  /* Font Weights */
+  /* Font Weights — ladder is 300 / 400 / 600 / 700; 500 deliberately absent */
   --font-light: 300;
   --font-normal: 400;
-  --font-medium: 500;
+  --font-medium: 600;
   --font-semibold: 600;
   --font-bold: 700;
-  --font-extrabold: 800;
+  --font-extrabold: 700;
 
   /* Line Heights */
-  --leading-tight: 1.25;
-  --leading-normal: 1.5;
+  --leading-tight: 1.1;
+  --leading-normal: 1.47;
   --leading-relaxed: 1.75;
-  --leading-loose: 2;
+  --leading-loose: 2.41;
 
-  /* Semantic Colors */
-  --color-success: #34d399;
-  --color-warning: #fbbf24;
-  --color-error: #f87171;
-  --color-info: #60a5fa;
+  /* Semantic Colors (light surfaces) */
+  --color-success: #248a3d;
+  --color-warning: #b25000;
+  --color-error: #e30000;
+  --color-info: #0066cc;
 
   /* Money Semantics — 紅 = 支出 / 綠 = 收入 / 鮮紅 = 超支 / 琥珀 = 80–99% */
-  --color-income: #34d399;
-  --color-income-bg: rgba(52, 211, 153, 0.1);
-  --color-expense: #f87171;
-  --color-expense-bg: rgba(248, 113, 113, 0.1);
-  --color-over-budget: #fb7185;
-  --color-over-budget-bg: rgba(251, 113, 133, 0.1);
+  --color-income: #248a3d;
+  --color-income-bg: rgba(36, 138, 61, 0.08);
+  --color-expense: #e30000;
+  --color-expense-bg: rgba(227, 0, 0, 0.06);
+  --color-over-budget: #e30000;
+  --color-over-budget-bg: rgba(227, 0, 0, 0.08);
 
-  /* Hairline borders — 全站統一 */
-  --color-line: rgba(255, 255, 255, 0.06);
-  --color-line-soft: rgba(255, 255, 255, 0.04);
+  /* Hairline borders — 全站統一（DESIGN.md hairline / divider-soft） */
+  --color-line: rgba(0, 0, 0, 0.08);
+  --color-line-soft: rgba(0, 0, 0, 0.04);
 
-  /* Unified card shadow — 取代多重陰影 */
-  --shadow-card:
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 8px 20px rgba(0, 0, 0, 0.25);
+  /* Cards are flat — elevation comes from surface change + hairline,
+     never from shadows on chrome */
+  --shadow-card: none;
 
-  /* Radii — 統一 */
-  --radius-card: 16px;
-  --radius-tile: 12px;
-  --radius-button: 10px;
-  --radius-pill: 9999px;
+  /* Radii — 統一（DESIGN.md rounded scale） */
+  --radius-card: 18px; /* {rounded.lg} — utility cards */
+  --radius-tile: 11px; /* {rounded.md} — pearl capsules */
+  --radius-button: 8px; /* {rounded.sm} — compact utility buttons */
+  --radius-pill: 9999px; /* {rounded.pill} — primary CTA grammar */
 
-  /* Background Colors - Dark theme */
-  --color-bg-primary: #0a0e1a; /* 深邃夜空 */
-  --color-bg-secondary: #111827; /* 稍亮的深色 */
-  --color-bg-elevated: #1e293b; /* 卡片背景 */
+  /* Background Colors — light canvas system */
+  --color-bg-primary: #ffffff; /* {colors.canvas} */
+  --color-bg-secondary: #f5f5f7; /* {colors.canvas-parchment} */
+  --color-bg-elevated: #fafafc; /* {colors.surface-pearl} */
 
-  /* Text Colors - Dark theme (WCAG AA compliant) */
-  --color-text-primary: #f1f5f9; /* 主要文字 - 16.5:1 on bg-primary */
-  --color-text-secondary: #cbd5e1; /* 次要文字 - 10.5:1 on bg-primary, 5.5:1 on bg-elevated */
-  --color-text-tertiary: #94a3b8; /* 提示文字 - 7.2:1 on bg-primary, 4.5:1 on bg-elevated */
-  --color-text-inverse: #0f172a; /* 反色文字 */
+  /* Text Colors — near-black ink, never pure black */
+  --color-text-primary: #1d1d1f; /* {colors.ink} */
+  --color-text-secondary: #333333; /* {colors.ink-muted-80} */
+  --color-text-tertiary: #7a7a7a; /* {colors.ink-muted-48} */
+  --color-text-inverse: #ffffff; /* {colors.on-dark} */
 
-  /* Border Colors - Dark theme */
-  --color-border-light: #1e293b;
-  --color-border-default: #334155;
-  --color-border-strong: #475569;
+  /* Border Colors */
+  --color-border-light: #f0f0f0; /* {colors.divider-soft} */
+  --color-border-default: #e0e0e0; /* {colors.hairline} */
+  --color-border-strong: #d2d2d7; /* {colors.surface-chip-translucent} */
 }
 
 @theme {
-  /* Background and Text - Solo Leveling Dark Theme */
-  --color-background: #0a0e1a;
-  --color-text: #f1f5f9;
+  /* Background and Text — Apple-style light canvas */
+  --color-background: #ffffff;
+  --color-text: #1d1d1f;
 
-  /* Primary - Cyan/Teal (主色系 - 青藍色，類似獨自升級的發光效果) */
-  --color-primary-50: #ecfeff;
-  --color-primary-100: #cffafe;
-  --color-primary-200: #a5f3fc;
-  --color-primary-300: #67e8f9;
-  --color-primary-400: #22d3ee;
-  --color-primary-500: #06b6d4; /* Main Cyan */
-  --color-primary-600: #0891b2;
-  --color-primary-700: #0e7490;
-  --color-primary-800: #155e75;
-  --color-primary-900: #164e63;
-  --color-primary-950: #083344;
+  /* Primary — Action Blue (單一互動色，所有 "click me" 訊號) */
+  --color-primary-50: #f2f7fc;
+  --color-primary-100: #d9e8f7;
+  --color-primary-200: #b3d1ef;
+  --color-primary-300: #6ba6e0;
+  --color-primary-400: #0071e3; /* {colors.primary-focus} */
+  --color-primary-500: #0066cc; /* {colors.primary} — Action Blue */
+  --color-primary-600: #0055ab;
+  --color-primary-700: #00468c;
+  --color-primary-800: #00386f;
+  --color-primary-900: #002b55;
+  --color-primary-950: #001f3d;
 
-  /* Secondary - Violet (副色系 - 電光紫，更冷調，更協調) */
-  --color-secondary-50: #f5f3ff;
-  --color-secondary-100: #ede9fe;
-  --color-secondary-200: #ddd6fe;
-  --color-secondary-300: #c4b5fd;
-  --color-secondary-400: #a78bfa;
-  --color-secondary-500: #8b5cf6; /* Main Violet (統一冷色調) */
-  --color-secondary-600: #7c3aed;
-  --color-secondary-700: #6d28d9;
-  --color-secondary-800: #5b21b6;
-  --color-secondary-900: #4c1d95;
-  --color-secondary-950: #2e1065;
+  /* Secondary — 無第二品牌色：全部對齊 Action Blue（單一強調色原則） */
+  --color-secondary-50: var(--color-primary-50);
+  --color-secondary-100: var(--color-primary-100);
+  --color-secondary-200: var(--color-primary-200);
+  --color-secondary-300: var(--color-primary-300);
+  --color-secondary-400: var(--color-primary-400);
+  --color-secondary-500: var(--color-primary-500);
+  --color-secondary-600: var(--color-primary-600);
+  --color-secondary-700: var(--color-primary-700);
+  --color-secondary-800: var(--color-primary-800);
+  --color-secondary-900: var(--color-primary-900);
+  --color-secondary-950: var(--color-primary-950);
 
-  /* Accent - Electric Blue (輔助色系 - 電光藍) */
-  --color-accent-50: #eff6ff;
-  --color-accent-100: #dbeafe;
-  --color-accent-200: #bfdbfe;
-  --color-accent-300: #93c5fd;
-  --color-accent-400: #60a5fa;
-  --color-accent-500: #3b82f6; /* Main Blue */
-  --color-accent-600: #2563eb;
-  --color-accent-700: #1d4ed8;
-  --color-accent-800: #1e40af;
-  --color-accent-900: #1e3a8a;
+  /* Accent — 同上，對齊 Action Blue */
+  --color-accent-50: var(--color-primary-50);
+  --color-accent-100: var(--color-primary-100);
+  --color-accent-200: var(--color-primary-200);
+  --color-accent-300: var(--color-primary-300);
+  --color-accent-400: var(--color-primary-400);
+  --color-accent-500: var(--color-primary-500);
+  --color-accent-600: var(--color-primary-600);
+  --color-accent-700: var(--color-primary-700);
+  --color-accent-800: var(--color-primary-800);
+  --color-accent-900: var(--color-primary-900);
 
-  /* Income - Emerald Green (收入 - 翡翠綠) */
-  --color-income-50: #ecfdf5;
-  --color-income-100: #d1fae5;
-  --color-income-200: #a7f3d0;
-  --color-income-300: #6ee7b7;
-  --color-income-400: #34d399;
-  --color-income-500: #10b981; /* Main Emerald */
-  --color-income-600: #059669;
-  --color-income-700: #047857;
-  --color-income-800: #065f46;
-  --color-income-900: #064e3b;
+  /* Income — Green（功能性財務語意色，非裝飾） */
+  --color-income-50: #f0faf3;
+  --color-income-100: #d8f3e0;
+  --color-income-200: #b0e7c3;
+  --color-income-300: #7dd89e;
+  --color-income-400: #2da44e;
+  --color-income-500: #248a3d; /* Main Green — 在白底可讀 */
+  --color-income-600: #1a7f37;
+  --color-income-700: #156a2e;
+  --color-income-800: #105524;
+  --color-income-900: #0b401b;
 
-  /* Slate Grays - Cool toned for dark theme (WCAG optimized) */
-  --color-gray-50: #f8fafc;
-  --color-gray-100: #f1f5f9;
-  --color-gray-200: #e2e8f0;
-  --color-gray-300: #cbd5e1; /* Use for secondary text */
-  --color-gray-400: #94a3b8; /* Use for tertiary/muted text */
-  --color-gray-500: #64748b; /* Use sparingly - low contrast on dark */
-  --color-gray-600: #475569;
-  --color-gray-700: #334155;
-  --color-gray-800: #1e293b; /* Card/elevated background */
-  --color-gray-900: #0f172a;
-  --color-gray-950: #020617;
+  /* Grays — 語意反轉對應：深色主題的「亮字 / 暗面」自動轉為
+     淺色主題的「墨字 / 淺面」。沿用既有 class 不需逐一改寫。 */
+  --color-gray-50: #1d1d1f; /* 最強調文字 → ink */
+  --color-gray-100: #1d1d1f; /* 主要文字 → ink */
+  --color-gray-200: #333333; /* 次要文字 → ink-muted-80 */
+  --color-gray-300: #494949; /* 次要文字（柔和） */
+  --color-gray-400: #7a7a7a; /* 提示文字 → ink-muted-48 */
+  --color-gray-500: #86868b; /* 弱化文字 */
+  --color-gray-600: #d2d2d7; /* 較強邊框 → chip translucent */
+  --color-gray-700: #e0e0e0; /* 預設邊框 → hairline */
+  --color-gray-800: #f5f5f7; /* 卡片/表面 → parchment */
+  --color-gray-900: #fafafc; /* 更淺表面 → pearl */
+  --color-gray-950: #ffffff; /* 純白 canvas */
 
   /* Legacy accent colors for compatibility */
-  --color-accent-lavender-100: var(--color-secondary-100);
-  --color-accent-lavender-500: var(--color-secondary-500);
-  --color-accent-orchid-100: var(--color-secondary-200);
-  --color-accent-orchid-500: var(--color-secondary-600);
+  --color-accent-lavender-100: var(--color-primary-100);
+  --color-accent-lavender-500: var(--color-primary-500);
+  --color-accent-orchid-100: var(--color-primary-200);
+  --color-accent-orchid-500: var(--color-primary-600);
   --color-accent-mint-100: var(--color-income-100);
   --color-accent-mint-500: var(--color-income-500);
   --color-accent-peach-100: var(--color-primary-100);
   --color-accent-peach-500: var(--color-primary-500);
 
-  /* Scrollbar - Dark theme */
-  --color-scrollbar-thumb: #475569;
-  --color-scrollbar-thumb-hover: #64748b;
+  /* Scrollbar — light theme */
+  --color-scrollbar-thumb: #d2d2d7;
+  --color-scrollbar-thumb-hover: #a1a1a6;
 
-  /* Special Shadows - Glow effects */
-  --shadow-primary:
-    0px 0px 0px 1px var(--color-primary-500),
-    0px 0px 20px -4px var(--color-primary-500);
-  --shadow-primary-hover:
-    0px 0px 0px 1px var(--color-primary-400),
-    0px 0px 30px -4px var(--color-primary-400);
+  /* Focus ring shadows（取代舊 glow） */
+  --shadow-primary: 0 0 0 2px var(--color-primary-400);
+  --shadow-primary-hover: 0 0 0 2px var(--color-primary-500);
 }
 
 body {
@@ -225,8 +211,10 @@ body {
   flex-direction: column;
   overflow-y: scroll;
   padding-bottom: 5rem;
-  font-size: 1rem;
+  /* Body copy at 17px / 1.47 / -0.374px — the brand reading pace */
+  font-size: 1.0625rem;
   line-height: var(--leading-normal);
+  letter-spacing: -0.022em;
   text-wrap: pretty;
 }
 
@@ -248,7 +236,6 @@ body {
 @media (min-width: 768px) {
   body {
     padding-bottom: 0;
-    font-size: 1.0625rem;
   }
 }
 
@@ -259,27 +246,28 @@ h4,
 h5,
 h6 {
   font-family: var(--font-heading);
+  /* Headlines sit at weight 600, never 700 */
   font-weight: var(--font-semibold);
   line-height: var(--leading-tight);
+  /* Negative tracking at display sizes — the signature tight cadence */
+  letter-spacing: -0.015em;
 }
 
 /* Headings responsive sizes */
 h1 {
-  font-size: 2.25rem;
-  font-weight: var(--font-bold);
+  font-size: 2.125rem; /* 34px — {typography.display-md} */
 }
 h2 {
-  font-size: 1.875rem;
-  font-weight: var(--font-semibold);
+  font-size: 1.75rem; /* 28px */
 }
 h3 {
-  font-size: 1.5rem;
+  font-size: 1.3125rem; /* 21px — {typography.tagline} */
 }
 h4 {
-  font-size: 1.25rem;
+  font-size: 1.1875rem; /* 19px */
 }
 h5 {
-  font-size: 1.125rem;
+  font-size: 1.0625rem; /* 17px — {typography.body-strong} */
 }
 h6 {
   font-size: 1rem;
@@ -287,62 +275,25 @@ h6 {
 
 @media (min-width: 768px) {
   h1 {
-    font-size: 2.5rem;
+    font-size: 2.5rem; /* 40px — {typography.display-lg} */
   }
   h2 {
     font-size: 2rem;
   }
 }
 
+/* Flat parchment surface — 色彩變化本身就是分隔，無漸層 */
 .bg-radial {
-  background-image:
-    radial-gradient(
-      circle at 0% 0%,
-      rgba(6, 182, 212, 0.15) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 100% 100%,
-      rgba(168, 85, 247, 0.12) 0%,
-      transparent 50%
-    );
+  background-color: var(--color-bg-secondary);
 }
 
 .bg-grid {
-  background-image:
-    linear-gradient(to right, rgba(71, 85, 105, 0.3) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(71, 85, 105, 0.3) 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-color: var(--color-bg-secondary);
 }
 
-/* Solo Leveling inspired dark background with glowing gradients */
+/* Page canvas — parchment（{colors.canvas-parchment}），純色、無光暈 */
 .bg-soft {
-  background-color: var(--color-bg-primary);
-  background-image:
-    /* Cyan glow top-left */
-    radial-gradient(
-      ellipse at 0% 0%,
-      rgba(6, 182, 212, 0.15) 0%,
-      transparent 50%
-    ),
-    /* Purple glow bottom-right */
-    radial-gradient(
-        ellipse at 100% 100%,
-        rgba(168, 85, 247, 0.12) 0%,
-        transparent 50%
-      ),
-    /* Blue accent top-right */
-    radial-gradient(
-        ellipse at 100% 0%,
-        rgba(59, 130, 246, 0.08) 0%,
-        transparent 40%
-      ),
-    /* Subtle cyan bottom-left */
-    radial-gradient(
-        ellipse at 0% 100%,
-        rgba(34, 211, 238, 0.06) 0%,
-        transparent 40%
-      );
+  background-color: var(--color-bg-secondary);
   position: relative;
   overflow: hidden;
 }
@@ -371,14 +322,7 @@ h6 {
   margin-bottom: 1rem;
   height: 1px;
   width: 100%;
-  background-image: linear-gradient(
-    to right,
-    transparent,
-    var(--color-primary-500),
-    var(--color-secondary-500),
-    transparent
-  );
-  opacity: 0.5;
+  background-color: var(--color-border-default);
 }
 
 button {
@@ -417,11 +361,11 @@ input[type='number'] {
 
 .scrollbar::-webkit-scrollbar-thumb {
   border-radius: 6px;
-  background-color: gray;
+  background-color: var(--color-scrollbar-thumb);
 }
 
 .scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: dimgray;
+  background-color: var(--color-scrollbar-thumb-hover);
 }
 
 .scrollbar {
@@ -433,78 +377,41 @@ input[type='number'] {
   scrollbar-color: var(--color-scrollbar-thumb-hover) var(--color-background);
 }
 
-/* Solo Leveling style gradient text */
+/* 標題強調 — 純色 ink，無漸層文字 */
 .gradient-text {
-  background: linear-gradient(
-    135deg,
-    var(--color-primary-400),
-    var(--color-secondary-500),
-    var(--color-accent-400)
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+  color: var(--color-text-primary);
 }
 
-/* Glow gradient backgrounds - Solo Leveling style */
+/* 純色 Action Blue 表面（沿用既有 class 名稱，移除漸層） */
 .gradient-glow {
-  background: linear-gradient(
-    135deg,
-    var(--color-primary-600) 0%,
-    var(--color-secondary-600) 100%
-  );
+  background: var(--color-primary-500);
 }
 
 .gradient-glow-soft {
-  background: linear-gradient(
-    135deg,
-    rgba(6, 182, 212, 0.1) 0%,
-    rgba(168, 85, 247, 0.1) 100%
-  );
+  background: var(--color-primary-50);
 }
 
-/* Intense glow for CTAs */
 .gradient-intense {
-  background: linear-gradient(
-    135deg,
-    var(--color-primary-500) 0%,
-    var(--color-accent-500) 50%,
-    var(--color-secondary-500) 100%
-  );
+  background: var(--color-primary-500);
 }
 
-/* Header quick-add CTA — desktop sticky header */
+/* Header quick-add CTA — desktop sticky header（pill、純色、scale 微互動） */
 .btn-add-header {
-  background: linear-gradient(
-    135deg,
-    var(--color-primary-500) 0%,
-    var(--color-primary-600) 100%
-  );
-  box-shadow:
-    0 0 0 1px rgba(6, 182, 212, 0.25),
-    0 4px 14px rgba(6, 182, 212, 0.28);
-  transition:
-    box-shadow var(--duration-normal) var(--ease-out),
-    transform var(--duration-fast) var(--ease-out);
+  background: var(--color-primary-500);
+  border-radius: var(--radius-pill);
+  transition: transform var(--duration-fast) var(--ease-out);
 }
 .btn-add-header:hover {
-  box-shadow:
-    0 0 0 1px rgba(6, 182, 212, 0.45),
-    0 6px 22px rgba(6, 182, 212, 0.48);
-  transform: translateY(-1px);
+  background: var(--color-primary-400);
 }
 .btn-add-header:active {
-  box-shadow:
-    0 0 0 1px rgba(6, 182, 212, 0.25),
-    0 2px 8px rgba(6, 182, 212, 0.3);
-  transform: translateY(0) scale(0.95);
+  transform: scale(0.95);
   transition-duration: 80ms;
 }
 
-/* Accessibility improvements */
+/* Accessibility improvements — focus ring in Focus Blue */
 *:focus-visible {
-  outline: 3px solid var(--color-primary-400);
+  outline: 2px solid var(--color-primary-400);
   outline-offset: 2px;
   border-radius: var(--radius-md);
 }
@@ -524,10 +431,10 @@ input[type='number'] {
 /* Animations */
 @keyframes highlight-pulse {
   0% {
-    background-color: rgba(6, 182, 212, 0.3);
+    background-color: rgba(0, 102, 204, 0.18);
   }
   50% {
-    background-color: rgba(6, 182, 212, 0.1);
+    background-color: rgba(0, 102, 204, 0.08);
   }
   100% {
     background-color: transparent;
@@ -635,12 +542,7 @@ input[type='number'] {
 }
 
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--color-gray-800) 25%,
-    var(--color-gray-700) 50%,
-    var(--color-gray-800) 75%
-  );
+  background: linear-gradient(90deg, #f5f5f7 25%, #e8e8ed 50%, #f5f5f7 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }
@@ -649,142 +551,140 @@ input[type='number'] {
   transition-timing-function: cubic-bezier(0.34, 1.26, 0.64, 1);
 }
 
-/* Button Styles - Solo Leveling Dark Theme */
+/* Button Styles — pill grammar, single Action Blue, scale(0.95) press */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  transition: all 0.2s;
+  border-radius: var(--radius-pill);
+  font-weight: 400;
+  transition:
+    background-color 0.2s,
+    transform 0.15s var(--ease-out);
   cursor: pointer;
   min-height: 44px;
   min-width: 44px;
-  padding: 0.625rem 1.25rem;
+  padding: 0.6875rem 1.375rem; /* 11px 22px — {component.button-primary} */
 }
 
+/* {component.button-primary} — 純色 Action Blue 膠囊 */
 .btn-primary {
-  background: linear-gradient(
-    135deg,
-    var(--color-primary-500),
-    var(--color-accent-500)
-  );
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 0.75rem;
-  font-weight: 600;
-  box-shadow: var(--shadow-glow);
-  transition: all 0.25s;
-  border: 1px solid rgba(6, 182, 212, 0.3);
+  background: var(--color-primary-500);
+  color: #ffffff;
+  padding: 0.6875rem 1.375rem;
+  border-radius: var(--radius-pill);
+  font-weight: 400;
+  transition:
+    background-color 0.2s,
+    transform 0.15s var(--ease-out);
+  border: 1px solid transparent;
 }
 
 .btn-primary:hover {
-  background: linear-gradient(
-    135deg,
-    var(--color-primary-400),
-    var(--color-accent-400)
-  );
-  box-shadow: var(--shadow-glow-lg);
-  border-color: rgba(6, 182, 212, 0.5);
+  background: var(--color-primary-400);
 }
 
 .btn-primary:active {
+  transform: scale(0.95);
 }
 
+/* {component.button-secondary-pill} — ghost pill */
 .btn-secondary {
-  background: var(--color-gray-800);
-  color: var(--color-primary-400);
-  border: 1px solid var(--color-gray-700);
-  padding: 0.5rem 1rem;
-  border-radius: 0.75rem;
-  font-weight: 600;
-  transition: all 0.2s;
+  background: transparent;
+  color: var(--color-primary-500);
+  border: 1px solid var(--color-primary-500);
+  padding: 0.6875rem 1.375rem;
+  border-radius: var(--radius-pill);
+  font-weight: 400;
+  transition:
+    background-color 0.2s,
+    transform 0.15s var(--ease-out);
 }
 
 .btn-secondary:hover {
-  background: var(--color-gray-700);
-  border-color: var(--color-primary-600);
-  box-shadow: var(--shadow-glow);
+  background: var(--color-primary-50);
 }
 
+.btn-secondary:active {
+  transform: scale(0.95);
+}
+
+/* {component.text-link} — inline action */
 .btn-ghost {
   background: transparent;
-  color: var(--color-primary-400);
+  color: var(--color-primary-500);
   padding: 0.5rem 1rem;
-  border-radius: 0.75rem;
-  font-weight: 600;
-  transition: all 0.2s;
+  border-radius: var(--radius-pill);
+  font-weight: 400;
+  transition:
+    background-color 0.2s,
+    transform 0.15s var(--ease-out);
   border: 1px solid transparent;
 }
 
 .btn-ghost:hover {
-  background: rgba(6, 182, 212, 0.1);
-  border-color: rgba(6, 182, 212, 0.3);
+  background: var(--color-primary-50);
+}
+
+.btn-ghost:active {
+  transform: scale(0.95);
 }
 
 .submit-button {
-  background: linear-gradient(
-    135deg,
-    var(--color-primary-500),
-    var(--color-accent-500)
-  );
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 0.75rem;
-  font-weight: 600;
-  box-shadow: var(--shadow-glow);
-  transition: all 0.25s;
-  border: 1px solid rgba(6, 182, 212, 0.3);
+  background: var(--color-primary-500);
+  color: #ffffff;
+  padding: 0.6875rem 1.375rem;
+  border-radius: var(--radius-pill);
+  font-weight: 400;
+  transition:
+    background-color 0.2s,
+    transform 0.15s var(--ease-out);
+  border: 1px solid transparent;
 }
 
 .submit-button:hover {
-  background: linear-gradient(
-    135deg,
-    var(--color-primary-400),
-    var(--color-accent-400)
-  );
-  box-shadow: var(--shadow-glow-lg);
-  border-color: rgba(6, 182, 212, 0.5);
+  background: var(--color-primary-400);
 }
 
-/* Card Styles - Solo Leveling Dark Theme (Refined) */
+.submit-button:active {
+  transform: scale(0.95);
+}
+
+/* Card Styles — {component.store-utility-card}：白底 + hairline，無陰影 */
 .card {
-  background: rgba(30, 41, 59, 0.8); /* gray-800/80 */
+  background: var(--color-bg-primary);
   border-radius: var(--radius-card);
-  padding: 1.25rem;
-  transition: background-color 0.2s, border-color 0.2s;
-  box-shadow: var(--shadow-card);
-  border: 1px solid var(--color-line);
+  padding: 1.5rem; /* {spacing.lg} 24px */
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+  border: 1px solid var(--color-border-default);
 }
 
 .card:hover {
-  background: rgba(30, 41, 59, 0.9);
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--color-border-strong);
 }
 
 .card-gradient {
-  background: linear-gradient(
-    135deg,
-    rgba(6, 182, 212, 0.1) 0%,
-    rgba(168, 85, 247, 0.1) 100%
-  );
-  border: 1px solid rgba(6, 182, 212, 0.2);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-default);
 }
 
 .card-interactive {
-  background: rgba(30, 41, 59, 0.8);
+  background: var(--color-bg-primary);
   border-radius: var(--radius-card);
-  padding: 1.25rem;
-  transition: background-color 0.2s, border-color 0.2s;
-  box-shadow: var(--shadow-card);
-  border: 1px solid var(--color-line);
+  padding: 1.5rem;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+  border: 1px solid var(--color-border-default);
   cursor: pointer;
 }
 
 .card-interactive:hover {
-  border-color: rgba(6, 182, 212, 0.3);
-  background: rgba(30, 41, 59, 0.95);
+  border-color: var(--color-border-strong);
+  background: var(--color-bg-elevated);
 }
 
 .animate-modal {

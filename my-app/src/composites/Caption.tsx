@@ -39,7 +39,7 @@ export const Caption = ({ openAside }: { openAside: () => void }) => {
 
   return (
     <div
-      className="sticky top-0 left-0 z-40 w-full border-b border-white/[0.06]"
+      className="sticky top-0 left-0 z-40 w-full border-b border-black/[0.08]"
       style={{ backgroundColor: 'var(--color-bg-primary)' }}
     >
       <div className="relative mx-auto flex max-w-7xl flex-col gap-2 px-4 py-3 md:flex-row md:items-center md:gap-3">
@@ -56,7 +56,7 @@ export const Caption = ({ openAside }: { openAside: () => void }) => {
             </div>
             <div className="flex flex-col leading-tight">
               <span
-                className="text-[15px] font-bold whitespace-nowrap text-gray-100 sm:text-base"
+                className="text-[15px] font-semibold whitespace-nowrap text-gray-100 sm:text-base"
                 style={{ fontFamily: 'var(--font-heading)' }}
               >
                 {greetingLabel}，
@@ -80,7 +80,7 @@ export const Caption = ({ openAside }: { openAside: () => void }) => {
           <Link
             href="/edit"
             scroll={false}
-            className="group btn-add-header hidden md:flex items-center gap-1.5 whitespace-nowrap rounded-[10px] px-3.5 py-2 text-sm font-semibold text-white"
+            className="group btn-add-header hidden items-center gap-1.5 px-3.5 py-2 text-sm whitespace-nowrap text-white md:flex"
             aria-label="新增帳目"
           >
             <IoMdAdd className="size-[15px] shrink-0 transition-transform duration-200 group-hover:rotate-90" />

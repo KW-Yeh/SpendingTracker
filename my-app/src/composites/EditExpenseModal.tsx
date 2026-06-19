@@ -18,14 +18,9 @@ import {
   OUTCOME_TYPE_MAP,
   SpendingType,
 } from '@/utils/constants';
+import { getCategoryIcon } from '@/utils/getCategoryIcon';
 import { getSpendingCategoryMap } from '@/utils/getSpendingCategoryMap';
-import {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { IoArrowBack, IoCheckmarkSharp } from 'react-icons/io5';
 import { v7 as uuid } from 'uuid';
 
@@ -215,11 +210,11 @@ export const EditExpenseModal = (props: Props) => {
 
   return (
     <ModalShell onClose={onClose}>
-      <header className="relative flex items-center justify-between gap-3 border-b border-white/[0.06] px-4 py-3">
+      <header className="relative flex items-center justify-between gap-3 border-b border-black/[0.08] px-4 py-3">
         <button
           type="button"
           onClick={handleHeaderLeft}
-          className="flex size-9 items-center justify-center rounded-full text-gray-300 transition-colors hover:bg-white/[0.06] hover:text-gray-100"
+          className="flex size-9 items-center justify-center rounded-full text-gray-300 transition-colors hover:bg-black/[0.05] hover:text-gray-100"
           aria-label={step === 2 ? '返回上一步' : '關閉'}
         >
           {step === 2 ? (
@@ -304,7 +299,7 @@ const ModalShell = ({
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm sm:items-center sm:p-4">
       <div
         ref={contentRef}
-        className="animate-modal flex max-h-[95dvh] w-full flex-col overflow-hidden rounded-t-[24px] border border-white/[0.06] bg-gray-800 shadow-2xl sm:max-w-md sm:rounded-2xl"
+        className="animate-modal flex max-h-[95dvh] w-full flex-col overflow-hidden rounded-t-[24px] border border-black/[0.08] bg-gray-950 shadow-xl sm:max-w-md sm:rounded-2xl"
         style={{ backgroundColor: 'var(--color-bg-secondary)' }}
       >
         {children}
@@ -323,7 +318,7 @@ const StepDots = ({ step }: { step: Step }) => (
       style={{
         width: step === 1 ? 16 : 6,
         backgroundColor:
-          step === 1 ? 'var(--color-primary-400)' : 'rgba(255,255,255,0.2)',
+          step === 1 ? 'var(--color-primary-500)' : 'rgba(0,0,0,0.15)',
       }}
     />
     <span
@@ -332,7 +327,7 @@ const StepDots = ({ step }: { step: Step }) => (
       style={{
         width: step === 2 ? 16 : 6,
         backgroundColor:
-          step === 2 ? 'var(--color-primary-400)' : 'rgba(255,255,255,0.2)',
+          step === 2 ? 'var(--color-primary-500)' : 'rgba(0,0,0,0.15)',
       }}
     />
   </div>
@@ -401,7 +396,7 @@ const StepAmount = ({
               key={q}
               type="button"
               onClick={() => onAddQuick(q)}
-              className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3.5 py-1 text-xs font-semibold text-gray-300 transition-colors hover:bg-white/[0.06]"
+              className="rounded-full border border-black/[0.10] bg-black/[0.03] px-3.5 py-1 text-xs font-semibold text-gray-300 transition-colors hover:bg-black/[0.05]"
               style={{ fontVariantNumeric: 'tabular-nums' }}
             >
               +{formatAmount(String(q))}
@@ -410,14 +405,11 @@ const StepAmount = ({
         </div>
 
         {/* Calculator */}
-        <NumberKeyboard
-          value={amountStr}
-          onChange={onChangeAmount}
-        />
+        <NumberKeyboard value={amountStr} onChange={onChangeAmount} />
       </div>
 
       {/* Footer CTA */}
-      <div className="border-t border-white/[0.06] px-5 py-3">
+      <div className="border-t border-black/[0.08] px-5 py-3">
         <button
           type="button"
           onClick={onNext}
@@ -479,7 +471,7 @@ const StepDetails = ({
       <div className="flex flex-1 flex-col gap-5 overflow-y-auto px-5 pt-4 pb-2">
         {/* Amount summary */}
         <div
-          className="flex items-baseline justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] px-3.5 py-2.5"
+          className="flex items-baseline justify-between rounded-xl border border-black/[0.08] bg-black/[0.02] px-3.5 py-2.5"
           style={{ fontVariantNumeric: 'tabular-nums' }}
         >
           <span className="text-sm text-gray-400">金額</span>
@@ -501,7 +493,7 @@ const StepDetails = ({
             option1={{ label: '支出', value: SpendingType.Outcome }}
             option2={{ label: '收入', value: SpendingType.Income }}
             value={spendingType}
-            className="h-10 w-full border border-solid border-white/[0.06] text-sm"
+            className="h-10 w-full border border-solid border-black/[0.08] text-sm"
             onChange={onSetSpendingType}
           />
         </Section>
@@ -518,7 +510,7 @@ const StepDetails = ({
               value: Necessity.NotNeed,
             }}
             value={necessity}
-            className="h-10 w-full border border-solid border-white/[0.06] text-sm"
+            className="h-10 w-full border border-solid border-black/[0.08] text-sm"
             onChange={onSetNecessity}
           />
         </Section>
@@ -536,22 +528,32 @@ const StepDetails = ({
                   className="flex flex-col items-center justify-center gap-0.5 rounded-xl border px-1 py-2 transition-colors"
                   style={{
                     borderColor: selected
-                      ? 'rgba(6, 182, 212, 0.5)'
-                      : 'rgba(255,255,255,0.06)',
+                      ? 'rgba(0, 102, 204, 0.5)'
+                      : 'rgba(0,0,0,0.08)',
                     background: selected
-                      ? 'linear-gradient(180deg, rgba(6,182,212,0.18), rgba(6,182,212,0.04))'
-                      : 'rgba(255,255,255,0.02)',
+                      ? 'rgba(0, 102, 204, 0.08)'
+                      : 'rgba(0,0,0,0.02)',
                   }}
                   title={CATEGORY_WORDING_MAP[cat.value] || cat.label}
                 >
-                  <span className="text-xl leading-none" aria-hidden>
-                    {cat.value}
+                  <span
+                    className="flex size-5 items-center justify-center"
+                    style={{
+                      color: selected
+                        ? 'var(--color-primary-500)'
+                        : 'var(--color-text-tertiary)',
+                    }}
+                    aria-hidden
+                  >
+                    {getCategoryIcon(cat.value, 'size-5') ?? (
+                      <span className="text-xl leading-none">{cat.value}</span>
+                    )}
                   </span>
                   <span
                     className="text-[10.5px] font-semibold"
                     style={{
                       color: selected
-                        ? 'var(--color-primary-400)'
+                        ? 'var(--color-primary-500)'
                         : 'var(--color-text-tertiary)',
                     }}
                   >
@@ -569,7 +571,7 @@ const StepDetails = ({
             type="text"
             id="description"
             name="description"
-            className="hover:border-primary-600 h-10 w-full rounded-xl border border-solid border-white/[0.06] bg-white/[0.02] px-3 py-1 text-gray-100 placeholder:text-gray-500 transition-colors focus:outline-0"
+            className="hover:border-primary-600 h-10 w-full rounded-xl border border-solid border-black/[0.08] bg-black/[0.02] px-3 py-1 text-gray-100 transition-colors placeholder:text-gray-500 focus:outline-0"
             autoComplete="off"
             placeholder="例如：午餐、咖啡、薪水"
             onChange={(e) => onSetDescription(e.target.value)}
@@ -593,15 +595,15 @@ const StepDetails = ({
                   style={{
                     borderColor:
                       description === commonDesc
-                        ? 'rgba(6, 182, 212, 0.5)'
-                        : 'rgba(255,255,255,0.08)',
+                        ? 'rgba(0, 102, 204, 0.5)'
+                        : 'rgba(0,0,0,0.10)',
                     background:
                       description === commonDesc
-                        ? 'rgba(6, 182, 212, 0.10)'
+                        ? 'rgba(0, 102, 204, 0.08)'
                         : 'transparent',
                     color:
                       description === commonDesc
-                        ? 'var(--color-primary-300)'
+                        ? 'var(--color-primary-500)'
                         : 'var(--color-text-tertiary)',
                   }}
                 >
@@ -617,7 +619,7 @@ const StepDetails = ({
               disabled={updatingCategory}
               className={`w-full rounded-lg border border-solid p-2 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
                 isNewDesc
-                  ? 'border-primary-700 bg-primary-900/20 text-primary-400'
+                  ? 'border-primary-500 bg-primary-50 text-primary-500'
                   : 'border-[var(--color-expense)]/40 text-[var(--color-expense)]'
               }`}
               onClick={() => onToggleCommonDesc(isNewDesc)}
@@ -634,7 +636,7 @@ const StepDetails = ({
         {/* Date */}
         <Section label="日期">
           <DatePicker
-            className="hover:border-primary-600 h-10 w-full rounded-xl border border-solid border-white/[0.06] bg-white/[0.02] transition-colors"
+            className="hover:border-primary-600 h-10 w-full rounded-xl border border-solid border-black/[0.08] bg-black/[0.02] transition-colors"
             labelClassName="text-sm px-3 py-1"
             format="yyyy/mm/dd"
             init={dateInit}
@@ -643,9 +645,12 @@ const StepDetails = ({
       </div>
 
       {/* Footer submit */}
-      <div className="border-t border-white/[0.06] px-5 py-3">
+      <div className="border-t border-black/[0.08] px-5 py-3">
         {loading ? (
-          <div className="flex items-center justify-center" style={{ minHeight: 48 }}>
+          <div
+            className="flex items-center justify-center"
+            style={{ minHeight: 48 }}
+          >
             <Loading className="size-6 animate-spin text-white" />
           </div>
         ) : (
@@ -675,7 +680,7 @@ const Section = ({
 }) => (
   <div className="flex flex-col gap-2">
     <span
-      className="text-[11px] font-semibold uppercase text-gray-400"
+      className="text-[11px] font-semibold text-gray-400 uppercase"
       style={{ letterSpacing: '0.12em' }}
     >
       {label}

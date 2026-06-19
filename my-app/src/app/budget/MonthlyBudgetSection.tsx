@@ -43,11 +43,10 @@ export const MonthlyBudgetSection = ({ yearlySpending }: Props) => {
 
   return (
     <div
-      className="relative flex w-full flex-col gap-3 overflow-hidden rounded-2xl border p-5 shadow-md backdrop-blur-sm"
+      className="relative flex w-full flex-col gap-3 overflow-hidden rounded-2xl border p-5 backdrop-blur-sm"
       style={{
-        borderColor: 'rgba(6, 182, 212, 0.30)',
-        background:
-          'linear-gradient(180deg, rgba(6,182,212,0.10), rgba(6,182,212,0.02))',
+        borderColor: 'rgba(0, 102, 204, 0.30)',
+        background: 'var(--color-bg-primary)',
         textWrap: 'pretty',
       }}
     >
@@ -55,7 +54,7 @@ export const MonthlyBudgetSection = ({ yearlySpending }: Props) => {
         className="text-[11px] font-semibold uppercase"
         style={{
           letterSpacing: '0.12em',
-          color: 'var(--color-primary-400)',
+          color: 'var(--color-primary-500)',
         }}
       >
         本月預算
@@ -69,7 +68,7 @@ export const MonthlyBudgetSection = ({ yearlySpending }: Props) => {
       >
         ${normalizeNumber(monthlyBudget)}
       </p>
-      <div className="h-1 w-full overflow-hidden rounded-full bg-white/[0.06]">
+      <div className="h-1 w-full overflow-hidden rounded-full bg-black/[0.06]">
         <div
           className="h-full rounded-full transition-all duration-300"
           style={{
