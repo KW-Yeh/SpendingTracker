@@ -47,16 +47,13 @@ Connection is configured via environment variables — either `DATABASE_URL` (si
 
 Auth is handled by **NextAuth v5** (via `@/auth`) with both Google and LINE OAuth providers (JWT session strategy). On first login, the `jwt` callback resolves the email to a DB `user_id` and stores it on the token, so the session user object always carries an integer `userId`.
 
-### Data Layer: Cloud-first + IndexedDB Cache
+### Data Layer: Cloud-first (API source of truth)
 
-The app uses a **cloud-first with IDB cache** pattern throughout:
-1. Show IDB cache immediately for fast render
-2. Fetch from API (source of truth) in parallel
-3. Update IDB cache with fresh API response
+The app fetches directly from the API on every page load. There is no local cache layer — the former IndexedDB cache has been removed.
 
 Mutations use optimistic updates with rollback on error.
 
-The IDB layer is encapsulated in `src/hooks/useIDB.ts`. The IDB store is named `"Expense Tracking"` (version 3 — see `IDB_NAME` / `IDB_VERSION` in `src/utils/constants.ts`).
+`IDB_NAME = "Expense Tracking"` remains in `src/utils/constants.ts` as a legacy constant but the IDB store itself is no longer used.
 
 ### Context Providers (Client State)
 
@@ -100,6 +97,7 @@ Two service tiers:
 - `src/services/*Services.ts` — **client-side** fetch wrappers that call the API routes: `groupServices.ts`, `budgetServices.ts`, `favoriteCategoriesServices.ts`, `userServices.ts`
 - `src/services/optimizedServices.ts` — client-side wrappers for the optimized endpoints
 - `src/services/optimizedServicesServer.ts` — server component equivalents (use absolute URL via `NEXTAUTH_URL`)
+- `src/services/getRecords.ts` — client-side wrapper for `/api/aurora/items`
 
 ### Pages & Routes
 
