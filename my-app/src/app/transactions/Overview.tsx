@@ -66,13 +66,11 @@ export default function OverView(props: Props) {
     [currentMonthBudgetItems],
   );
 
+  const hasBudget = monthlyBudget > 0;
   const balance = monthlyBudget - totalOutcome;
-  const usagePercentage =
-    monthlyBudget > 0 ? (totalOutcome / monthlyBudget) * 100 : 0;
-  const isOverBudget = balance < 0;
+  const usagePercentage = hasBudget ? (totalOutcome / monthlyBudget) * 100 : 0;
+  const isOverBudget = hasBudget && balance < 0;
   const isWarning = usagePercentage >= 80 && !isOverBudget;
-
-  const remainingPercent = Math.max(0, 100 - usagePercentage);
 
   const progressFillStyle = isOverBudget
     ? { backgroundColor: 'var(--color-over-budget)' }
@@ -87,91 +85,116 @@ export default function OverView(props: Props) {
       className="relative flex w-full flex-col gap-5 rounded-2xl border border-black/[0.08] bg-gray-950 p-5 text-gray-300 backdrop-blur-sm md:min-w-110"
       style={{ textWrap: 'pretty' }}
     >
-      {/* Hero — 主結餘數字 */}
-      <div className="flex flex-col gap-3">
+      {/* Hero — 本月總花費 */}
+      <div className="flex flex-col gap-2">
         <span
           className="text-[11px] font-semibold tracking-[0.12em] text-gray-400 uppercase"
           style={{ letterSpacing: '0.12em' }}
         >
-          本月預算結餘
+          本月總花費
         </span>
-        <div className="flex items-baseline gap-3">
-          <span
-            className="font-extrabold text-gray-50 tabular-nums"
-            style={{
-              fontFamily: 'var(--font-heading)',
-              fontSize: 'clamp(2.25rem, 9vw, 2.625rem)', // ~36–42px
-              fontVariantNumeric: 'tabular-nums',
-              color: isOverBudget ? 'var(--color-over-budget)' : undefined,
-            }}
-          >
-            ${normalizeNumber(Math.abs(balance))}
-          </span>
-          <span
-            className="text-xs font-semibold"
-            style={{
-              color: isOverBudget
-                ? 'var(--color-over-budget)'
-                : 'var(--color-text-tertiary)',
-            }}
-          >
-            {isOverBudget ? '超支' : `剩 ${remainingPercent.toFixed(0)}%`}
-          </span>
-        </div>
+        <span
+          className="font-extrabold text-gray-50 tabular-nums"
+          style={{
+            fontFamily: 'var(--font-heading)',
+            fontSize: 'clamp(2.25rem, 9vw, 2.625rem)', // ~36–42px
+            fontVariantNumeric: 'tabular-nums',
+          }}
+        >
+          ${normalizeNumber(totalOutcome)}
+        </span>
+      </div>
 
-        {/* Slim progress bar with marker */}
-        <div className="relative h-1.5 w-full overflow-visible rounded-full bg-black/[0.06]">
-          <div
-            className="h-full rounded-full transition-all duration-300"
-            style={{
-              ...progressFillStyle,
-              width: `${Math.min(usagePercentage, 100)}%`,
-            }}
-          />
-          <div
-            className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-gray-900 transition-all duration-300"
-            style={{
-              left: markerLeft,
-              width: 10,
-              height: 10,
-              ...progressFillStyle,
-            }}
-          />
-        </div>
+      <div
+        className="flex items-center justify-between rounded-xl border border-black/[0.08] px-3.5 py-2.5"
+        style={{ backgroundColor: 'var(--color-income-bg)' }}
+      >
+        <span
+          className="text-[11px] font-medium"
+          style={{
+            color: 'var(--color-income)',
+            letterSpacing: '0.04em',
+          }}
+        >
+          本月收入
+        </span>
+        <span
+          className="text-lg font-extrabold tabular-nums"
+          style={{
+            color: 'var(--color-income)',
+            fontVariantNumeric: 'tabular-nums',
+            fontFamily: 'var(--font-heading)',
+          }}
+        >
+          ${normalizeNumber(totalIncome)}
+        </span>
+      </div>
 
-        <div className="flex items-center justify-between text-[11px] font-medium text-gray-400">
-          <span style={{ fontVariantNumeric: 'tabular-nums' }}>
-            已使用 {usagePercentage.toFixed(1)}%
-          </span>
-          {isOverBudget && (
+      {/* 預算摘要 — 從 hero 下放為輔助資訊 */}
+      {hasBudget && (
+        <div className="flex flex-col gap-2">
+          <div className="flex items-baseline justify-between text-[11px] font-medium">
+            <span className="text-gray-400">
+              本月預算{' '}
+              <span
+                className="font-semibold text-gray-300"
+                style={{ fontVariantNumeric: 'tabular-nums' }}
+              >
+                ${normalizeNumber(monthlyBudget)}
+              </span>
+            </span>
             <span
               className="font-semibold"
               style={{
-                color: 'var(--color-over-budget)',
+                color: isOverBudget
+                  ? 'var(--color-over-budget)'
+                  : 'var(--color-text-tertiary)',
                 fontVariantNumeric: 'tabular-nums',
               }}
             >
-              超出 {(usagePercentage - 100).toFixed(1)}%
+              {isOverBudget ? '超支' : '剩餘'} $
+              {normalizeNumber(Math.abs(balance))}
             </span>
-          )}
-        </div>
-      </div>
+          </div>
 
-      {/* 收支雙卡 (取代 3 卡) */}
-      <div className="grid grid-cols-2 gap-3">
-        <Tile
-          label="本月收入"
-          amount={totalIncome}
-          colorVar="--color-income"
-          mutedBgVar="--color-income-bg"
-        />
-        <Tile
-          label="本月支出"
-          amount={totalOutcome}
-          colorVar="--color-expense"
-          mutedBgVar="--color-expense-bg"
-        />
-      </div>
+          {/* Slim progress bar with marker */}
+          <div className="relative h-1.5 w-full overflow-visible rounded-full bg-black/[0.06]">
+            <div
+              className="h-full rounded-full transition-all duration-300"
+              style={{
+                ...progressFillStyle,
+                width: `${Math.min(usagePercentage, 100)}%`,
+              }}
+            />
+            <div
+              className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-gray-900 transition-all duration-300"
+              style={{
+                left: markerLeft,
+                width: 10,
+                height: 10,
+                ...progressFillStyle,
+              }}
+            />
+          </div>
+
+          <div className="flex items-center justify-between text-[11px] font-medium text-gray-400">
+            <span style={{ fontVariantNumeric: 'tabular-nums' }}>
+              已使用 {usagePercentage.toFixed(1)}%
+            </span>
+            {isOverBudget && (
+              <span
+                className="font-semibold"
+                style={{
+                  color: 'var(--color-over-budget)',
+                  fontVariantNumeric: 'tabular-nums',
+                }}
+              >
+                超出 {(usagePercentage - 100).toFixed(1)}%
+              </span>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* 預算超支警告 */}
       {overBudgetItems.length > 0 && (
@@ -317,45 +340,6 @@ export default function OverView(props: Props) {
           )}
         </div>
       )}
-    </div>
-  );
-}
-
-function Tile({
-  label,
-  amount,
-  colorVar,
-  mutedBgVar,
-}: {
-  label: string;
-  amount: number;
-  colorVar: string;
-  mutedBgVar: string;
-}) {
-  return (
-    <div
-      className="flex flex-col gap-1 rounded-xl border border-black/[0.08] px-3.5 py-3"
-      style={{ backgroundColor: `var(${mutedBgVar})` }}
-    >
-      <span
-        className="text-[11px] font-medium"
-        style={{
-          color: `var(${colorVar})`,
-          letterSpacing: '0.04em',
-        }}
-      >
-        {label}
-      </span>
-      <span
-        className="text-xl font-extrabold tabular-nums"
-        style={{
-          color: `var(${colorVar})`,
-          fontVariantNumeric: 'tabular-nums',
-          fontFamily: 'var(--font-heading)',
-        }}
-      >
-        ${normalizeNumber(amount)}
-      </span>
     </div>
   );
 }
