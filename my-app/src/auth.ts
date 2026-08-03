@@ -11,7 +11,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     LineProvider({
       clientId: process.env.LINE_CLIENT_ID,
       clientSecret: process.env.LINE_CLIENT_SECRET,
-      checks: ["state"],
+      checks: ['state'],
     }),
   ],
   session: {
@@ -56,7 +56,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.name = token.name as string;
         // Add user_id to session
         if (token.userId) {
-          (session.user as any).userId = token.userId;
+          session.user.userId = token.userId;
         }
       }
       return session;
@@ -68,7 +68,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       // 如果 URL 包含 callbackUrl 參數，使用它進行重定向
       if (url.startsWith(baseUrl)) {
-        console.log('[NextAuth Redirect] ✅ URL starts with baseUrl, returning:', url);
+        console.log(
+          '[NextAuth Redirect] ✅ URL starts with baseUrl, returning:',
+          url,
+        );
         return url;
       }
 
@@ -77,11 +80,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       const callbackUrl = urlObj.searchParams.get('callbackUrl');
       if (callbackUrl) {
         const redirectUrl = `${baseUrl}${callbackUrl}`;
-        console.log('[NextAuth Redirect] ✅ Found callbackUrl, redirecting to:', redirectUrl);
+        console.log(
+          '[NextAuth Redirect] ✅ Found callbackUrl, redirecting to:',
+          redirectUrl,
+        );
         return redirectUrl;
       }
 
-      console.log('[NextAuth Redirect] ⚠️ No callback, returning baseUrl:', baseUrl);
+      console.log(
+        '[NextAuth Redirect] ⚠️ No callback, returning baseUrl:',
+        baseUrl,
+      );
       return baseUrl;
     },
   },

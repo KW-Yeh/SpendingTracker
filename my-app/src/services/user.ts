@@ -41,7 +41,11 @@ export async function getUser(email: string): Promise<User | null> {
 export async function createUser(data: User): Promise<User> {
   const { user_id, email, name } = data;
 
-  console.log('[DB createUser] Creating user with data:', { user_id, email, name });
+  console.log('[DB createUser] Creating user with data:', {
+    user_id,
+    email,
+    name,
+  });
 
   if (!user_id || !email) {
     throw new Error('缺少必要欄位');
@@ -61,7 +65,10 @@ export async function createUser(data: User): Promise<User> {
   console.log('[DB createUser] Query result rows:', result.rows.length);
 
   if (result.rows.length === 0) {
-    console.log('[DB createUser] ⚠️ Email already exists, fetching existing user:', email);
+    console.log(
+      '[DB createUser] ⚠️ Email already exists, fetching existing user:',
+      email,
+    );
     const existing = await getUser(email);
     if (!existing) {
       throw new Error('使用者建立失敗');
@@ -88,7 +95,7 @@ export async function putUser(
 
   // 動態建構 SET 子句
   const updates: string[] = [];
-  const values: any[] = [];
+  const values: unknown[] = [];
   let paramIndex = 1;
 
   if (data.email !== undefined) {

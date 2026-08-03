@@ -166,9 +166,10 @@ export async function createGroup(data: {
 
     // Parse members JSON string to array
     if (account.members) {
-      account.members = typeof account.members === 'string'
-        ? JSON.parse(account.members)
-        : account.members;
+      account.members =
+        typeof account.members === 'string'
+          ? JSON.parse(account.members)
+          : account.members;
     }
 
     // 自動將擁有者加入成員
@@ -205,7 +206,7 @@ export async function updateGroup(
 
   // 動態建構 SET 子句
   const updates: string[] = [];
-  const values: any[] = [];
+  const values: unknown[] = [];
   let paramIndex = 1;
 
   if (data.name !== undefined) {

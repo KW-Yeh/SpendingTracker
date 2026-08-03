@@ -26,7 +26,7 @@ export async function GET(req: Request) {
     if (!userId) {
       return NextResponse.json(
         { status: false, message: 'Missing userId parameter' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -40,7 +40,7 @@ export async function GET(req: Request) {
     console.error('[Dashboard API] Error:', error);
     return NextResponse.json(
       { status: false, message: 'Internal Server Error' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -53,7 +53,7 @@ async function getOptimizedDashboardData(userId: number) {
 
   const result = await pool.query(
     'SELECT get_user_dashboard_data($1) as data',
-    [userId]
+    [userId],
   );
 
   if (!result.rows[0]?.data) {
@@ -64,9 +64,10 @@ async function getOptimizedDashboardData(userId: number) {
   }
 
   // Parse the JSON string returned from the function
-  const data = typeof result.rows[0].data === 'string'
-    ? JSON.parse(result.rows[0].data)
-    : result.rows[0].data;
+  const data =
+    typeof result.rows[0].data === 'string'
+      ? JSON.parse(result.rows[0].data)
+      : result.rows[0].data;
 
   return NextResponse.json({
     status: true,
@@ -96,16 +97,17 @@ async function getLegacyDashboardData(userId: number) {
   const groups = await getUserGroups(userId);
 
   // Get recent transactions (last 30 days) from all user's groups
-  const groupIds = groups.map((g: any) => g.account_id);
+  const groupIds = groups.map((g) => g.account_id);
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  const recentTransactions = groupIds.length > 0
-    ? await getItems({
-        groupId: groupIds[0], // For now, just get from first group
-        startDate: thirtyDaysAgo.toISOString().split('T')[0],
-      })
-    : [];
+  const recentTransactions =
+    groupIds[0] !== undefined
+      ? await getItems({
+          groupId: String(groupIds[0]), // For now, just get from first group
+          startDate: thirtyDaysAgo.toISOString().split('T')[0],
+        })
+      : [];
 
   return NextResponse.json({
     status: true,

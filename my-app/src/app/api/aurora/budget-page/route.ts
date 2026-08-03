@@ -26,21 +26,27 @@ export async function GET(req: Request) {
     if (!accountId) {
       return NextResponse.json(
         { status: false, message: 'Missing accountId parameter' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Check feature flag to determine which implementation to use
     if (FEATURE_FLAGS.USE_OPTIMIZED_BUDGET) {
-      return await getOptimizedBudgetData(Number(accountId), year ? Number(year) : undefined);
+      return await getOptimizedBudgetData(
+        Number(accountId),
+        year ? Number(year) : undefined,
+      );
     } else {
-      return await getLegacyBudgetData(Number(accountId), year ? Number(year) : undefined);
+      return await getLegacyBudgetData(
+        Number(accountId),
+        year ? Number(year) : undefined,
+      );
     }
   } catch (error) {
     console.error('[Budget Page API] Error:', error);
     return NextResponse.json(
       { status: false, message: 'Internal Server Error' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -52,14 +58,11 @@ async function getOptimizedBudgetData(accountId: number, year?: number) {
   const pool = await getPool();
 
   const result = year
-    ? await pool.query(
-        'SELECT get_budget_page_data($1, $2) as data',
-        [accountId, year]
-      )
-    : await pool.query(
-        'SELECT get_budget_page_data($1) as data',
-        [accountId]
-      );
+    ? await pool.query('SELECT get_budget_page_data($1, $2) as data', [
+        accountId,
+        year,
+      ])
+    : await pool.query('SELECT get_budget_page_data($1) as data', [accountId]);
 
   if (!result.rows[0]?.data) {
     return NextResponse.json({
@@ -69,9 +72,10 @@ async function getOptimizedBudgetData(accountId: number, year?: number) {
   }
 
   // Parse the JSON string returned from the function
-  const data = typeof result.rows[0].data === 'string'
-    ? JSON.parse(result.rows[0].data)
-    : result.rows[0].data;
+  const data =
+    typeof result.rows[0].data === 'string'
+      ? JSON.parse(result.rows[0].data)
+      : result.rows[0].data;
 
   return NextResponse.json({
     status: true,
@@ -103,20 +107,22 @@ async function getLegacyBudgetData(accountId: number, year?: number) {
   });
 
   // Calculate monthly statistics
-  const monthlyStatistics: any = {};
+  const monthlyStatistics: MonthlyStatistics = {};
   for (let month = 1; month <= 12; month++) {
-    const monthTransactions = yearlyTransactions.filter((t: any) => {
+    const monthTransactions = yearlyTransactions.filter((t) => {
       const date = new Date(t.date);
-      return date.getFullYear() === currentYear && date.getMonth() + 1 === month;
+      return (
+        date.getFullYear() === currentYear && date.getMonth() + 1 === month
+      );
     });
 
     monthlyStatistics[month] = {
       total_outcome: monthTransactions
-        .filter((t: any) => t.type === 'Outcome')
-        .reduce((sum: number, t: any) => sum + Number(t.amount), 0),
+        .filter((t) => t.type === 'Outcome')
+        .reduce((sum, t) => sum + Number(t.amount), 0),
       total_income: monthTransactions
-        .filter((t: any) => t.type === 'Income')
-        .reduce((sum: number, t: any) => sum + Number(t.amount), 0),
+        .filter((t) => t.type === 'Income')
+        .reduce((sum, t) => sum + Number(t.amount), 0),
       transaction_count: monthTransactions.length,
     };
   }

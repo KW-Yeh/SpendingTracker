@@ -37,7 +37,7 @@ export async function getItems(params: {
     WHERE 1=1
   `;
 
-  const queryParams: any[] = [];
+  const queryParams: unknown[] = [];
   let paramIndex = 1;
 
   // 根據 groupId 或 email 篩選

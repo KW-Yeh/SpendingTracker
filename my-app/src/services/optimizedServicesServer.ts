@@ -22,9 +22,9 @@ interface DashboardDataResponse {
   status: boolean;
   message?: string;
   data?: {
-    user: any;
-    groups: any[];
-    recentTransactions: any[];
+    user: User;
+    groups: Group[];
+    recentTransactions: SpendingRecord[];
   };
 }
 
@@ -35,15 +35,9 @@ interface BudgetPageDataResponse {
   status: boolean;
   message?: string;
   data?: {
-    budget: any | null;
-    yearlyTransactions: any[];
-    monthlyStatistics: {
-      [month: string]: {
-        total_outcome: number;
-        total_income: number;
-        transaction_count: number;
-      };
-    };
+    budget: Budget | null;
+    yearlyTransactions: SpendingRecord[];
+    monthlyStatistics: MonthlyStatistics;
   };
 }
 
@@ -58,7 +52,7 @@ interface BudgetPageDataResponse {
  * Performance: ~10-30ms (vs ~50-100ms via API route)
  */
 export async function getDashboardDataDirect(
-  userId: number
+  userId: number,
 ): Promise<DashboardDataResponse> {
   try {
     if (FEATURE_FLAGS.USE_OPTIMIZED_DASHBOARD) {
@@ -83,7 +77,7 @@ async function getOptimizedDashboardDataDirect(userId: number) {
 
   const result = await pool.query(
     'SELECT get_user_dashboard_data($1) as data',
-    [userId]
+    [userId],
   );
 
   if (!result.rows[0]?.data) {
@@ -94,9 +88,10 @@ async function getOptimizedDashboardDataDirect(userId: number) {
   }
 
   // Parse the JSON string returned from the function
-  const data = typeof result.rows[0].data === 'string'
-    ? JSON.parse(result.rows[0].data)
-    : result.rows[0].data;
+  const data =
+    typeof result.rows[0].data === 'string'
+      ? JSON.parse(result.rows[0].data)
+      : result.rows[0].data;
 
   return {
     status: true,
@@ -126,16 +121,17 @@ async function getLegacyDashboardDataDirect(userId: number) {
   const groups = await getUserGroups(userId);
 
   // Get recent transactions (last 30 days) from all user's groups
-  const groupIds = groups.map((g: any) => g.account_id);
+  const groupIds = groups.map((g) => g.account_id);
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  const recentTransactions = groupIds.length > 0
-    ? await getItems({
-        groupId: groupIds[0],
-        startDate: thirtyDaysAgo.toISOString().split('T')[0],
-      })
-    : [];
+  const recentTransactions =
+    groupIds[0] !== undefined
+      ? await getItems({
+          groupId: String(groupIds[0]),
+          startDate: thirtyDaysAgo.toISOString().split('T')[0],
+        })
+      : [];
 
   return {
     status: true,
@@ -160,7 +156,7 @@ async function getLegacyDashboardDataDirect(userId: number) {
  */
 export async function getBudgetPageDataDirect(
   accountId: number,
-  year?: number
+  year?: number,
 ): Promise<BudgetPageDataResponse> {
   try {
     if (FEATURE_FLAGS.USE_OPTIMIZED_BUDGET) {
@@ -184,14 +180,11 @@ async function getOptimizedBudgetDataDirect(accountId: number, year?: number) {
   const pool = await getPool();
 
   const result = year
-    ? await pool.query(
-        'SELECT get_budget_page_data($1, $2) as data',
-        [accountId, year]
-      )
-    : await pool.query(
-        'SELECT get_budget_page_data($1) as data',
-        [accountId]
-      );
+    ? await pool.query('SELECT get_budget_page_data($1, $2) as data', [
+        accountId,
+        year,
+      ])
+    : await pool.query('SELECT get_budget_page_data($1) as data', [accountId]);
 
   if (!result.rows[0]?.data) {
     return {
@@ -201,9 +194,10 @@ async function getOptimizedBudgetDataDirect(accountId: number, year?: number) {
   }
 
   // Parse the JSON string returned from the function
-  const data = typeof result.rows[0].data === 'string'
-    ? JSON.parse(result.rows[0].data)
-    : result.rows[0].data;
+  const data =
+    typeof result.rows[0].data === 'string'
+      ? JSON.parse(result.rows[0].data)
+      : result.rows[0].data;
 
   return {
     status: true,
@@ -235,20 +229,22 @@ async function getLegacyBudgetDataDirect(accountId: number, year?: number) {
   });
 
   // Calculate monthly statistics
-  const monthlyStatistics: any = {};
+  const monthlyStatistics: MonthlyStatistics = {};
   for (let month = 1; month <= 12; month++) {
-    const monthTransactions = yearlyTransactions.filter((t: any) => {
+    const monthTransactions = yearlyTransactions.filter((t) => {
       const date = new Date(t.date);
-      return date.getFullYear() === currentYear && date.getMonth() + 1 === month;
+      return (
+        date.getFullYear() === currentYear && date.getMonth() + 1 === month
+      );
     });
 
     monthlyStatistics[month] = {
       total_outcome: monthTransactions
-        .filter((t: any) => t.type === 'Outcome')
-        .reduce((sum: number, t: any) => sum + Number(t.amount), 0),
+        .filter((t) => t.type === 'Outcome')
+        .reduce((sum, t) => sum + Number(t.amount), 0),
       total_income: monthTransactions
-        .filter((t: any) => t.type === 'Income')
-        .reduce((sum: number, t: any) => sum + Number(t.amount), 0),
+        .filter((t) => t.type === 'Income')
+        .reduce((sum, t) => sum + Number(t.amount), 0),
       transaction_count: monthTransactions.length,
     };
   }

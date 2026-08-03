@@ -186,6 +186,15 @@ interface SyncPushPayload {
   favorites: FavoriteCategories | null;
 }
 
+interface MonthlyStatistic {
+  total_outcome: number;
+  total_income: number;
+  transaction_count: number;
+}
+
+// Keyed by month number 1-12, as a string once it round-trips through JSON.
+type MonthlyStatistics = Record<string, MonthlyStatistic>;
+
 // Helper type for category keys
 type CategoryKey =
   | 'food'
