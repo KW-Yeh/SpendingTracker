@@ -1,6 +1,6 @@
 'use client';
 
-import { MiniDailyCostChart } from '@/app/transactions/MiniDailyCostChart';
+import { MonthlySpendingProgressCard } from '@/app/transactions/MonthlySpendingProgressCard';
 import Overview from '@/app/transactions/Overview';
 import { QuickNavigationCards } from '@/components/QuickNavigationCards';
 import { RecentTransactionsList } from '@/components/RecentTransactionsList';
@@ -10,17 +10,21 @@ import { useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
-import { startTransition, useCallback, useEffect, useState, useMemo } from 'react';
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useState,
+  useMemo,
+} from 'react';
 import { YearMonthFilter } from './analysis/YearMonthFilter';
 import { useYearMonth } from '@/hooks/useYearMonth';
-import { CategoricalChartState } from 'recharts/types/chart/types';
 
 export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
   const { syncData, data, loading, hasEverLoaded } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
   const { budget } = useBudgetCtx();
   const [monthlyData, setMonthlyData] = useState<SpendingRecord[]>([]);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const dateHook = useYearMonth(new Date());
 
   const refreshData = useCallback(() => {
@@ -78,13 +82,6 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
     return total;
   }, [budget, dateHook.month]);
 
-  const handleChartClick = useCallback((state: CategoricalChartState) => {
-    if (!state.activePayload || !state.activePayload[0]) return;
-    const clickedDate = state.activePayload[0].payload.date;
-    if (!clickedDate) return;
-    setSelectedDate(prevDate => prevDate === clickedDate ? null : clickedDate);
-  }, []);
-
   // Only show the skeleton when we genuinely have nothing to render yet.
   if (!hasEverLoaded && data.length === 0) {
     return <DashboardSkeleton />;
@@ -112,18 +109,22 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
           selectedMonth={Number(dateHook.month)}
         />
 
-        <MiniDailyCostChart
-          dateStr={new Date().toISOString()}
+        <MonthlySpendingProgressCard
+          year={Number(dateHook.year)}
+          month={Number(dateHook.month)}
           costList={monthlyData}
+          monthlyBudget={currentMonthBudget}
           isMobile={isMobile}
-          onChartClick={handleChartClick}
-          selectedDate={selectedDate}
         />
       </div>
 
       <div className="flex w-full flex-col gap-3 md:w-auto md:flex-row md:gap-5">
         <QuickNavigationCards isMobile={isMobile} />
-        <RecentTransactionsList data={monthlyData} loading={loading} refreshData={refreshData} />
+        <RecentTransactionsList
+          data={monthlyData}
+          loading={loading}
+          refreshData={refreshData}
+        />
       </div>
     </div>
   );
