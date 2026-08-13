@@ -124,9 +124,6 @@ export const ChartBlock = ({ mockMode = false }: { mockMode?: boolean }) => {
       <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="eyebrow">Spending insights</p>
-          <h1 className="mt-1 text-2xl text-gray-100 sm:text-3xl">
-            看懂錢花去哪裡
-          </h1>
           <p className="mt-1 text-sm text-gray-400">
             {activeGroup.name} · {analysis.selectedMonthLabel}
           </p>

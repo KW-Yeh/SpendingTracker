@@ -42,6 +42,7 @@ def main() -> None:
             page.goto("http://localhost:3000/analysis?mock=1")
             page.wait_for_load_state("networkidle")
             page.get_by_text("Mock data 驗證模式", exact=True).wait_for()
+            assert page.get_by_text("看懂錢花去哪裡", exact=True).count() == 0
 
             for label in ["本月支出", "較上月", "本月結餘", "預算使用率"]:
                 assert page.get_by_text(label, exact=True).count() == 1, label
