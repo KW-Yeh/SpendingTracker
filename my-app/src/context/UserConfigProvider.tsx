@@ -122,6 +122,12 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const handleLogin = useCallback(() => {
+    const isMockAnalysis =
+      pathname === '/analysis' &&
+      typeof window !== 'undefined' &&
+      new URLSearchParams(window.location.search).get('mock') === '1';
+    if (isMockAnalysis) return;
+
     if (pathname !== '/login') {
       redirect('/login');
     }

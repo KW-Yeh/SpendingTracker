@@ -20,11 +20,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ mock?: string }>;
+}) {
+  const { mock } = await searchParams;
+
   return (
     <div className="bg-soft relative flex w-full flex-1 flex-col">
       <PageTitle>消費分析</PageTitle>
-      <ChartBlock />
+      <ChartBlock mockMode={mock === '1'} />
     </div>
   );
 }

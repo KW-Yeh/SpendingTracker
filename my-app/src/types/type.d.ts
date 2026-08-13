@@ -87,35 +87,53 @@ interface ModalRef {
   close: () => void;
 }
 
-interface PieChartData {
-  income: {
-    total: number;
-    necessary: number;
-    unnecessary: number;
-    necessaryList: { name: string; value: number; color: string }[];
-    unnecessaryList: { name: string; value: number; color: string }[];
-    list: PieChartDataItem[];
-  };
-  outcome: {
-    total: number;
-    necessary: number;
-    unnecessary: number;
-    necessaryList: { name: string; value: number; color: string }[];
-    unnecessaryList: { name: string; value: number; color: string }[];
-    list: PieChartDataItem[];
-  };
-}
-
-interface PieChartDataBase {
-  name: string;
-  value: number;
-  color: string;
-}
-
-interface PieChartDataItem extends PieChartDataBase {
-  id: string;
+interface AnalysisMonthlyPoint {
+  key: string;
+  label: string;
+  income: number;
+  outcome: number;
   necessary: number;
   unnecessary: number;
+  necessaryPercent: number;
+  unnecessaryPercent: number;
+  movingAverage: number;
+  budget: number;
+}
+
+interface AnalysisCategoryChange {
+  category: string;
+  label: string;
+  current: number;
+  previous: number;
+  change: number;
+}
+
+interface AnalysisBudgetProgress {
+  category: string;
+  label: string;
+  budgeted: number;
+  spent: number;
+  remaining: number;
+  usagePercent: number;
+  isOver: boolean;
+}
+
+interface AnalysisDashboardData {
+  selectedMonthLabel: string;
+  previousMonthLabel: string;
+  months: AnalysisMonthlyPoint[];
+  necessityMonths: AnalysisMonthlyPoint[];
+  categoryChanges: AnalysisCategoryChange[];
+  budgetProgress: AnalysisBudgetProgress[];
+  summary: {
+    outcome: number;
+    income: number;
+    net: number;
+    previousDelta: number;
+    previousChangePercent: number | null;
+    budgeted: number;
+    budgetUsagePercent: number | null;
+  };
 }
 
 // New Budget Schema Types

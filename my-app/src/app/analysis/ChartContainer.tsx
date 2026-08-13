@@ -2,22 +2,24 @@ import { ReactNode } from 'react';
 
 export const ChartContainer = ({
   title,
+  subtitle,
   children,
 }: {
   title: string;
+  subtitle?: string;
   children: ReactNode;
 }) => {
   return (
-    <div className="card relative z-10 flex w-full flex-col items-center transition-all duration-200">
-      <div className="mb-4 w-full">
-        <h2
-          className="relative inline-block text-xl font-semibold text-gray-100 select-none"
-          style={{ fontFamily: 'var(--font-heading)' }}
-        >
-          {title}
-        </h2>
+    <section className="card flex w-full min-w-0 flex-col items-center">
+      <div className="mb-5 w-full">
+        <h2 className="text-xl font-semibold text-gray-100">{title}</h2>
+        {subtitle && (
+          <p className="mt-1 text-sm leading-relaxed text-gray-400">
+            {subtitle}
+          </p>
+        )}
       </div>
       {children}
-    </div>
+    </section>
   );
 };

@@ -8,7 +8,7 @@ import { BiChevronLeft, BiChevronRight } from 'react-icons/bi';
 import styles from './YearMonthFilter.module.css';
 
 interface Props {
-  refreshData: (
+  refreshData?: (
     groupId: string | undefined,
     year: string,
     month: string,
@@ -33,12 +33,13 @@ export const YearMonthFilter = (props: Props) => {
   });
 
   useEffect(() => {
+    if (!refreshData) return;
     refreshData(
       group?.account_id ? String(group.account_id) : undefined,
       year,
       month,
     );
-  }, [group?.account_id, year, month, refreshData]);
+  }, [group?.account_id, month, refreshData, year]);
 
   const handlePreviousMonth = () => {
     if (month === '1') {
@@ -70,12 +71,12 @@ export const YearMonthFilter = (props: Props) => {
   };
 
   return (
-    <div className={`relative w-full md:max-w-80 ${className}`}>
-      <div className="hover:border-primary-400 flex w-full items-center gap-1.5 overflow-hidden rounded-xl border border-gray-600 bg-gray-950/90 backdrop-blur-sm transition-all">
+    <div className={`relative w-full ${className}`}>
+      <div className="hover:border-primary-400 bg-background flex w-full items-center gap-1.5 overflow-hidden rounded-xl border border-gray-600 transition-colors">
         <button
           type="button"
           onClick={handlePreviousMonth}
-          className={`hover:text-primary-400 flex min-h-11 min-w-11 items-center justify-center border-r border-gray-600 text-gray-400 transition-all hover:bg-gray-700/70 active:bg-gray-700 ${styles.navButton}`}
+          className={`hover:text-primary-500 flex min-h-11 min-w-11 items-center justify-center border-r border-gray-600 text-gray-400 transition-colors hover:bg-gray-800 active:bg-gray-700 ${styles.navButton}`}
           aria-label="上個月"
         >
           <BiChevronLeft className="size-5" />
@@ -85,7 +86,7 @@ export const YearMonthFilter = (props: Props) => {
           type="button"
           onClick={() => setOpen(!open)}
           className={`flex min-h-11 flex-1 items-center justify-center gap-2 py-2 transition-all ${
-            open ? 'bg-primary-500/20' : 'hover:bg-gray-700/50'
+            open ? 'bg-primary-50' : 'hover:bg-gray-800'
           }`}
         >
           <CalendarIcon
@@ -112,7 +113,7 @@ export const YearMonthFilter = (props: Props) => {
         <button
           type="button"
           onClick={handleNextMonth}
-          className={`hover:text-primary-400 flex min-h-11 min-w-11 items-center justify-center border-l border-gray-600 text-gray-400 transition-all hover:bg-gray-700/70 active:bg-gray-700 ${styles.navButton}`}
+          className={`hover:text-primary-500 flex min-h-11 min-w-11 items-center justify-center border-l border-gray-600 text-gray-400 transition-colors hover:bg-gray-800 active:bg-gray-700 ${styles.navButton}`}
           aria-label="下個月"
         >
           <BiChevronRight className="size-5" />
@@ -122,7 +123,7 @@ export const YearMonthFilter = (props: Props) => {
       {/* Dropdown panel */}
       <div
         ref={ref}
-        className={`absolute top-full left-1/2 z-20 mt-2 w-80 overflow-hidden rounded-2xl border border-gray-700 bg-gray-950/95 shadow-lg backdrop-blur-sm transition-all ${
+        className={`bg-background absolute top-full left-1/2 z-20 mt-2 w-[min(20rem,calc(100vw-2.5rem))] -translate-x-1/2 overflow-hidden rounded-2xl border border-gray-700 shadow-lg transition-all ${
           open
             ? `${styles.dropdownAnimation} visible opacity-100`
             : 'invisible translate-y-1 opacity-0'

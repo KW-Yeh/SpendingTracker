@@ -1,256 +1,167 @@
 'use client';
 
-import { ChartContainer } from '@/app/analysis/ChartContainer';
+import { AnalysisKpiGrid } from '@/app/analysis/AnalysisKpiGrid';
+import { BudgetProgressList } from '@/app/analysis/BudgetProgressList';
 import { YearMonthFilter } from '@/app/analysis/YearMonthFilter';
-import { AnalysisSkeleton } from '@/components/skeletons/AnalysisSkeleton';
+import {
+  createMockAnalysisRecords,
+  MOCK_ANALYSIS_BUDGET,
+  MOCK_ANALYSIS_GROUP,
+} from '@/app/analysis/mockAnalysisData';
 import { NoGroupEmptyState } from '@/components/NoGroupEmptyState';
+import { AnalysisSkeleton } from '@/components/skeletons/AnalysisSkeleton';
 import { useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
-import { useGetSpendingCtx } from '@/context/SpendingProvider';
-import { useUserConfigCtx } from '@/context/UserConfigProvider';
 import { useScrollToTop } from '@/hooks/useScrollToTop';
 import { useYearMonth } from '@/hooks/useYearMonth';
-import { calSpending2Chart } from '@/utils/calSpending2Chart';
-import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
-import { CATEGORY_WORDING_MAP, SpendingType, Necessity } from '@/utils/constants';
+import { getItems } from '@/services/getRecords';
+import { buildAnalysisDashboard } from '@/utils/buildAnalysisDashboard';
 import dynamic from 'next/dynamic';
-import { useCallback, useEffect, useMemo } from 'react';
-import ExpenseCostTable from './ExpenseCostTable';
-import NecessityCostTable from './NecessityCostTable';
-import BudgetCostTable from './BudgetCostTable';
+import { useEffect, useMemo, useState } from 'react';
 
-const ExpensePieChart = dynamic(() => import('./ExpensePieChart'), {
-  ssr: false,
-  loading: () => (
-    <div className="mx-auto mt-15 aspect-square size-45 animate-pulse rounded-full bg-gray-600/50 p-1.5">
-      <div className="bg-gray-800 size-full rounded-full p-1.5">
-        <div className="size-full rounded-full bg-gray-600/50 p-5">
-          <div className="bg-gray-800 size-full rounded-full"></div>
-        </div>
-      </div>
-    </div>
-  ),
+const SpendingTrendChart = dynamic(
+  () => import('./AnalysisCharts').then((module) => module.SpendingTrendChart),
+  { ssr: false },
+);
+const CategoryChangeChart = dynamic(
+  () => import('./AnalysisCharts').then((module) => module.CategoryChangeChart),
+  { ssr: false },
+);
+const NecessityTrendChart = dynamic(
+  () => import('./AnalysisCharts').then((module) => module.NecessityTrendChart),
+  { ssr: false },
+);
+
+const getAnalysisRange = (anchor: Date) => ({
+  startDate: new Date(
+    anchor.getFullYear(),
+    anchor.getMonth() - 12,
+    1,
+  ).toISOString(),
+  endDate: new Date(
+    anchor.getFullYear(),
+    anchor.getMonth() + 1,
+    0,
+    23,
+    59,
+    59,
+    999,
+  ).toISOString(),
 });
 
-const NecessityPieChart = dynamic(() => import('./NecessityPieChart'), {
-  ssr: false,
-  loading: () => (
-    <div className="mx-auto mt-15 aspect-square size-45 animate-pulse rounded-full bg-gray-600/50 p-1.5">
-      <div className="bg-gray-800 size-full rounded-full p-1.5">
-        <div className="size-full rounded-full bg-gray-600/50 p-5">
-          <div className="bg-gray-800 size-full rounded-full"></div>
-        </div>
-      </div>
-    </div>
-  ),
-});
-
-const BudgetPieChart = dynamic(() => import('./BudgetPieChart'), {
-  ssr: false,
-  loading: () => (
-    <div className="mx-auto mt-15 aspect-square size-45 animate-pulse rounded-full bg-gray-600/50 p-1.5">
-      <div className="bg-gray-800 size-full rounded-full p-1.5">
-        <div className="size-full rounded-full bg-gray-600/50 p-5">
-          <div className="bg-gray-800 size-full rounded-full"></div>
-        </div>
-      </div>
-    </div>
-  ),
-});
-
-export const ChartBlock = () => {
+export const ChartBlock = ({ mockMode = false }: { mockMode?: boolean }) => {
   useScrollToTop();
-  const { config: userData } = useUserConfigCtx();
-  const { data, syncData, hasEverLoaded } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
   const { budget } = useBudgetCtx();
-  const today = new Date();
-  const dateHook = useYearMonth(today);
-
-  const refreshData = useCallback(
-    (_groupId: string | undefined, _year: string, _month: string) => {
-      const { startDate, endDate } = getStartEndOfMonth(
-        new Date(Number(_year), Number(_month) - 1),
-      );
-      syncData(
-        _groupId,
-        userData?.email,
-        startDate.toISOString(),
-        endDate.toISOString(),
-      );
-    },
-    [syncData, userData?.email],
+  const dateHook = useYearMonth(new Date());
+  const [records, setRecords] = useState<SpendingRecord[]>([]);
+  const [isLoading, setIsLoading] = useState(!mockMode);
+  const [errorMessage, setErrorMessage] = useState('');
+  const anchor = useMemo(
+    () => new Date(Number(dateHook.year), Number(dateHook.month) - 1, 1),
+    [dateHook.month, dateHook.year],
   );
+  const activeGroup = mockMode ? MOCK_ANALYSIS_GROUP : currentGroup;
+  const activeBudget = mockMode ? MOCK_ANALYSIS_BUDGET : budget;
 
-  // Memoize filtered data and chart calculation
-  const chartData = useMemo(() => {
-    const filteredData = data.filter(
-      (record) =>
-        `${new Date(record.date).getFullYear()}` === dateHook.year &&
-        `${new Date(record.date).getMonth() + 1}` === dateHook.month,
-    );
-
-    return calSpending2Chart(filteredData);
-  }, [data, dateHook.year, dateHook.month]);
-
-  // Calculate budget analysis data
-  const budgetAnalysis = useMemo(() => {
-    if (!budget?.monthly_items) {
-      return {
-        totalBudgeted: 0,
-        totalSpent: 0,
-        totalNecessary: 0,
-        totalUnnecessary: 0,
-        categoryBreakdown: [],
-      };
+  useEffect(() => {
+    if (mockMode) {
+      setRecords(createMockAnalysisRecords(anchor));
+      setErrorMessage('');
+      setIsLoading(false);
+      return;
     }
 
-    const currentMonth = Number(dateHook.month);
-    const categoryMap: Record<string, { budgeted: number; spent: number; necessary: number; unnecessary: number }> = {};
+    if (!currentGroup?.account_id) {
+      setRecords([]);
+      setIsLoading(false);
+      return;
+    }
 
-    // Get budgeted amounts
-    budget.monthly_items.forEach((item) => {
-      const budgetAmount = item.months?.[currentMonth.toString()];
-      if (budgetAmount && budgetAmount > 0) {
-        const category = CATEGORY_WORDING_MAP[item.category] || item.category;
-        if (!categoryMap[category]) {
-          categoryMap[category] = { budgeted: 0, spent: 0, necessary: 0, unnecessary: 0 };
-        }
-        categoryMap[category].budgeted += budgetAmount;
+    let cancelled = false;
+    const loadAnalysis = async () => {
+      setIsLoading(true);
+      setErrorMessage('');
+      const range = getAnalysisRange(anchor);
+      const response = await getItems(
+        String(currentGroup.account_id),
+        undefined,
+        range.startDate,
+        range.endDate,
+      );
+      if (cancelled) return;
+
+      if (response.status && Array.isArray(response.data)) {
+        setRecords(response.data);
+      } else {
+        setRecords([]);
+        setErrorMessage(response.message || '分析資料載入失敗');
       }
-    });
-
-    // Get spent amounts
-    data.forEach((record) => {
-      if (
-        record.type === SpendingType.Outcome &&
-        `${new Date(record.date).getFullYear()}` === dateHook.year &&
-        `${new Date(record.date).getMonth() + 1}` === dateHook.month
-      ) {
-        const category = CATEGORY_WORDING_MAP[record.category] || record.category;
-        if (!categoryMap[category]) {
-          categoryMap[category] = { budgeted: 0, spent: 0, necessary: 0, unnecessary: 0 };
-        }
-        const amount = Number(record.amount);
-        categoryMap[category].spent += amount;
-
-        if (record.necessity === Necessity.Need) {
-          categoryMap[category].necessary += amount;
-        } else {
-          categoryMap[category].unnecessary += amount;
-        }
-      }
-    });
-
-    const categoryBreakdown = Object.entries(categoryMap).map(([category, values]) => ({
-      category,
-      ...values,
-    }));
-
-    const totalBudgeted = categoryBreakdown.reduce((sum, item) => sum + item.budgeted, 0);
-    const totalSpent = categoryBreakdown.reduce((sum, item) => sum + item.spent, 0);
-    const totalNecessary = categoryBreakdown.reduce((sum, item) => sum + item.necessary, 0);
-    const totalUnnecessary = categoryBreakdown.reduce((sum, item) => sum + item.unnecessary, 0);
-
-    return {
-      totalBudgeted,
-      totalSpent,
-      totalNecessary,
-      totalUnnecessary,
-      categoryBreakdown,
+      setIsLoading(false);
     };
-  }, [budget, data, dateHook.year, dateHook.month]);
 
-  // Only show the skeleton when we genuinely have nothing to render yet.
-  if (!hasEverLoaded && data.length === 0) {
-    return <AnalysisSkeleton />;
-  }
+    void loadAnalysis();
+    return () => {
+      cancelled = true;
+    };
+  }, [anchor, currentGroup?.account_id, mockMode]);
 
-  if (!currentGroup) {
+  const analysis = useMemo(
+    () => buildAnalysisDashboard(records, activeBudget, anchor),
+    [activeBudget, anchor, records],
+  );
+
+  if (!activeGroup) {
     return <NoGroupEmptyState>{null}</NoGroupEmptyState>;
   }
 
+  if (isLoading && records.length === 0) {
+    return <AnalysisSkeleton />;
+  }
+
   return (
-    <div className="content-wrapper">
-      <YearMonthFilter
-        refreshData={refreshData}
-        group={currentGroup}
-        dateOptions={dateHook}
-        className="self-center text-base"
-      />
-
-      <div className="flex w-full flex-col items-center gap-8 md:flex-row md:items-start">
-        <ChartContainer title="收支類別比例">
-          <div className="flex w-full flex-wrap justify-center gap-4">
-            <div className="size-75">
-              <ExpensePieChart
-                totalIncome={chartData.income.total}
-                totalOutcome={chartData.outcome.total}
-                list={[...chartData.outcome.list, ...chartData.income.list]}
-              />
-            </div>
-            <div className="flex flex-1 flex-col gap-4">
-              <ExpenseCostTable
-                totalIncome={chartData.income.total}
-                totalOutcome={chartData.outcome.total}
-                incomeList={chartData.income.list}
-                outcomeList={chartData.outcome.list}
-              />
-            </div>
-          </div>
-        </ChartContainer>
-
-        <ChartContainer title="支出類別比例（必要 vs 額外）">
-          <div className="flex w-full flex-wrap justify-center gap-4">
-            <div className="size-75">
-              <NecessityPieChart
-                totalNecessity={chartData.outcome.necessary}
-                totalUnnecessity={chartData.outcome.unnecessary}
-                list={[
-                  ...chartData.outcome.necessaryList,
-                  ...chartData.outcome.unnecessaryList,
-                ]}
-              />
-            </div>
-            <div className="flex flex-1 flex-col gap-4">
-              <NecessityCostTable
-                totalNecessary={chartData.outcome.necessary}
-                totalUnnecessary={chartData.outcome.unnecessary}
-                necessaryList={chartData.outcome.necessaryList}
-                unnecessaryList={chartData.outcome.unnecessaryList}
-              />
-            </div>
-          </div>
-        </ChartContainer>
+    <div className="content-wrapper !items-stretch !gap-5 lg:max-w-7xl">
+      <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="eyebrow">Spending insights</p>
+          <h1 className="mt-1 text-2xl text-gray-100 sm:text-3xl">
+            看懂錢花去哪裡
+          </h1>
+          <p className="mt-1 text-sm text-gray-400">
+            {activeGroup.name} · {analysis.selectedMonthLabel}
+          </p>
+        </div>
+        <YearMonthFilter dateOptions={dateHook} className="sm:max-w-72" />
       </div>
 
-      {/* Budget Analysis Section */}
-      {budgetAnalysis.totalBudgeted > 0 && (
-        <div className="flex w-full flex-col items-center gap-8 md:flex-row md:items-start">
-          <ChartContainer title="預算使用情況與合理性分析">
-            <div className="flex w-full flex-wrap justify-center gap-4">
-              <div className="size-75">
-                <BudgetPieChart
-                  totalBudgeted={budgetAnalysis.totalBudgeted}
-                  totalSpent={budgetAnalysis.totalSpent}
-                  totalNecessary={budgetAnalysis.totalNecessary}
-                  totalUnnecessary={budgetAnalysis.totalUnnecessary}
-                  categoryList={[]}
-                />
-              </div>
-              <div className="flex flex-1 flex-col gap-4">
-                <BudgetCostTable
-                  totalBudgeted={budgetAnalysis.totalBudgeted}
-                  totalSpent={budgetAnalysis.totalSpent}
-                  totalNecessary={budgetAnalysis.totalNecessary}
-                  totalUnnecessary={budgetAnalysis.totalUnnecessary}
-                  categoryBreakdown={budgetAnalysis.categoryBreakdown}
-                />
-              </div>
-            </div>
-          </ChartContainer>
+      {mockMode && (
+        <div className="border-primary-200 bg-primary-50 text-primary-700 flex items-center justify-between gap-3 rounded-xl border px-4 py-3 text-sm">
+          <span className="font-semibold">Mock data 驗證模式</span>
+          <span className="hidden text-xs sm:inline">不會呼叫真實交易 API</span>
         </div>
       )}
+
+      {errorMessage && (
+        <div
+          role="alert"
+          className="rounded-xl border border-[var(--color-expense)]/20 bg-[var(--color-expense-bg)] px-4 py-3 text-sm text-[var(--color-expense)]"
+        >
+          {errorMessage}
+        </div>
+      )}
+
+      <AnalysisKpiGrid data={analysis} />
+      <SpendingTrendChart months={analysis.months} />
+
+      <div className="grid min-w-0 gap-5 lg:grid-cols-2">
+        <CategoryChangeChart
+          changes={analysis.categoryChanges}
+          previousMonthLabel={analysis.previousMonthLabel}
+        />
+        <NecessityTrendChart months={analysis.necessityMonths} />
+      </div>
+
+      <BudgetProgressList items={analysis.budgetProgress} />
     </div>
   );
 };
