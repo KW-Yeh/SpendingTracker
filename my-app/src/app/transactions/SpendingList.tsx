@@ -25,8 +25,14 @@ export const SpendingList = (props: Props) => {
 
   const sortedData = useMemo(() => {
     const result: Record<string, SpendingRecord[]> = {};
+    const dataToGroup =
+      sortBy === 'date'
+        ? [...filteredBySearch].sort(
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+          )
+        : filteredBySearch;
 
-    filteredBySearch.forEach((d: SpendingRecord) => {
+    dataToGroup.forEach((d: SpendingRecord) => {
       let key: string;
 
       if (sortBy === 'category') {
@@ -69,7 +75,7 @@ export const SpendingList = (props: Props) => {
 
   return (
     <div className="flex w-full flex-col gap-2 text-xs sm:text-sm">
-      {Object.keys(sortedData).map((groupKey, index) => (
+      {Object.keys(sortedData).map((groupKey) => (
         <div key={groupKey}>
           <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">{groupKey}</span>
           <div
