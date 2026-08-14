@@ -211,9 +211,9 @@ export const RecurringBudgetItems = () => {
                   <div className="flex flex-1 items-center gap-2 overflow-hidden">
                     <span
                       aria-hidden
-                      className="flex size-[34px] shrink-0 items-center justify-center rounded-[10px] bg-black/[0.04] text-lg"
+                      className="flex size-[34px] shrink-0 items-center justify-center rounded-[10px] bg-black/[0.04] text-gray-400"
                     >
-                      {item.category}
+                      {getCategoryIcon(item.category, 'size-5')}
                     </span>
                     <div className="flex flex-col overflow-hidden">
                       <p className="truncate text-sm font-semibold text-gray-100">

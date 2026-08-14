@@ -173,8 +173,10 @@ export const MonthlyItemsList = () => {
                 className="flex items-center justify-between rounded-lg border border-solid border-gray-700 p-3"
               >
                 <div className="flex-1">
-                  <p className="font-medium">
-                    <span className="mr-2 text-xl">{item.category}</span>
+                  <p className="flex items-center gap-2 font-medium">
+                    <span aria-hidden className="text-gray-400">
+                      {getCategoryIcon(item.category, 'size-5')}
+                    </span>
                     {item.description}
                   </p>
                   <p className="text-sm text-gray-300">

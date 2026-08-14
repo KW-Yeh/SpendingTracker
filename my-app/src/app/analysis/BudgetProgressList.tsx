@@ -1,4 +1,5 @@
 import { ChartContainer } from '@/app/analysis/ChartContainer';
+import { getCategoryIcon } from '@/utils/getCategoryIcon';
 import { normalizeNumber } from '@/utils/normalizeNumber';
 
 export const BudgetProgressList = ({
@@ -27,8 +28,11 @@ export const BudgetProgressList = ({
               >
                 <div className="mb-2 flex items-start justify-between gap-4 text-sm">
                   <div className="min-w-0">
-                    <strong className="block truncate text-gray-100">
-                      {item.category} {item.label}
+                    <strong className="flex items-center gap-1.5 truncate text-gray-100">
+                      <span aria-hidden className="shrink-0 text-gray-400">
+                        {getCategoryIcon(item.category, 'size-4')}
+                      </span>
+                      {item.label}
                     </strong>
                     <span className="text-xs text-gray-400">
                       ${normalizeNumber(item.spent)} / $

@@ -539,9 +539,7 @@ const StepDetails = ({
                     }}
                     aria-hidden
                   >
-                    {getCategoryIcon(cat.value, 'size-5') ?? (
-                      <span className="text-xl leading-none">{cat.value}</span>
-                    )}
+                    {getCategoryIcon(cat.value, 'size-5')}
                   </span>
                   <span
                     className="text-[10.5px] font-semibold"

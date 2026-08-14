@@ -1,45 +1,38 @@
+import type { IconType } from 'react-icons';
 import {
-  MdOutlineBalance,
-  MdOutlineCatchingPokemon,
   MdOutlineCategory,
-  MdOutlineChecklistRtl,
   MdOutlineCheckroom,
   MdOutlineDirectionsCar,
   MdOutlineFastfood,
-  MdOutlineHealing,
   MdOutlineHome,
+  MdOutlineMedicalServices,
   MdOutlineMonetizationOn,
   MdOutlineRedeem,
   MdOutlineSchool,
+  MdOutlineShoppingBasket,
+  MdOutlineSportsEsports,
+  MdOutlineTrendingDown,
+  MdOutlineTrendingUp,
 } from 'react-icons/md';
 
+const CATEGORY_ICON_MAP: Record<string, IconType> = {
+  '🍔': MdOutlineFastfood,
+  '👗': MdOutlineCheckroom,
+  '🏠': MdOutlineHome,
+  '🚗': MdOutlineDirectionsCar,
+  '📚': MdOutlineSchool,
+  '🎲': MdOutlineSportsEsports,
+  '🧻': MdOutlineShoppingBasket,
+  '💊': MdOutlineMedicalServices,
+  '📉': MdOutlineTrendingDown,
+  '📈': MdOutlineTrendingUp,
+  '💰': MdOutlineMonetizationOn,
+  '🎁': MdOutlineRedeem,
+  '✨': MdOutlineCategory,
+};
+
 export function getCategoryIcon(category: string, className: string = '') {
-  switch (category) {
-    case '🍔':
-      return <MdOutlineFastfood className={className} />;
-    case '👗':
-      return <MdOutlineCheckroom className={className} />;
-    case '🏠':
-      return <MdOutlineHome className={className} />;
-    case '🚗':
-      return <MdOutlineDirectionsCar className={className} />;
-    case '📚':
-      return <MdOutlineSchool className={className} />;
-    case '🎲':
-      return <MdOutlineCatchingPokemon className={className} />;
-    case '🧻':
-      return <MdOutlineChecklistRtl className={className} />;
-    case '💊':
-      return <MdOutlineHealing className={className} />;
-    case '📉':
-      return <MdOutlineBalance className={className} />;
-    case '📈':
-      return <MdOutlineBalance className={className} />;
-    case '💰':
-      return <MdOutlineMonetizationOn className={className} />;
-    case '🎁':
-      return <MdOutlineRedeem className={className} />;
-    case '✨':
-      return <MdOutlineCategory className={className} />;
-  }
+  // Legacy records may carry emoji outside the current option list — never render a blank slot.
+  const Icon = CATEGORY_ICON_MAP[category] ?? MdOutlineCategory;
+  return <Icon className={className} />;
 }
