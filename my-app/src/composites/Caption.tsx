@@ -79,6 +79,7 @@ export const Caption = ({ openAside }: { openAside: () => void }) => {
           {/* Desktop quick-add — mobile uses the BottomNav FAB */}
           <Link
             href="/edit"
+            prefetch={true}
             scroll={false}
             className="group btn-add-header hidden items-center gap-1.5 px-3.5 py-2 text-sm whitespace-nowrap text-white md:flex"
             aria-label="新增帳目"

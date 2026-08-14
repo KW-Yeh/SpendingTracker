@@ -43,6 +43,7 @@ export const BottomNav = () => {
         <div className="flex items-center justify-center">
           <Link
             href="/edit"
+            prefetch={true}
             className="flex size-14 -translate-y-3 items-center justify-center rounded-full text-white transition-transform duration-150 active:scale-95"
             style={{
               background: 'var(--color-primary-500)',

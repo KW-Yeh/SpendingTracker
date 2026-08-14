@@ -1,45 +1,49 @@
-# Analysis Dashboard Expansion Plan
+# Instant Add-Expense Modal Plan
 
 ## Requirement
 
-Replace the analysis page's nested doughnut charts with a mobile-first dashboard that helps users understand current spending, changes over time, category drivers, necessity mix, and budget pressure. The implementation must support deterministic mock-data verification because the development environment cannot access production data.
+Make every add-expense trigger feel immediate: after the user presses the add button, the `/edit` modal should appear without waiting for a cold route navigation or an extra post-mount render, and the amount keypad should be interactive as soon as it is visible.
 
 ## Scope
 
-- Add summary KPIs for spending, month-over-month change, net balance, and budget usage.
-- Add a rolling 12-month spending chart with a 3-month moving average and monthly budget reference.
-- Add a category month-over-month change chart.
-- Add a 6-month necessary-versus-extra spending share chart.
-- Replace the budget doughnut with per-category budget progress bars that show overruns.
-- Fetch 13 months of live records through the existing items API without overwriting `SpendingProvider` state.
-- Add `/analysis?mock=1` as a deterministic UI verification mode that performs no analysis data fetch.
+- Fully prefetch `/edit` from the mobile FAB, desktop header action, and transactions-page add button.
+- Initialize a new spending draft synchronously when `EditRecordContainer` mounts instead of opening it from an effect.
+- Preserve delayed edit-record rendering until transaction context data is available.
+- Remove the modal's redundant favorite-category refresh because `PrepareData` already owns that synchronization.
+- Shorten the modal entrance motion and keep the panel visible from the first animation frame.
 
 ## Boundaries
 
-- Do not change the database schema, SQL functions, authenticated-route behavior, provider order, transaction CRUD, or budget editing behavior. The public mock route may skip the login redirect because it cannot access real records.
-- Do not add dependencies or edit the lockfile.
-- Do not redesign other routes.
-- Do not stage or commit `agent_memory.db` or `graphify-out/`.
+- Keep the existing intercepted `/edit` route, shareable URL, browser back behavior, provider order, form fields, transaction mutations, and API contracts.
+- Do not add a global modal provider, change database code, introduce dependencies, or edit the lockfile.
+- Do not alter the category dropdown behavior or add `animation-fill-mode` to `.animate-modal`.
+- Do not stage or commit `graphify-out/`.
 
 ## Acceptance Checks
 
-1. Open `/analysis?mock=1` at 375, 768, and 1440 pixels wide.
-2. Confirm the four KPI labels and mock-mode banner are visible.
-3. Confirm the 12-month trend, category change, necessity trend, and budget progress sections render.
-4. Confirm Recharts SVG content exists for all three chart sections.
-5. Confirm at least one over-budget category and both positive and negative category changes are rendered.
-6. Confirm there is no horizontal document overflow at any target width.
-7. Confirm the page emits no browser console errors and makes no `/api/aurora/items` request in mock mode.
-8. Run `npm run lint`, `npx tsc --noEmit`, and `npm run build` from `my-app/`.
+1. Clicking the mobile navigation button labeled `新增帳目` opens the modal titled `新增帳目`.
+2. A number-key button is usable immediately after the modal appears and updates the amount display.
+3. Closing the modal returns to the previous route.
+4. The `/edit` links explicitly request full prefetching.
+5. The new-record modal no longer depends on a post-mount `open` effect.
+6. Run `npm run lint`, `npx tsc --noEmit`, and `npm run build` from `my-app/`.
+7. Exercise the add-modal flow in a running app with Playwright and confirm there are no browser console errors caused by the change.
 
 ## Regression Checks
 
-- Live mode still requires a selected group and shows the existing empty state when none exists.
-- Month navigation updates the selected analysis period.
-- API responses retain the existing `{ status, data, message }` client service contract.
+- Editing an existing transaction still waits for context records and uses the matched record when available.
+- Closing continues to use `router.back()`.
+- Favorite categories remain supplied by `FavoriteCategoriesProvider` and synchronized by `PrepareData`.
+- The modal animation retains no fill mode, preserving fixed-position dropdown coordinates.
 
 ## Environment
 
 - App commands run from `my-app/` as required by `AGENTS.md`.
-- Browser verification uses Python Playwright and the repository dev server.
-- The implementation is intentionally performed on `main` and pushed to `origin/main` per user instruction.
+- Browser verification uses Python Playwright and the repository development server.
+- Next.js route prefetching is production-only; the production build is required even though interaction is exercised against the development server.
+- The implementation is intentionally performed on `main` and pushed to `origin/main` per explicit user instruction.
+
+## Ownership and Handoff
+
+- Codex owns the implementation, verification, commit, and push.
+- No dependency, database, API, or design handoff is required.

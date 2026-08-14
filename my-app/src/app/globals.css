@@ -688,13 +688,12 @@ input[type='number'] {
 }
 
 .animate-modal {
-  animation: slide-in 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  animation: slide-in 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 @keyframes slide-in {
   0% {
-    opacity: 0;
-    transform: translateY(60px);
+    transform: translateY(24px);
   }
   100% {
     opacity: 1;
@@ -704,13 +703,12 @@ input[type='number'] {
 
 @media (min-width: 640px) {
   .animate-modal {
-    animation: scale-in 0.25s cubic-bezier(0, 0, 0.2, 1);
+    animation: scale-in 0.18s cubic-bezier(0, 0, 0.2, 1);
   }
 
   @keyframes scale-in {
     0% {
-      opacity: 0;
-      transform: scale(0.95) translateY(-8px);
+      transform: scale(0.98) translateY(-4px);
     }
     100% {
       opacity: 1;

@@ -44,7 +44,6 @@ export const EditExpenseModal = (props: Props) => {
     getCategoryDescriptions,
     addCategoryDescription,
     removeCategoryDescription,
-    syncFavorites,
   } = useFavoriteCategoriesCtx();
 
   // Shared state — preserved across step transitions
@@ -93,11 +92,6 @@ export const EditExpenseModal = (props: Props) => {
     setDate(isNewData ? new Date() : new Date(data.date));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Sync favorites for current user
-  useEffect(() => {
-    if (userData?.user_id) syncFavorites(userData.user_id);
-  }, [userData?.user_id, syncFavorites]);
 
   // Clear "no amount" flag once user enters something
   useEffect(() => {
