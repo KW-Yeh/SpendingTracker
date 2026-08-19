@@ -45,7 +45,7 @@ export const SpendingTrendChart = ({
 }) => (
   <ChartContainer
     title="12 個月支出趨勢"
-    subtitle="柱狀為每月支出；趨勢線採 3 個月移動平均，虛線為每月預算。"
+    subtitle="趨勢線為 3 個月移動平均，虛線為每月預算"
   >
     <div className="h-72 w-full sm:h-80" data-testid="spending-trend-chart">
       <ResponsiveContainer width="100%" height="100%">
@@ -122,7 +122,7 @@ export const CategoryChangeChart = ({
     return (
       <ChartContainer
         title="支出變化來源"
-        subtitle={`與 ${previousMonthLabel} 比較。`}
+        subtitle={`與 ${previousMonthLabel} 相比`}
       >
         <div data-testid="category-change-chart" className="w-full">
           <ChartEmptyState>目前沒有可比較的類別資料</ChartEmptyState>
@@ -139,7 +139,7 @@ export const CategoryChangeChart = ({
   return (
     <ChartContainer
       title="支出變化來源"
-      subtitle={`與 ${previousMonthLabel} 比較，顯示影響最大的五個類別。`}
+      subtitle={`與 ${previousMonthLabel} 相比，影響最大的五個類別`}
     >
       <div className="h-64 w-full sm:h-72" data-testid="category-change-chart">
         <ResponsiveContainer width="100%" height="100%">
@@ -239,7 +239,7 @@ export const NecessityTrendChart = ({
 }) => (
   <ChartContainer
     title="必要與額外支出"
-    subtitle="觀察近六個月的消費結構；每根柱狀合計為 100%。"
+    subtitle="近六個月消費結構，每根柱狀合計 100%"
   >
     <div className="h-64 w-full sm:h-72" data-testid="necessity-trend-chart">
       <ResponsiveContainer width="100%" height="100%">

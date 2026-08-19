@@ -7,10 +7,7 @@ export const BudgetProgressList = ({
 }: {
   items: AnalysisBudgetProgress[];
 }) => (
-  <ChartContainer
-    title="各類別預算進度"
-    subtitle="優先顯示超支與接近上限的類別；進度超過 100% 時保留實際超支幅度。"
-  >
+  <ChartContainer title="各類別預算進度" subtitle="超支與接近上限的類別優先">
     <div className="w-full" data-testid="budget-progress-list">
       {items.length === 0 ? (
         <div className="flex h-32 items-center justify-center rounded-xl bg-gray-800 text-sm text-gray-400">
@@ -57,7 +54,7 @@ export const BudgetProgressList = ({
                     </span>
                   </div>
                 </div>
-                <div className="h-2.5 overflow-hidden rounded-full bg-gray-700">
+                <div className="relative h-1.5 rounded-full bg-black/[0.06]">
                   <div
                     className={`h-full rounded-full transition-[width] duration-500 ${
                       item.isOver
@@ -68,6 +65,13 @@ export const BudgetProgressList = ({
                     }`}
                     style={{ width: `${width}%` }}
                   />
+                  {item.isOver && (
+                    /* 條長封頂在 100%，右緣標記保留「還在往外溢」的訊號 */
+                    <span
+                      aria-hidden
+                      className="absolute top-[-3px] right-[-1px] h-3 w-0.5 rounded-full bg-[var(--color-expense)]"
+                    />
+                  )}
                 </div>
               </li>
             );

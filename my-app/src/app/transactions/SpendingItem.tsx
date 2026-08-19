@@ -49,9 +49,9 @@ export const SpendingItem = (props: Props) => {
 
   const additionalStyle = useMemo(() => {
     if (deleting) {
-      return 'ring-2 ring-[var(--color-expense)]';
+      return 'rounded-lg ring-2 ring-[var(--color-expense)]';
     }
-    return 'hover:bg-black/[0.03] cursor-pointer';
+    return 'hover:bg-black/[0.02] cursor-pointer';
   }, [deleting]);
 
   const handleOnDelete = useCallback(async () => {
@@ -93,7 +93,7 @@ export const SpendingItem = (props: Props) => {
 
   return (
     <div
-      className={`relative flex items-center gap-3 rounded-[14px] border border-black/[0.08] bg-gray-950/80 px-3 py-2.5 text-sm backdrop-blur-sm transition-colors sm:text-base ${additionalStyle} ${menuOpen ? 'z-10' : ''}`}
+      className={`relative flex items-center gap-3 border-t border-black/[0.04] px-2 py-2.5 text-sm transition-colors first:border-t-0 sm:text-base ${additionalStyle} ${menuOpen ? 'z-10' : ''}`}
     >
       {deleting && (
         <span

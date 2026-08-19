@@ -2,8 +2,11 @@
 
 import { MonthlySpendingProgressCard } from '@/app/transactions/MonthlySpendingProgressCard';
 import Overview from '@/app/transactions/Overview';
-import { QuickNavigationCards } from '@/components/QuickNavigationCards';
+import { BookIcon } from '@/components/icons/BookIcon';
+import { CaretDown } from '@/components/icons/CaretDown';
 import { RecentTransactionsList } from '@/components/RecentTransactionsList';
+import { PageControlBar } from '@/composites/PageControlBar';
+import Link from 'next/link';
 import { DashboardSkeleton } from '@/components/skeletons/DashboardSkeleton';
 import { NoGroupEmptyState } from '@/components/NoGroupEmptyState';
 import { useBudgetCtx } from '@/context/BudgetProvider';
@@ -17,7 +20,6 @@ import {
   useState,
   useMemo,
 } from 'react';
-import { YearMonthFilter } from './analysis/YearMonthFilter';
 import { useYearMonth } from '@/hooks/useYearMonth';
 
 export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
@@ -93,11 +95,10 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
 
   return (
     <div className="content-wrapper">
-      <YearMonthFilter
+      <PageControlBar
         refreshData={getNewData}
         group={currentGroup}
         dateOptions={dateHook}
-        className="self-center text-base"
       />
 
       <div className="flex w-full flex-col gap-3 md:w-auto md:flex-row md:items-start md:gap-5">
@@ -119,13 +120,42 @@ export const DashboardSection = ({ isMobile }: { isMobile: boolean }) => {
       </div>
 
       <div className="flex w-full flex-col gap-3 md:w-auto md:flex-row md:gap-5">
-        <QuickNavigationCards isMobile={isMobile} />
         <RecentTransactionsList
           data={monthlyData}
           loading={loading}
           refreshData={refreshData}
         />
       </div>
+
+      <GroupManagementLink group={currentGroup} />
     </div>
   );
 };
+
+/**
+ * 帳目／分析／預算都在 BottomNav，帳本管理沒有入口 —
+ * 這條列取代原本四格純導覽卡。
+ */
+const GroupManagementLink = ({ group }: { group: Group }) => (
+  <Link
+    href="/group"
+    className="flex w-full items-center gap-3 rounded-[18px] border border-black/[0.08] bg-gray-950 px-5 py-3.5 transition-colors hover:bg-gray-900 md:min-w-110"
+  >
+    <span className="bg-primary-50 text-primary-500 flex size-9 shrink-0 items-center justify-center rounded-[10px]">
+      <BookIcon className="size-5" />
+    </span>
+    <span className="flex min-w-0 flex-1 flex-col">
+      <span
+        className="text-[15px] font-semibold text-gray-100"
+        style={{ fontFamily: 'var(--font-heading)' }}
+      >
+        帳本管理
+      </span>
+      <span className="overflow-hidden text-xs font-medium text-ellipsis whitespace-nowrap text-gray-400">
+        {group.name}
+        {group.member_count ? ` · ${group.member_count} 位成員` : ''}
+      </span>
+    </span>
+    <CaretDown className="size-3 shrink-0 -rotate-90 text-gray-600" />
+  </Link>
+);

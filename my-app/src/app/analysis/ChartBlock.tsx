@@ -2,7 +2,7 @@
 
 import { AnalysisKpiGrid } from '@/app/analysis/AnalysisKpiGrid';
 import { BudgetProgressList } from '@/app/analysis/BudgetProgressList';
-import { YearMonthFilter } from '@/app/analysis/YearMonthFilter';
+import { PageControlBar } from '@/composites/PageControlBar';
 import {
   createMockAnalysisRecords,
   MOCK_ANALYSIS_BUDGET,
@@ -121,14 +121,22 @@ export const ChartBlock = ({ mockMode = false }: { mockMode?: boolean }) => {
 
   return (
     <div className="content-wrapper !items-stretch !gap-5 lg:max-w-7xl">
-      <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="eyebrow">Spending insights</p>
-          <p className="mt-1 text-sm text-gray-400">
-            {activeGroup.name} · {analysis.selectedMonthLabel}
-          </p>
-        </div>
-        <YearMonthFilter dateOptions={dateHook} className="sm:max-w-72" />
+      <PageControlBar dateOptions={dateHook} />
+
+      <div className="flex flex-col gap-0.5 pt-1">
+        <h1
+          className="font-semibold text-gray-100"
+          style={{
+            fontFamily: 'var(--font-heading)',
+            fontSize: '28px',
+            letterSpacing: '-0.015em',
+          }}
+        >
+          消費分析
+        </h1>
+        <span className="text-xs font-semibold text-gray-400">
+          {activeGroup.name} · {analysis.selectedMonthLabel}
+        </span>
       </div>
 
       {mockMode && (

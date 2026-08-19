@@ -1,5 +1,4 @@
 import { ChartBlock } from '@/app/analysis/ChartBlock';
-import { PageTitle } from '@/components/PageTitle';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -29,7 +28,6 @@ export default async function Home({
 
   return (
     <div className="bg-soft relative flex w-full flex-1 flex-col">
-      <PageTitle>消費分析</PageTitle>
       <ChartBlock mockMode={mock === '1'} />
     </div>
   );

@@ -4,6 +4,7 @@ import { SpendingItem } from '@/app/transactions/SpendingItem';
 import { SearchIcon } from '@/components/icons/SearchIcon';
 import { formatDate } from '@/utils/formatDate';
 import { CATEGORY_WORDING_MAP, SpendingType } from '@/utils/constants';
+import { normalizeNumber } from '@/utils/normalizeNumber';
 import { useMemo } from 'react';
 
 interface Props {
@@ -13,6 +14,16 @@ interface Props {
   loading: boolean;
   refreshData: () => void;
 }
+
+/** 分組淨額：收入為正、支出為負，讓每天／每類一眼看得到小計。 */
+const getGroupNet = (records: SpendingRecord[]) =>
+  records.reduce(
+    (sum, record) =>
+      record.type === SpendingType.Income
+        ? sum + Number(record.amount)
+        : sum - Number(record.amount),
+    0,
+  );
 
 export const SpendingList = (props: Props) => {
   const { refreshData, data, filterStr, sortBy, loading } = props;
@@ -53,12 +64,11 @@ export const SpendingList = (props: Props) => {
 
   if (loading) {
     return (
-      <div className="flex w-full flex-col gap-2 text-xs sm:text-sm">
+      <div className="flex w-full flex-col gap-4 text-xs sm:text-sm">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="flex flex-col gap-1">
-            <div className="mb-1 h-4 w-24 skeleton rounded-md"></div>
-            <div className="h-12 w-full skeleton rounded-lg sm:h-14"></div>
-            <div className="mt-1 h-12 w-full skeleton rounded-lg sm:h-14"></div>
+          <div key={i} className="flex flex-col gap-2">
+            <div className="skeleton mb-1 h-4 w-32 rounded-md"></div>
+            <div className="skeleton h-30 w-full rounded-[18px]"></div>
           </div>
         ))}
       </div>
@@ -74,24 +84,42 @@ export const SpendingList = (props: Props) => {
   }
 
   return (
-    <div className="flex w-full flex-col gap-2 text-xs sm:text-sm">
-      {Object.keys(sortedData).map((groupKey) => (
-        <div key={groupKey}>
-          <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">{groupKey}</span>
-          <div
-            className="flex flex-col gap-1 rounded border-2 border-solid border-transparent p-1 transition-all"
-            id={`spending-list-${groupKey}`}
-          >
-            {sortedData[groupKey].map((spending, index) => (
-              <SpendingItem
-                key={`${spending.id}-${index.toString()}`}
-                spending={spending}
-                refreshData={refreshData}
-              />
-            ))}
+    <div className="flex w-full flex-col gap-4 text-xs sm:text-sm">
+      {Object.keys(sortedData).map((groupKey) => {
+        const net = getGroupNet(sortedData[groupKey]);
+        return (
+          <div key={groupKey} className="flex flex-col gap-1.5">
+            <div className="flex items-baseline justify-between gap-3 px-1">
+              <span className="text-xs font-semibold tracking-wide text-gray-400">
+                {groupKey}
+              </span>
+              <span
+                className="text-[13px] font-semibold"
+                style={{
+                  fontFamily: 'var(--font-heading)',
+                  fontVariantNumeric: 'tabular-nums',
+                  color:
+                    net < 0 ? 'var(--color-expense)' : 'var(--color-income)',
+                }}
+              >
+                {net < 0 ? '−' : '+'}${normalizeNumber(Math.abs(net))}
+              </span>
+            </div>
+            <div
+              className="flex flex-col rounded-[18px] border border-black/[0.08] bg-gray-950 px-3"
+              id={`spending-list-${groupKey}`}
+            >
+              {sortedData[groupKey].map((spending, index) => (
+                <SpendingItem
+                  key={`${spending.id}-${index.toString()}`}
+                  spending={spending}
+                  refreshData={refreshData}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };

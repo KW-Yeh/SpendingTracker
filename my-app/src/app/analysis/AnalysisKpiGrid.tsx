@@ -47,32 +47,40 @@ export const AnalysisKpiGrid = ({ data }: { data: AnalysisDashboardData }) => {
           ? '設定預算後即可追蹤'
           : `預算 ${formatMoney(summary.budgeted)}`,
       tone:
-        usage !== null && usage > 100
-          ? 'text-[var(--color-expense)]'
-          : 'text-primary-500',
+        usage === null
+          ? 'text-gray-300'
+          : usage > 100
+            ? 'text-[var(--color-expense)]'
+            : usage >= 80
+              ? 'text-[var(--color-warning)]'
+              : 'text-primary-500',
     },
   ];
 
   return (
     <section
       aria-label="本月消費摘要"
-      className="grid w-full grid-cols-2 gap-3 lg:grid-cols-4"
+      className="grid w-full grid-cols-2 gap-2.5 lg:grid-cols-4"
     >
       {cards.map((card) => (
         <article
           key={card.label}
-          className="card flex min-h-32 flex-col justify-between !p-4 sm:!p-5"
+          className="card flex min-h-26 flex-col justify-between !p-4"
         >
-          <span className="text-xs font-semibold tracking-wide text-gray-400">
+          <span className="text-[11px] font-semibold tracking-wide text-gray-400">
             {card.label}
           </span>
-          <div className="mt-4 min-w-0">
+          <div className="mt-3 min-w-0">
             <strong
-              className={`block truncate text-xl font-semibold tabular-nums sm:text-2xl ${card.tone}`}
+              className={`block truncate text-[22px] font-semibold tabular-nums ${card.tone}`}
+              style={{
+                fontFamily: 'var(--font-heading)',
+                letterSpacing: '-0.025em',
+              }}
             >
               {card.value}
             </strong>
-            <span className="mt-1 block truncate text-xs text-gray-400">
+            <span className="mt-0.5 block truncate text-[11px] text-gray-400">
               {card.detail}
             </span>
           </div>

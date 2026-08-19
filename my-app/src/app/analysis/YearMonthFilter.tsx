@@ -22,10 +22,18 @@ interface Props {
     setMonth: (month: string) => void;
   };
   className?: string;
+  /** Compact pill form used inside PageControlBar. */
+  compact?: boolean;
 }
 
 export const YearMonthFilter = (props: Props) => {
-  const { refreshData, group, dateOptions, className = '' } = props;
+  const {
+    refreshData,
+    group,
+    dateOptions,
+    className = '',
+    compact = false,
+  } = props;
   const { setYear, year, setMonth, month } = dateOptions;
   const [open, setOpen] = useState(false);
   const ref = useFocusRef<HTMLDivElement>(() => {
@@ -70,13 +78,23 @@ export const YearMonthFilter = (props: Props) => {
     );
   };
 
+  const navButtonClass = compact
+    ? `hover:text-primary-500 flex size-11 shrink-0 items-center justify-center text-gray-400 transition-colors hover:bg-gray-800 active:bg-gray-700 ${styles.navButton}`
+    : `hover:text-primary-500 flex min-h-11 min-w-11 items-center justify-center border-gray-600 text-gray-400 transition-colors hover:bg-gray-800 active:bg-gray-700 ${styles.navButton}`;
+
   return (
-    <div className={`relative w-full ${className}`}>
-      <div className="hover:border-primary-400 bg-background flex w-full items-center gap-1.5 overflow-hidden rounded-xl border border-gray-600 transition-colors">
+    <div className={`relative ${compact ? 'w-auto' : 'w-full'} ${className}`}>
+      <div
+        className={
+          compact
+            ? 'hover:border-primary-400 bg-background flex items-center overflow-hidden rounded-full border border-black/[0.08] transition-colors'
+            : 'hover:border-primary-400 bg-background flex w-full items-center gap-1.5 overflow-hidden rounded-xl border border-gray-600 transition-colors'
+        }
+      >
         <button
           type="button"
           onClick={handlePreviousMonth}
-          className={`hover:text-primary-500 flex min-h-11 min-w-11 items-center justify-center border-r border-gray-600 text-gray-400 transition-colors hover:bg-gray-800 active:bg-gray-700 ${styles.navButton}`}
+          className={`${navButtonClass} ${compact ? '' : 'border-r'}`}
           aria-label="上個月"
         >
           <BiChevronLeft className="size-5" />
@@ -85,35 +103,39 @@ export const YearMonthFilter = (props: Props) => {
         <button
           type="button"
           onClick={() => setOpen(!open)}
-          className={`flex min-h-11 flex-1 items-center justify-center gap-2 py-2 transition-all ${
-            open ? 'bg-primary-50' : 'hover:bg-gray-800'
-          }`}
+          className={`flex items-center justify-center transition-all ${
+            compact ? 'h-11 gap-1.5 px-1' : 'min-h-11 flex-1 gap-2 py-2'
+          } ${open ? 'bg-primary-50' : 'hover:bg-gray-800'}`}
         >
-          <CalendarIcon
-            className={`size-5 transition-colors ${open ? 'text-primary-400' : 'text-gray-400'}`}
-          />
+          {!compact && (
+            <CalendarIcon
+              className={`size-5 transition-colors ${open ? 'text-primary-400' : 'text-gray-400'}`}
+            />
+          )}
           <div className="flex items-center gap-1.5">
             <span
-              className={`text-base font-semibold transition-colors ${open ? 'text-primary-400' : 'text-gray-200'}`}
+              className={`font-semibold transition-colors ${compact ? 'text-[13px]' : 'text-base'} ${open ? 'text-primary-400' : 'text-gray-200'}`}
             >
               {year}
             </span>
             <span className="text-gray-500">/</span>
             <span
-              className={`text-base font-semibold transition-colors ${open ? 'text-primary-400' : 'text-gray-200'}`}
+              className={`font-semibold transition-colors ${compact ? 'text-[13px]' : 'text-base'} ${open ? 'text-primary-400' : 'text-gray-200'}`}
             >
               {currentMonthName}
             </span>
           </div>
           {isCurrentMonth() && (
-            <span className="bg-primary-500 ml-1 size-2 rounded-full"></span>
+            <span
+              className={`bg-primary-500 ml-1 rounded-full ${compact ? 'size-1.5' : 'size-2'}`}
+            ></span>
           )}
         </button>
 
         <button
           type="button"
           onClick={handleNextMonth}
-          className={`hover:text-primary-500 flex min-h-11 min-w-11 items-center justify-center border-l border-gray-600 text-gray-400 transition-colors hover:bg-gray-800 active:bg-gray-700 ${styles.navButton}`}
+          className={`${navButtonClass} ${compact ? '' : 'border-l'}`}
           aria-label="下個月"
         >
           <BiChevronRight className="size-5" />
@@ -123,7 +145,9 @@ export const YearMonthFilter = (props: Props) => {
       {/* Dropdown panel */}
       <div
         ref={ref}
-        className={`bg-background absolute top-full left-1/2 z-20 mt-2 w-[min(20rem,calc(100vw-2.5rem))] -translate-x-1/2 overflow-hidden rounded-2xl border border-gray-700 shadow-lg transition-all ${
+        className={`bg-background absolute top-full z-20 mt-2 w-[min(20rem,calc(100vw-2.5rem))] overflow-hidden rounded-2xl border border-gray-700 shadow-lg transition-all ${
+          compact ? 'right-0' : 'left-1/2 -translate-x-1/2'
+        } ${
           open
             ? `${styles.dropdownAnimation} visible opacity-100`
             : 'invisible translate-y-1 opacity-0'

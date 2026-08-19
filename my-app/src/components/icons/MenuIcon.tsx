@@ -1,4 +1,4 @@
-import { HTMLAttributes } from "react";
+import { HTMLAttributes } from 'react';
 
 export const MenuIcon = (props: HTMLAttributes<HTMLOrSVGElement>) => {
   return (
@@ -6,15 +6,15 @@ export const MenuIcon = (props: HTMLAttributes<HTMLOrSVGElement>) => {
       xmlns="http://www.w3.org/2000/svg"
       width="16"
       height="16"
-      fill="currentColor"
-      className="bi bi-list"
-      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.7}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      viewBox="0 0 24 24"
       {...props}
     >
-      <path
-        fillRule="evenodd"
-        d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"
-      />
+      <path d="M4 7h16M4 12h16M4 17h16" />
     </svg>
   );
 };

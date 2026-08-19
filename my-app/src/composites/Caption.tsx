@@ -1,6 +1,5 @@
 'use client';
 
-import { GroupSelector } from '@/composites/GroupSelector';
 import { MenuButton } from '@/composites/MenuButton';
 import { SettingIcon } from '@/components/icons/SettingIcon';
 import { UserAvatar } from '@/components/UserAvatar';
@@ -42,40 +41,36 @@ export const Caption = ({ openAside }: { openAside: () => void }) => {
       className="sticky top-0 left-0 z-40 w-full border-b border-black/[0.08]"
       style={{ backgroundColor: 'var(--color-bg-primary)' }}
     >
-      <div className="relative mx-auto flex max-w-7xl flex-col gap-2 px-4 py-3 md:flex-row md:items-center md:gap-3">
-        <div className="flex items-center gap-3">
-          <MenuButton openAside={openAside} />
+      <div className="relative mx-auto flex max-w-7xl items-center gap-3 px-4 py-3">
+        <MenuButton openAside={openAside} />
 
-          {/* Mobile greeting — visible mobile only */}
-          <Link
-            href="/profile"
-            className="flex items-center gap-2.5 transition-opacity hover:opacity-85 md:hidden"
-          >
-            <div className="ring-primary-500/30 size-8 shrink-0 overflow-hidden rounded-full ring-2">
-              <UserAvatar user={user} />
-            </div>
-            <div className="flex flex-col leading-tight">
-              <span
-                className="text-[15px] font-semibold whitespace-nowrap text-gray-100 sm:text-base"
-                style={{ fontFamily: 'var(--font-heading)' }}
-              >
-                {greetingLabel}，
-                <span className="text-primary-400">
-                  {user?.name?.split(' ')[0] || '訪客'}
-                </span>
+        {/* Mobile greeting — visible mobile only */}
+        <Link
+          href="/profile"
+          className="flex items-center gap-2.5 transition-opacity hover:opacity-85 md:hidden"
+        >
+          <div className="ring-primary-500/30 size-8 shrink-0 overflow-hidden rounded-full ring-2">
+            <UserAvatar user={user} />
+          </div>
+          <div className="flex flex-col leading-tight">
+            <span
+              className="text-[15px] font-semibold whitespace-nowrap text-gray-100 sm:text-base"
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              {greetingLabel}，
+              <span className="text-primary-400">
+                {user?.name?.split(' ')[0] || '訪客'}
               </span>
-              {dateLabel && (
-                <span className="text-[11px] font-medium text-gray-400">
-                  {dateLabel}
-                </span>
-              )}
-            </div>
-          </Link>
-        </div>
+            </span>
+            {dateLabel && (
+              <span className="text-[11px] font-medium text-gray-400">
+                {dateLabel}
+              </span>
+            )}
+          </div>
+        </Link>
 
-        <div className="flex items-center gap-2 md:ml-auto">
-          <GroupSelector className="max-w-80 font-bold" />
-
+        <div className="ml-auto flex items-center gap-2">
           {/* Desktop quick-add — mobile uses the BottomNav FAB */}
           <Link
             href="/edit"

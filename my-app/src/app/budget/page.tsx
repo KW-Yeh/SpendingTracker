@@ -1,8 +1,6 @@
 'use client';
 
-import { PageTitle } from '@/components/PageTitle';
-import { AnnualBudgetSection } from '@/app/budget/AnnualBudgetSection';
-import { MonthlyBudgetSection } from '@/app/budget/MonthlyBudgetSection';
+import { BudgetSummaryCard } from '@/app/budget/BudgetSummaryCard';
 import { MonthlyBudgetBlocks } from '@/app/budget/MonthlyBudgetBlocks';
 import { RecurringBudgetItems } from '@/app/budget/RecurringBudgetItems';
 import { BudgetSkeleton } from '@/components/skeletons/BudgetSkeleton';
@@ -47,10 +45,7 @@ function BudgetContent() {
   // Progressive rendering: Show UI immediately, data will populate when ready
   return (
     <div className="content-wrapper space-y-3 md:space-y-5">
-      <div className="grid w-full grid-cols-1 gap-3 md:max-w-250 md:grid-cols-2 md:gap-5">
-        <AnnualBudgetSection yearlySpending={yearlySpending} />
-        <MonthlyBudgetSection yearlySpending={yearlySpending} />
-      </div>
+      <BudgetSummaryCard yearlySpending={yearlySpending} />
       <RecurringBudgetItems />
       <MonthlyBudgetBlocks yearlySpending={yearlySpending} />
     </div>
@@ -58,23 +53,28 @@ function BudgetContent() {
 }
 
 function BudgetHero() {
+  const { currentGroup } = useGroupCtx();
   const [now, setNow] = useState<Date | null>(null);
   useEffect(() => setNow(new Date()), []);
-  const sub = now
-    ? `${now.getFullYear()} 年 · ${now.getMonth() + 1} 月`
-    : '';
+  const sub = [currentGroup?.name, now ? `${now.getFullYear()} 年` : '']
+    .filter(Boolean)
+    .join(' · ');
   return (
     <div
-      className="content-wrapper !pb-2 !gap-1"
+      className="content-wrapper !gap-0.5 !pb-2"
       style={{ alignItems: 'flex-start', textWrap: 'pretty' }}
     >
       <h1
-        className="text-2xl font-extrabold text-gray-100 sm:text-3xl"
-        style={{ fontFamily: 'var(--font-heading)' }}
+        className="font-semibold text-gray-100"
+        style={{
+          fontFamily: 'var(--font-heading)',
+          fontSize: '28px',
+          letterSpacing: '-0.015em',
+        }}
       >
         預算規劃
       </h1>
-      <span className="text-xs font-medium text-gray-400">{sub}</span>
+      <span className="text-xs font-semibold text-gray-400">{sub}</span>
     </div>
   );
 }
@@ -82,7 +82,6 @@ function BudgetHero() {
 export default function BudgetPage() {
   return (
     <div className="bg-soft relative flex w-full flex-1 flex-col">
-      <PageTitle>預算管理</PageTitle>
       <BudgetHero />
       <BudgetContent />
     </div>

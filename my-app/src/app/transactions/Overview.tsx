@@ -67,6 +67,7 @@ export default function OverView(props: Props) {
   );
 
   const hasBudget = monthlyBudget > 0;
+  const net = totalIncome - totalOutcome;
   const balance = monthlyBudget - totalOutcome;
   const usagePercentage = hasBudget ? (totalOutcome / monthlyBudget) * 100 : 0;
   const isOverBudget = hasBudget && balance < 0;
@@ -105,30 +106,51 @@ export default function OverView(props: Props) {
         </span>
       </div>
 
-      <div
-        className="flex items-center justify-between rounded-xl border border-black/[0.08] px-3.5 py-2.5"
-        style={{ backgroundColor: 'var(--color-income-bg)' }}
-      >
+      {/* 收入與結餘並排 — 讓「本月總花費」單獨當視覺主角 */}
+      <div className="grid grid-cols-[1fr_1px_1fr] items-center">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[11px] font-medium text-gray-400">
+            本月收入
+          </span>
+          <span
+            className="text-lg font-semibold tabular-nums"
+            style={{
+              color: 'var(--color-income)',
+              fontVariantNumeric: 'tabular-nums',
+              fontFamily: 'var(--font-heading)',
+            }}
+          >
+            ${normalizeNumber(totalIncome)}
+          </span>
+        </div>
         <span
-          className="text-[11px] font-medium"
-          style={{
-            color: 'var(--color-income)',
-            letterSpacing: '0.04em',
-          }}
-        >
-          本月收入
-        </span>
-        <span
-          className="text-lg font-extrabold tabular-nums"
-          style={{
-            color: 'var(--color-income)',
-            fontVariantNumeric: 'tabular-nums',
-            fontFamily: 'var(--font-heading)',
-          }}
-        >
-          ${normalizeNumber(totalIncome)}
-        </span>
+          aria-hidden
+          className="h-8 w-px"
+          style={{ backgroundColor: 'var(--color-border-light)' }}
+        />
+        <div className="flex flex-col gap-0.5 pl-4">
+          <span className="text-[11px] font-medium text-gray-400">
+            本月結餘
+          </span>
+          <span
+            className="text-lg font-semibold tabular-nums"
+            style={{
+              color:
+                net < 0 ? 'var(--color-expense)' : 'var(--color-text-primary)',
+              fontVariantNumeric: 'tabular-nums',
+              fontFamily: 'var(--font-heading)',
+            }}
+          >
+            {net < 0 ? '−' : ''}${normalizeNumber(Math.abs(net))}
+          </span>
+        </div>
       </div>
+
+      <span
+        aria-hidden
+        className="h-px w-full"
+        style={{ backgroundColor: 'var(--color-border-light)' }}
+      />
 
       {/* 預算摘要 — 從 hero 下放為輔助資訊 */}
       {hasBudget && (

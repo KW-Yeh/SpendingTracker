@@ -1,4 +1,4 @@
-import { HTMLAttributes } from "react";
+import { HTMLAttributes } from 'react';
 
 export const CoinIcon = (props: HTMLAttributes<HTMLOrSVGElement>) => {
   return (
@@ -6,14 +6,16 @@ export const CoinIcon = (props: HTMLAttributes<HTMLOrSVGElement>) => {
       xmlns="http://www.w3.org/2000/svg"
       width="16"
       height="16"
-      fill="currentColor"
-      className="bi bi-coin"
-      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.7}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      viewBox="0 0 24 24"
       {...props}
     >
-      <path d="M5.5 9.511c.076.954.83 1.697 2.182 1.785V12h.6v-.709c1.4-.098 2.218-.846 2.218-1.932 0-.987-.626-1.496-1.745-1.76l-.473-.112V5.57c.6.068.982.396 1.074.85h1.052c-.076-.919-.864-1.638-2.126-1.716V4h-.6v.719c-1.195.117-2.01.836-2.01 1.853 0 .9.606 1.472 1.613 1.707l.397.098v2.034c-.615-.093-1.022-.43-1.114-.9zm2.177-2.166c-.59-.137-.91-.416-.91-.836 0-.47.345-.822.915-.925v1.76h-.005zm.692 1.193c.717.166 1.048.435 1.048.91 0 .542-.412.914-1.135.982V8.518z" />
-      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
-      <path d="M8 13.5a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11m0 .5A6 6 0 1 0 8 2a6 6 0 0 0 0 12" />
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M14.2 9.2A2.4 2.4 0 0 0 12 8h-.6a2 2 0 0 0 0 4h1.2a2 2 0 0 1 0 4H12a2.4 2.4 0 0 1-2.2-1.2M12 6.4v1.6M12 16v1.6" />
     </svg>
   );
 };

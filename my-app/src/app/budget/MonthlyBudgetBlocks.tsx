@@ -49,6 +49,26 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
   const [itemDescription, setItemDescription] = useState('');
   const [itemAmount, setItemAmount] = useState<number>(0);
   const [saving, setSaving] = useState(false);
+  const [openMonths, setOpenMonths] = useState<number[]>(() => [
+    new Date().getMonth() + 1,
+  ]);
+
+  const toggleMonth = useCallback((month: number, open: boolean) => {
+    setOpenMonths((prev) =>
+      open ? [...new Set([...prev, month])] : prev.filter((m) => m !== month),
+    );
+  }, []);
+
+  // 年度概覽點月份：展開該月並滑到它
+  const focusMonth = useCallback(
+    (month: number) => {
+      toggleMonth(month, true);
+      document
+        .getElementById(`budget-month-${month}`)
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    },
+    [toggleMonth],
+  );
 
   const selectedCategoryLabel = useMemo(
     () => ALL_CATEGORIES.find((cat) => cat.value === itemCategory)?.label || '',
@@ -261,6 +281,13 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
   return (
     <>
       <div className="flex w-full flex-col gap-3 md:max-w-250">
+        <YearOverviewStrip
+          totals={monthlyTotals}
+          spending={monthlySpending}
+          currentMonth={currentMonth}
+          onSelect={focusMonth}
+        />
+
         {MONTHS.map((month) => {
           const monthItems = getMonthItems(month.value);
           const monthTotal = monthlyTotals[month.value];
@@ -281,8 +308,10 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
           return (
             <Accordion
               key={month.value}
-              defaultOpen={isCurrentMonth}
-              className="rounded-2xl border bg-gray-950/80 backdrop-blur-sm"
+              id={`budget-month-${month.value}`}
+              open={openMonths.includes(month.value)}
+              onOpenChange={(open) => toggleMonth(month.value, open)}
+              className="scroll-mt-20 rounded-[18px] border bg-gray-950"
               style={{
                 borderColor: isOverBudget
                   ? 'rgba(227,0,0,0.3)'
@@ -298,8 +327,12 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
                       className={`size-3 shrink-0 text-gray-400 transition-transform duration-300 ${isOpen ? '' : '-rotate-90'}`}
                     />
                     <h3
-                      className="text-base font-bold text-gray-100"
-                      style={{ fontFamily: 'var(--font-heading)' }}
+                      className="font-semibold text-gray-100"
+                      style={{
+                        fontFamily: 'var(--font-heading)',
+                        fontSize: '16px',
+                        letterSpacing: '-0.015em',
+                      }}
                     >
                       {month.label}
                       {isCurrentMonth && (
@@ -553,3 +586,96 @@ export const MonthlyBudgetBlocks = ({ yearlySpending }: Props) => {
     </>
   );
 };
+
+/** 12 格年度概覽：先一眼看完整年，再點月份展開細項。 */
+const YearOverviewStrip = ({
+  totals,
+  spending,
+  currentMonth,
+  onSelect,
+}: {
+  totals: { [key: number]: number };
+  spending: { [key: number]: number };
+  currentMonth: number;
+  onSelect: (month: number) => void;
+}) => (
+  <div className="flex w-full flex-col rounded-[18px] border border-black/[0.08] bg-gray-950 p-5">
+    <div className="mb-3.5 flex items-baseline justify-between">
+      <h3
+        className="font-semibold text-gray-100"
+        style={{
+          fontFamily: 'var(--font-heading)',
+          fontSize: '17px',
+          letterSpacing: '-0.015em',
+        }}
+      >
+        年度概覽
+      </h3>
+      <span className="text-[11px] font-semibold text-gray-400">
+        點月份可展開
+      </span>
+    </div>
+
+    <div className="grid grid-cols-12 items-end gap-1">
+      {MONTHS.map((month) => {
+        const total = totals[month.value] || 0;
+        const spent = spending[month.value] || 0;
+        const percentage = total > 0 ? (spent / total) * 100 : 0;
+        const isOver = total > 0 && spent > total;
+        const isWarning = percentage >= 80 && !isOver && total > 0;
+        const fill = isOver
+          ? 'rgba(227,0,0,0.35)'
+          : isWarning
+            ? 'var(--color-warning)'
+            : 'var(--color-primary-100)';
+
+        return (
+          <button
+            key={month.value}
+            type="button"
+            onClick={() => onSelect(month.value)}
+            className="flex flex-col items-center gap-1.5"
+            aria-label={`${month.label}預算`}
+          >
+            <span className="flex h-14 w-full items-end overflow-hidden rounded bg-black/[0.04]">
+              <span
+                className="w-full rounded transition-all duration-300"
+                style={{
+                  height: `${Math.min(percentage, 100)}%`,
+                  backgroundColor: fill,
+                }}
+              />
+            </span>
+            <span
+              className={`text-[9px] font-semibold ${
+                month.value === currentMonth
+                  ? 'text-primary-500'
+                  : 'text-gray-400'
+              }`}
+              style={{ fontVariantNumeric: 'tabular-nums' }}
+            >
+              {month.value}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+
+    <div className="mt-3 flex items-center gap-3.5 text-[10px] font-semibold text-gray-400">
+      <LegendDot color="var(--color-primary-100)" label="正常" />
+      <LegendDot color="var(--color-warning)" label="接近上限" />
+      <LegendDot color="rgba(227,0,0,0.35)" label="超支" />
+    </div>
+  </div>
+);
+
+const LegendDot = ({ color, label }: { color: string; label: string }) => (
+  <span className="flex items-center gap-1.5">
+    <span
+      aria-hidden
+      className="size-2 rounded-sm"
+      style={{ backgroundColor: color }}
+    />
+    {label}
+  </span>
+);

@@ -243,13 +243,14 @@ export const EditExpenseModal = (props: Props) => {
           onAddQuick={handleAddQuick}
           isNoAmount={isNoAmount}
           onNext={handleNext}
+          isIncome={isIncome}
+          spendingType={spendingType}
+          onSetSpendingType={handleSetSpendingType}
         />
       ) : (
         <StepDetails
           isIncome={isIncome}
           amountStr={amountStr}
-          spendingType={spendingType}
-          onSetSpendingType={handleSetSpendingType}
           necessity={necessity}
           onSetNecessity={setNecessity}
           spendingCategories={spendingCategories}
@@ -335,6 +336,9 @@ interface StepAmountProps {
   onAddQuick: (delta: number) => void;
   isNoAmount: boolean;
   onNext: () => void;
+  isIncome: boolean;
+  spendingType: string;
+  onSetSpendingType: (t: string) => void;
 }
 
 const StepAmount = ({
@@ -343,10 +347,22 @@ const StepAmount = ({
   onAddQuick,
   isNoAmount,
   onNext,
+  isIncome,
+  spendingType,
+  onSetSpendingType,
 }: StepAmountProps) => {
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-5 pt-4 pb-3">
+        {/* 類型先決定 — 它同時決定金額正負與步驟 2 的類別清單 */}
+        <Switch
+          option1={{ label: '支出', value: SpendingType.Outcome }}
+          option2={{ label: '收入', value: SpendingType.Income }}
+          value={spendingType}
+          className="h-10 w-full border border-solid border-black/[0.08] text-sm"
+          onChange={onSetSpendingType}
+        />
+
         {/* Big amount display */}
         <div className="flex flex-col items-center gap-2 py-2">
           <span
@@ -356,21 +372,24 @@ const StepAmount = ({
               color: 'var(--color-text-tertiary)',
             }}
           >
-            輸入金額
+            {isIncome ? '輸入收入金額' : '輸入支出金額'}
           </span>
           <div
             className={`flex items-baseline gap-1 ${isNoAmount ? 'animate-pulse' : ''}`}
           >
             <span
-              className="font-extrabold text-gray-100"
+              className="font-extrabold"
               style={{
                 fontFamily: 'var(--font-heading)',
                 fontSize: 'clamp(2.75rem, 12vw, 3.5rem)',
                 fontVariantNumeric: 'tabular-nums',
                 lineHeight: 1,
+                color: isIncome
+                  ? 'var(--color-income)'
+                  : 'var(--color-text-primary)',
               }}
             >
-              $ {formatAmount(amountStr)}
+              {isIncome ? '+' : '−'} $ {formatAmount(amountStr)}
             </span>
           </div>
           {isNoAmount && (
@@ -422,8 +441,6 @@ const StepAmount = ({
 interface StepDetailsProps {
   isIncome: boolean;
   amountStr: string;
-  spendingType: string;
-  onSetSpendingType: (t: string) => void;
   necessity: string;
   onSetNecessity: (n: string) => void;
   spendingCategories: { value: string; label: string }[];
@@ -443,8 +460,6 @@ interface StepDetailsProps {
 const StepDetails = ({
   isIncome,
   amountStr,
-  spendingType,
-  onSetSpendingType,
   necessity,
   onSetNecessity,
   spendingCategories,
@@ -468,7 +483,9 @@ const StepDetails = ({
           className="flex items-baseline justify-between rounded-xl border border-black/[0.08] bg-black/[0.02] px-3.5 py-2.5"
           style={{ fontVariantNumeric: 'tabular-nums' }}
         >
-          <span className="text-sm text-gray-400">金額</span>
+          <span className="text-sm text-gray-400">
+            {isIncome ? '收入金額' : '支出金額'}
+          </span>
           <span
             className="text-lg font-bold"
             style={{
@@ -481,32 +498,45 @@ const StepDetails = ({
           </span>
         </div>
 
-        {/* Type segment */}
-        <Section label="類型">
-          <Switch
-            option1={{ label: '支出', value: SpendingType.Outcome }}
-            option2={{ label: '收入', value: SpendingType.Income }}
-            value={spendingType}
-            className="h-10 w-full border border-solid border-black/[0.08] text-sm"
-            onChange={onSetSpendingType}
-          />
-        </Section>
-
-        {/* Necessity segment */}
+        {/* 必要程度 — 類型已在步驟 1 決定，這裡是次要選擇，不用同等權重的 Switch */}
         <Section label="必要程度">
-          <Switch
-            option1={{
-              label: isIncome ? '必要收入' : '必要支出',
-              value: Necessity.Need,
-            }}
-            option2={{
-              label: isIncome ? '額外收入' : '額外支出',
-              value: Necessity.NotNeed,
-            }}
-            value={necessity}
-            className="h-10 w-full border border-solid border-black/[0.08] text-sm"
-            onChange={onSetNecessity}
-          />
+          <div className="flex gap-2">
+            {[
+              {
+                label: isIncome ? '必要收入' : '必要支出',
+                value: Necessity.Need,
+              },
+              {
+                label: isIncome ? '額外收入' : '額外支出',
+                value: Necessity.NotNeed,
+              },
+            ].map((option) => {
+              const selected = necessity === option.value;
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => onSetNecessity(option.value)}
+                  aria-pressed={selected}
+                  className="flex h-10 flex-1 items-center justify-center gap-1.5 rounded-xl border text-[13px] font-semibold transition-colors"
+                  style={{
+                    borderColor: selected
+                      ? 'rgba(0, 102, 204, 0.5)'
+                      : 'rgba(0,0,0,0.08)',
+                    background: selected
+                      ? 'rgba(0, 102, 204, 0.08)'
+                      : 'rgba(0,0,0,0.02)',
+                    color: selected
+                      ? 'var(--color-primary-500)'
+                      : 'var(--color-text-tertiary)',
+                  }}
+                >
+                  {selected && <IoCheckmarkSharp className="size-3.5" />}
+                  {option.label}
+                </button>
+              );
+            })}
+          </div>
         </Section>
 
         {/* Category grid */}
@@ -519,7 +549,7 @@ const StepDetails = ({
                   key={cat.value}
                   type="button"
                   onClick={() => onSetSelectedCategory(cat.value)}
-                  className="flex flex-col items-center justify-center gap-0.5 rounded-xl border px-1 py-2 transition-colors"
+                  className="flex min-h-15 flex-col items-center justify-center gap-1 rounded-xl border px-1 py-2 transition-colors"
                   style={{
                     borderColor: selected
                       ? 'rgba(0, 102, 204, 0.5)'
