@@ -81,6 +81,7 @@ export const RecentTransactionsList = ({
               key={`${spending.id}-${index}`}
               spending={spending}
               refreshData={refreshData || (() => {})}
+              showDate
             />
           ))
         )}

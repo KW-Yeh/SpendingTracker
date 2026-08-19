@@ -90,6 +90,11 @@ A change is done only when:
 ## Runtime verification
 
 - **Standard:** `cd my-app && npm run dev`, open localhost:3000, exercise the changed flow.
+- **No database reachable (the usual dev case):** append `?mock=1` to any route
+  (`/?mock=1`, `/transactions?mock=1`, `/analysis?mock=1`, `/budget?mock=1`,
+  `/edit?mock=1`). Every context provider then serves the fixtures in
+  `my-app/src/utils/mockData.ts`, and the login redirect is skipped. Mock mode
+  never writes to localStorage, so real cached data is left alone.
 - **OAuth / session changes:** Launch Chrome with `--remote-debugging-port=9222` and reuse the existing login session. Then author a Playwright script at repo root connecting to that port.
 - **API changes:** DevTools → Network, confirm the route returns `{ status: true, data: ... }`.
 - **PWA / service worker:** Hard-refresh or use DevTools → Application → Service Workers → "Update on reload" to bypass SW cache.

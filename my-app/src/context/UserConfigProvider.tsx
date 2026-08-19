@@ -1,7 +1,10 @@
 'use client';
 
+import { useMockMode } from '@/hooks/useMockMode';
 import { getUser, createUser, putUser } from '@/services/userServices';
 import { getCachedUser, setCachedUser } from '@/utils/localCache';
+import { MOCK_USER } from '@/utils/mockData';
+import { isMockRequest } from '@/utils/mockMode';
 import { useSession } from 'next-auth/react';
 import { redirect, usePathname } from 'next/navigation';
 import {
@@ -54,6 +57,7 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
   const configRef = useRef<User | undefined>(config);
   configRef.current = config;
   const pathname = usePathname();
+  const mockMode = useMockMode();
 
   const handleState = useCallback((value: User) => {
     setConfig(value);
@@ -101,16 +105,17 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
     () => ({
       // `loading` kept for backwards-compatible consumers; it's truthy only
       // before we have any data at all.
-      loading: !hasEverLoaded,
-      isFetching,
-      hasEverLoaded,
-      config,
+      loading: mockMode ? false : !hasEverLoaded,
+      isFetching: mockMode ? false : isFetching,
+      hasEverLoaded: mockMode ? true : hasEverLoaded,
+      config: mockMode ? MOCK_USER : config,
       budgetData,
       syncUser,
       setter: handleUpdateUser,
       setBudgetData: handleUpdateBudgetData,
     }),
     [
+      mockMode,
       hasEverLoaded,
       isFetching,
       config,
@@ -122,11 +127,8 @@ export const UserConfigProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const handleLogin = useCallback(() => {
-    const isMockAnalysis =
-      pathname === '/analysis' &&
-      typeof window !== 'undefined' &&
-      new URLSearchParams(window.location.search).get('mock') === '1';
-    if (isMockAnalysis) return;
+    // `?mock=1` reviews the UI against fixtures — never bounce it to login.
+    if (isMockRequest()) return;
 
     if (pathname !== '/login') {
       redirect('/login');

@@ -1,6 +1,8 @@
 'use client';
 
 import { useGroupCtx } from '@/context/GroupProvider';
+import { useMockMode } from '@/hooks/useMockMode';
+import { MOCK_BUDGET } from '@/utils/mockData';
 import {
   getBudget as getBudgetAPI,
   putBudget as putBudgetAPI,
@@ -45,6 +47,9 @@ const INIT_CTX_VAL: {
 
 export const BudgetProvider = ({ children }: { children: ReactNode }) => {
   const { currentGroup } = useGroupCtx();
+  const mockMode = useMockMode();
+  // Mock edits stay in memory so the budget-item modal is still exercisable.
+  const [mockBudget, setMockBudget] = useState<Budget>(MOCK_BUDGET);
 
   // Synchronous warm-start: if we already know the current group, pull
   // its cached budget from localStorage now.
@@ -97,6 +102,10 @@ export const BudgetProvider = ({ children }: { children: ReactNode }) => {
       annual_budget: number;
       monthly_items: MonthlyBudgetItem[];
     }) => {
+      if (mockMode) {
+        setMockBudget((prev) => ({ ...prev, ...data }));
+        return;
+      }
       setIsFetching(true);
       try {
         const res = await putBudgetAPI(data);
@@ -109,7 +118,7 @@ export const BudgetProvider = ({ children }: { children: ReactNode }) => {
         setIsFetching(false);
       }
     },
-    [handleState],
+    [mockMode, handleState],
   );
 
   const removeBudget = useCallback(
@@ -133,26 +142,36 @@ export const BudgetProvider = ({ children }: { children: ReactNode }) => {
   // When current group changes, hot-swap to its cached budget synchronously
   // (before the API call resolves).
   useEffect(() => {
+    if (mockMode) return;
     if (!currentGroup?.account_id) return;
     const ls = getCachedBudget(currentGroup.account_id);
     if (ls) {
       startTransition(() => handleState(ls, currentGroup.account_id!));
     }
     syncBudget(currentGroup.account_id);
-  }, [currentGroup?.account_id, syncBudget, handleState]);
+  }, [mockMode, currentGroup?.account_id, syncBudget, handleState]);
 
   const ctxVal = useMemo(
     () => ({
-      loading: !hasEverLoaded,
-      isFetching,
-      hasEverLoaded,
-      isInitialLoad: !hasEverLoaded,
-      budget,
+      loading: mockMode ? false : !hasEverLoaded,
+      isFetching: mockMode ? false : isFetching,
+      hasEverLoaded: mockMode ? true : hasEverLoaded,
+      isInitialLoad: mockMode ? false : !hasEverLoaded,
+      budget: mockMode ? mockBudget : budget,
       syncBudget,
       updateBudget,
       removeBudget,
     }),
-    [hasEverLoaded, isFetching, budget, syncBudget, updateBudget, removeBudget],
+    [
+      mockMode,
+      mockBudget,
+      hasEverLoaded,
+      isFetching,
+      budget,
+      syncBudget,
+      updateBudget,
+      removeBudget,
+    ],
   );
 
   return <Ctx.Provider value={ctxVal}>{children}</Ctx.Provider>;

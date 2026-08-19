@@ -21,10 +21,16 @@ import { startTransition, useCallback, useMemo, useState } from 'react';
 interface Props {
   spending: SpendingRecord;
   refreshData: () => void;
+  /**
+   * Prefix the timestamp with the date. Needed wherever the surrounding list
+   * does not already group by date — a mixed-date list showing only times
+   * reads as unsorted.
+   */
+  showDate?: boolean;
 }
 
 export const SpendingItem = (props: Props) => {
-  const { spending, refreshData } = props;
+  const { spending, refreshData, showDate = false } = props;
   const { config: userData } = useUserConfigCtx();
   const { deleteRecord } = useGetSpendingCtx();
   const { currentGroup } = useGroupCtx();
@@ -83,11 +89,20 @@ export const SpendingItem = (props: Props) => {
     const minutes = date.getMinutes().toString().padStart(2, '0');
     const period = hours >= 12 ? 'PM' : 'AM';
     const displayHours = hours % 12 || 12;
+    const today = new Date();
+    const isToday =
+      date.getFullYear() === today.getFullYear() &&
+      date.getMonth() === today.getMonth() &&
+      date.getDate() === today.getDate();
     return {
       period,
       time: `${displayHours}:${minutes}`,
+      dateLabel:
+        showDate && !isToday
+          ? `${date.getMonth() + 1}/${date.getDate()}`
+          : null,
     };
-  }, [spending.date]);
+  }, [spending.date, showDate]);
 
   const isNeed = spending.necessity === Necessity.Need;
 
@@ -130,6 +145,12 @@ export const SpendingItem = (props: Props) => {
           className="flex items-center gap-1 text-[10.5px] font-medium text-gray-400"
           style={{ fontVariantNumeric: 'tabular-nums' }}
         >
+          {timeInfo.dateLabel && (
+            <>
+              <span>{timeInfo.dateLabel}</span>
+              <span aria-hidden>·</span>
+            </>
+          )}
           <span>{timeInfo.time}</span>
           <span aria-hidden>·</span>
           <span>{timeInfo.period}</span>

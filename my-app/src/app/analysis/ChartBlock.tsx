@@ -3,11 +3,7 @@
 import { AnalysisKpiGrid } from '@/app/analysis/AnalysisKpiGrid';
 import { BudgetProgressList } from '@/app/analysis/BudgetProgressList';
 import { PageControlBar } from '@/composites/PageControlBar';
-import {
-  createMockAnalysisRecords,
-  MOCK_ANALYSIS_BUDGET,
-  MOCK_ANALYSIS_GROUP,
-} from '@/app/analysis/mockAnalysisData';
+import { createMockRecords, MOCK_BUDGET, MOCK_GROUP } from '@/utils/mockData';
 import { NoGroupEmptyState } from '@/components/NoGroupEmptyState';
 import { AnalysisSkeleton } from '@/components/skeletons/AnalysisSkeleton';
 import { useBudgetCtx } from '@/context/BudgetProvider';
@@ -61,12 +57,12 @@ export const ChartBlock = ({ mockMode = false }: { mockMode?: boolean }) => {
     () => new Date(Number(dateHook.year), Number(dateHook.month) - 1, 1),
     [dateHook.month, dateHook.year],
   );
-  const activeGroup = mockMode ? MOCK_ANALYSIS_GROUP : currentGroup;
-  const activeBudget = mockMode ? MOCK_ANALYSIS_BUDGET : budget;
+  const activeGroup = mockMode ? MOCK_GROUP : currentGroup;
+  const activeBudget = mockMode ? MOCK_BUDGET : budget;
 
   useEffect(() => {
     if (mockMode) {
-      setRecords(createMockAnalysisRecords(anchor));
+      setRecords(createMockRecords(anchor));
       setErrorMessage('');
       setIsLoading(false);
       return;

@@ -182,8 +182,12 @@ export const RecurringBudgetItems = () => {
         <header className="flex items-center justify-between gap-3">
           <div className="flex flex-col gap-0.5">
             <h2
-              className="text-base font-bold text-gray-100"
-              style={{ fontFamily: 'var(--font-heading)' }}
+              className="font-semibold text-gray-100"
+              style={{
+                fontFamily: 'var(--font-heading)',
+                fontSize: '17px',
+                letterSpacing: '-0.015em',
+              }}
             >
               固定預算項目
             </h2>

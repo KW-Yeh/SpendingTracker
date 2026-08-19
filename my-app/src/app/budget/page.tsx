@@ -7,31 +7,45 @@ import { BudgetSkeleton } from '@/components/skeletons/BudgetSkeleton';
 import { NoGroupEmptyState } from '@/components/NoGroupEmptyState';
 import { useBudgetCtx } from '@/context/BudgetProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
-import { useGetSpendingCtx } from '@/context/SpendingProvider';
-import { getStartEndOfMonth } from '@/utils/getStartEndOfMonth';
-import { useEffect, useMemo, useState } from 'react';
+import { useMockMode } from '@/hooks/useMockMode';
+import { getItems } from '@/services/getRecords';
+import { mockRecordsInRange } from '@/utils/mockData';
+import { useEffect, useState } from 'react';
 
 function BudgetContent() {
   const { currentGroup } = useGroupCtx();
   const { hasEverLoaded, budget } = useBudgetCtx();
-  const { data: spendingData, syncData } = useGetSpendingCtx();
+  const mockMode = useMockMode();
+  const [yearlySpending, setYearlySpending] = useState<SpendingRecord[]>([]);
 
-  // Sync spending data for current year from IDB
+  // The month accordions and the year overview both report per-month usage, so
+  // this page needs a full year. It fetches its own range instead of sharing
+  // the spending context, which PrepareData keeps scoped to the current month.
   useEffect(() => {
+    const year = new Date().getFullYear();
+    const startDate = new Date(year, 0, 1).toISOString();
+    const endDate = new Date(year, 11, 31, 23, 59, 59, 999).toISOString();
+
+    if (mockMode) {
+      setYearlySpending(mockRecordsInRange(startDate, endDate));
+      return;
+    }
     if (!currentGroup?.account_id) return;
 
-    const now = new Date();
-    const { startDate, endDate } = getStartEndOfMonth(now);
-    syncData(
+    let cancelled = false;
+    void getItems(
       String(currentGroup.account_id),
       undefined,
-      startDate.toISOString(),
-      endDate.toISOString(),
-    );
-  }, [currentGroup?.account_id, syncData]);
-
-  // Use spending data from context as yearly spending (IDB data for the current group)
-  const yearlySpending = useMemo(() => spendingData, [spendingData]);
+      startDate,
+      endDate,
+    ).then((res) => {
+      if (cancelled) return;
+      if (res.status && Array.isArray(res.data)) setYearlySpending(res.data);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [mockMode, currentGroup?.account_id]);
 
   if (!currentGroup) {
     return <NoGroupEmptyState>{null}</NoGroupEmptyState>;

@@ -5,6 +5,7 @@ import { useFavoriteCategoriesCtx } from '@/context/FavoriteCategoriesProvider';
 import { useGroupCtx } from '@/context/GroupProvider';
 import { useGetSpendingCtx } from '@/context/SpendingProvider';
 import { useUserConfigCtx } from '@/context/UserConfigProvider';
+import { useMockMode } from '@/hooks/useMockMode';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 
@@ -21,13 +22,15 @@ export const DataSyncToast = () => {
   const { isFetching: isFetchingBudget } = useBudgetCtx();
   const { isFetching: isFetchingUser } = useUserConfigCtx();
   const { isFetching: isFetchingFavorites } = useFavoriteCategoriesCtx();
+  const mockMode = useMockMode();
 
   const isSyncing =
-    isFetchingSpending ||
-    isFetchingGroups ||
-    isFetchingBudget ||
-    isFetchingUser ||
-    isFetchingFavorites;
+    !mockMode &&
+    (isFetchingSpending ||
+      isFetchingGroups ||
+      isFetchingBudget ||
+      isFetchingUser ||
+      isFetchingFavorites);
 
   useEffect(() => {
     if (isSyncing) {

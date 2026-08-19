@@ -114,6 +114,7 @@ export const SpendingList = (props: Props) => {
                   key={`${spending.id}-${index.toString()}`}
                   spending={spending}
                   refreshData={refreshData}
+                  showDate={sortBy !== 'date'}
                 />
               ))}
             </div>

@@ -1,6 +1,8 @@
 'use client';
 
+import { useMockMode } from '@/hooks/useMockMode';
 import { getGroups } from '@/services/groupServices';
+import { MOCK_GROUP } from '@/utils/mockData';
 import {
   getCachedCurrentGroup,
   getCachedGroups,
@@ -37,7 +39,10 @@ const INIT_CTX_VAL: {
   setCurrentGroup: () => {},
 };
 
+const noop = () => {};
+
 export const GroupProvider = ({ children }: { children: ReactNode }) => {
+  const mockMode = useMockMode();
   // Synchronous warm-start. We don't yet know the userId at this point
   // (UserConfigProvider hasn't initialized), so we start with empty groups
   // and pull from cache as soon as the user_id arrives via syncGroup.
@@ -102,17 +107,31 @@ export const GroupProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const ctxVal = useMemo(
-    () => ({
-      loading: !hasEverLoaded,
-      isFetching,
-      hasEverLoaded,
-      groups,
-      currentGroup,
-      setCurrentGroup,
-      syncGroup,
-      setter: handleSetGroups,
-    }),
+    () =>
+      mockMode
+        ? {
+            loading: false,
+            isFetching: false,
+            hasEverLoaded: true,
+            groups: [MOCK_GROUP],
+            currentGroup: MOCK_GROUP,
+            // Mutators are inert in mock mode so nothing reaches the cache.
+            setCurrentGroup: noop,
+            syncGroup: noop,
+            setter: noop,
+          }
+        : {
+            loading: !hasEverLoaded,
+            isFetching,
+            hasEverLoaded,
+            groups,
+            currentGroup,
+            setCurrentGroup,
+            syncGroup,
+            setter: handleSetGroups,
+          },
     [
+      mockMode,
       hasEverLoaded,
       isFetching,
       currentGroup,

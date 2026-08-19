@@ -8,6 +8,8 @@ import {
   getFavoriteCategories,
   putFavoriteCategories,
 } from '@/services/favoriteCategoriesServices';
+import { useMockMode } from '@/hooks/useMockMode';
+import { MOCK_FAVORITE_CATEGORIES } from '@/utils/mockData';
 import { getCachedFavorites, setCachedFavorites } from '@/utils/localCache';
 import {
   createContext,
@@ -56,6 +58,7 @@ export const FavoriteCategoriesProvider = ({
 }: {
   children: ReactNode;
 }) => {
+  const mockMode = useMockMode();
   const [favorites, setFavorites] = useState<FavoriteCategories | null>(null);
   const [hasEverLoaded, setHasEverLoaded] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
@@ -71,6 +74,7 @@ export const FavoriteCategoriesProvider = ({
 
   const syncFavorites = useCallback(
     async (ownerId: number) => {
+      if (mockMode) return;
       setIsFetching(true);
 
       // Synchronous LS hit
@@ -94,11 +98,12 @@ export const FavoriteCategoriesProvider = ({
         setHasEverLoaded(true);
       }
     },
-    [handleState],
+    [mockMode, handleState],
   );
 
   const updateFavorites = useCallback(
     async (data: Partial<FavoriteCategories> & { owner_id: number }) => {
+      if (mockMode) return;
       setIsFetching(true);
       const updatedFavorites: FavoriteCategories = {
         category_id: favorites?.category_id || Date.now(),
@@ -135,13 +140,16 @@ export const FavoriteCategoriesProvider = ({
         setIsFetching(false);
       }
     },
-    [favorites, handleState],
+    [mockMode, favorites, handleState],
   );
 
   const getCategoryDescriptions = useCallback(
     (categoryEmoji: string): string[] =>
-      getCategoryFavorites(favorites, categoryEmoji),
-    [favorites],
+      getCategoryFavorites(
+        mockMode ? MOCK_FAVORITE_CATEGORIES : favorites,
+        categoryEmoji,
+      ),
+    [mockMode, favorites],
   );
 
   const addCategoryDescription = useCallback(

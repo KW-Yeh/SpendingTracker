@@ -5,7 +5,9 @@ import {
   putItem,
   deleteItem as deleteItemAPI,
 } from '@/services/getRecords';
+import { useMockMode } from '@/hooks/useMockMode';
 import { getCookie } from '@/utils/handleCookie';
+import { mockRecordsInRange } from '@/utils/mockData';
 import { getCachedSpending, setCachedSpending } from '@/utils/localCache';
 import {
   createContext,
@@ -16,6 +18,7 @@ import {
   useMemo,
   useReducer,
   useRef,
+  useState,
 } from 'react';
 import { toast } from 'sonner';
 
@@ -104,6 +107,9 @@ function getInitialState(): State {
 
 export const SpendingProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(reducer, undefined, getInitialState);
+  const mockMode = useMockMode();
+  // Mock records live outside the reducer so they never touch localStorage.
+  const [mockData, setMockData] = useState<SpendingRecord[]>([]);
   // Remember the last sync params so we can re-run them when the tab regains
   // focus / becomes visible. Without this, returning to a stale tab keeps
   // showing whatever was last fetched.
@@ -125,6 +131,10 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       startDate?: string,
       endDate?: string,
     ) => {
+      if (mockMode) {
+        setMockData(mockRecordsInRange(startDate, endDate));
+        return;
+      }
       if (!groupId) {
         dispatch({ type: 'FETCH_END' });
         return;
@@ -160,13 +170,17 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
         dispatch({ type: 'FETCH_END' });
       }
     },
-    [handleSetState],
+    [mockMode, handleSetState],
   );
 
   const addRecord = useCallback(
     async (record: SpendingRecord, groupId: string | number) => {
-      const prevData = state.data;
       const newRecord = { ...record, updated_at: new Date().toISOString() };
+      if (mockMode) {
+        setMockData((prev) => [...prev, newRecord]);
+        return;
+      }
+      const prevData = state.data;
       const updatedData = [...prevData, newRecord];
       handleSetState(updatedData);
 
@@ -187,13 +201,19 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
         toast.error('新增失敗，請再試一次');
       }
     },
-    [state.data, handleSetState],
+    [mockMode, state.data, handleSetState],
   );
 
   const updateRecord = useCallback(
     async (record: SpendingRecord, groupId: string | number) => {
-      const prevData = state.data;
       const updatedRecord = { ...record, updated_at: new Date().toISOString() };
+      if (mockMode) {
+        setMockData((prev) =>
+          prev.map((r) => (r.id === record.id ? updatedRecord : r)),
+        );
+        return;
+      }
+      const prevData = state.data;
       const updatedData = prevData.map((r) =>
         r.id === record.id ? updatedRecord : r,
       );
@@ -219,11 +239,15 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
         toast.error('更新失敗，請再試一次');
       }
     },
-    [state.data, handleSetState],
+    [mockMode, state.data, handleSetState],
   );
 
   const deleteRecord = useCallback(
     async (recordId: string, groupId: string | number) => {
+      if (mockMode) {
+        setMockData((prev) => prev.filter((r) => r.id !== recordId));
+        return;
+      }
       const prevData = state.data;
       const updatedData = prevData.filter((r) => r.id !== recordId);
       const dateStr = prevData.find((r) => r.id === recordId)?.date;
@@ -251,28 +275,37 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
         toast.error('刪除失敗，請再試一次');
       }
     },
-    [state.data, handleSetState],
+    [mockMode, state.data, handleSetState],
   );
 
   const ctxVal = useMemo(
     () => ({
       // Backwards-compat shape:
-      loading: state.isFetching && !state.hasEverLoaded,
-      isInitialLoad: !state.hasEverLoaded,
-      isFetching: state.isFetching,
-      hasEverLoaded: state.hasEverLoaded,
-      data: state.data,
+      loading: mockMode ? false : state.isFetching && !state.hasEverLoaded,
+      isInitialLoad: mockMode ? false : !state.hasEverLoaded,
+      isFetching: mockMode ? false : state.isFetching,
+      hasEverLoaded: mockMode ? true : state.hasEverLoaded,
+      data: mockMode ? mockData : state.data,
       syncData,
       addRecord,
       updateRecord,
       deleteRecord,
     }),
-    [state, syncData, addRecord, updateRecord, deleteRecord],
+    [
+      mockMode,
+      mockData,
+      state,
+      syncData,
+      addRecord,
+      updateRecord,
+      deleteRecord,
+    ],
   );
 
   // Re-sync when the tab becomes visible again. Without this, an inactive
   // dashboard tab keeps showing stale data even after edits made elsewhere.
   useEffect(() => {
+    if (mockMode) return;
     if (typeof document === 'undefined') return;
     const onVisible = () => {
       if (document.visibilityState !== 'visible') return;
@@ -286,7 +319,7 @@ export const SpendingProvider = ({ children }: { children: ReactNode }) => {
       document.removeEventListener('visibilitychange', onVisible);
       window.removeEventListener('focus', onVisible);
     };
-  }, [syncData]);
+  }, [mockMode, syncData]);
 
   return <Ctx.Provider value={ctxVal}>{children}</Ctx.Provider>;
 };
