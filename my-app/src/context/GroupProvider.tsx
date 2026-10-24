@@ -63,16 +63,29 @@ export const GroupProvider = ({ children }: { children: ReactNode }) => {
     setHasEverLoaded(true);
   }, []);
 
+  // The cached currentGroup is a full snapshot, so swap it for the matching
+  // entry from authoritative data. If the group no longer exists (deleted, or
+  // the user was removed), clear it so usePrepareData picks a default.
+  const reconcileCurrentGroup = useCallback((freshGroups: Group[]) => {
+    setCurrentGroupState((prev) => {
+      if (!prev) return prev;
+      const fresh = freshGroups.find((g) => g.account_id === prev.account_id);
+      setCachedCurrentGroup(fresh ?? null);
+      return fresh;
+    });
+  }, []);
+
   const handleSetGroups = useCallback(
     (newGroups: Group[], userId?: number) => {
       startTransition(() => {
         handleState(newGroups);
+        reconcileCurrentGroup(newGroups);
       });
       if (userId) {
         setCachedGroups(userId, newGroups);
       }
     },
-    [handleState],
+    [handleState, reconcileCurrentGroup],
   );
 
   const syncGroup = useCallback(
@@ -87,12 +100,13 @@ export const GroupProvider = ({ children }: { children: ReactNode }) => {
         });
       }
 
-      // Source of truth
+      // Source of truth: remote overrides the warm-start and refreshes the cache
       try {
         const res = await getGroups(user_id);
         if (res.status && res.data) {
           startTransition(() => {
             handleState(res.data);
+            reconcileCurrentGroup(res.data);
           });
           setCachedGroups(user_id, res.data);
         }
@@ -103,7 +117,7 @@ export const GroupProvider = ({ children }: { children: ReactNode }) => {
         setHasEverLoaded(true);
       }
     },
-    [handleState],
+    [handleState, reconcileCurrentGroup],
   );
 
   const ctxVal = useMemo(
