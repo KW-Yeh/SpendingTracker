@@ -32,6 +32,22 @@ interface Props {
 
 const QUICK_AMOUNTS = [100, 500, 1000, 5000];
 
+const DESC_SEPARATOR = '，';
+
+const splitDescription = (text: string) =>
+  text
+    .split(/[,，]/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+const toggleDescriptionItem = (text: string, item: string) => {
+  const parts = splitDescription(text);
+  const next = parts.includes(item)
+    ? parts.filter((p) => p !== item)
+    : [...parts, item];
+  return next.join(DESC_SEPARATOR);
+};
+
 type Step = 1 | 2;
 
 export const EditExpenseModal = (props: Props) => {
@@ -608,30 +624,36 @@ const StepDetails = ({
 
           {descriptionList.length > 0 && (
             <div className="flex flex-wrap gap-1.5 pt-1">
-              {descriptionList.map((commonDesc) => (
-                <button
-                  key={commonDesc}
-                  type="button"
-                  onClick={() => onSetDescription(commonDesc)}
-                  className="rounded-full border px-2.5 py-1 text-xs font-medium transition-colors"
-                  style={{
-                    borderColor:
-                      description === commonDesc
+              {descriptionList.map((commonDesc) => {
+                const selected =
+                  splitDescription(description).includes(commonDesc);
+                return (
+                  <button
+                    key={commonDesc}
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={() =>
+                      onSetDescription(
+                        toggleDescriptionItem(description, commonDesc),
+                      )
+                    }
+                    className="rounded-full border px-2.5 py-1 text-xs font-medium transition-colors"
+                    style={{
+                      borderColor: selected
                         ? 'rgba(0, 102, 204, 0.5)'
                         : 'rgba(0,0,0,0.10)',
-                    background:
-                      description === commonDesc
+                      background: selected
                         ? 'rgba(0, 102, 204, 0.08)'
                         : 'transparent',
-                    color:
-                      description === commonDesc
+                      color: selected
                         ? 'var(--color-primary-500)'
                         : 'var(--color-text-tertiary)',
-                  }}
-                >
-                  {commonDesc}
-                </button>
-              ))}
+                    }}
+                  >
+                    {commonDesc}
+                  </button>
+                );
+              })}
             </div>
           )}
 
